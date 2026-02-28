@@ -93,3 +93,9 @@ create table budget.monthly_budgets (
 - [SMTM](https://github.com/2022-Winter-Bootcamp-Team-C/docker) — 영수증 OCR + 그래프 레퍼런스
 - [pink-tracker](https://pink-tracker-dun.vercel.app) — UI 레퍼런스
 - [docs/plan.md](./docs/plan.md) — 상세 기획 및 의사결정 로그
+
+## Setup (형주가 직접 설정)
+
+- [ ] Vercel 프로젝트 생성 + GitHub 연동
+- [ ] Supabase bb-todo 프로젝트에 `budget` 스키마 생성
+- [ ] Vercel 환경변수 설정 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
