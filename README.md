@@ -99,3 +99,13 @@ create table budget.monthly_budgets (
 - [ ] Vercel 프로젝트 생성 + GitHub 연동
 - [ ] Supabase bb-todo 프로젝트에 `budget` 스키마 생성
 - [ ] Vercel 환경변수 설정 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+
+## UI Library
+
+**shadcn/ui** — pink-tracker에서 유리님이 마음에 들어했던 UI 패키지.
+
+- 공식 사이트: https://ui.shadcn.com
+- GitHub: https://github.com/shadcn-ui/ui
+- 컴포넌트 데모: https://ui.shadcn.com/examples/dashboard
+
+Tailwind 기반, 컴포넌트 소스코드를 직접 프로젝트에 복사하는 방식 (npm 패키지 아님).
