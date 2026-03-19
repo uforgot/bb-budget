@@ -44,7 +44,6 @@ export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps
   const cells: (number | null)[] = []
   for (let i = 0; i < firstDay; i++) cells.push(null)
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
-  while (cells.length % 7 !== 0) cells.push(null)
 
   const selectedDayOfWeek = selectedDay
     ? DAY_NAMES[new Date(year, month - 1, selectedDay).getDay()]
