@@ -34,12 +34,12 @@ function formatAmount(amount: number): string {
 }
 
 export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps) {
-  const [selectedDay, setSelectedDay] = useState<number | null>(null)
-  const firstDay = new Date(year, month - 1, 1).getDay()
-  const daysInMonth = new Date(year, month, 0).getDate()
   const today = new Date()
   const isCurrentMonth = today.getFullYear() === year && today.getMonth() + 1 === month
   const todayDate = today.getDate()
+  const [selectedDay, setSelectedDay] = useState<number | null>(isCurrentMonth ? todayDate : 1)
+  const firstDay = new Date(year, month - 1, 1).getDay()
+  const daysInMonth = new Date(year, month, 0).getDate()
 
   const cells: (number | null)[] = []
   for (let i = 0; i < firstDay; i++) cells.push(null)
