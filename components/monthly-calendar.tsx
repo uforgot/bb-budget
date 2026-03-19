@@ -36,6 +36,11 @@ export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps
 
   return (
     <div className="bg-card border border-border rounded-xl p-4">
+      {/* Month title */}
+      <h1 className="text-lg font-semibold text-muted-foreground mb-3">
+        {year}년 {month}월
+      </h1>
+
       {/* Weekday header */}
       <div className="grid grid-cols-7 mb-2">
         {WEEKDAYS.map((day, i) => (
@@ -66,18 +71,23 @@ export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps
             >
               {day && (
                 <>
-                  <span
-                    className={`text-xs tabular-nums leading-none ${
-                      isToday
-                        ? 'bg-primary text-primary-foreground rounded-full size-5 flex items-center justify-center font-semibold'
-                        : dayOfWeek === 0
-                          ? 'text-red-400'
-                          : dayOfWeek === 6
-                            ? 'text-blue-400'
-                            : 'text-foreground'
-                    }`}
-                  >
-                    {day}
+                  <span className="relative flex items-center justify-center">
+                    {isToday && (
+                      <span className="absolute inset-0 m-auto size-5 rounded-full bg-primary" />
+                    )}
+                    <span
+                      className={`relative text-xs tabular-nums leading-none ${
+                        isToday
+                          ? 'text-primary-foreground font-semibold'
+                          : dayOfWeek === 0
+                            ? 'text-red-400'
+                            : dayOfWeek === 6
+                              ? 'text-blue-400'
+                              : 'text-foreground'
+                      }`}
+                    >
+                      {day}
+                    </span>
                   </span>
                   <div className="mt-0.5 flex flex-col items-center gap-0">
                     <span className="text-[9px] tabular-nums text-blue-400 leading-tight">
