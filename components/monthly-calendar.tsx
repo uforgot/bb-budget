@@ -80,16 +80,12 @@ export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps
                     {day}
                   </span>
                   <div className="mt-0.5 flex flex-col items-center gap-0">
-                    {dayData?.income && (
-                      <span className="text-[9px] tabular-nums text-blue-400 leading-tight">
-                        +{formatAmount(dayData.income)}
-                      </span>
-                    )}
-                    {dayData?.expense && (
-                      <span className="text-[9px] tabular-nums text-red-400 leading-tight">
-                        -{formatAmount(dayData.expense)}
-                      </span>
-                    )}
+                    <span className="text-[9px] tabular-nums text-blue-400 leading-tight">
+                      +{formatAmount(dayData?.income ?? 0)}
+                    </span>
+                    <span className="text-[9px] tabular-nums text-red-400 leading-tight">
+                      -{formatAmount(dayData?.expense ?? 0)}
+                    </span>
                   </div>
                 </>
               )}
