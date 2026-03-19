@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
+import { TopHeader } from '@/components/top-header'
 
 type TabType = '지출' | '수입'
 
@@ -36,7 +37,8 @@ export default function History() {
 
   return (
     <div className="min-h-dvh bg-background pb-20">
-      <div className="max-w-md mx-auto px-4 pt-8">
+      <div className="max-w-md mx-auto px-4">
+        <TopHeader />
         <p className="text-lg font-bold text-pretty mb-4">내역</p>
 
         {/* Tabs */}
