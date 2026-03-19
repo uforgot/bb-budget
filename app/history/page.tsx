@@ -38,8 +38,7 @@ export default function History() {
   return (
     <div className="min-h-dvh bg-background pb-20">
       <div className="max-w-md mx-auto px-4">
-        <TopHeader />
-        <p className="text-lg font-bold text-pretty mb-4">내역</p>
+        <TopHeader title="내역" />
 
         {/* Tabs */}
         <div className="flex border-b border-border mb-4">

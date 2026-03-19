@@ -12,9 +12,7 @@ export default function Home() {
   return (
     <div className="min-h-dvh bg-background pb-20">
       <div className="max-w-md mx-auto px-4">
-        <TopHeader />
-
-        <p className="text-lg font-bold text-pretty mb-3">요약</p>
+        <TopHeader title="요약" />
 
         <div className="grid grid-cols-3 gap-3 mb-6">
           {summary.map(({ label, value, color }) => (
