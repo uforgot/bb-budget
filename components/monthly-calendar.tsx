@@ -37,12 +37,12 @@ export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps
   return (
     <div className="bg-card border border-border rounded-xl p-4">
       {/* Month title */}
-      <h1 className="text-lg font-semibold text-muted-foreground mb-3">
+      <h1 className="text-sm font-semibold text-muted-foreground mb-3 text-center">
         {year}년 {month}월
       </h1>
 
       {/* Weekday header */}
-      <div className="grid grid-cols-7 mb-2">
+      <div className="grid grid-cols-7 pb-2 mb-2 border-b border-border">
         {WEEKDAYS.map((day, i) => (
           <div
             key={day}

@@ -11,11 +11,9 @@ export default function Home() {
   return (
     <div className="min-h-dvh bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-8">
-        <MonthlyCalendar year={2026} month={3} />
+        <p className="text-lg font-bold text-pretty mb-3">요약</p>
 
-        <p className="text-lg font-bold text-pretty mt-6 mb-3">요약</p>
-
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           {summary.map(({ label, value, color }) => (
             <div key={label} className="bg-card border border-border rounded-xl p-4">
               <p className="text-xs text-muted-foreground mb-1">{label}</p>
@@ -23,6 +21,10 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        <p className="text-lg font-bold text-pretty mb-3">월간 내역</p>
+
+        <MonthlyCalendar year={2026} month={3} />
       </div>
 
       <BottomNav />
