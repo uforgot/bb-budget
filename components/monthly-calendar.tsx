@@ -71,9 +71,9 @@ export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps
             >
               {day && (
                 <>
-                  <span className="relative flex items-center justify-center">
+                  <span className="relative flex items-center justify-center size-5">
                     {isToday && (
-                      <span className="absolute inset-0 m-auto size-5 rounded-full bg-primary" />
+                      <span className="absolute inset-0 rounded-full bg-primary" />
                     )}
                     <span
                       className={`relative text-xs tabular-nums leading-none ${
