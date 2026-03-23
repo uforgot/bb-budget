@@ -32,6 +32,10 @@ function formatAmount(amount: number): string {
     const rest = Math.floor((amount % 100000000) / 10000000)
     return rest > 0 ? `${eok}.${rest}억` : `${eok}억`
   }
+  if (amount >= 100000) {
+    const man = Math.floor(amount / 10000)
+    return `${man}만`
+  }
   return amount.toLocaleString()
 }
 

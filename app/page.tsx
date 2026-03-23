@@ -6,6 +6,20 @@ import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionFab } from '@/components/add-transaction-fab'
 
+function formatCompact(amount: number): string {
+  if (amount >= 100000000) {
+    const eok = Math.floor(amount / 100000000)
+    const rest = Math.floor((amount % 100000000) / 10000000)
+    return rest > 0 ? `${eok}.${rest}억` : `${eok}억`
+  }
+  if (amount >= 10000) {
+    const man = Math.floor(amount / 10000)
+    const rest = Math.floor((amount % 10000) / 1000)
+    return rest > 0 ? `${man.toLocaleString()}.${rest}만` : `${man.toLocaleString()}만`
+  }
+  return amount.toLocaleString()
+}
+
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
@@ -56,9 +70,9 @@ export default function Home() {
   const totalAssets = 123456678
 
   const summary = [
-    { label: '수입', value: `₩${totalIncome.toLocaleString()}`, color: 'text-blue-400' },
-    { label: '지출', value: `₩${totalExpense.toLocaleString()}`, color: 'text-red-400' },
-    { label: '저축', value: `₩${totalSavings.toLocaleString()}`, color: 'text-green-400' },
+    { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-blue-400' },
+    { label: '지출', value: `₩${formatCompact(totalExpense)}`, color: 'text-red-400' },
+    { label: '저축', value: `₩${formatCompact(totalSavings)}`, color: 'text-green-400' },
   ]
 
   return (
