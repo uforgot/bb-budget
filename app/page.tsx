@@ -41,8 +41,6 @@ export default function Home() {
           ))}
         </div>
 
-        <p className="text-lg font-bold text-pretty mb-3">월간 내역</p>
-
         <MonthlyCalendar
           year={2026}
           month={3}
