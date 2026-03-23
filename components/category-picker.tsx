@@ -29,6 +29,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
   '부수입': '💵',
   '예적금': '🏦',
   '투자': '📈',
+  '부수입': '💵',
 }
 
 export function CategoryPicker({ open, type, selected, onSelect, onClose }: CategoryPickerProps) {
