@@ -66,11 +66,11 @@ export default function Home() {
       <div className="px-5">
         <TopHeader title={`₩${totalAssets.toLocaleString()}`} />
 
-        <div className="bg-card rounded-xl p-4 mb-6">
+        <div className="mb-6">
           {summary.map(({ label, value, color }) => (
-            <div key={label} className="flex items-center justify-center gap-3 py-1">
-              <span className="text-sm text-muted-foreground w-8">{label}</span>
-              <span className={`text-sm font-bold tabular-nums ${color}`}>{value}</span>
+            <div key={label} className="flex items-center gap-3 py-0.5">
+              <span className="text-xs text-muted-foreground w-6">{label}</span>
+              <span className={`text-sm tabular-nums ${color}`}>{value}</span>
             </div>
           ))}
         </div>
