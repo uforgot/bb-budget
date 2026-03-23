@@ -48,6 +48,15 @@ export default function Home() {
 
   useEffect(() => {
     loadData()
+    // 탭 전환 시 자동 새로고침
+    const handleFocus = () => loadData()
+    window.addEventListener('focus', handleFocus)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') loadData()
+    })
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [loadData])
 
   const totalAssets = totalIncome - totalExpense + totalSavings
