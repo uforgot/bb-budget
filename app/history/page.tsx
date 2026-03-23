@@ -40,6 +40,7 @@ export default function History() {
   const [activeTab, setActiveTab] = useState<TabType>('지출')
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
   const [modalOpen, setModalOpen] = useState(false)
+  const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   const loadData = useCallback(async () => {
@@ -126,7 +127,13 @@ export default function History() {
                         loadData()
                       }}
                     >
-                      <div className="flex items-center justify-between px-4 py-3 border-t border-border/50">
+                      <div
+                        onClick={() => {
+                          setEditTx(tx)
+                          setModalOpen(true)
+                        }}
+                        className="flex items-center justify-between px-4 py-3 border-t border-border/50 cursor-pointer active:bg-muted/50"
+                      >
                         <div className="flex flex-col">
                           <span className="text-sm">{tx.description || (tx.category as any)?.name || ''}</span>
                           <span className="text-[11px] text-muted-foreground">
@@ -150,14 +157,16 @@ export default function History() {
 
       <AddTransactionModal
         open={modalOpen}
+        editTransaction={editTx}
         onClose={() => {
           setModalOpen(false)
+          setEditTx(null)
           loadData()
         }}
         onSave={() => {}}
       />
 
-      <BottomNav onAdd={() => setModalOpen(true)} hideAdd={modalOpen} />
+      <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} hideAdd={modalOpen} />
     </div>
   )
 }

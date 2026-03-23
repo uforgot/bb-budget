@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { CategoryPicker } from './category-picker'
-import { getCategories, addTransaction, type Category } from '@/lib/api'
+import { getCategories, addTransaction, updateTransaction, type Category, type Transaction } from '@/lib/api'
 
 type TransactionType = '수입' | '지출' | '저축'
 
@@ -11,6 +11,7 @@ const TYPE_MAP: Record<TransactionType, string> = { '수입': 'income', '지출'
 interface AddTransactionModalProps {
   open: boolean
   initialDate?: string
+  editTransaction?: Transaction | null
   onClose: () => void
   onSave: (data: {
     date: string
@@ -20,6 +21,8 @@ interface AddTransactionModalProps {
     memo: string
   }) => void
 }
+
+const REVERSE_TYPE_MAP: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
 
 function getToday() {
   const now = new Date()
@@ -41,7 +44,7 @@ function formatAmount(raw: string) {
   return parseInt(raw).toLocaleString()
 }
 
-export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddTransactionModalProps) {
+export function AddTransactionModal({ open, initialDate, editTransaction, onClose, onSave }: AddTransactionModalProps) {
   const [type, setType] = useState<TransactionType | null>(null)
   const [rawAmount, setRawAmount] = useState('')
   const [categoryId, setCategoryId] = useState('')
@@ -50,8 +53,24 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
   const [memo, setMemo] = useState('')
   const [keypadActive, setKeypadActive] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [editDate, setEditDate] = useState<string | null>(null)
 
-  const date = initialDate || getToday()
+  // Populate fields when editing
+  useEffect(() => {
+    if (editTransaction && open) {
+      setType(REVERSE_TYPE_MAP[editTransaction.type] || null)
+      setRawAmount(String(editTransaction.amount))
+      setCategoryId(editTransaction.category_id)
+      const catName = (editTransaction.category as any)?.name || ''
+      setCategoryLabel(catName)
+      setMemo(editTransaction.description || '')
+      setEditDate(editTransaction.date)
+    } else if (!editTransaction && open) {
+      // Reset for new entry
+    }
+  }, [editTransaction, open])
+
+  const date = editDate || initialDate || getToday()
 
   const handleSave = async () => {
     const numAmount = parseInt(rawAmount, 10)
@@ -72,12 +91,17 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
     }
     setSaving(true)
     try {
-      await addTransaction(payload)
+      if (editTransaction) {
+        await updateTransaction(editTransaction.id, payload)
+      } else {
+        await addTransaction(payload)
+      }
       onSave({ date, type: type!, amount: numAmount, category: categoryLabel, memo })
       setRawAmount('')
       setMemo('')
       setCategoryId('')
       setCategoryLabel('카테고리 선택')
+      setEditDate(null)
       onClose()
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : JSON.stringify(e)
@@ -138,7 +162,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <h1 className="text-[17px] font-semibold">기록하기</h1>
+        <h1 className="text-[17px] font-semibold">{editTransaction ? '수정하기' : '기록하기'}</h1>
         <div className="w-8" />
       </header>
 
@@ -227,7 +251,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             onClick={handleSave}
             className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
           >
-            {saving ? '저장 중...' : '저장하기'}
+            {saving ? '저장 중...' : editTransaction ? '수정하기' : '저장하기'}
           </button>
         </div>
       </div>

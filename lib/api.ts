@@ -84,6 +84,23 @@ export async function addTransaction(tx: {
   return data as Transaction
 }
 
+export async function updateTransaction(id: string, tx: {
+  type?: string
+  amount?: number
+  category_id?: string
+  description?: string
+  date?: string
+}) {
+  const { data, error } = await getSupabase()
+    .from('transactions')
+    .update(tx as any)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data as Transaction
+}
+
 export async function deleteTransaction(id: string) {
   const { error } = await getSupabase()
     .from('transactions')
