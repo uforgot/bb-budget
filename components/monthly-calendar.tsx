@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 interface DayData {
   income?: number
@@ -50,6 +50,20 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
 
   const selectedData = selectedDay ? data[selectedDay] : undefined
+  const touchStartX = useRef<number | null>(null)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return
+    const diff = e.changedTouches[0].clientX - touchStartX.current
+    if (Math.abs(diff) > 50) {
+      goMonth(diff > 0 ? -1 : 1)
+    }
+    touchStartX.current = null
+  }
 
   const goMonth = (dir: -1 | 1) => {
     let newMonth = month + dir
@@ -66,13 +80,13 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
     <div>
       <div>
         {/* Month nav */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-center gap-2 mb-3">
           <button
             onClick={() => goMonth(-1)}
             className="p-1 text-muted-foreground"
             aria-label="이전 달"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
           </button>
@@ -84,7 +98,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
             className="p-1 text-muted-foreground"
             aria-label="다음 달"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="m9 18 6-6-6-6" />
             </svg>
           </button>
@@ -105,7 +119,11 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
         </div>
 
         {/* Calendar grid */}
-        <div className="grid grid-cols-7">
+        <div
+          className="grid grid-cols-7"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {cells.map((day, i) => {
             const dayOfWeek = i % 7
             const dayData = day ? data[day] : undefined
