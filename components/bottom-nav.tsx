@@ -14,24 +14,24 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border pb-[env(safe-area-inset-bottom,0px)]">
-      <div className="flex items-center justify-around h-16 max-w-md mx-auto">
-        {tabs.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex flex-col items-center gap-1 px-4 py-2 text-xs transition-colors ${
-                active ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Icon size={22} strokeWidth={active ? 2.5 : 1.5} />
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 px-1.5 py-1.5 rounded-full bg-black/75 dark:bg-black/85 shadow-lg backdrop-blur-md pb-[calc(6px+env(safe-area-inset-bottom,0px))]">
+      {tabs.map(({ href, label, icon: Icon }) => {
+        const active = pathname === href
+        return (
+          <Link
+            key={href}
+            href={href}
+            className={`flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-full transition-colors ${
+              active ? 'bg-white/15' : ''
+            }`}
+          >
+            <Icon className={`h-5 w-5 ${active ? 'text-blue-400' : 'text-gray-400'}`} />
+            <span className={`text-[10px] font-medium ${active ? 'text-blue-400' : 'text-gray-400'}`}>
               {label}
-            </Link>
-          )
-        })}
-      </div>
-    </nav>
+            </span>
+          </Link>
+        )
+      })}
+    </div>
   )
 }
