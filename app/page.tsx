@@ -64,7 +64,7 @@ export default function Home() {
   return (
     <div className="min-h-dvh bg-background pb-20">
       <div className="px-5">
-        <TopHeader title={`₩${totalAssets.toLocaleString()}`} />
+        <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
 
         <div className="grid grid-cols-3 gap-3 mb-6">
           {summary.map(({ label, value, color }) => (
