@@ -50,6 +50,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
   const [category, setCategory] = useState(categoriesByType['지출'][0])
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
+  const [keypadActive, setKeypadActive] = useState(true)
 
   const date = initialDate || getToday()
 
@@ -143,14 +144,14 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           </p>
 
           {/* 금액 표시 */}
-          <div className="mb-4">
+          <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(true)}>
             <div className="flex items-baseline justify-center gap-1">
               <span className="text-4xl font-bold text-muted-foreground">₩</span>
               <span className="text-4xl font-bold tabular-nums">
                 {formatAmount(rawAmount)}
               </span>
             </div>
-            <div className="h-px bg-border mt-2 mx-8" />
+            <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-blue-400' : 'bg-border'}`} />
           </div>
 
           {/* 카테고리 */}
@@ -190,7 +191,10 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
               placeholder="메모를 입력하세요"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              className="w-full bg-card rounded-lg px-3 py-2.5 text-sm"
+              onBlur={() => setKeypadActive(true)}
+              onFocus={() => setKeypadActive(false)}
+              style={{ fontSize: '16px' }}
+              className="w-full bg-card rounded-lg px-3 py-2.5"
             />
           </div>
 
@@ -205,7 +209,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
       </div>
 
       {/* 키패드 (하단 고정) */}
-      <div className="w-full max-w-lg mx-auto px-4 pb-20 flex-shrink-0">
+      <div className={`w-full max-w-lg mx-auto px-4 pb-20 flex-shrink-0 ${keypadActive ? '' : 'hidden'}`}>
         <div className="grid grid-cols-3 gap-px mb-3">
           {keypadKeys.map((row, ri) =>
             row.map((key) => (
