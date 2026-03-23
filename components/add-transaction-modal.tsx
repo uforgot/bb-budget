@@ -100,9 +100,9 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
   }
 
   const typeColors: Record<TransactionType, { active: string; inactive: string }> = {
-    '지출': { active: 'bg-red-400 text-white', inactive: 'bg-muted text-muted-foreground' },
-    '수입': { active: 'bg-blue-400 text-white', inactive: 'bg-muted text-muted-foreground' },
-    '저축': { active: 'bg-green-400 text-white', inactive: 'bg-muted text-muted-foreground' },
+    '지출': { active: 'bg-accent-coral text-white', inactive: 'bg-muted text-muted-foreground' },
+    '수입': { active: 'bg-accent-blue text-white', inactive: 'bg-muted text-muted-foreground' },
+    '저축': { active: 'bg-accent-mint text-white', inactive: 'bg-muted text-muted-foreground' },
   }
 
   const keypadKeys = [
@@ -149,7 +149,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
                 {formatAmount(rawAmount)}
               </span>
             </div>
-            <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-blue-400' : 'bg-border'}`} />
+            <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-accent-blue' : 'bg-border'}`} />
           </div>
 
           {/* 유형 + 카테고리 */}

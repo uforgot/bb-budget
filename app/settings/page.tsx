@@ -38,7 +38,7 @@ export default function Settings() {
               aria-checked={theme === 'dark'}
               onClick={toggleTheme}
               className={`relative inline-flex h-[31px] w-[51px] items-center rounded-full transition-colors duration-200 ${
-                theme === 'dark' ? 'bg-emerald-500' : 'bg-muted'
+                theme === 'dark' ? 'bg-accent-mint' : 'bg-muted'
               }`}
             >
               <span

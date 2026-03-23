@@ -65,8 +65,8 @@ export default function History() {
               className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
                 activeTab === tab
                   ? tab === '지출'
-                    ? 'text-red-400 border-b-2 border-red-400'
-                    : 'text-blue-400 border-b-2 border-blue-400'
+                    ? 'text-accent-coral border-b-2 border-accent-coral'
+                    : 'text-accent-blue border-b-2 border-accent-blue'
                   : 'text-muted-foreground'
               }`}
             >
@@ -103,7 +103,7 @@ export default function History() {
                 <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                   <span className="text-xs font-medium text-muted-foreground">{label}</span>
                   <span className={`text-xs font-medium tabular-nums ${
-                    activeTab === '지출' ? 'text-red-400' : 'text-blue-400'
+                    activeTab === '지출' ? 'text-accent-coral' : 'text-accent-blue'
                   }`}>
                     ₩{groupTotal.toLocaleString()}
                   </span>
@@ -118,7 +118,7 @@ export default function History() {
                       <span className="text-[11px] text-muted-foreground">{formatDate(tx.date)} · {tx.category}</span>
                     </div>
                     <span className={`text-sm font-medium tabular-nums ${
-                      activeTab === '지출' ? 'text-red-400' : 'text-blue-400'
+                      activeTab === '지출' ? 'text-accent-coral' : 'text-accent-blue'
                     }`}>
                       ₩{tx.amount.toLocaleString()}
                     </span>

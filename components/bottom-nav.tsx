@@ -32,8 +32,8 @@ export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
                 active ? 'bg-white/15' : ''
               }`}
             >
-              <Icon className={`h-5 w-5 ${active ? 'text-blue-400' : 'text-gray-400'}`} />
-              <span className={`text-[10px] font-medium ${active ? 'text-blue-400' : 'text-gray-400'}`}>
+              <Icon className={`h-5 w-5 ${active ? 'text-accent-blue' : 'text-gray-400'}`} />
+              <span className={`text-[10px] font-medium ${active ? 'text-accent-blue' : 'text-gray-400'}`}>
                 {label}
               </span>
             </Link>
@@ -45,7 +45,7 @@ export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
       {onAdd && !hideAdd && (
         <button
           onClick={onAdd}
-          className="size-[60px] bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
+          className="size-[60px] bg-black/75 dark:bg-black/85 backdrop-blur-md text-accent-blue rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
           aria-label="내역 추가"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

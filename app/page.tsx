@@ -31,9 +31,9 @@ export default function Home() {
   const totalAssets = 0
 
   const summary = [
-    { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-blue-400' },
-    { label: '지출', value: `₩${formatCompact(totalExpense)}`, color: 'text-red-400' },
-    { label: '저축', value: `₩${formatCompact(totalSavings)}`, color: 'text-green-400' },
+    { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-accent-blue' },
+    { label: '지출', value: `₩${formatCompact(totalExpense)}`, color: 'text-accent-coral' },
+    { label: '저축', value: `₩${formatCompact(totalSavings)}`, color: 'text-accent-mint' },
   ]
 
   return (

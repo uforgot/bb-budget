@@ -77,7 +77,7 @@ export default function CategoriesSettings() {
                   />
                   <button
                     onClick={handleSaveEdit}
-                    className="text-sm text-blue-400 font-medium flex-shrink-0"
+                    className="text-sm text-accent-blue font-medium flex-shrink-0"
                   >
                     저장
                   </button>
@@ -94,13 +94,13 @@ export default function CategoriesSettings() {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => handleEdit(idx)}
-                      className="text-xs text-blue-400"
+                      className="text-xs text-accent-blue"
                     >
                       수정
                     </button>
                     <button
                       onClick={() => handleDelete(idx)}
-                      className="text-xs text-red-400"
+                      className="text-xs text-accent-coral"
                     >
                       삭제
                     </button>

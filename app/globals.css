@@ -5,6 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-accent-blue: #3700B3;
+  --color-accent-coral: #CF6679;
+  --color-accent-mint: #2dd4bf;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

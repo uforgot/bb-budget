@@ -127,7 +127,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
             <div
               key={day}
               className={`text-center text-[11px] font-medium ${
-                i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-muted-foreground'
+                i === 0 ? 'text-accent-coral' : i === 6 ? 'text-accent-blue' : 'text-muted-foreground'
               }`}
             >
               {day}
@@ -172,9 +172,9 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                           isToday
                             ? 'text-primary-foreground font-semibold'
                             : dayOfWeek === 0
-                              ? 'text-red-400'
+                              ? 'text-accent-coral'
                               : dayOfWeek === 6
-                                ? 'text-blue-400'
+                                ? 'text-accent-blue'
                                 : 'text-foreground'
                         }`}
                       >
@@ -183,12 +183,12 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                     </span>
                     <div className="mt-0.5 flex flex-col items-center gap-0">
                       {(dayData?.income ?? 0) > 0 && (
-                        <span className="text-[8px] tabular-nums text-blue-400 leading-tight">
+                        <span className="text-[8px] tabular-nums text-accent-blue leading-tight">
                           {formatAmount(dayData!.income!)}
                         </span>
                       )}
                       {(dayData?.expense ?? 0) > 0 && (
-                        <span className="text-[8px] tabular-nums text-red-400 leading-tight">
+                        <span className="text-[8px] tabular-nums text-accent-coral leading-tight">
                           {formatAmount(dayData!.expense!)}
                         </span>
                       )}
@@ -211,7 +211,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                     <div className="flex flex-col items-end">
                       <span className="text-[11px] text-muted-foreground">{item.category}</span>
                       <span className={`text-sm font-medium tabular-nums ${
-                        item.type === 'expense' ? 'text-red-400' : 'text-blue-400'
+                        item.type === 'expense' ? 'text-accent-coral' : 'text-accent-blue'
                       }`}>
                         {item.amount.toLocaleString()}
                       </span>
