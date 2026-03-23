@@ -59,10 +59,10 @@ export default function Home() {
     31: { expense: 19800 },
   }
 
-  const totalIncome = 123456678
-  const totalExpense = 123456678
-  const totalSavings = 123456678
-  const totalAssets = 123456678
+  const totalIncome = 12345678
+  const totalExpense = 12345678
+  const totalSavings = 12345678
+  const totalAssets = 12345678
 
   const summary = [
     { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-blue-400' },
