@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const DEFAULT_CATEGORIES = ['식비', '교통', '쇼핑', '주거', '의료']
 
 export default function CategoriesSettings() {
+  const router = useRouter()
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
   const [editValue, setEditValue] = useState('')
@@ -44,18 +45,21 @@ export default function CategoriesSettings() {
 
   return (
     <div className="min-h-dvh bg-background">
+      {/* 헤더 */}
+      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 border-b border-border">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+        <h1 className="text-[17px] font-semibold">카테고리 관리</h1>
+        <div className="w-8" />
+      </header>
+
       <div className="max-w-md mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between pt-[env(safe-area-inset-top,0px)] h-14 flex-shrink-0">
-          <Link href="/settings" className="text-blue-400 text-sm font-medium flex items-center gap-1">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            설정
-          </Link>
-          <span className="text-base font-semibold">카테고리 관리</span>
-          <span className="w-12" />
-        </div>
 
         {/* Category list */}
         <div className="mt-4 bg-card border border-border rounded-xl overflow-hidden">
