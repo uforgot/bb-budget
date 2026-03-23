@@ -29,7 +29,7 @@ export function CategoryPicker({ open, categories, selected, onSelect, onClose }
     <div className="fixed inset-0 z-[60] flex items-end justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="relative w-full max-w-md bg-card border-t border-border rounded-t-2xl overflow-hidden max-h-[70dvh] flex flex-col">
+      <div className="relative w-full max-w-md bg-card border-t border-border rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'min(70dvh, 500px)' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-5 pb-3 flex-shrink-0">
           <h3 className="text-lg font-bold">카테고리 선택</h3>
@@ -45,7 +45,7 @@ export function CategoryPicker({ open, categories, selected, onSelect, onClose }
         </div>
 
         {/* Category list */}
-        <div className="flex-1 overflow-y-auto px-5">
+        <div className="overflow-y-auto px-5">
           {categories.map((cat) => (
             <button
               key={cat}
