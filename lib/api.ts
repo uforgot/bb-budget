@@ -91,17 +91,17 @@ export async function updateTransaction(id: string, tx: {
   description?: string
   date?: string
 }) {
-  const { error } = await getSupabase()
+  const { error } = await (getSupabase()
     .from('transactions')
-    .update(tx as any)
+    .update(tx as any) as any)
     .eq('id', id)
   if (error) throw error
 }
 
 export async function deleteTransaction(id: string) {
-  const { error } = await getSupabase()
+  const { error } = await (getSupabase()
     .from('transactions')
-    .delete()
+    .delete() as any)
     .eq('id', id)
   if (error) throw error
 }
