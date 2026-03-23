@@ -110,16 +110,24 @@ export async function getMonthlySummary(year: number, month: number) {
     .filter(t => t.type === 'savings')
     .reduce((sum, t) => sum + t.amount, 0)
 
+  // 카테고리 전체 로드 (parent 이름 매칭용)
+  const allCategories = await getCategories()
+  const catMap = Object.fromEntries(allCategories.map(c => [c.id, c]))
+
   // 일별 집계 + 상세
-  const daily: Record<number, { income: number; expense: number; items: { type: 'income' | 'expense'; category: string; description: string; amount: number }[] }> = {}
+  const daily: Record<number, { income: number; expense: number; savings: number; items: { type: 'income' | 'expense' | 'savings'; category: string; parentCategory: string; description: string; amount: number }[] }> = {}
   for (const t of transactions) {
     const day = new Date(t.date).getDate()
-    if (!daily[day]) daily[day] = { income: 0, expense: 0, items: [] }
+    if (!daily[day]) daily[day] = { income: 0, expense: 0, savings: 0, items: [] }
     if (t.type === 'income') daily[day].income += t.amount
     else if (t.type === 'expense') daily[day].expense += t.amount
+    else if (t.type === 'savings') daily[day].savings += t.amount
+    const cat = catMap[t.category_id]
+    const parentCat = cat?.parent_id ? catMap[cat.parent_id] : null
     daily[day].items.push({
-      type: t.type as 'income' | 'expense',
-      category: (t.category as any)?.name || '',
+      type: t.type as 'income' | 'expense' | 'savings',
+      category: cat?.name || '',
+      parentCategory: parentCat?.name || '',
       description: t.description || '',
       amount: t.amount,
     })

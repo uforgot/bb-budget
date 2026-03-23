@@ -5,12 +5,14 @@ import { useState, useRef } from 'react'
 interface DayData {
   income?: number
   expense?: number
+  savings?: number
   items?: DayItem[]
 }
 
 interface DayItem {
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'savings'
   category: string
+  parentCategory?: string
   description: string
   amount: number
 }
@@ -203,19 +205,47 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
         {/* Selected day detail */}
         {selectedDay !== null && (
           <div className="border-t border-border mt-2 pt-3">
+            {/* 일간 요약 */}
+            {selectedData && (
+              <div className="flex items-center justify-center gap-4 mb-3 text-xs">
+                {(selectedData.income ?? 0) > 0 && (
+                  <span className="text-accent-blue">수입 ₩{(selectedData.income ?? 0).toLocaleString()}</span>
+                )}
+                {(selectedData.expense ?? 0) > 0 && (
+                  <span className="text-accent-coral">지출 ₩{(selectedData.expense ?? 0).toLocaleString()}</span>
+                )}
+                {((selectedData as any).savings ?? 0) > 0 && (
+                  <span className="text-accent-mint">저축 ₩{((selectedData as any).savings ?? 0).toLocaleString()}</span>
+                )}
+              </div>
+            )}
+
+            {/* 내역 */}
             {selectedData?.items && selectedData.items.length > 0 ? (
-              <div className="flex flex-col gap-1.5">
-                {selectedData.items.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground tabular-nums w-10 flex-shrink-0">{selectedDay}일</span>
-                    <span className="text-sm flex-1 truncate">{item.category}{item.description ? `, ${item.description}` : ''}</span>
-                    <span className={`text-sm font-medium tabular-nums flex-shrink-0 ml-2 ${
-                      item.type === 'expense' ? 'text-accent-coral' : 'text-accent-blue'
-                    }`}>
-                      ₩{item.amount.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
+              <div className="flex flex-col gap-1">
+                {selectedData.items.map((item, i) => {
+                  const colorClass = (item as any).type === 'savings'
+                    ? 'text-accent-mint'
+                    : item.type === 'expense'
+                      ? 'text-accent-coral'
+                      : 'text-accent-blue'
+                  const catDisplay = (item as any).parentCategory
+                    ? `${(item as any).parentCategory} > ${item.category}`
+                    : item.category
+                  return (
+                    <div key={i} className="flex items-center justify-between py-1">
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-sm truncate">{catDisplay}</span>
+                        {item.description && (
+                          <span className="text-[11px] text-muted-foreground truncate">{item.description}</span>
+                        )}
+                      </div>
+                      <span className={`text-sm font-medium tabular-nums flex-shrink-0 ml-3 ${colorClass}`}>
+                        ₩{item.amount.toLocaleString()}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-3">내역이 없어요</p>
