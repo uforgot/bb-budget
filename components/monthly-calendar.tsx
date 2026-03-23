@@ -128,38 +128,35 @@ export function MonthlyCalendar({ year, month, data = {}, onDaySelect }: Monthly
             )
           })}
         </div>
-      </div>
-
-      {/* Selected day detail */}
-      {selectedDay !== null && (
-        <div className="mt-3 bg-card border border-border rounded-xl p-4">
-          <p className="text-sm font-semibold mb-3 border-b border-border pb-2">
-            {selectedDay}일 ({selectedDayOfWeek})
-          </p>
-
-          {selectedData?.items && selectedData.items.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              {selectedData.items.map((item, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-sm">{item.description}</span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-[11px] text-muted-foreground">{item.category}</span>
-                    <span className={`text-sm font-medium tabular-nums ${
-                      item.type === 'expense' ? 'text-red-400' : 'text-blue-400'
-                    }`}>
-                      {item.type === 'expense' ? '⊖' : '⊕'} {item.amount.toLocaleString()}
-                    </span>
-                  </div>
+        {/* Selected day detail (inside calendar card) */}
+        {selectedDay !== null && (
+          <>
+            <div className="border-t border-border mt-2 pt-3">
+              {selectedData?.items && selectedData.items.length > 0 ? (
+                <div className="flex flex-col gap-3">
+                  {selectedData.items.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-sm">{item.description}</span>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-[11px] text-muted-foreground">{item.category}</span>
+                        <span className={`text-sm font-medium tabular-nums ${
+                          item.type === 'expense' ? 'text-red-400' : 'text-blue-400'
+                        }`}>
+                          {item.type === 'expense' ? '⊖' : '⊕'} {item.amount.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-3">내역이 없어요</p>
+              )}
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground text-center py-4">내역이 없어요</p>
-          )}
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
   )
 }
