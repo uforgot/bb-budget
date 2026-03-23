@@ -117,7 +117,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
         <div className="w-full max-w-md mx-auto p-5">
           {/* 유형 선택 */}
           <div className="flex gap-2 mb-4">
-            {(['지출', '수입', '저축'] as TransactionType[]).map((t) => (
+            {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setType(t)}
