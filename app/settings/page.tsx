@@ -21,9 +21,9 @@ export default function Settings() {
           <span className="w-12" />
         </div>
 
-        {/* Section */}
+        {/* 보기 설정 */}
         <p className="text-xs text-muted-foreground mb-2 px-1">보기 설정</p>
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4 mb-6">
           <div className="flex items-center justify-between">
             <span className="text-sm">다크 모드</span>
             <button
@@ -40,6 +40,20 @@ export default function Settings() {
               />
             </button>
           </div>
+        </div>
+
+        {/* 데이터 관리 */}
+        <p className="text-xs text-muted-foreground mb-2 px-1">데이터 관리</p>
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <Link
+            href="/settings/categories"
+            className="flex items-center justify-between p-4"
+          >
+            <span className="text-sm">카테고리 관리</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </Link>
         </div>
       </div>
     </div>
