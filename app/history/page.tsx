@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
-import { AddTransactionFab } from '@/components/add-transaction-fab'
+import { AddTransactionModal } from '@/components/add-transaction-modal'
 
 type TabType = '지출' | '수입'
 type ViewMode = 'monthly' | 'weekly'
@@ -15,7 +15,6 @@ interface Transaction {
   amount: number
 }
 
-// 더미 데이터 - 주간 그룹핑용
 const dummyExpenses: Transaction[] = [
   { date: '2026-03-01', category: '생활용품', description: '레이디가구 침대', amount: 835080 },
   { date: '2026-03-02', category: '식비', description: '파파노다이닝 배달', amount: 26500 },
@@ -66,6 +65,7 @@ function formatDate(dateStr: string): string {
 export default function History() {
   const [activeTab, setActiveTab] = useState<TabType>('지출')
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
+  const [modalOpen, setModalOpen] = useState(false)
   const transactions = activeTab === '지출' ? dummyExpenses : dummyIncome
   const grouped = groupBy(transactions, viewMode)
 
@@ -118,7 +118,6 @@ export default function History() {
             const groupTotal = items.reduce((sum, t) => sum + t.amount, 0)
             return (
               <div key={label} className="bg-card rounded-xl overflow-hidden">
-                {/* Group header */}
                 <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                   <span className="text-xs font-medium text-muted-foreground">{label}</span>
                   <span className={`text-xs font-medium tabular-nums ${
@@ -127,7 +126,6 @@ export default function History() {
                     ₩{groupTotal.toLocaleString()}
                   </span>
                 </div>
-                {/* Items */}
                 {items.map((tx, i) => (
                   <div
                     key={i}
@@ -150,8 +148,15 @@ export default function History() {
         </div>
       </div>
 
-      <AddTransactionFab />
-      <BottomNav />
+      <AddTransactionModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={(data) => {
+          console.log('저장:', data)
+        }}
+      />
+
+      <BottomNav onAdd={() => setModalOpen(true)} />
     </div>
   )
 }

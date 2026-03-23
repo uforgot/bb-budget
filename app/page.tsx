@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { TopHeader } from '@/components/top-header'
-import { AddTransactionFab } from '@/components/add-transaction-fab'
+import { AddTransactionModal } from '@/components/add-transaction-modal'
 
 function formatCompact(amount: number): string {
   if (amount >= 100000000) {
@@ -22,6 +22,7 @@ function toDateStr(year: number, month: number, day: number) {
 export default function Home() {
   const today = new Date()
   const [selectedDay, setSelectedDay] = useState(today.getDate())
+  const [modalOpen, setModalOpen] = useState(false)
   const selectedDate = toDateStr(2026, 3, selectedDay)
 
   // 더미 달력 데이터
@@ -94,8 +95,16 @@ export default function Home() {
         />
       </div>
 
-      <AddTransactionFab selectedDate={selectedDate} />
-      <BottomNav />
+      <AddTransactionModal
+        open={modalOpen}
+        initialDate={selectedDate}
+        onClose={() => setModalOpen(false)}
+        onSave={(data) => {
+          console.log('저장:', data)
+        }}
+      />
+
+      <BottomNav onAdd={() => setModalOpen(true)} />
     </div>
   )
 }
