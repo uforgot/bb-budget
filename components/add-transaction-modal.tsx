@@ -152,37 +152,38 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-blue-400' : 'bg-border'}`} />
           </div>
 
-          {/* 유형 선택 */}
-          <div className="flex gap-2 mb-4">
-            {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => {
-                  setType(t)
-                  setCategoryId('')
-                  setCategoryLabel('카테고리 선택')
-                }}
-                className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
-                  type === t ? typeColors[t].active : typeColors[t].inactive
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          {/* 카테고리 */}
+          {/* 유형 + 카테고리 통합 */}
           <div className="mb-3">
             <label className="text-xs text-muted-foreground mb-1 block">카테고리</label>
-            <button
-              onClick={() => setCategoryPickerOpen(true)}
-              className="w-full bg-card rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
-            >
-              <span className={categoryId ? '' : 'text-muted-foreground'}>{categoryLabel}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </button>
+            <div className="flex gap-2 mb-2">
+              {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => {
+                    setType(t)
+                    setCategoryId('')
+                    setCategoryLabel('카테고리 선택')
+                    setCategoryPickerOpen(true)
+                  }}
+                  className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
+                    type === t ? typeColors[t].active : typeColors[t].inactive
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+            {categoryId && (
+              <button
+                onClick={() => setCategoryPickerOpen(true)}
+                className="w-full bg-card rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between"
+              >
+                <span>{categoryLabel}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+            )}
             <CategoryPicker
               open={categoryPickerOpen}
               type={TYPE_MAP[type] as 'income' | 'expense' | 'savings'}
