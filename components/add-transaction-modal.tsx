@@ -136,6 +136,22 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto p-5">
+          {/* 날짜 */}
+          <p className="text-xs text-muted-foreground mb-4 text-center">
+            {formatDateDisplay(date)}
+          </p>
+
+          {/* 금액 표시 */}
+          <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(true)}>
+            <div className="flex items-baseline justify-center gap-1">
+              <span className="text-4xl font-bold text-muted-foreground">₩</span>
+              <span className="text-4xl font-bold tabular-nums">
+                {formatAmount(rawAmount)}
+              </span>
+            </div>
+            <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-blue-400' : 'bg-border'}`} />
+          </div>
+
           {/* 유형 선택 */}
           <div className="flex gap-2 mb-4">
             {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
@@ -153,22 +169,6 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
                 {t}
               </button>
             ))}
-          </div>
-
-          {/* 날짜 */}
-          <p className="text-xs text-muted-foreground mb-4 text-center">
-            {formatDateDisplay(date)}
-          </p>
-
-          {/* 금액 표시 */}
-          <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(true)}>
-            <div className="flex items-baseline justify-center gap-1">
-              <span className="text-4xl font-bold text-muted-foreground">₩</span>
-              <span className="text-4xl font-bold tabular-nums">
-                {formatAmount(rawAmount)}
-              </span>
-            </div>
-            <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-blue-400' : 'bg-border'}`} />
           </div>
 
           {/* 카테고리 */}
