@@ -107,14 +107,16 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                             }
                           }}
                           className={`flex flex-col items-center gap-1 py-3 rounded-xl transition-colors ${
-                            isExpanded || isSelected
-                              ? 'bg-blue-400/15 ring-1 ring-blue-400/30'
-                              : 'bg-muted/50'
+                            isExpanded
+                              ? 'bg-muted/80'
+                              : isSelected
+                                ? 'bg-muted/80'
+                                : 'bg-muted/50'
                           }`}
                         >
                           <span className="text-xl">{CATEGORY_EMOJI[parent.name] || '📁'}</span>
                           <span className={`text-[11px] font-medium ${
-                            isExpanded || isSelected ? 'text-blue-400' : 'text-muted-foreground'
+                            isExpanded || isSelected ? 'text-foreground' : 'text-muted-foreground'
                           }`}>
                             {parent.name}
                           </span>
@@ -125,8 +127,8 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
 
                   {/* 2depth inline below this row */}
                   {expandedInRow && expandedChildren.length > 0 && (
-                    <div className="bg-muted/30 rounded-xl p-2 mb-2">
-                      <div className="grid grid-cols-3 gap-1.5">
+                    <div className="bg-muted/80 rounded-xl p-2 mb-2">
+                      <div className="grid grid-cols-4 gap-1.5">
                         {expandedChildren.map((child) => (
                           <button
                             key={child.id}
@@ -134,7 +136,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                               onSelect(child.id, `${expandedInRow.name} > ${child.name}`)
                               onClose()
                             }}
-                            className={`py-2.5 rounded-lg text-sm transition-colors ${
+                            className={`py-2 rounded-lg text-[11px] transition-colors ${
                               selected === child.id
                                 ? 'bg-blue-400 text-white font-medium'
                                 : 'bg-card text-foreground'
