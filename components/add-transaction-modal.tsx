@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, type RefObject } from 'react'
 import { CategoryPicker } from './category-picker'
 
 type TransactionType = '수입' | '지출' | '저축'
@@ -10,6 +10,7 @@ const DEFAULT_CATEGORIES = ['식비', '교통', '쇼핑', '주거', '의료']
 interface AddTransactionModalProps {
   open: boolean
   initialDate?: string // YYYY-MM-DD
+  amountInputRef?: RefObject<HTMLInputElement | null>
   onClose: () => void
   onSave: (data: {
     date: string
@@ -34,33 +35,26 @@ function formatDateDisplay(dateStr: string) {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${days[d.getDay()]})`
 }
 
-export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddTransactionModalProps) {
+export function AddTransactionModal({ open, initialDate, amountInputRef, onClose, onSave }: AddTransactionModalProps) {
   const [type, setType] = useState<TransactionType>('지출')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState(DEFAULT_CATEGORIES[0])
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
-  const amountRef = useRef<HTMLInputElement>(null)
 
   const date = initialDate || getToday()
-
-  useEffect(() => {
-    if (open && amountRef.current) {
-      // iOS needs longer delay for keyboard to appear
-      setTimeout(() => {
-        amountRef.current?.focus()
-        amountRef.current?.click()
-      }, 300)
-    }
-  }, [open])
-
-  if (!open) return null
 
   const handleSave = () => {
     const numAmount = parseInt(amount.replace(/[^0-9]/g, ''), 10)
     if (!numAmount) return
     onSave({ date, type, amount: numAmount, category, memo })
+    setAmount('')
+    setMemo('')
+    onClose()
+  }
+
+  const handleClose = () => {
     setAmount('')
     setMemo('')
     onClose()
@@ -73,13 +67,17 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
+    <div
+      className={`fixed inset-0 z-50 bg-background overflow-y-auto transition-transform duration-200 ${
+        open ? 'translate-y-0' : 'translate-y-full pointer-events-none'
+      }`}
+    >
       <div className="w-full max-w-md mx-auto p-5 pb-20">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-semibold">기록하기</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-1 text-muted-foreground hover:text-foreground"
             aria-label="취소"
           >
@@ -114,7 +112,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           <div className="flex items-baseline justify-center gap-2">
             <span className="text-5xl font-bold text-muted-foreground">₩</span>
             <input
-              ref={amountRef}
+              ref={amountInputRef}
               type="text"
               inputMode="numeric"
               placeholder="0"
