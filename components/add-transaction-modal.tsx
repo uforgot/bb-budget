@@ -152,33 +152,47 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-blue-400' : 'bg-border'}`} />
           </div>
 
-          {/* 카테고리 */}
+          {/* 유형 + 카테고리 */}
           <div className="mb-3">
             <label className="text-xs text-muted-foreground mb-1 block">카테고리</label>
-            <button
-              onClick={() => setCategoryPickerOpen(true)}
-              className="w-full bg-card rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
-            >
-              <span className={categoryId ? '' : 'text-muted-foreground'}>
-                {categoryId ? categoryLabel : '카테고리 선택'}
-              </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </button>
+            <div className="flex gap-2 mb-2">
+              {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => {
+                    if (type !== t) {
+                      setCategoryId('')
+                      setCategoryLabel('카테고리 선택')
+                    }
+                    setType(t)
+                    setCategoryPickerOpen(true)
+                  }}
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    type === t ? typeColors[t].active : typeColors[t].inactive
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+            {categoryId && (
+              <button
+                onClick={() => setCategoryPickerOpen(true)}
+                className="w-full bg-card rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
+              >
+                <span>{categoryLabel}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+            )}
             <CategoryPicker
-              open={categoryPickerOpen}
+              open={categoryPickerOpen && type !== null}
               type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
               selected={categoryId}
               onSelect={(id, label) => {
                 setCategoryId(id)
                 setCategoryLabel(label)
-              }}
-              onTypeChange={(dbType) => {
-                const reverseMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
-                setType(reverseMap[dbType])
-                setCategoryId('')
-                setCategoryLabel('카테고리 선택')
               }}
               onClose={() => setCategoryPickerOpen(false)}
             />
