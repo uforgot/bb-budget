@@ -8,6 +8,7 @@ interface CategoryPickerProps {
   type: 'income' | 'expense' | 'savings'
   selected: string
   onSelect: (categoryId: string, categoryName: string) => void
+  onTypeChange: (type: 'income' | 'expense' | 'savings') => void
   onClose: () => void
 }
 
@@ -31,7 +32,13 @@ const CATEGORY_EMOJI: Record<string, string> = {
   '투자': '📈',
 }
 
-export function CategoryPicker({ open, type, selected, onSelect, onClose }: CategoryPickerProps) {
+const TYPE_LABELS: { key: 'income' | 'expense' | 'savings'; label: string; active: string }[] = [
+  { key: 'income', label: '수입', active: 'bg-blue-400 text-white' },
+  { key: 'expense', label: '지출', active: 'bg-red-400 text-white' },
+  { key: 'savings', label: '저축', active: 'bg-green-400 text-white' },
+]
+
+export function CategoryPicker({ open, type, selected, onSelect, onTypeChange, onClose }: CategoryPickerProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [expandedParent, setExpandedParent] = useState<string | null>(null)
 
@@ -58,17 +65,36 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
 
       <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '75dvh' }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
-          <h3 className="text-base font-semibold">카테고리</h3>
-          <button
-            onClick={onClose}
-            className="p-1 text-muted-foreground hover:text-foreground"
-            aria-label="닫기"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
-          </button>
+        <div className="px-5 pt-5 pb-3 flex-shrink-0">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base font-semibold">카테고리</h3>
+            <button
+              onClick={onClose}
+              className="p-1 text-muted-foreground hover:text-foreground"
+              aria-label="닫기"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
+          {/* Type tabs */}
+          <div className="flex gap-2">
+            {TYPE_LABELS.map(({ key, label, active }) => (
+              <button
+                key={key}
+                onClick={() => {
+                  onTypeChange(key)
+                  setExpandedParent(null)
+                }}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  type === key ? active : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Category grid + inline accordion */}
