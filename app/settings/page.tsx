@@ -31,7 +31,7 @@ export default function Settings() {
         </div>
 
         <div className="mx-4 rounded-[18px] bg-card">
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-between px-4 py-4">
             <span className="text-[15px]">다크 모드</span>
             <button
               role="switch"
