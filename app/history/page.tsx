@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { getTransactions, type Transaction } from '@/lib/api'
+import { getTransactions, deleteTransaction, type Transaction } from '@/lib/api'
+import { SwipeToDelete } from '@/components/swipe-to-delete'
 
 type TabType = '지출' | '수입'
 type ViewMode = 'monthly' | 'weekly'
@@ -118,22 +119,27 @@ export default function History() {
                     </span>
                   </div>
                   {items.map((tx) => (
-                    <div
+                    <SwipeToDelete
                       key={tx.id}
-                      className="flex items-center justify-between px-4 py-3 border-t border-border/50"
+                      onDelete={async () => {
+                        await deleteTransaction(tx.id)
+                        loadData()
+                      }}
                     >
-                      <div className="flex flex-col">
-                        <span className="text-sm">{tx.description || (tx.category as any)?.name || ''}</span>
-                        <span className="text-[11px] text-muted-foreground">
-                          {formatDate(tx.date)} · {(tx.category as any)?.name || ''}
+                      <div className="flex items-center justify-between px-4 py-3 border-t border-border/50">
+                        <div className="flex flex-col">
+                          <span className="text-sm">{tx.description || (tx.category as any)?.name || ''}</span>
+                          <span className="text-[11px] text-muted-foreground">
+                            {formatDate(tx.date)} · {(tx.category as any)?.name || ''}
+                          </span>
+                        </div>
+                        <span className={`text-sm font-medium tabular-nums ${
+                          activeTab === '지출' ? 'text-accent-coral' : 'text-accent-blue'
+                        }`}>
+                          ₩{tx.amount.toLocaleString()}
                         </span>
                       </div>
-                      <span className={`text-sm font-medium tabular-nums ${
-                        activeTab === '지출' ? 'text-accent-coral' : 'text-accent-blue'
-                      }`}>
-                        ₩{tx.amount.toLocaleString()}
-                      </span>
-                    </div>
+                    </SwipeToDelete>
                   ))}
                 </div>
               )

@@ -84,6 +84,14 @@ export async function addTransaction(tx: {
   return data as Transaction
 }
 
+export async function deleteTransaction(id: string) {
+  const { error } = await getSupabase()
+    .from('transactions')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
 // 월별 요약
 export async function getMonthlySummary(year: number, month: number) {
   const transactions = await getTransactions({ year, month })
