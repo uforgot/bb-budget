@@ -71,68 +71,85 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
           </button>
         </div>
 
-        {/* Category grid + accordion */}
+        {/* Category grid + inline accordion */}
         <div className="overflow-y-auto px-5 pb-24">
-          {/* 1depth grid */}
-          <div className="grid grid-cols-4 gap-2 mb-2">
-            {parents.map((parent) => {
-              const isExpanded = expandedParent === parent.id
-              const children = childrenOf(parent.id)
-              const hasChildren = children.length > 0
-              const isSelected = selected === parent.id || children.some(c => c.id === selected)
+          {(() => {
+            // Split parents into rows of 4
+            const rows: typeof parents[] = []
+            for (let i = 0; i < parents.length; i += 4) {
+              rows.push(parents.slice(i, i + 4))
+            }
+
+            return rows.map((row, rowIdx) => {
+              // Check if any parent in this row is expanded
+              const expandedInRow = row.find(p => p.id === expandedParent)
+              const expandedChildren = expandedInRow ? childrenOf(expandedInRow.id) : []
 
               return (
-                <button
-                  key={parent.id}
-                  onClick={() => {
-                    if (hasChildren) {
-                      setExpandedParent(isExpanded ? null : parent.id)
-                    } else {
-                      onSelect(parent.id, parent.name)
-                      onClose()
-                    }
-                  }}
-                  className={`flex flex-col items-center gap-1 py-3 rounded-xl transition-colors ${
-                    isExpanded || isSelected
-                      ? 'bg-blue-400/15 ring-1 ring-blue-400/30'
-                      : 'bg-muted/50'
-                  }`}
-                >
-                  <span className="text-xl">{CATEGORY_EMOJI[parent.name] || '📁'}</span>
-                  <span className={`text-[11px] font-medium ${
-                    isExpanded || isSelected ? 'text-blue-400' : 'text-muted-foreground'
-                  }`}>
-                    {parent.name}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+                <div key={rowIdx}>
+                  {/* Row of 4 */}
+                  <div className="grid grid-cols-4 gap-2 mb-2">
+                    {row.map((parent) => {
+                      const isExpanded = expandedParent === parent.id
+                      const children = childrenOf(parent.id)
+                      const hasChildren = children.length > 0
+                      const isSelected = selected === parent.id || children.some(c => c.id === selected)
 
-          {/* 2depth - expanded children */}
-          {expandedParent && (
-            <div className="bg-muted/30 rounded-xl p-2 mt-1">
-              <div className="grid grid-cols-3 gap-1.5">
-                {childrenOf(expandedParent).map((child) => (
-                  <button
-                    key={child.id}
-                    onClick={() => {
-                      const parent = parents.find(p => p.id === expandedParent)
-                      onSelect(child.id, `${parent?.name} > ${child.name}`)
-                      onClose()
-                    }}
-                    className={`py-2.5 rounded-lg text-sm transition-colors ${
-                      selected === child.id
-                        ? 'bg-blue-400 text-white font-medium'
-                        : 'bg-card text-foreground'
-                    }`}
-                  >
-                    {child.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+                      return (
+                        <button
+                          key={parent.id}
+                          onClick={() => {
+                            if (hasChildren) {
+                              setExpandedParent(isExpanded ? null : parent.id)
+                            } else {
+                              onSelect(parent.id, parent.name)
+                              onClose()
+                            }
+                          }}
+                          className={`flex flex-col items-center gap-1 py-3 rounded-xl transition-colors ${
+                            isExpanded || isSelected
+                              ? 'bg-blue-400/15 ring-1 ring-blue-400/30'
+                              : 'bg-muted/50'
+                          }`}
+                        >
+                          <span className="text-xl">{CATEGORY_EMOJI[parent.name] || '📁'}</span>
+                          <span className={`text-[11px] font-medium ${
+                            isExpanded || isSelected ? 'text-blue-400' : 'text-muted-foreground'
+                          }`}>
+                            {parent.name}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  {/* 2depth inline below this row */}
+                  {expandedInRow && expandedChildren.length > 0 && (
+                    <div className="bg-muted/30 rounded-xl p-2 mb-2">
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {expandedChildren.map((child) => (
+                          <button
+                            key={child.id}
+                            onClick={() => {
+                              onSelect(child.id, `${expandedInRow.name} > ${child.name}`)
+                              onClose()
+                            }}
+                            className={`py-2.5 rounded-lg text-sm transition-colors ${
+                              selected === child.id
+                                ? 'bg-blue-400 text-white font-medium'
+                                : 'bg-card text-foreground'
+                            }`}
+                          >
+                            {child.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })
+          })()}
         </div>
       </div>
     </div>
