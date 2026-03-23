@@ -91,8 +91,7 @@ export default function History() {
       {/* FAB */}
       <button
         onClick={() => setModalOpen(true)}
-        className="fixed bottom-24 right-5 size-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center z-30"
-        style={{ maxWidth: 'calc(100% - 40px)', right: 'max(20px, calc((100% - 448px) / 2 + 20px))' }}
+        className="fixed bottom-24 right-5 size-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center z-40"
         aria-label="내역 추가"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
