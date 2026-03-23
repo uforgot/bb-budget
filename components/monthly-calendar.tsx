@@ -90,7 +90,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
               <path d="m15 18-6-6 6-6" />
             </svg>
           </button>
-          <h1 className="text-sm font-semibold text-muted-foreground">
+          <h1 className="text-base font-semibold text-foreground">
             {year}년 {month}월
           </h1>
           <button
