@@ -15,26 +15,8 @@ interface Transaction {
   amount: number
 }
 
-const dummyExpenses: Transaction[] = [
-  { date: '2026-03-01', category: '생활용품', description: '레이디가구 침대', amount: 835080 },
-  { date: '2026-03-02', category: '식비', description: '파파노다이닝 배달', amount: 26500 },
-  { date: '2026-03-05', category: '식비', description: '홍루이젠', amount: 2800 },
-  { date: '2026-03-07', category: '여가', description: '마술쇼 공연 예매', amount: 88000 },
-  { date: '2026-03-10', category: '대출', description: '원금', amount: 940000 },
-  { date: '2026-03-10', category: '대출', description: '이자', amount: 1376748 },
-  { date: '2026-03-12', category: '구독', description: 'AI 구독', amount: 140557 },
-  { date: '2026-03-14', category: '여가', description: '위시캣 전시', amount: 45000 },
-  { date: '2026-03-15', category: '식비', description: '이마트 장', amount: 124070 },
-  { date: '2026-03-17', category: '여가', description: '뽀로로 공연', amount: 138000 },
-  { date: '2026-03-18', category: '식비', description: '진심장인 배달', amount: 34900 },
-  { date: '2026-03-23', category: '식비', description: '참새방앗간 배달', amount: 23000 },
-]
-
-const dummyIncome: Transaction[] = [
-  { date: '2026-03-06', category: '부수입', description: '용돈(피버)', amount: 30000 },
-  { date: '2026-03-10', category: '월급', description: '신형주 월급', amount: 9540370 },
-  { date: '2026-03-10', category: '부수입', description: 'AI', amount: 120785 },
-]
+const dummyExpenses: Transaction[] = []
+const dummyIncome: Transaction[] = []
 
 function getWeekLabel(dateStr: string): string {
   const d = new Date(dateStr)
