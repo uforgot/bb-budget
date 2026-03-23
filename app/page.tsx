@@ -1,6 +1,7 @@
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { TopHeader } from '@/components/top-header'
+import { AddTransactionFab } from '@/components/add-transaction-fab'
 
 export default function Home() {
   const summary = [
@@ -28,6 +29,7 @@ export default function Home() {
         <MonthlyCalendar year={2026} month={3} />
       </div>
 
+      <AddTransactionFab />
       <BottomNav />
     </div>
   )

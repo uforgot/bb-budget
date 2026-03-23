@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
-import { AddTransactionModal } from '@/components/add-transaction-modal'
+import { AddTransactionFab } from '@/components/add-transaction-fab'
 
 type TabType = '지출' | '수입'
 
@@ -34,7 +34,6 @@ const dummyIncome: Transaction[] = [
 
 export default function History() {
   const [activeTab, setActiveTab] = useState<TabType>('지출')
-  const [modalOpen, setModalOpen] = useState(false)
   const transactions = activeTab === '지출' ? dummyExpenses : dummyIncome
 
   return (
@@ -88,26 +87,7 @@ export default function History() {
         </div>
       </div>
 
-      {/* FAB */}
-      <button
-        onClick={() => setModalOpen(true)}
-        className="fixed bottom-24 right-5 size-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center z-40"
-        aria-label="내역 추가"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 5v14" /><path d="M5 12h14" />
-        </svg>
-      </button>
-
-      <AddTransactionModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSave={(data) => {
-          // TODO: Supabase에 저장
-          console.log('저장:', data)
-        }}
-      />
-
+      <AddTransactionFab />
       <BottomNav />
     </div>
   )
