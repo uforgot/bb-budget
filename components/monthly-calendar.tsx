@@ -27,10 +27,10 @@ const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
 function formatAmount(amount: number): string {
-  if (amount >= 10000) {
-    const man = Math.floor(amount / 10000)
-    const rest = amount % 10000
-    return rest > 0 ? `${man}.${Math.floor(rest / 1000)}만` : `${man}만`
+  if (amount >= 100000000) {
+    const eok = Math.floor(amount / 100000000)
+    const rest = Math.floor((amount % 100000000) / 10000000)
+    return rest > 0 ? `${eok}.${rest}억` : `${eok}억`
   }
   return amount.toLocaleString()
 }
