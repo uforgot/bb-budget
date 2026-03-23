@@ -59,7 +59,7 @@ export default function CategoriesSettings() {
         <div className="w-8" />
       </header>
 
-      <div className="max-w-lg mx-auto px-4">
+      <div className="max-w-md mx-auto px-4">
 
         {/* Category list */}
         <div className="mt-4 bg-card border border-border rounded-xl overflow-hidden">
