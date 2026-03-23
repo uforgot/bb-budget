@@ -62,14 +62,23 @@ export function AddTransactionModal({ open, onClose, onSave }: AddTransactionMod
       {/* Sheet */}
       <div className="relative w-full max-w-md bg-card border-t border-border rounded-t-2xl p-5 pb-20 overflow-y-auto max-h-[85dvh]">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold">기록하기</h2>
           <button
             onClick={onClose}
-            className="p-1 text-muted-foreground hover:text-foreground"
-            aria-label="닫기"
+            className="size-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"
+            aria-label="취소"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+            </svg>
+          </button>
+          <h2 className="text-base font-semibold">기록하기</h2>
+          <button
+            onClick={handleSave}
+            className="size-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"
+            aria-label="저장"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6 9 17l-5-5" />
             </svg>
           </button>
         </div>
@@ -163,13 +172,7 @@ export function AddTransactionModal({ open, onClose, onSave }: AddTransactionMod
             />
           </div>
 
-          {/* 저장 버튼 */}
-          <button
-            onClick={handleSave}
-            className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold mt-1"
-          >
-            저장하기
-          </button>
+
         </div>
       </div>
     </div>
