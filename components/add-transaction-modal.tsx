@@ -55,12 +55,12 @@ export function AddTransactionModal({ open, onClose, onSave }: AddTransactionMod
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      {/* Sheet */}
-      <div className="relative w-full max-w-md bg-card border-t border-border rounded-t-2xl p-5 pb-20 overflow-y-auto max-h-[85dvh]">
+      {/* Sheet - top aligned to prevent keyboard push */}
+      <div className="absolute bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-card border-t border-border rounded-t-2xl p-5 pb-20 overflow-y-auto" style={{ maxHeight: '70dvh' }}>
         <div className="flex items-center justify-between mb-5">
           <button
             onClick={onClose}
