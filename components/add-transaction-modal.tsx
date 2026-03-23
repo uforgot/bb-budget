@@ -148,7 +148,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
           {/* 카테고리 */}
           <div className="mb-3">
-            <label className="text-xs text-muted-foreground mb-1 block">카테고리</label>
+            <label className="text-[13px] text-muted-foreground mb-1 block">카테고리</label>
             <button
               onClick={() => setCategoryPickerOpen(true)}
               className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
@@ -174,7 +174,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
           {/* 메모 */}
           <div className="mb-4">
-            <label className="text-xs text-muted-foreground mb-1 block">메모</label>
+            <label className="text-[13px] text-muted-foreground mb-1 block">메모</label>
             <input
               type="text"
               placeholder="메모를 입력하세요"
