@@ -44,7 +44,7 @@ export function BottomNav({ onAdd }: BottomNavProps) {
       {onAdd && (
         <button
           onClick={onAdd}
-          className="size-[56px] bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
+          className="size-[60px] bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
           aria-label="내역 추가"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
