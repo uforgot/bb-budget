@@ -173,7 +173,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           </div>
 
           {/* 메모 */}
-          <div>
+          <div className="mb-4">
             <label className="text-xs text-muted-foreground mb-1 block">메모</label>
             <input
               type="text"
@@ -183,6 +183,14 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
               className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm"
             />
           </div>
+
+          {/* 저장 버튼 */}
+          <button
+            onClick={handleSave}
+            className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
+          >
+            저장하기
+          </button>
         </div>
       </div>
 
@@ -209,12 +217,6 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           )}
         </div>
 
-        <button
-          onClick={handleSave}
-          className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold mb-2"
-        >
-          저장하기
-        </button>
       </div>
     </div>
   )
