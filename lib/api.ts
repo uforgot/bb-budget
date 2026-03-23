@@ -91,14 +91,11 @@ export async function updateTransaction(id: string, tx: {
   description?: string
   date?: string
 }) {
-  const { data, error } = await getSupabase()
+  const { error } = await getSupabase()
     .from('transactions')
     .update(tx as any)
     .eq('id', id)
-    .select()
-    .single()
   if (error) throw error
-  return data as Transaction
 }
 
 export async function deleteTransaction(id: string) {
