@@ -224,8 +224,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           {/* 저장 버튼 */}
           <button
             onClick={handleSave}
-            disabled={saving || !categoryId || !rawAmount || !type}
-            className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold disabled:opacity-50"
+            className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
           >
             {saving ? '저장 중...' : '저장하기'}
           </button>
