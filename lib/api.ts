@@ -7,6 +7,7 @@ export interface Category {
   name: string
   type: 'income' | 'expense' | 'savings'
   sort_order: number
+  parent_id: string | null
 }
 
 export interface Transaction {

@@ -2,15 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { CategoryPicker } from './category-picker'
-import { getCategories, addTransaction, addCategory, type Category } from '@/lib/api'
+import { getCategories, addTransaction, type Category } from '@/lib/api'
 
 type TransactionType = '수입' | '지출' | '저축'
 
-const CATEGORIES_BY_TYPE: Record<TransactionType, string[]> = {
-  '수입': ['월급', '상여금', '부수입'],
-  '지출': ['식비', '주거', '통신', '교통', '쇼핑', '건강', '문화', '경조사', '교육'],
-  '저축': ['예적금', '투자', '보험'],
-}
+const TYPE_MAP: Record<TransactionType, string> = { '수입': 'income', '지출': 'expense', '저축': 'savings' }
 
 interface AddTransactionModalProps {
   open: boolean
@@ -47,55 +43,33 @@ function formatAmount(raw: string) {
 export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddTransactionModalProps) {
   const [type, setType] = useState<TransactionType>('지출')
   const [rawAmount, setRawAmount] = useState('')
-  const [categoriesByType, setCategoriesByType] = useState(CATEGORIES_BY_TYPE)
-  const [dbCategories, setDbCategories] = useState<Category[]>([])
-  const [category, setCategory] = useState(categoriesByType['지출'][0])
-  const [saving, setSaving] = useState(false)
-
-  // Load categories from DB
-  useEffect(() => {
-    getCategories().then(cats => {
-      setDbCategories(cats)
-      const byType: Record<TransactionType, string[]> = { '수입': [], '지출': [], '저축': [] }
-      const typeMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
-      for (const cat of cats) {
-        const t = typeMap[cat.type]
-        if (t) byType[t].push(cat.name)
-      }
-      // Only update if DB has data
-      if (byType['지출'].length > 0) setCategoriesByType(byType)
-    }).catch(() => {})
-  }, [open])
+  const [categoryId, setCategoryId] = useState('')
+  const [categoryLabel, setCategoryLabel] = useState('카테고리 선택')
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
   const [keypadActive, setKeypadActive] = useState(true)
+  const [saving, setSaving] = useState(false)
 
   const date = initialDate || getToday()
 
   const handleSave = async () => {
     const numAmount = parseInt(rawAmount, 10)
-    if (!numAmount || saving) return
+    if (!numAmount || !categoryId || saving) return
     setSaving(true)
     try {
-      const typeMap: Record<TransactionType, string> = { '수입': 'income', '지출': 'expense', '저축': 'savings' }
-      const dbType = typeMap[type]
-      // Find category_id
-      let cat = dbCategories.find(c => c.name === category && c.type === dbType)
-      if (!cat) {
-        // Create new category in DB
-        cat = await addCategory(category, dbType)
-        setDbCategories(prev => [...prev, cat!])
-      }
+      const dbType = TYPE_MAP[type]
       await addTransaction({
         type: dbType,
         amount: numAmount,
-        category_id: cat.id,
+        category_id: categoryId,
         description: memo || undefined,
         date,
       })
-      onSave({ date, type, amount: numAmount, category, memo })
+      onSave({ date, type, amount: numAmount, category: categoryLabel, memo })
       setRawAmount('')
       setMemo('')
+      setCategoryId('')
+      setCategoryLabel('카테고리 선택')
       onClose()
     } catch (e) {
       console.error('저장 실패:', e)
@@ -161,7 +135,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-lg mx-auto p-5">
+        <div className="w-full max-w-md mx-auto p-5">
           {/* 유형 선택 */}
           <div className="flex gap-2 mb-4">
             {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
@@ -169,7 +143,8 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
                 key={t}
                 onClick={() => {
                   setType(t)
-                  setCategory(categoriesByType[t][0])
+                  setCategoryId('')
+                  setCategoryLabel('카테고리 선택')
                 }}
                 className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
                   type === t ? typeColors[t].active : typeColors[t].inactive
@@ -203,23 +178,18 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
               onClick={() => setCategoryPickerOpen(true)}
               className="w-full bg-card rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
             >
-              <span>{category}</span>
+              <span className={categoryId ? '' : 'text-muted-foreground'}>{categoryLabel}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
             <CategoryPicker
               open={categoryPickerOpen}
-              categories={categoriesByType[type]}
-              selected={category}
-              onSelect={(cat) => {
-                setCategory(cat)
-                if (!categoriesByType[type].includes(cat)) {
-                  setCategoriesByType((prev) => ({
-                    ...prev,
-                    [type]: [...prev[type], cat],
-                  }))
-                }
+              type={TYPE_MAP[type] as 'income' | 'expense' | 'savings'}
+              selected={categoryId}
+              onSelect={(id, label) => {
+                setCategoryId(id)
+                setCategoryLabel(label)
               }}
               onClose={() => setCategoryPickerOpen(false)}
             />
@@ -243,7 +213,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           {/* 저장 버튼 */}
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || !categoryId || !rawAmount}
             className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold disabled:opacity-50"
           >
             {saving ? '저장 중...' : '저장하기'}
@@ -252,7 +222,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
       </div>
 
       {/* 키패드 (하단 고정) */}
-      <div className={`w-full max-w-lg mx-auto px-4 pb-20 flex-shrink-0 ${keypadActive ? '' : 'hidden'}`}>
+      <div className={`w-full max-w-md mx-auto px-4 pb-20 flex-shrink-0 ${keypadActive ? '' : 'hidden'}`}>
         <div className="grid grid-cols-3 gap-px mb-3">
           {keypadKeys.map((row, ri) =>
             row.map((key) => (

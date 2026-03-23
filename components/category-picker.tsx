@@ -1,35 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getCategories, type Category } from '@/lib/api'
 
 interface CategoryPickerProps {
   open: boolean
-  categories: string[]
-  selected: string
-  onSelect: (cat: string) => void
+  type: 'income' | 'expense' | 'savings'
+  selected: string // category id
+  onSelect: (categoryId: string, categoryName: string) => void
   onClose: () => void
 }
 
-export function CategoryPicker({ open, categories, selected, onSelect, onClose }: CategoryPickerProps) {
-  const [adding, setAdding] = useState(false)
-  const [newCat, setNewCat] = useState('')
+export function CategoryPicker({ open, type, selected, onSelect, onClose }: CategoryPickerProps) {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [expandedParent, setExpandedParent] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (open) {
+      getCategories(type).then(setCategories).catch(() => {})
+    }
+  }, [open, type])
 
   if (!open) return null
 
-  const handleAdd = () => {
-    const trimmed = newCat.trim()
-    if (trimmed) {
-      onSelect(trimmed)
-      setNewCat('')
-      setAdding(false)
-    }
-  }
+  // Split into parents and children
+  const parents = categories
+    .filter(c => !c.parent_id)
+    .sort((a, b) => a.sort_order - b.sort_order)
+  
+  const childrenOf = (parentId: string) =>
+    categories
+      .filter(c => c.parent_id === parentId)
+      .sort((a, b) => a.sort_order - b.sort_order)
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="relative w-full max-w-md bg-card border-t border-border rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'min(70dvh, 500px)' }}>
+      <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: 'min(70dvh, 500px)' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-5 pb-3 flex-shrink-0">
           <h3 className="text-lg font-bold">카테고리 선택</h3>
@@ -45,53 +53,61 @@ export function CategoryPicker({ open, categories, selected, onSelect, onClose }
         </div>
 
         {/* Category list */}
-        <div className="overflow-y-auto px-5">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => { onSelect(cat); onClose() }}
-              className={`w-full text-left py-3.5 border-b border-border/50 text-sm ${
-                selected === cat ? 'text-primary font-medium' : 'text-foreground'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        <div className="overflow-y-auto px-5 pb-24">
+          {parents.map((parent) => {
+            const children = childrenOf(parent.id)
+            const isExpanded = expandedParent === parent.id
+            const hasChildren = children.length > 0
 
-        {/* Add category */}
-        <div className="flex-shrink-0 p-5 pt-3 pb-24 border-t border-border">
-          {adding ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="카테고리명 입력"
-                value={newCat}
-                onChange={(e) => setNewCat(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                autoFocus
-                className="flex-1 bg-background border border-border rounded-lg px-3 py-2.5 text-sm"
-              />
-              <button
-                onClick={handleAdd}
-                className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium flex-shrink-0"
-              >
-                추가
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setAdding(true)}
-              className="flex items-center gap-3 w-full text-sm text-muted-foreground"
-            >
-              <span className="size-10 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14" /><path d="M5 12h14" />
-                </svg>
-              </span>
-              카테고리 추가
-            </button>
-          )}
+            return (
+              <div key={parent.id}>
+                {/* 1depth */}
+                <button
+                  onClick={() => {
+                    if (hasChildren) {
+                      setExpandedParent(isExpanded ? null : parent.id)
+                    } else {
+                      onSelect(parent.id, parent.name)
+                      onClose()
+                    }
+                  }}
+                  className={`w-full flex items-center justify-between py-3.5 border-b border-border/50 ${
+                    selected === parent.id ? 'text-blue-400 font-medium' : 'text-foreground'
+                  }`}
+                >
+                  <span className="text-sm">{parent.name}</span>
+                  {hasChildren && (
+                    <svg
+                      width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      className={`text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  )}
+                </button>
+
+                {/* 2depth */}
+                {isExpanded && hasChildren && (
+                  <div className="bg-muted/30 rounded-lg my-1">
+                    {children.map((child) => (
+                      <button
+                        key={child.id}
+                        onClick={() => {
+                          onSelect(child.id, `${parent.name} > ${child.name}`)
+                          onClose()
+                        }}
+                        className={`w-full text-left pl-8 pr-4 py-3 text-sm border-b border-border/30 last:border-b-0 ${
+                          selected === child.id ? 'text-blue-400 font-medium' : 'text-foreground'
+                        }`}
+                      >
+                        {child.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
