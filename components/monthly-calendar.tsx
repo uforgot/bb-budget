@@ -55,9 +55,21 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
 
   const selectedData = selectedDay ? data[selectedDay] : undefined
   const touchStartX = useRef<number | null>(null)
+  const touchStartY = useRef<number | null>(null)
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current)
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current)
+    // 수평 스와이프가 수직보다 크면 스크롤 방지
+    if (dx > dy && dx > 10) {
+      e.preventDefault()
+    }
   }
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -67,6 +79,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
       goMonth(diff > 0 ? -1 : 1)
     }
     touchStartX.current = null
+    touchStartY.current = null
   }
 
   const goMonth = (dir: -1 | 1) => {
@@ -126,6 +139,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
         <div
           className="grid grid-cols-7"
           onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
           {cells.map((day, i) => {
