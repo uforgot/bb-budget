@@ -118,7 +118,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-md mx-auto p-5">
+        <div className="w-full max-w-lg mx-auto p-5">
           {/* 유형 선택 */}
           <div className="flex gap-2 mb-4">
             {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
@@ -205,7 +205,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
       </div>
 
       {/* 키패드 (하단 고정) */}
-      <div className="w-full max-w-md mx-auto px-4 pb-20 flex-shrink-0">
+      <div className="w-full max-w-lg mx-auto px-4 pb-20 flex-shrink-0">
         <div className="grid grid-cols-3 gap-px mb-3">
           {keypadKeys.map((row, ri) =>
             row.map((key) => (

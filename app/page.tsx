@@ -16,10 +16,10 @@ export default function Home() {
   const selectedDate = toDateStr(2026, 3, selectedDay)
 
   // TODO: Supabase에서 실제 데이터 가져오기
-  const totalIncome = 0
-  const totalExpense = 0
-  const totalSavings = 0
-  const totalAssets = totalIncome - totalExpense + totalSavings
+  const totalIncome = 123456678
+  const totalExpense = 123456678
+  const totalSavings = 123456678
+  const totalAssets = 123456678
 
   const summary = [
     { label: '수입', value: `₩${totalIncome.toLocaleString()}`, color: 'text-blue-400' },
@@ -29,7 +29,7 @@ export default function Home() {
 
   return (
     <div className="min-h-dvh bg-background pb-20">
-      <div className="max-w-md mx-auto px-5">
+      <div className="px-5">
         <TopHeader title={`₩${totalAssets.toLocaleString()}`} />
 
         <div className="grid grid-cols-3 gap-3 mb-6">
