@@ -75,9 +75,12 @@ export async function addTransaction(tx: {
   const { data, error } = await getSupabase()
     .from('transactions')
     .insert(tx)
-    .select('*, category:categories(*)')
+    .select()
     .single()
-  if (error) throw error
+  if (error) {
+    console.error('Supabase insert error:', JSON.stringify(error))
+    throw error
+  }
   return data as Transaction
 }
 

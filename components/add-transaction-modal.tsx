@@ -55,7 +55,13 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
   const handleSave = async () => {
     const numAmount = parseInt(rawAmount, 10)
-    if (!numAmount || !categoryId || !type || saving) return
+    if (!numAmount || !categoryId || !type || saving) {
+      console.log('저장 차단:', { numAmount, categoryId, type, saving })
+      if (!numAmount) alert('금액을 입력해주세요')
+      else if (!type) alert('수입/지출/저축을 선택해주세요')
+      else if (!categoryId) alert('카테고리를 선택해주세요')
+      return
+    }
     setSaving(true)
     try {
       const dbType = TYPE_MAP[type!]
@@ -72,9 +78,10 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
       setCategoryId('')
       setCategoryLabel('카테고리 선택')
       onClose()
-    } catch (e) {
-      console.error('저장 실패:', e)
-      alert('저장에 실패했어요. 다시 시도해주세요.')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : JSON.stringify(e)
+      console.error('저장 실패:', msg)
+      alert(`저장 실패: ${msg}`)
     } finally {
       setSaving(false)
     }
