@@ -70,7 +70,6 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
       description: memo || '',
       date,
     }
-    alert(`저장 데이터:\n날짜: ${date}\n유형: ${type}\n금액: ₩${numAmount.toLocaleString()}\n카테고리: ${categoryLabel}\n메모: ${memo || '(없음)'}\ncategory_id: ${categoryId}`)
     setSaving(true)
     try {
       await addTransaction(payload)

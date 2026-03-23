@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
+import { getMonthlySummary } from '@/lib/api'
 
 function formatCompact(amount: number): string {
   if (amount >= 100000000) {
@@ -23,18 +24,48 @@ export default function Home() {
   const today = new Date()
   const [selectedDay, setSelectedDay] = useState(today.getDate())
   const [modalOpen, setModalOpen] = useState(false)
-  const selectedDate = toDateStr(2026, 3, selectedDay)
+  const [calYear] = useState(2026)
+  const [calMonth] = useState(3)
 
-  const totalIncome = 0
-  const totalExpense = 0
-  const totalSavings = 0
-  const totalAssets = 0
+  const [totalIncome, setTotalIncome] = useState(0)
+  const [totalExpense, setTotalExpense] = useState(0)
+  const [totalSavings, setTotalSavings] = useState(0)
+  const [dailyData, setDailyData] = useState<Record<number, { income?: number; expense?: number }>>({})
+
+  const selectedDate = toDateStr(calYear, calMonth, selectedDay)
+
+  const loadData = useCallback(async () => {
+    try {
+      const summary = await getMonthlySummary(calYear, calMonth)
+      setTotalIncome(summary.income)
+      setTotalExpense(summary.expense)
+      setTotalSavings(summary.savings)
+      setDailyData(summary.daily)
+    } catch (e) {
+      console.error('데이터 로드 실패:', e)
+    }
+  }, [calYear, calMonth])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  const totalAssets = totalIncome - totalExpense + totalSavings
 
   const summary = [
     { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-accent-blue' },
     { label: '지출', value: `₩${formatCompact(totalExpense)}`, color: 'text-accent-coral' },
     { label: '저축', value: `₩${formatCompact(totalSavings)}`, color: 'text-accent-mint' },
   ]
+
+  // Pull to refresh
+  const [pulling, setPulling] = useState(false)
+  const handleTouchRefresh = async () => {
+    if (pulling) return
+    setPulling(true)
+    await loadData()
+    setPulling(false)
+  }
 
   return (
     <div className="min-h-dvh bg-background pb-20">
@@ -53,19 +84,25 @@ export default function Home() {
         </div>
 
         <MonthlyCalendar
-          year={2026}
-          month={3}
+          year={calYear}
+          month={calMonth}
+          data={dailyData}
           onDaySelect={(day) => setSelectedDay(day)}
         />
+
+        {pulling && (
+          <p className="text-xs text-muted-foreground text-center py-2">새로고침 중...</p>
+        )}
       </div>
 
       <AddTransactionModal
         open={modalOpen}
         initialDate={selectedDate}
-        onClose={() => setModalOpen(false)}
-        onSave={(data) => {
-          console.log('저장:', data)
+        onClose={() => {
+          setModalOpen(false)
+          loadData() // 저장 후 데이터 새로고침
         }}
+        onSave={() => {}}
       />
 
       <BottomNav onAdd={() => setModalOpen(true)} hideAdd={modalOpen} />
