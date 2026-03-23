@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-accent-blue: #3700B3;
+  --color-accent-blue: var(--accent-blue);
   --color-accent-coral: #CF6679;
   --color-accent-mint: #2dd4bf;
   --color-background: var(--background);
@@ -70,6 +70,7 @@
   --border: #e5e7eb;
   --input: #d1d5db;
   --ring: #9ca3af;
+  --accent-blue: #3700B3;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -104,6 +105,7 @@
   --border: #1f2937;
   --input: #374151;
   --ring: #6b7280;
+  --accent-blue: #B39DDB;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
