@@ -1,28 +1,19 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { AddTransactionModal } from './add-transaction-modal'
 
 interface AddTransactionFabProps {
-  selectedDate?: string // YYYY-MM-DD
+  selectedDate?: string
 }
 
 export function AddTransactionFab({ selectedDate }: AddTransactionFabProps) {
   const [modalOpen, setModalOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  const handleOpen = () => {
-    setModalOpen(true)
-    // Focus synchronously within user gesture chain for iOS keyboard
-    requestAnimationFrame(() => {
-      inputRef.current?.focus()
-    })
-  }
 
   return (
     <>
       <button
-        onClick={handleOpen}
+        onClick={() => setModalOpen(true)}
         className="fixed bottom-24 right-5 size-10 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center z-40"
         aria-label="내역 추가"
       >
@@ -34,7 +25,6 @@ export function AddTransactionFab({ selectedDate }: AddTransactionFabProps) {
       <AddTransactionModal
         open={modalOpen}
         initialDate={selectedDate}
-        amountInputRef={inputRef}
         onClose={() => setModalOpen(false)}
         onSave={(data) => {
           console.log('저장:', data)
