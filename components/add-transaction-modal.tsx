@@ -46,7 +46,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
-  const [showDetails, setShowDetails] = useState(false)
+  
 
   const date = initialDate || getToday()
 
@@ -56,14 +56,12 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
     onSave({ date, type, amount: numAmount, category, memo })
     setRawAmount('')
     setMemo('')
-    setShowDetails(false)
     onClose()
   }
 
   const handleClose = () => {
     setRawAmount('')
     setMemo('')
-    setShowDetails(false)
     onClose()
   }
 
@@ -148,55 +146,43 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             <div className="h-px bg-border mt-2 mx-8" />
           </div>
 
-          {/* 카테고리/메모 토글 */}
-          {!showDetails ? (
+          {/* 카테고리 */}
+          <div className="mb-3">
+            <label className="text-xs text-muted-foreground mb-1 block">카테고리</label>
             <button
-              onClick={() => setShowDetails(true)}
-              className="w-full text-sm text-blue-400 text-center py-2"
+              onClick={() => setCategoryPickerOpen(true)}
+              className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
             >
-              카테고리 · 메모 추가
+              <span>{category}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
             </button>
-          ) : (
-            <div className="space-y-3 mb-2">
-              {/* 카테고리 */}
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">카테고리</label>
-                <button
-                  onClick={() => setCategoryPickerOpen(true)}
-                  className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
-                >
-                  <span>{category}</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
-                <CategoryPicker
-                  open={categoryPickerOpen}
-                  categories={categories}
-                  selected={category}
-                  onSelect={(cat) => {
-                    setCategory(cat)
-                    if (!categories.includes(cat)) {
-                      setCategories([...categories, cat])
-                    }
-                  }}
-                  onClose={() => setCategoryPickerOpen(false)}
-                />
-              </div>
+            <CategoryPicker
+              open={categoryPickerOpen}
+              categories={categories}
+              selected={category}
+              onSelect={(cat) => {
+                setCategory(cat)
+                if (!categories.includes(cat)) {
+                  setCategories([...categories, cat])
+                }
+              }}
+              onClose={() => setCategoryPickerOpen(false)}
+            />
+          </div>
 
-              {/* 메모 */}
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">메모</label>
-                <input
-                  type="text"
-                  placeholder="메모를 입력하세요"
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                  className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm"
-                />
-              </div>
-            </div>
-          )}
+          {/* 메모 */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">메모</label>
+            <input
+              type="text"
+              placeholder="메모를 입력하세요"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm"
+            />
+          </div>
         </div>
       </div>
 
