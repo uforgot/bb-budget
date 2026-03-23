@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CategoryPicker } from './category-picker'
+import { getCategories, addTransaction, addCategory, type Category } from '@/lib/api'
 
 type TransactionType = '수입' | '지출' | '저축'
 
@@ -47,20 +48,61 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
   const [type, setType] = useState<TransactionType>('지출')
   const [rawAmount, setRawAmount] = useState('')
   const [categoriesByType, setCategoriesByType] = useState(CATEGORIES_BY_TYPE)
+  const [dbCategories, setDbCategories] = useState<Category[]>([])
   const [category, setCategory] = useState(categoriesByType['지출'][0])
+  const [saving, setSaving] = useState(false)
+
+  // Load categories from DB
+  useEffect(() => {
+    getCategories().then(cats => {
+      setDbCategories(cats)
+      const byType: Record<TransactionType, string[]> = { '수입': [], '지출': [], '저축': [] }
+      const typeMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
+      for (const cat of cats) {
+        const t = typeMap[cat.type]
+        if (t) byType[t].push(cat.name)
+      }
+      // Only update if DB has data
+      if (byType['지출'].length > 0) setCategoriesByType(byType)
+    }).catch(() => {})
+  }, [open])
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
   const [keypadActive, setKeypadActive] = useState(true)
 
   const date = initialDate || getToday()
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const numAmount = parseInt(rawAmount, 10)
-    if (!numAmount) return
-    onSave({ date, type, amount: numAmount, category, memo })
-    setRawAmount('')
-    setMemo('')
-    onClose()
+    if (!numAmount || saving) return
+    setSaving(true)
+    try {
+      const typeMap: Record<TransactionType, string> = { '수입': 'income', '지출': 'expense', '저축': 'savings' }
+      const dbType = typeMap[type]
+      // Find category_id
+      let cat = dbCategories.find(c => c.name === category && c.type === dbType)
+      if (!cat) {
+        // Create new category in DB
+        cat = await addCategory(category, dbType)
+        setDbCategories(prev => [...prev, cat!])
+      }
+      await addTransaction({
+        type: dbType,
+        amount: numAmount,
+        category_id: cat.id,
+        description: memo || undefined,
+        date,
+      })
+      onSave({ date, type, amount: numAmount, category, memo })
+      setRawAmount('')
+      setMemo('')
+      onClose()
+    } catch (e) {
+      console.error('저장 실패:', e)
+      alert('저장에 실패했어요. 다시 시도해주세요.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleClose = () => {
@@ -201,9 +243,10 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           {/* 저장 버튼 */}
           <button
             onClick={handleSave}
-            className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
+            disabled={saving}
+            className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold disabled:opacity-50"
           >
-            저장하기
+            {saving ? '저장 중...' : '저장하기'}
           </button>
         </div>
       </div>
