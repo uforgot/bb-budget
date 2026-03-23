@@ -18,9 +18,9 @@ export function BottomNav({ onAdd }: BottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-end gap-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       {/* Tab bar */}
-      <div className="flex items-center gap-1 px-1.5 py-1.5 rounded-full bg-black/75 dark:bg-black/85 shadow-lg backdrop-blur-md">
+      <div className="flex items-center gap-1 px-1.5 py-1.5 rounded-full bg-black/75 dark:bg-black/85 shadow-lg backdrop-blur-md" id="tab-bar">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname === href
           return (
@@ -40,11 +40,11 @@ export function BottomNav({ onAdd }: BottomNavProps) {
         })}
       </div>
 
-      {/* + Button — match tab bar height */}
+      {/* + Button */}
       {onAdd && (
         <button
           onClick={onAdd}
-          className="self-stretch aspect-square bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
+          className="size-[56px] bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
           aria-label="내역 추가"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
