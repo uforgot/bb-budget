@@ -40,11 +40,11 @@ export function BottomNav({ onAdd }: BottomNavProps) {
         })}
       </div>
 
-      {/* + Button */}
+      {/* + Button — match tab bar height */}
       {onAdd && (
         <button
           onClick={onAdd}
-          className="size-[52px] bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
+          className="self-stretch aspect-square bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"
           aria-label="내역 추가"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
