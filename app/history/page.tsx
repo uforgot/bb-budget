@@ -1,22 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
+import { getTransactions, type Transaction } from '@/lib/api'
 
 type TabType = '지출' | '수입'
 type ViewMode = 'monthly' | 'weekly'
-
-interface Transaction {
-  date: string
-  category: string
-  description: string
-  amount: number
-}
-
-const dummyExpenses: Transaction[] = []
-const dummyIncome: Transaction[] = []
 
 function getWeekLabel(dateStr: string): string {
   const d = new Date(dateStr)
@@ -48,7 +39,22 @@ export default function History() {
   const [activeTab, setActiveTab] = useState<TabType>('지출')
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
   const [modalOpen, setModalOpen] = useState(false)
-  const transactions = activeTab === '지출' ? dummyExpenses : dummyIncome
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+
+  const loadData = useCallback(async () => {
+    try {
+      const typeMap: Record<TabType, string> = { '지출': 'expense', '수입': 'income' }
+      const data = await getTransactions({ year: 2026, month: 3, type: typeMap[activeTab] })
+      setTransactions(data)
+    } catch (e) {
+      console.error('내역 로드 실패:', e)
+    }
+  }, [activeTab])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
   const grouped = groupBy(transactions, viewMode)
 
   return (
@@ -95,47 +101,54 @@ export default function History() {
         </div>
 
         {/* Grouped list */}
-        <div className="flex flex-col gap-3">
-          {Object.entries(grouped).map(([label, items]) => {
-            const groupTotal = items.reduce((sum, t) => sum + t.amount, 0)
-            return (
-              <div key={label} className="bg-card rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
-                  <span className="text-xs font-medium text-muted-foreground">{label}</span>
-                  <span className={`text-xs font-medium tabular-nums ${
-                    activeTab === '지출' ? 'text-accent-coral' : 'text-accent-blue'
-                  }`}>
-                    ₩{groupTotal.toLocaleString()}
-                  </span>
-                </div>
-                {items.map((tx, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between px-4 py-3 border-t border-border/50"
-                  >
-                    <div className="flex flex-col">
-                      <span className="text-sm">{tx.description}</span>
-                      <span className="text-[11px] text-muted-foreground">{formatDate(tx.date)} · {tx.category}</span>
-                    </div>
-                    <span className={`text-sm font-medium tabular-nums ${
+        {Object.keys(grouped).length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center mt-20">내역이 없어요</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {Object.entries(grouped).map(([label, items]) => {
+              const groupTotal = items.reduce((sum, t) => sum + t.amount, 0)
+              return (
+                <div key={label} className="bg-card rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
+                    <span className="text-xs font-medium text-muted-foreground">{label}</span>
+                    <span className={`text-xs font-medium tabular-nums ${
                       activeTab === '지출' ? 'text-accent-coral' : 'text-accent-blue'
                     }`}>
-                      ₩{tx.amount.toLocaleString()}
+                      ₩{groupTotal.toLocaleString()}
                     </span>
                   </div>
-                ))}
-              </div>
-            )
-          })}
-        </div>
+                  {items.map((tx) => (
+                    <div
+                      key={tx.id}
+                      className="flex items-center justify-between px-4 py-3 border-t border-border/50"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm">{tx.description || (tx.category as any)?.name || ''}</span>
+                        <span className="text-[11px] text-muted-foreground">
+                          {formatDate(tx.date)} · {(tx.category as any)?.name || ''}
+                        </span>
+                      </div>
+                      <span className={`text-sm font-medium tabular-nums ${
+                        activeTab === '지출' ? 'text-accent-coral' : 'text-accent-blue'
+                      }`}>
+                        ₩{tx.amount.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <AddTransactionModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSave={(data) => {
-          console.log('저장:', data)
+        onClose={() => {
+          setModalOpen(false)
+          loadData()
         }}
+        onSave={() => {}}
       />
 
       <BottomNav onAdd={() => setModalOpen(true)} hideAdd={modalOpen} />

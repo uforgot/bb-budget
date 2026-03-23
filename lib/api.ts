@@ -98,13 +98,19 @@ export async function getMonthlySummary(year: number, month: number) {
     .filter(t => t.type === 'savings')
     .reduce((sum, t) => sum + t.amount, 0)
 
-  // 일별 집계
-  const daily: Record<number, { income: number; expense: number }> = {}
+  // 일별 집계 + 상세
+  const daily: Record<number, { income: number; expense: number; items: { type: 'income' | 'expense'; category: string; description: string; amount: number }[] }> = {}
   for (const t of transactions) {
     const day = new Date(t.date).getDate()
-    if (!daily[day]) daily[day] = { income: 0, expense: 0 }
+    if (!daily[day]) daily[day] = { income: 0, expense: 0, items: [] }
     if (t.type === 'income') daily[day].income += t.amount
     else if (t.type === 'expense') daily[day].expense += t.amount
+    daily[day].items.push({
+      type: t.type as 'income' | 'expense',
+      category: (t.category as any)?.name || '',
+      description: t.description || '',
+      amount: t.amount,
+    })
   }
 
   return { income, expense, savings, daily, transactions }

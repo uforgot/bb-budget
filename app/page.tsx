@@ -30,7 +30,7 @@ export default function Home() {
   const [totalIncome, setTotalIncome] = useState(0)
   const [totalExpense, setTotalExpense] = useState(0)
   const [totalSavings, setTotalSavings] = useState(0)
-  const [dailyData, setDailyData] = useState<Record<number, { income?: number; expense?: number }>>({})
+  const [dailyData, setDailyData] = useState<Record<number, { income?: number; expense?: number; items?: { type: 'income' | 'expense'; category: string; description: string; amount: number }[] }>>({})
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
 
