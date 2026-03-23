@@ -64,7 +64,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
 
   return (
     <div>
-      <div className="bg-card rounded-xl p-4">
+      <div className="p-4">
         {/* Month nav */}
         <div className="flex items-center justify-between mb-3">
           <button
