@@ -71,7 +71,7 @@ export default function History() {
 
   return (
     <div className="min-h-dvh bg-background pb-20">
-      <div className="max-w-md mx-auto px-4">
+      <div className="max-w-md mx-auto px-5">
         <TopHeader title="상세 내역" />
 
         {/* Tabs */}
