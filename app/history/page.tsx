@@ -138,7 +138,7 @@ export default function History() {
         }}
       />
 
-      <BottomNav onAdd={() => setModalOpen(true)} />
+      <BottomNav onAdd={() => setModalOpen(true)} hideAdd={modalOpen} />
     </div>
   )
 }

@@ -12,9 +12,10 @@ const tabs = [
 
 interface BottomNavProps {
   onAdd?: () => void
+  hideAdd?: boolean
 }
 
-export function BottomNav({ onAdd }: BottomNavProps) {
+export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
   const pathname = usePathname()
 
   return (
@@ -41,7 +42,7 @@ export function BottomNav({ onAdd }: BottomNavProps) {
       </div>
 
       {/* + Button */}
-      {onAdd && (
+      {onAdd && !hideAdd && (
         <button
           onClick={onAdd}
           className="size-[60px] bg-black/75 dark:bg-black/85 backdrop-blur-md text-blue-400 rounded-full shadow-lg flex items-center justify-center flex-shrink-0"

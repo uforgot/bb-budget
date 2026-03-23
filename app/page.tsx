@@ -68,7 +68,7 @@ export default function Home() {
         }}
       />
 
-      <BottomNav onAdd={() => setModalOpen(true)} />
+      <BottomNav onAdd={() => setModalOpen(true)} hideAdd={modalOpen} />
     </div>
   )
 }
