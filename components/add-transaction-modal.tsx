@@ -5,7 +5,11 @@ import { CategoryPicker } from './category-picker'
 
 type TransactionType = '수입' | '지출' | '저축'
 
-const DEFAULT_CATEGORIES = ['식비', '교통', '쇼핑', '주거', '의료']
+const CATEGORIES_BY_TYPE: Record<TransactionType, string[]> = {
+  '수입': ['월급', '상여금', '부수입'],
+  '지출': ['식비', '주거', '통신', '교통', '쇼핑', '건강', '문화', '경조사', '교육'],
+  '저축': ['예적금', '투자', '보험'],
+}
 
 interface AddTransactionModalProps {
   open: boolean
@@ -42,8 +46,8 @@ function formatAmount(raw: string) {
 export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddTransactionModalProps) {
   const [type, setType] = useState<TransactionType>('지출')
   const [rawAmount, setRawAmount] = useState('')
-  const [category, setCategory] = useState(DEFAULT_CATEGORIES[0])
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
+  const [categoriesByType, setCategoriesByType] = useState(CATEGORIES_BY_TYPE)
+  const [category, setCategory] = useState(categoriesByType['지출'][0])
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
 
@@ -120,7 +124,10 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
               <button
                 key={t}
-                onClick={() => setType(t)}
+                onClick={() => {
+                  setType(t)
+                  setCategory(categoriesByType[t][0])
+                }}
                 className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
                   type === t ? typeColors[t].active : typeColors[t].inactive
                 }`}
@@ -160,12 +167,15 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             </button>
             <CategoryPicker
               open={categoryPickerOpen}
-              categories={categories}
+              categories={categoriesByType[type]}
               selected={category}
               onSelect={(cat) => {
                 setCategory(cat)
-                if (!categories.includes(cat)) {
-                  setCategories([...categories, cat])
+                if (!categoriesByType[type].includes(cat)) {
+                  setCategoriesByType((prev) => ({
+                    ...prev,
+                    [type]: [...prev[type], cat],
+                  }))
                 }
               }}
               onClose={() => setCategoryPickerOpen(false)}
