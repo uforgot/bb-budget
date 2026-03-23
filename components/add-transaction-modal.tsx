@@ -57,7 +57,7 @@ export function AddTransactionModal({ open, onClose, onSave }: AddTransactionMod
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Sheet */}
-      <div className="relative w-full max-w-md bg-card border-t border-border rounded-t-2xl p-5 pb-[env(safe-area-inset-bottom,20px)]">
+      <div className="relative w-full max-w-md bg-card border-t border-border rounded-t-2xl p-5 pb-20 overflow-y-auto max-h-[85dvh]">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold">기록하기</h2>
           <button
