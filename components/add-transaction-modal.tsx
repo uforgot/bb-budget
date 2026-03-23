@@ -47,7 +47,11 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
   useEffect(() => {
     if (open && amountRef.current) {
-      setTimeout(() => amountRef.current?.focus(), 100)
+      // iOS needs longer delay for keyboard to appear
+      setTimeout(() => {
+        amountRef.current?.focus()
+        amountRef.current?.click()
+      }, 300)
     }
   }, [open])
 
@@ -107,8 +111,8 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
         {/* 금액 - 크게 */}
         <div className="mb-8">
-          <div className="flex items-baseline justify-center gap-1">
-            <span className="text-2xl text-muted-foreground">₩</span>
+          <div className="flex items-baseline justify-center gap-2">
+            <span className="text-5xl font-bold text-muted-foreground">₩</span>
             <input
               ref={amountRef}
               type="text"
@@ -119,7 +123,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
                 const raw = e.target.value.replace(/[^0-9]/g, '')
                 setAmount(raw ? parseInt(raw).toLocaleString() : '')
               }}
-              className="text-4xl font-bold tabular-nums bg-transparent border-none outline-none text-center w-full"
+              className="text-5xl font-bold tabular-nums bg-transparent border-none outline-none text-center w-full"
               style={{ caretColor: 'var(--foreground)' }}
             />
           </div>
