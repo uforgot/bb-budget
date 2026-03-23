@@ -60,7 +60,7 @@ export function CategoryPicker({ open, categories, selected, onSelect, onClose }
         </div>
 
         {/* Add category */}
-        <div className="flex-shrink-0 p-5 pt-3 border-t border-border">
+        <div className="flex-shrink-0 p-5 pt-3 pb-24 border-t border-border">
           {adding ? (
             <div className="flex items-center gap-2">
               <input
