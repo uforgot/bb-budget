@@ -194,8 +194,8 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
         </div>
       </div>
 
-      {/* 키패드 + 저장 (하단 고정) */}
-      <div className="w-full max-w-md mx-auto px-4 pb-[env(safe-area-inset-bottom,8px)] flex-shrink-0">
+      {/* 키패드 (하단 고정) */}
+      <div className="w-full max-w-md mx-auto px-4 pb-20 flex-shrink-0">
         <div className="grid grid-cols-3 gap-px mb-3">
           {keypadKeys.map((row, ri) =>
             row.map((key) => (
