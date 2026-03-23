@@ -1,6 +1,8 @@
 import { createClient } from './supabase'
 
-const supabase = createClient()
+function getSupabase() {
+  return createClient()
+}
 
 export interface Category {
   id: string
@@ -23,7 +25,7 @@ export interface Transaction {
 
 // 카테고리
 export async function getCategories(type?: string) {
-  let query = supabase.from('categories').select('*').order('sort_order')
+  let query = getSupabase().from('categories').select('*').order('sort_order')
   if (type) query = query.eq('type', type)
   const { data, error } = await query
   if (error) throw error
@@ -31,7 +33,7 @@ export async function getCategories(type?: string) {
 }
 
 export async function addCategory(name: string, type: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('categories')
     .insert({ name, type })
     .select()
@@ -42,7 +44,7 @@ export async function addCategory(name: string, type: string) {
 
 // 거래 내역
 export async function getTransactions(filters?: { year?: number; month?: number; type?: string }) {
-  let query = supabase
+  let query = getSupabase()
     .from('transactions')
     .select('*, category:categories(*)')
     .order('date', { ascending: false })
@@ -70,7 +72,7 @@ export async function addTransaction(tx: {
   description?: string
   date: string
 }) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('transactions')
     .insert(tx)
     .select('*, category:categories(*)')
