@@ -71,25 +71,16 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
   return (
     <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
       <div className="w-full max-w-md mx-auto p-5 pb-20">
-        {/* Header: X / 기록하기 / ✓ */}
+        {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={onClose}
-            className="size-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground"
-            aria-label="취소"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
-          </button>
           <h2 className="text-base font-semibold">기록하기</h2>
           <button
-            onClick={handleSave}
-            className="size-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground"
-            aria-label="저장"
+            onClick={onClose}
+            className="p-1 text-muted-foreground hover:text-foreground"
+            aria-label="취소"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 6 9 17l-5-5" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
             </svg>
           </button>
         </div>
@@ -162,7 +153,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
         </div>
 
         {/* 메모 */}
-        <div>
+        <div className="mb-6">
           <label className="text-xs text-muted-foreground mb-1 block">메모</label>
           <input
             type="text"
@@ -172,6 +163,14 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
             className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm"
           />
         </div>
+
+        {/* 저장 버튼 */}
+        <button
+          onClick={handleSave}
+          className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
+        >
+          저장하기
+        </button>
       </div>
     </div>
   )
