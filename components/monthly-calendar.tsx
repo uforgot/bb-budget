@@ -163,7 +163,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
               >
                 {day && (
                   <>
-                    <span className="relative flex items-center justify-center size-5">
+                    <span className="relative flex items-center justify-center size-7">
                       {isToday && (
                         <span className="absolute inset-0 rounded-full bg-primary" />
                       )}
