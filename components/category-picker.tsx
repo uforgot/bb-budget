@@ -108,9 +108,9 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                           }}
                           className={`flex flex-col items-center gap-1 py-3 rounded-xl transition-colors ${
                             isExpanded
-                              ? 'bg-muted/80'
+                              ? 'bg-blue-400/20'
                               : isSelected
-                                ? 'bg-muted/80'
+                                ? 'bg-blue-400/20'
                                 : 'bg-muted/50'
                           }`}
                         >
@@ -127,7 +127,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
 
                   {/* 2depth inline below this row */}
                   {expandedInRow && expandedChildren.length > 0 && (
-                    <div className="bg-muted/80 rounded-xl p-2 mb-2">
+                    <div className="bg-blue-400/20 rounded-xl p-2 mb-2">
                       <div className="grid grid-cols-4 gap-1.5">
                         {expandedChildren.map((child) => (
                           <button
