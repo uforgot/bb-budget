@@ -24,7 +24,7 @@ export default function Settings() {
         <div className="w-8" />
       </header>
 
-      <main className="max-w-md mx-auto">
+      <main className="max-w-lg mx-auto">
         {/* 보기 설정 */}
         <div className="px-4 pt-6 pb-2">
           <p className="text-xs font-medium text-muted-foreground uppercase">보기 설정</p>
