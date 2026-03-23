@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { CategoryPicker } from './category-picker'
 
 type TransactionType = '수입' | '지출' | '저축'
 
-const CATEGORIES = ['식비', '교통', '쇼핑', '주거', '의료']
+const DEFAULT_CATEGORIES = ['식비', '교통', '쇼핑', '주거', '의료']
 
 interface AddTransactionModalProps {
   open: boolean
@@ -30,7 +31,9 @@ export function AddTransactionModal({ open, onClose, onSave }: AddTransactionMod
   const [date, setDate] = useState(getToday())
   const [type, setType] = useState<TransactionType>('지출')
   const [amount, setAmount] = useState('')
-  const [category, setCategory] = useState(CATEGORIES[0])
+  const [category, setCategory] = useState(DEFAULT_CATEGORIES[0])
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES)
+  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
 
   if (!open) return null
@@ -125,15 +128,27 @@ export function AddTransactionModal({ open, onClose, onSave }: AddTransactionMod
           {/* 카테고리 */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">카테고리</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm appearance-none"
+            <button
+              onClick={() => setCategoryPickerOpen(true)}
+              className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
             >
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+              <span>{category}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <CategoryPicker
+              open={categoryPickerOpen}
+              categories={categories}
+              selected={category}
+              onSelect={(cat) => {
+                setCategory(cat)
+                if (!categories.includes(cat)) {
+                  setCategories([...categories, cat])
+                }
+              }}
+              onClose={() => setCategoryPickerOpen(false)}
+            />
           </div>
 
           {/* 메모 */}
