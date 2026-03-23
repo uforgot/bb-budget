@@ -36,7 +36,7 @@ export default function Home() {
           {summary.map(({ label, value, color }) => (
             <div key={label} className="bg-card rounded-xl p-4">
               <p className="text-xs text-muted-foreground mb-1">{label}</p>
-              <p className={`text-base font-bold tabular-nums ${color}`}>{value}</p>
+              <p className={`text-sm font-bold tabular-nums ${color}`}>{value}</p>
             </div>
           ))}
         </div>
