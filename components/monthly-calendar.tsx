@@ -165,12 +165,12 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                     </span>
                     <div className="mt-0.5 flex flex-col items-center gap-0">
                       {(dayData?.income ?? 0) > 0 && (
-                        <span className="text-[10px] tabular-nums text-blue-400 leading-tight">
+                        <span className="text-[8px] tabular-nums text-blue-400 leading-tight">
                           {formatAmount(dayData!.income!)}
                         </span>
                       )}
                       {(dayData?.expense ?? 0) > 0 && (
-                        <span className="text-[10px] tabular-nums text-red-400 leading-tight">
+                        <span className="text-[8px] tabular-nums text-red-400 leading-tight">
                           {formatAmount(dayData!.expense!)}
                         </span>
                       )}
