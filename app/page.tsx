@@ -75,11 +75,13 @@ export default function Home() {
       <div className="px-5">
         <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
 
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          {summary.map(({ label, value, color }) => (
-            <div key={label} className="bg-card rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground mb-1">{label}</p>
-              <p className={`text-xs font-bold tabular-nums ${color}`}>{value}</p>
+        <div className="bg-card rounded-[18px] mb-6">
+          {summary.map(({ label, value, color }, i) => (
+            <div key={label} className={`flex items-center justify-between px-4 py-3 ${
+              i < summary.length - 1 ? 'border-b border-border' : ''
+            }`}>
+              <span className="text-[15px] text-muted-foreground">{label}</span>
+              <span className={`text-[15px] font-semibold tabular-nums ${color}`}>{value}</span>
             </div>
           ))}
         </div>
