@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import { AddTransactionModal } from './add-transaction-modal'
 
-export function AddTransactionFab() {
+interface AddTransactionFabProps {
+  selectedDate?: string // YYYY-MM-DD
+}
+
+export function AddTransactionFab({ selectedDate }: AddTransactionFabProps) {
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -20,6 +24,7 @@ export function AddTransactionFab() {
 
       <AddTransactionModal
         open={modalOpen}
+        initialDate={selectedDate}
         onClose={() => setModalOpen(false)}
         onSave={(data) => {
           // TODO: Supabase에 저장

@@ -19,6 +19,7 @@ interface MonthlyCalendarProps {
   year: number
   month: number // 1-indexed
   data?: Record<number, DayData> // day -> { income, expense, items }
+  onDaySelect?: (day: number) => void
 }
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
@@ -33,7 +34,7 @@ function formatAmount(amount: number): string {
   return amount.toLocaleString()
 }
 
-export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ year, month, data = {}, onDaySelect }: MonthlyCalendarProps) {
   const today = new Date()
   const isCurrentMonth = today.getFullYear() === year && today.getMonth() + 1 === month
   const todayDate = today.getDate()
@@ -83,7 +84,12 @@ export function MonthlyCalendar({ year, month, data = {} }: MonthlyCalendarProps
             return (
               <div
                 key={i}
-                onClick={() => day && setSelectedDay(day === selectedDay ? null : day)}
+                onClick={() => {
+                  if (!day) return
+                  const newDay = day === selectedDay ? null : day
+                  setSelectedDay(newDay)
+                  if (newDay && onDaySelect) onDaySelect(newDay)
+                }}
                 className={`relative flex flex-col items-center py-1.5 min-h-[56px] rounded-lg transition-colors ${
                   day ? 'cursor-pointer' : ''
                 } ${isSelected ? 'bg-accent' : ''}`}

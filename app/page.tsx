@@ -1,9 +1,20 @@
+'use client'
+
+import { useState } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionFab } from '@/components/add-transaction-fab'
 
+function toDateStr(year: number, month: number, day: number) {
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
 export default function Home() {
+  const today = new Date()
+  const [selectedDay, setSelectedDay] = useState(today.getDate())
+  const selectedDate = toDateStr(2026, 3, selectedDay)
+
   const summary = [
     { label: '수입', value: '₩0', color: 'text-blue-400' },
     { label: '지출', value: '₩0', color: 'text-red-400' },
@@ -26,10 +37,14 @@ export default function Home() {
 
         <p className="text-lg font-bold text-pretty mb-3">월간 내역</p>
 
-        <MonthlyCalendar year={2026} month={3} />
+        <MonthlyCalendar
+          year={2026}
+          month={3}
+          onDaySelect={(day) => setSelectedDay(day)}
+        />
       </div>
 
-      <AddTransactionFab />
+      <AddTransactionFab selectedDate={selectedDate} />
       <BottomNav />
     </div>
   )
