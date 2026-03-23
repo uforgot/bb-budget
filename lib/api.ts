@@ -35,7 +35,7 @@ export async function getCategories(type?: string) {
 export async function addCategory(name: string, type: string) {
   const { data, error } = await getSupabase()
     .from('categories')
-    .insert({ name, type })
+    .insert({ name, type } as any)
     .select()
     .single()
   if (error) throw error
@@ -74,7 +74,7 @@ export async function addTransaction(tx: {
 }) {
   const { data, error } = await getSupabase()
     .from('transactions')
-    .insert(tx)
+    .insert(tx as any)
     .select()
     .single()
   if (error) {
