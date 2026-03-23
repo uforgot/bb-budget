@@ -9,13 +9,8 @@ import { AddTransactionFab } from '@/components/add-transaction-fab'
 function formatCompact(amount: number): string {
   if (amount >= 100000000) {
     const eok = Math.floor(amount / 100000000)
-    const rest = Math.floor((amount % 100000000) / 10000000)
-    return rest > 0 ? `${eok}.${rest}억` : `${eok}억`
-  }
-  if (amount >= 10000) {
-    const man = Math.floor(amount / 10000)
-    const rest = Math.floor((amount % 10000) / 1000)
-    return rest > 0 ? `${man.toLocaleString()}.${rest}만` : `${man.toLocaleString()}만`
+    const man = Math.floor((amount % 100000000) / 10000)
+    return man > 0 ? `${eok}억 ${man.toLocaleString()}만` : `${eok}억`
   }
   return amount.toLocaleString()
 }
