@@ -62,16 +62,18 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
       else if (!categoryId) alert('카테고리를 선택해주세요')
       return
     }
+    const dbType = TYPE_MAP[type!]
+    const payload = {
+      type: dbType,
+      amount: numAmount,
+      category_id: categoryId,
+      description: memo || '',
+      date,
+    }
+    alert(`저장 데이터:\n날짜: ${date}\n유형: ${type}\n금액: ₩${numAmount.toLocaleString()}\n카테고리: ${categoryLabel}\n메모: ${memo || '(없음)'}\ncategory_id: ${categoryId}`)
     setSaving(true)
     try {
-      const dbType = TYPE_MAP[type!]
-      await addTransaction({
-        type: dbType,
-        amount: numAmount,
-        category_id: categoryId,
-        description: memo || undefined,
-        date,
-      })
+      await addTransaction(payload)
       onSave({ date, type: type!, amount: numAmount, category: categoryLabel, memo })
       setRawAmount('')
       setMemo('')
