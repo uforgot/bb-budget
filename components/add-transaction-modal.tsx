@@ -41,7 +41,7 @@ function formatAmount(raw: string) {
 }
 
 export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddTransactionModalProps) {
-  const [type, setType] = useState<TransactionType>('지출')
+  const [type, setType] = useState<TransactionType | null>(null)
   const [rawAmount, setRawAmount] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [categoryLabel, setCategoryLabel] = useState('카테고리 선택')
@@ -54,10 +54,10 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
 
   const handleSave = async () => {
     const numAmount = parseInt(rawAmount, 10)
-    if (!numAmount || !categoryId || saving) return
+    if (!numAmount || !categoryId || !type || saving) return
     setSaving(true)
     try {
-      const dbType = TYPE_MAP[type]
+      const dbType = TYPE_MAP[type!]
       await addTransaction({
         type: dbType,
         amount: numAmount,
@@ -65,7 +65,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
         description: memo || undefined,
         date,
       })
-      onSave({ date, type, amount: numAmount, category: categoryLabel, memo })
+      onSave({ date, type: type!, amount: numAmount, category: categoryLabel, memo })
       setRawAmount('')
       setMemo('')
       setCategoryId('')
@@ -160,12 +160,14 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
                 <button
                   key={t}
                   onClick={() => {
+                    if (type !== t) {
+                      setCategoryId('')
+                      setCategoryLabel('카테고리 선택')
+                    }
                     setType(t)
-                    setCategoryId('')
-                    setCategoryLabel('카테고리 선택')
                     setCategoryPickerOpen(true)
                   }}
-                  className={`flex-1 py-2 rounded-full text-xs font-medium transition-colors ${
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     type === t ? typeColors[t].active : typeColors[t].inactive
                   }`}
                 >
@@ -185,8 +187,8 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
               </button>
             )}
             <CategoryPicker
-              open={categoryPickerOpen}
-              type={TYPE_MAP[type] as 'income' | 'expense' | 'savings'}
+              open={categoryPickerOpen && type !== null}
+              type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
               selected={categoryId}
               onSelect={(id, label) => {
                 setCategoryId(id)
@@ -214,7 +216,7 @@ export function AddTransactionModal({ open, initialDate, onClose, onSave }: AddT
           {/* 저장 버튼 */}
           <button
             onClick={handleSave}
-            disabled={saving || !categoryId || !rawAmount}
+            disabled={saving || !categoryId || !rawAmount || !type}
             className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold disabled:opacity-50"
           >
             {saving ? '저장 중...' : '저장하기'}
