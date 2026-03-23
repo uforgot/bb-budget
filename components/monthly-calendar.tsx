@@ -203,55 +203,60 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
         </div>
 
         {/* Selected day detail */}
-        {selectedDay !== null && (
-          <div className="border-t border-border mt-2 pt-3">
-            {/* 일간 요약 */}
-            {selectedData && (
-              <div className="flex items-center justify-center gap-4 mb-3 text-xs">
-                {(selectedData.income ?? 0) > 0 && (
-                  <span className="text-accent-blue">수입 ₩{(selectedData.income ?? 0).toLocaleString()}</span>
-                )}
-                {(selectedData.expense ?? 0) > 0 && (
-                  <span className="text-accent-coral">지출 ₩{(selectedData.expense ?? 0).toLocaleString()}</span>
-                )}
-                {((selectedData as any).savings ?? 0) > 0 && (
-                  <span className="text-accent-mint">저축 ₩{((selectedData as any).savings ?? 0).toLocaleString()}</span>
-                )}
-              </div>
-            )}
+        {selectedDay !== null && (() => {
+          const dayOfWeek = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'][new Date(year, month - 1, selectedDay).getDay()]
+          const totalExpense = selectedData?.expense ?? 0
+          const totalIncome = selectedData?.income ?? 0
+          const totalSavings = (selectedData as any)?.savings ?? 0
+          const totalDay = totalExpense + totalIncome + totalSavings
 
-            {/* 내역 */}
-            {selectedData?.items && selectedData.items.length > 0 ? (
-              <div className="flex flex-col gap-1">
-                {selectedData.items.map((item, i) => {
-                  const colorClass = (item as any).type === 'savings'
-                    ? 'text-accent-mint'
-                    : item.type === 'expense'
-                      ? 'text-accent-coral'
-                      : 'text-accent-blue'
-                  const catDisplay = (item as any).parentCategory
-                    ? `${(item as any).parentCategory} > ${item.category}`
-                    : item.category
-                  return (
-                    <div key={i} className="flex items-center justify-between py-1">
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="text-sm truncate">{catDisplay}</span>
-                        {item.description && (
-                          <span className="text-[11px] text-muted-foreground truncate">{item.description}</span>
-                        )}
-                      </div>
-                      <span className={`text-sm font-medium tabular-nums flex-shrink-0 ml-3 ${colorClass}`}>
-                        ₩{item.amount.toLocaleString()}
-                      </span>
-                    </div>
-                  )
-                })}
+          return (
+            <div className="mt-4">
+              {/* 날짜 + 총액 헤더 */}
+              <div className="bg-card rounded-[18px] flex items-center justify-between px-5 py-4 mb-3">
+                <span className="text-[15px] font-semibold">{month}월 {selectedDay}일 {dayOfWeek}</span>
+                {totalDay > 0 && (
+                  <span className={`text-[15px] font-semibold tabular-nums ${
+                    totalExpense > 0 ? 'text-accent-coral' : totalIncome > 0 ? 'text-accent-blue' : 'text-accent-mint'
+                  }`}>
+                    ₩{totalDay.toLocaleString()}
+                  </span>
+                )}
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-3">내역이 없어요</p>
-            )}
-          </div>
-        )}
+
+              {/* 내역 리스트 */}
+              {selectedData?.items && selectedData.items.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  {selectedData.items.map((item, i) => {
+                    const colorClass = item.type === 'savings'
+                      ? 'text-accent-mint'
+                      : item.type === 'expense'
+                        ? 'text-accent-coral'
+                        : 'text-accent-blue'
+                    const catLabel = item.parentCategory
+                      ? item.category
+                      : item.category
+                    return (
+                      <div key={i} className="flex items-center justify-between py-2 px-1">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs bg-muted px-3 py-1.5 rounded-full text-muted-foreground">{catLabel}</span>
+                          {item.description && (
+                            <span className="text-sm text-muted-foreground">{item.description}</span>
+                          )}
+                        </div>
+                        <span className={`text-[15px] font-semibold tabular-nums ${colorClass}`}>
+                          ₩{item.amount.toLocaleString()}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
+              )}
+            </div>
+          )
+        })()}
       </div>
     </div>
   )
