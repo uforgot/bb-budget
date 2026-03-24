@@ -520,9 +520,12 @@ export default function History() {
         open={modalOpen}
         editTransaction={editTx}
         onClose={() => {
+          const scrollY = window.scrollY
           setModalOpen(false)
           setEditTx(null)
-          loadData()
+          loadData().then(() => {
+            requestAnimationFrame(() => window.scrollTo(0, scrollY))
+          })
         }}
         onSave={() => {}}
       />
