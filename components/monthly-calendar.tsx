@@ -198,20 +198,16 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     if (isAnimating) return
     isDraggingRef.current = true
-    startXRef.current = e.touches[0].clientX
-    moveXRef.current = e.touches[0].clientX
+    startXRef.current = e.touches[0].clientY
+    moveXRef.current = e.touches[0].clientY
   }, [isAnimating])
 
   const onTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDraggingRef.current) return
-    const x = e.touches[0].clientX
-    const diff = x - startXRef.current
-    // 수평 드래그가 수직보다 크면 기본 스크롤 방지
-    if (Math.abs(diff) > 10) {
-      e.preventDefault()
-    }
-    setDragOffset(diff * 0.4) // moveRatio
-    moveXRef.current = x
+    const y = e.touches[0].clientY
+    const diff = y - startXRef.current
+    setDragOffset(diff * 0.4)
+    moveXRef.current = y
   }, [])
 
   const onTouchEnd = useCallback(() => {
@@ -219,19 +215,18 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     isDraggingRef.current = false
     const diff = moveXRef.current - startXRef.current
 
-    if (Math.abs(diff) > 50) {
-      // 충분히 드래그함 → 월 전환
+    if (Math.abs(diff) > 40) {
+      // 충분히 드래그 → 월 전환 (아래로 드래그 = 이전 달, 위로 = 다음 달)
       const dir = diff > 0 ? -1 : 1
       setIsAnimating(true)
-      const containerWidth = sliderRef.current?.offsetWidth ?? 300
-      setDragOffset(diff > 0 ? containerWidth : -containerWidth)
+      const containerHeight = sliderRef.current?.offsetHeight ?? 300
+      setDragOffset(diff > 0 ? containerHeight : -containerHeight)
       setTimeout(() => {
         goMonth(dir)
         setDragOffset(0)
         setIsAnimating(false)
       }, 250)
     } else {
-      // 드래그 부족 → 원위치 스냅
       setIsAnimating(true)
       setDragOffset(0)
       setTimeout(() => setIsAnimating(false), 250)
@@ -270,18 +265,20 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     loadingMonthsRef.current.clear()
   }, [refreshKey])
 
-  // Load focused month data + notify parent
+  // Load focused month + adjacent months data, notify parent
   useEffect(() => {
+    const indices = [focusedMonthIndex - 1, focusedMonthIndex, focusedMonthIndex + 1]
+    indices.forEach(idx => {
+      if (idx >= 0 && idx < months.length) {
+        const entry = months[idx]
+        const key = monthKey(entry.year, entry.month)
+        if (!dataCache.has(key)) loadMonthData(entry.year, entry.month)
+      }
+    })
     const entry = months[focusedMonthIndex]
     if (entry) {
-      const key = monthKey(entry.year, entry.month)
-      if (!dataCache.has(key)) {
-        loadMonthData(entry.year, entry.month)
-      }
-      const cached = dataCache.get(key)
-      if (cached) {
-        onMonthChange?.(entry.year, entry.month + 1, cached.income, cached.expense)
-      }
+      const cached = dataCache.get(monthKey(entry.year, entry.month))
+      if (cached) onMonthChange?.(entry.year, entry.month + 1, cached.income, cached.expense)
     }
   }, [focusedMonthIndex, months, dataCache, loadMonthData, onMonthChange])
 
@@ -333,7 +330,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         ))}
       </div>
 
-      {/* Touch slider calendar */}
+      {/* Touch slider calendar — 이전/현재/다음 3개월 렌더 */}
       <div
         ref={sliderRef}
         onTouchStart={onTouchStart}
@@ -343,22 +340,39 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       >
         <div
           style={{
-            transform: `translate3d(${dragOffset}px, 0, 0)`,
+            transform: `translate3d(0, ${dragOffset}px, 0)`,
             transition: isAnimating ? 'transform 0.25s ease-out' : 'none',
             willChange: 'transform',
           }}
         >
+          {/* 이전 달 */}
+          {focusedMonthIndex > 0 && (() => {
+            const prev = months[focusedMonthIndex - 1]
+            const cached = dataCache.get(monthKey(prev.year, prev.month))
+            return (
+              <div className="opacity-30">
+                <MonthGrid year={prev.year} month={prev.month} data={cached?.daily ?? {}} selectedDay={null} onDayClick={handleDayClick} />
+              </div>
+            )
+          })()}
+
+          {/* 현재 달 */}
           {(() => {
             const entry = months[focusedMonthIndex]
             const cached = dataCache.get(monthKey(entry.year, entry.month))
             return (
-              <MonthGrid
-                year={entry.year}
-                month={entry.month}
-                data={cached?.daily ?? {}}
-                selectedDay={selectedDay}
-                onDayClick={handleDayClick}
-              />
+              <MonthGrid year={entry.year} month={entry.month} data={cached?.daily ?? {}} selectedDay={selectedDay} onDayClick={handleDayClick} />
+            )
+          })()}
+
+          {/* 다음 달 */}
+          {focusedMonthIndex < months.length - 1 && (() => {
+            const next = months[focusedMonthIndex + 1]
+            const cached = dataCache.get(monthKey(next.year, next.month))
+            return (
+              <div className="opacity-30">
+                <MonthGrid year={next.year} month={next.month} data={cached?.daily ?? {}} selectedDay={null} onDayClick={handleDayClick} />
+              </div>
             )
           })()}
         </div>
