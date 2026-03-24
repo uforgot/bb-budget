@@ -237,7 +237,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                       ? item.category
                       : item.category
                     return (
-                      <div key={i} className="flex items-center justify-between py-2 px-1">
+                      <div key={i} className="flex items-center justify-between py-2 px-5">
                         <div className="flex items-center gap-3">
                           <span className="text-xs bg-muted px-3 py-1.5 rounded-full text-muted-foreground">{catLabel}</span>
                           {item.description && (
