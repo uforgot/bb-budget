@@ -64,8 +64,11 @@ export default function Home() {
 
   return (
     <div className="min-h-dvh bg-background pb-32">
-      <div className="px-5">
+      <div className="sticky top-0 z-30 bg-background px-5 border-b border-border">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="가용 현금" />
+      </div>
+
+      <div className="px-5">
 
         {/* 금월 수입/지출 */}
         <div className="mb-4">
