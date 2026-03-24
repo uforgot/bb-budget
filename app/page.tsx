@@ -83,12 +83,7 @@ export default function Home() {
   }, [loadData])
 
   const totalAssets = allTimeIncome - allTimeExpense
-
-  const summary = [
-    { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-accent-blue' },
-    { label: '지출', value: `₩${formatCompact(totalExpense)}`, color: 'text-accent-coral' },
-    { label: '저축', value: `₩${formatCompact(totalSavings)}`, color: 'text-accent-mint' },
-  ]
+  const cashBalance = totalAssets - allTimeSavings
 
   // Pull to refresh
   const [pulling, setPulling] = useState(false)
@@ -105,14 +100,22 @@ export default function Home() {
         <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
 
         <div className="bg-surface rounded-[18px] mb-6">
-          {summary.map(({ label, value, color }, i) => (
-            <div key={label} className={`flex items-center justify-between px-4 py-3 ${
-              i < summary.length - 1 ? 'border-b border-border' : ''
-            }`}>
-              <span className="text-[15px] text-muted-foreground">{label}</span>
-              <span className={`text-[15px] font-semibold tabular-nums ${color}`}>{value}</span>
-            </div>
-          ))}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <span className="text-sm text-muted-foreground">수입</span>
+            <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{formatCompact(totalIncome)}</span>
+          </div>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <span className="text-sm text-muted-foreground">지출</span>
+            <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{formatCompact(totalExpense)}</span>
+          </div>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <span className="text-sm text-muted-foreground">잔고</span>
+            <span className={`text-sm font-semibold tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{formatCompact(cashBalance)}</span>
+          </div>
+          <div className="flex items-center justify-between px-4 py-3">
+            <span className="text-sm text-accent-mint">저축</span>
+            <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{formatCompact(allTimeSavings)}</span>
+          </div>
         </div>
 
         <MonthlyCalendar
