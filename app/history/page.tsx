@@ -74,6 +74,7 @@ export default function History() {
   const [yearOffset, setYearOffset] = useState(0)
   const [cameFromMonthly, setCameFromMonthly] = useState(false)
   const [cameFromYearly, setCameFromYearly] = useState(false)
+  const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set())
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -376,7 +377,7 @@ export default function History() {
             <div className="flex flex-col gap-3 mt-2">
               {/* 헤더 */}
               <div className="flex items-center px-2 py-4 bg-surface rounded-[18px]">
-                <button onClick={() => setMonthOffset(m => m - 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1 flex-shrink-0">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
                 <div className="flex-1 flex items-center justify-between px-2">
@@ -385,54 +386,105 @@ export default function History() {
                     {monthTotal < 0 ? "-" : ""}₩{Math.abs(monthTotal).toLocaleString()}
                   </span>
                 </div>
-                <button onClick={() => setMonthOffset(m => m + 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1 flex-shrink-0">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
               </div>
 
-              {/* 주차별 요약 */}
-              {weekSummaries.map(({ weekNum, income, expense, savings }, idx) => (
+              {/* 주차별 아코디언 */}
+              {weekSummaries.map(({ weekNum, income, expense, savings }, idx) => {
+                const isExpanded = expandedWeeks.has(weekNum)
+                const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+                return (
                 <div key={weekNum}>
                   {idx > 0 && <div className="border-t border-border mx-5 my-1" />}
-                <div
-                  onClick={() => {
-                    // 해당 주의 월요일 기준으로 weekOffset 계산
-                    const targetDate = new Date(targetYear, actualMonth - 1, (weekNum - 1) * 7 + 1)
-                    const now = new Date()
-                    const nowStart = new Date(now)
-                    nowStart.setDate(now.getDate() - now.getDay())
-                    nowStart.setHours(0, 0, 0, 0)
-                    const targetStart = new Date(targetDate)
-                    targetStart.setDate(targetDate.getDate() - targetDate.getDay())
-                    targetStart.setHours(0, 0, 0, 0)
-                    const diffWeeks = Math.round((targetStart.getTime() - nowStart.getTime()) / (7 * 24 * 60 * 60 * 1000))
-                    setWeekOffset(diffWeeks)
-                    setCameFromMonthly(true)
-                    setViewMode('weekly')
-                  }}
-                  className="px-5 py-3 cursor-pointer active:bg-muted/30"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-foreground">{actualMonth}월 {weekNum}주 차</p>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">수입</p>
-                      <p className="text-sm font-medium tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
+                <div>
+                  <div
+                    onClick={() => {
+                      const next = new Set(expandedWeeks)
+                      if (next.has(weekNum)) next.delete(weekNum)
+                      else next.add(weekNum)
+                      setExpandedWeeks(next)
+                    }}
+                    className="px-5 py-3 cursor-pointer active:bg-muted/30"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? '' : '-rotate-90'}`}><path d="m6 9 6 6 6-6" /></svg>
+                        <p className="text-sm font-semibold text-foreground">{actualMonth}월 {weekNum}주 차</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">지출</p>
-                      <p className="text-sm font-medium tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">저축</p>
-                      <p className="text-sm font-medium tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">수입</p>
+                        <p className="text-sm font-medium tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">지출</p>
+                        <p className="text-sm font-medium tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">저축</p>
+                        <p className="text-sm font-medium tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
+                      </div>
                     </div>
                   </div>
+                  {isExpanded && (
+                    <div className="bg-muted/20">
+                      {weekTxs.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">내역이 없어요</p>
+                      ) : (() => {
+                        let lastDate: string | null = null
+                        return weekTxs.map((tx) => {
+                          const showDivider = lastDate !== null && lastDate !== tx.date
+                          const showDate = lastDate !== tx.date
+                          lastDate = tx.date
+                          const d = new Date(tx.date)
+                          const cat = tx.category as any
+                          const catName = cat?.name || ''
+                          return (
+                            <div key={tx.id}>
+                              {showDivider && <div className="border-t border-border mx-5 my-1" />}
+                              <SwipeToDelete onDelete={async () => { await deleteTransaction(tx.id); loadData() }}>
+                                <div onClick={() => { setEditTx(tx); setModalOpen(true) }} className="px-5 py-2 cursor-pointer active:bg-muted/30">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-14 flex-shrink-0">
+                                      {showDate && (
+                                        <div className="flex items-baseline gap-1.5">
+                                          <span className="text-sm font-medium">{DAY_NAMES[d.getDay()]}</span>
+                                          <span className="text-xs text-muted-foreground tabular-nums">{d.getDate()}일</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <span className="text-xs bg-muted px-3 py-1 rounded-full inline-block">
+                                        {!cat ? <span className="text-muted-foreground">미분류</span> : cat.parent_id ? (() => {
+                                          const parent = categories.find((c: any) => c.id === cat.parent_id)
+                                          return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
+                                        })() : <span className="text-foreground">{catName}</span>}
+                                      </span>
+                                    </div>
+                                    <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
+                                      tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+                                    }`}>
+                                      ₩{tx.amount.toLocaleString()}
+                                    </span>
+                                  </div>
+                                  {tx.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{tx.description}</p>}
+                                </div>
+                              </SwipeToDelete>
+                            </div>
+                          )
+                        })
+                      })()}
+                    </div>
+                  )}
                 </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )
         })() : viewMode === 'yearly' ? (() => {
