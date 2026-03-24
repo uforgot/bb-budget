@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
@@ -96,14 +96,20 @@ export default function History() {
     '저축': { active: 'text-accent-mint', border: 'border-accent-mint', text: 'text-accent-mint' },
   }
 
-  const renderRow = (tx: Transaction) => {
+  const lastRenderedDate = useRef<string | null>(null)
+
+  const renderRow = (tx: Transaction, isFirstInGroup: boolean = false) => {
     const cat = tx.category as any
-    const parentName = cat?.parent_id ? '' : ''
     const catName = cat?.name || ''
     const desc = tx.description || ''
 
     const d = new Date(tx.date)
-    const dateDisplay = `${d.getMonth() + 1}/${d.getDate()}(${getWeekday(tx.date)})`
+    const dateKey = tx.date
+    const showDate = lastRenderedDate.current !== dateKey
+    if (showDate) lastRenderedDate.current = dateKey
+
+    const weekday = getWeekday(tx.date)
+    const dayNum = `${d.getDate()}일`
 
     return (
       <SwipeToDelete
@@ -117,10 +123,15 @@ export default function History() {
           onClick={() => { setEditTx(tx); setModalOpen(true) }}
           className="flex items-center gap-3 px-4 py-3 border-t border-border/50 cursor-pointer active:bg-muted/50"
         >
-          {/* 날짜/요일 */}
-          <span className="text-xs text-muted-foreground tabular-nums w-14 flex-shrink-0">
-            {dateDisplay}
-          </span>
+          {/* 날짜/요일 — 같은 날은 빈칸 */}
+          <div className="w-14 flex-shrink-0">
+            {showDate ? (
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm font-medium">{weekday}</span>
+                <span className="text-xs text-muted-foreground tabular-nums">{dayNum}</span>
+              </div>
+            ) : null}
+          </div>
 
           {/* 카테고리 + 메모 */}
           <div className="flex-1 min-w-0">
@@ -165,7 +176,7 @@ export default function History() {
         </div>
 
         {/* Filter chips: 지출 / 수입 / 저축 */}
-        <div className="flex items-center gap-2 py-3">
+        <div className="flex items-center justify-end gap-2 py-3">
           {(['지출', '수입', '저축'] as TabType[]).map((tab) => {
             const isActive = activeFilters.has(tab)
             const chipColors: Record<TabType, string> = {
@@ -229,7 +240,7 @@ export default function History() {
                               ₩{wkTotal.toLocaleString()}
                             </span>
                           </div>
-                          {wkItems.map(renderRow)}
+                          {wkItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; return renderRow(tx) })}
                         </div>
                       )
                     })}
@@ -264,7 +275,7 @@ export default function History() {
                               ₩{mTotal.toLocaleString()}
                             </span>
                           </div>
-                          {mItems.map(renderRow)}
+                          {mItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; return renderRow(tx) })}
                         </div>
                       )
                     })}
@@ -281,7 +292,10 @@ export default function History() {
                       ₩{groupTotal.toLocaleString()}
                     </span>
                   </div>
-                  {items.map(renderRow)}
+                  {items.map((tx, i) => {
+                    if (i === 0) lastRenderedDate.current = null
+                    return renderRow(tx)
+                  })}
                 </div>
               )
             })}
