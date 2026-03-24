@@ -67,7 +67,7 @@ function getFullCatDisplay(tx: Transaction) {
 }
 
 export default function History() {
-  const [viewMode, setViewMode] = useState<ViewMode>('weekly')
+  const [viewMode, setViewMode] = useState<ViewMode>('monthly')
   const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출', '수입', '저축']))
   const [weekOffset, setWeekOffset] = useState(0)
   const [monthOffset, setMonthOffset] = useState(0)
@@ -184,10 +184,10 @@ export default function History() {
       <div className="px-5">
         <TopHeader title="상세 내역" />
 
-        {/* View mode tabs: 주간 / 월간 / 연간 */}
+        {/* View mode tabs: 월간 / 연간 */}
         <div className="flex border-b border-border">
-          {(['weekly', 'monthly', 'yearly'] as ViewMode[]).map((mode) => {
-            const label = mode === 'weekly' ? '주간' : mode === 'monthly' ? '월간' : '연간'
+          {(['monthly', 'yearly'] as ViewMode[]).map((mode) => {
+            const label = mode === 'monthly' ? '월간' : '연간'
             return (
               <button
                 key={mode}
@@ -376,7 +376,7 @@ export default function History() {
                 <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
-                <span className="text-lg font-bold">{actualMonth}월</span>
+                <span className="text-lg font-bold">{targetYear}년 {actualMonth}월</span>
                 <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
