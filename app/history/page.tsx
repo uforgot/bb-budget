@@ -166,7 +166,7 @@ export default function History() {
           <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
             tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
           }`}>
-            {tx.type === 'expense' ? '-' : '+'}₩{tx.amount.toLocaleString()}
+            ₩{tx.amount.toLocaleString()}
           </span>
         </div>
       </SwipeToDelete>
@@ -253,7 +253,7 @@ export default function History() {
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
-                        {groupTotal >= 0 ? "+" : ""}₩{Math.abs(groupTotal).toLocaleString()}
+                        {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                       </span>
                     </div>
                     {Object.entries(byWeek).map(([wk, wkItems]) => {
@@ -263,7 +263,7 @@ export default function History() {
                           <div className="flex items-center justify-between px-5 py-2">
                             <span className="text-[10px] text-muted-foreground">{wk}</span>
                             <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
-                              {wkTotal >= 0 ? "+" : ""}₩{Math.abs(wkTotal).toLocaleString()}
+                              {wkTotal < 0 ? "-" : ""}₩{Math.abs(wkTotal).toLocaleString()}
                             </span>
                           </div>
                           {wkItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; const prevDate = lastRenderedDate.current; const showDivider = i > 0 && prevDate !== tx.date; return (<div key={tx.id}>{showDivider && <div className="border-t border-border mx-5 my-2" />}{renderRow(tx)}</div>) })}
@@ -288,7 +288,7 @@ export default function History() {
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
-                        {groupTotal >= 0 ? "+" : ""}₩{Math.abs(groupTotal).toLocaleString()}
+                        {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                       </span>
                     </div>
                     {Object.entries(byMonth).map(([mk, mItems]) => {
@@ -298,7 +298,7 @@ export default function History() {
                           <div className="flex items-center justify-between px-5 py-2">
                             <span className="text-[10px] text-muted-foreground">{mk}</span>
                             <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
-                              {mTotal >= 0 ? "+" : ""}₩{Math.abs(mTotal).toLocaleString()}
+                              {mTotal < 0 ? "-" : ""}₩{Math.abs(mTotal).toLocaleString()}
                             </span>
                           </div>
                           {mItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; return renderRow(tx) })}
@@ -315,7 +315,7 @@ export default function History() {
                   <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                     <span className="text-xs font-medium text-muted-foreground">{label}</span>
                     <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
-                      {groupTotal >= 0 ? "+" : ""}₩{Math.abs(groupTotal).toLocaleString()}
+                      {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                     </span>
                   </div>
                   {items.map((tx, i) => {
