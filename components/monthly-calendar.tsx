@@ -206,6 +206,10 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     if (!isDraggingRef.current) return
     const y = e.touches[0].clientY
     const diff = y - startXRef.current
+    if (Math.abs(diff) > 5) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setDragOffset(diff * 0.4)
     moveXRef.current = y
   }, [])
@@ -349,7 +353,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
-            style={{ height: GRID_H, overflow: 'hidden' }}
+            style={{ height: GRID_H, overflow: 'hidden', touchAction: 'none' }}
           >
             <div
               style={{
