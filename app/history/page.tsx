@@ -400,7 +400,9 @@ export default function History() {
 
               {/* 이번 달 요약 */}
               {(() => {
-                const balance = monthIncome - monthExpense
+                const cumulativeIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const cumulativeExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const balance = cumulativeIncome - cumulativeExpense
                 return (
                   <div className="mb-2">
                     <p className="text-xs text-muted-foreground px-5 mb-2">이번 달 요약</p>
