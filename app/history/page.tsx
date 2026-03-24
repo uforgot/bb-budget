@@ -431,9 +431,10 @@ export default function History() {
               </div>
 
               {/* 월별 카드 */}
-              {monthSummaries.map(({ month, income, expense, savings }) => (
+              {monthSummaries.map(({ month, income, expense, savings }, idx) => (
+                <div key={month}>
+                  {idx > 0 && <div className="border-t border-border mx-5 my-1" />}
                 <div
-                  key={month}
                   onClick={() => {
                     // 해당 월로 월간 뷰 이동
                     const now2 = new Date()
@@ -442,7 +443,7 @@ export default function History() {
                     setCameFromYearly(true)
                     setViewMode('monthly')
                   }}
-                  className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30"
+                  className="px-5 py-3 cursor-pointer active:bg-muted/30"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-sm font-semibold text-foreground">{month}월</p>
@@ -462,6 +463,7 @@ export default function History() {
                       <p className="text-sm font-medium tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
                     </div>
                   </div>
+                </div>
                 </div>
               ))}
             </div>
