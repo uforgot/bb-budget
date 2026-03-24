@@ -5,16 +5,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { getMonthlySummary, type Transaction } from '@/lib/api'
-
-function formatCompact(amount: number): string {
-  if (amount >= 100000000) {
-    const eok = Math.floor(amount / 100000000)
-    const man = Math.floor((amount % 100000000) / 10000)
-    return man > 0 ? `${eok}억 ${man.toLocaleString()}만` : `${eok}억`
-  }
-  return amount.toLocaleString()
-}
+import { type Transaction } from '@/lib/api'
 
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -25,32 +16,15 @@ export default function Home() {
   const [selectedDay, setSelectedDay] = useState(today.getDate())
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
-  const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
   const [calYear, setCalYear] = useState(today.getFullYear())
   const [calMonth, setCalMonth] = useState(today.getMonth() + 1)
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  const [totalIncome, setTotalIncome] = useState(0)
-  const [totalExpense, setTotalExpense] = useState(0)
-  const [totalSavings, setTotalSavings] = useState(0)
   const [allTimeIncome, setAllTimeIncome] = useState(0)
   const [allTimeExpense, setAllTimeExpense] = useState(0)
   const [allTimeSavings, setAllTimeSavings] = useState(0)
-  const [dailyData, setDailyData] = useState<Record<number, { income?: number; expense?: number; savings?: number; items?: { type: 'income' | 'expense' | 'savings'; category: string; parentCategory?: string; description: string; amount: number }[] }>>({})
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
-
-  const loadData = useCallback(async () => {
-    try {
-      const summary = await getMonthlySummary(calYear, calMonth)
-      setTotalIncome(summary.income)
-      setTotalExpense(summary.expense)
-      setTotalSavings(summary.savings)
-      setDailyData(summary.daily)
-      setAllTransactions(summary.transactions)
-    } catch (e) {
-      console.error('데이터 로드 실패:', e)
-    }
-  }, [calYear, calMonth])
 
   // 전체 기간 자산 총합 (1회 로드)
   const loadAllTime = useCallback(async () => {
@@ -69,56 +43,38 @@ export default function Home() {
     loadAllTime()
   }, [loadAllTime])
 
+  // 탭 전환 시 자동 새로고침
   useEffect(() => {
-    loadData()
-    // 탭 전환 시 자동 새로고침
-    const handleFocus = () => loadData()
-    window.addEventListener('focus', handleFocus)
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') loadData()
-    })
-    return () => {
-      window.removeEventListener('focus', handleFocus)
+    const refresh = () => setRefreshKey(k => k + 1)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') refresh()
     }
-  }, [loadData])
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => {
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [])
 
   const totalAssets = allTimeIncome - allTimeExpense
   const cashBalance = totalAssets - allTimeSavings
 
-  // Pull to refresh
-  const [pulling, setPulling] = useState(false)
-  const handleTouchRefresh = async () => {
-    if (pulling) return
-    setPulling(true)
-    await loadData()
-    setPulling(false)
-  }
-
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <div className="h-dvh flex flex-col bg-background">
       <div className="px-5">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="가용 현금" />
-        <MonthlyCalendar
-          year={calYear}
-          month={calMonth}
-          data={dailyData}
-          monthlyIncome={totalIncome}
-          monthlyExpense={totalExpense}
-          onDaySelect={(day) => setSelectedDay(day)}
-          onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); setSelectedDay(1) }}
-          onItemClick={(day, itemIndex) => {
-            // 해당 날짜의 트랜잭션 찾기
-            const dayTxs = allTransactions.filter(t => new Date(t.date).getDate() === day)
-            if (dayTxs[itemIndex]) {
-              setEditTx(dayTxs[itemIndex])
-              setModalOpen(true)
-            }
-          }}
-        />
+      </div>
 
-        {pulling && (
-          <p className="text-xs text-muted-foreground text-center py-2">새로고침 중...</p>
-        )}
+      <div className="flex-1 min-h-0 px-5">
+        <MonthlyCalendar
+          onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); setSelectedDay(1) }}
+          onTransactionClick={(tx) => {
+            setEditTx(tx)
+            setModalOpen(true)
+          }}
+          refreshKey={refreshKey}
+        />
       </div>
 
       <AddTransactionModal
@@ -128,7 +84,7 @@ export default function Home() {
         onClose={() => {
           setModalOpen(false)
           setEditTx(null)
-          loadData()
+          setRefreshKey(k => k + 1)
           loadAllTime()
         }}
         onSave={() => {}}
