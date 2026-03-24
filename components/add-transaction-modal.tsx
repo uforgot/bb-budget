@@ -54,6 +54,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [keypadActive, setKeypadActive] = useState(true)
   const [saving, setSaving] = useState(false)
   const [editDate, setEditDate] = useState<string | null>(null)
+  const [endDate, setEndDate] = useState('')
+  const [endAmount, setEndAmount] = useState('')
 
   // Populate fields when editing
   useEffect(() => {
@@ -63,6 +65,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setCategoryId(editTransaction.category_id)
       setMemo(editTransaction.description || '')
       setEditDate(editTransaction.date)
+      setEndDate((editTransaction as any).end_date || '')
+      setEndAmount((editTransaction as any).end_amount ? String((editTransaction as any).end_amount) : '')
       // parent > child 라벨 구성
       const dbType = editTransaction.type
       getCategories(dbType).then(cats => {
@@ -91,12 +95,16 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       return
     }
     const dbType = TYPE_MAP[type!]
-    const payload = {
+    const payload: Record<string, unknown> = {
       type: dbType,
       amount: numAmount,
       category_id: categoryId,
       description: memo || '',
       date,
+    }
+    if (dbType === 'savings') {
+      if (endDate) payload.end_date = endDate
+      if (endAmount) payload.end_amount = parseInt(endAmount.replace(/[^0-9]/g, ''))
     }
     setSaving(true)
     try {
@@ -111,6 +119,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setCategoryId('')
       setCategoryLabel('카테고리 선택')
       setEditDate(null)
+      setEndDate('')
+      setEndAmount('')
       onClose()
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : JSON.stringify(e)
@@ -251,6 +261,41 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onClose={() => setCategoryPickerOpen(false)}
             />
           </div>
+
+          {/* 저축 전용: 만기일 + 예상 금액 */}
+          {type && TYPE_MAP[type] === 'savings' && (
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">만기일</label>
+                <div className="relative">
+                  <span className="text-sm bg-surface rounded-xl px-5 py-3.5 block cursor-pointer">
+                    {endDate || '미정'}
+                  </span>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    style={{ fontSize: '16px' }}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">인출 시 금액</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="₩0"
+                  value={endAmount ? `₩${parseInt(endAmount).toLocaleString()}` : ''}
+                  onChange={(e) => setEndAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                  onFocus={() => setKeypadActive(false)}
+                  onBlur={() => setKeypadActive(true)}
+                  style={{ fontSize: '16px' }}
+                  className="w-full bg-surface rounded-xl px-5 py-3.5"
+                />
+              </div>
+            </div>
+          )}
 
           {/* 메모 */}
           <div className="mb-4">

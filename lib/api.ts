@@ -69,13 +69,7 @@ export async function getTransactions(filters?: { year?: number; month?: number;
   return data as Transaction[]
 }
 
-export async function addTransaction(tx: {
-  type: string
-  amount: number
-  category_id: string
-  description?: string
-  date: string
-}) {
+export async function addTransaction(tx: Record<string, unknown>) {
   const { data, error } = await getSupabase()
     .from('transactions')
     .insert(tx as any)
