@@ -71,6 +71,7 @@ export default function History() {
   const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출', '수입', '저축']))
   const [weekOffset, setWeekOffset] = useState(0)
   const [monthOffset, setMonthOffset] = useState(0)
+  const [cameFromMonthly, setCameFromMonthly] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -192,7 +193,7 @@ export default function History() {
             return (
               <button
                 key={mode}
-                onClick={() => { setViewMode(mode); setWeekOffset(0); setMonthOffset(0) }}
+                onClick={() => { setViewMode(mode); setWeekOffset(0); setMonthOffset(0); setCameFromMonthly(false) }}
                 className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
                   viewMode === mode
                     ? 'text-foreground border-b-2 border-foreground'
@@ -258,6 +259,18 @@ export default function History() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
               </div>
+              {cameFromMonthly && (
+                <button
+                  onClick={() => {
+                    setViewMode('monthly')
+                    setCameFromMonthly(false)
+                  }}
+                  className="text-xs text-accent-blue flex items-center gap-1 px-5 py-1"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                  월간 전체 보기
+                </button>
+              )}
               {filteredTransactions.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
               ) : (
@@ -322,8 +335,29 @@ export default function History() {
 
               {/* 주차별 요약 */}
               {weekSummaries.map(({ weekNum, income, expense, savings }) => (
-                <div key={weekNum} className="bg-surface rounded-[18px] px-5 py-4">
-                  <p className="text-sm font-semibold text-foreground mb-3">{actualMonth}월 {weekNum}주 차</p>
+                <div
+                  key={weekNum}
+                  onClick={() => {
+                    // 해당 주의 월요일 기준으로 weekOffset 계산
+                    const targetDate = new Date(targetYear, actualMonth - 1, (weekNum - 1) * 7 + 1)
+                    const now = new Date()
+                    const nowStart = new Date(now)
+                    nowStart.setDate(now.getDate() - now.getDay())
+                    nowStart.setHours(0, 0, 0, 0)
+                    const targetStart = new Date(targetDate)
+                    targetStart.setDate(targetDate.getDate() - targetDate.getDay())
+                    targetStart.setHours(0, 0, 0, 0)
+                    const diffWeeks = Math.round((targetStart.getTime() - nowStart.getTime()) / (7 * 24 * 60 * 60 * 1000))
+                    setWeekOffset(diffWeeks)
+                    setCameFromMonthly(true)
+                    setViewMode('weekly')
+                  }}
+                  className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-semibold text-foreground">{actualMonth}월 {weekNum}주 차</p>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
+                  </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">수입</p>
