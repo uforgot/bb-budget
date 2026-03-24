@@ -240,7 +240,13 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                     return (
                       <div key={i} onClick={() => onItemClick?.(selectedDay, i)} className="flex items-center justify-between py-2 px-5 cursor-pointer active:bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <span className="text-xs bg-muted px-3 py-1.5 rounded-full text-muted-foreground">{catLabel}</span>
+                          <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
+                            {item.parentCategory ? (
+                              <><span className="text-foreground">{item.parentCategory}</span><span className="text-muted-foreground"> · {item.category}</span></>
+                            ) : (
+                              <span className="text-foreground">{item.category}</span>
+                            )}
+                          </span>
                           {item.description && (
                             <span className="text-[10px] text-muted-foreground line-clamp-2">{item.description}</span>
                           )}
