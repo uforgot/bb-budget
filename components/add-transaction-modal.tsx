@@ -267,18 +267,15 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">만기일</label>
-                <div className="relative">
-                  <span className="text-sm bg-surface rounded-xl px-5 py-3.5 block cursor-pointer">
-                    {endDate || '미정'}
-                  </span>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    style={{ fontSize: '16px' }}
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  onFocus={() => setKeypadActive(false)}
+                  onBlur={() => setKeypadActive(true)}
+                  style={{ fontSize: '16px' }}
+                  className="w-full bg-surface rounded-xl px-5 py-3.5 text-sm"
+                />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">인출 시 금액</label>
