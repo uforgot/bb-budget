@@ -398,21 +398,29 @@ export default function History() {
                 </button>
               </div>
 
-              {/* 수입/지출/저축 요약 */}
-              <div className="grid grid-cols-3 gap-3 px-5 pb-4">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">수입</p>
-                  <p className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">지출</p>
-                  <p className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">저축</p>
-                  <p className="text-sm font-semibold tabular-nums text-accent-mint">₩{monthSavings.toLocaleString()}</p>
-                </div>
-              </div>
+              {/* 수입/지출/잔고 요약 */}
+              {(() => {
+                // 잔고 = 초기자산 + 해당 월 말까지 누적 수입 - 누적 지출
+                const cumulativeIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const cumulativeExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const balance = cumulativeIncome - cumulativeExpense
+                return (
+                  <div className="px-5 pb-4 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">수입</span>
+                      <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">지출</span>
+                      <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">잔고</span>
+                      <span className="text-sm font-bold tabular-nums">₩{balance.toLocaleString()}</span>
+                    </div>
+                  </div>
+                )
+              })()}
 
               {/* 활성 저축 (전체 기간 — 해당 월 이전에 기록된 것 포함) */}
               {(() => {
