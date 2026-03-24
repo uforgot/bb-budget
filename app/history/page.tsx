@@ -396,11 +396,11 @@ export default function History() {
                   <div className="mb-2">
 
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">이번 달 수입</span>
+                      <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">금월 수입</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">이번 달 지출</span>
+                      <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">금월 지출</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
                     </div>
                     <div className="border-t border-border mx-5 my-2" />
@@ -410,11 +410,11 @@ export default function History() {
                     </div>
                     {/* 자산 하위: 저축 + 현금 */}
                     <div className="flex items-center justify-between px-5 py-1.5 pl-8">
-                      <span className="text-xs text-accent-mint">투자 자산</span>
+                      <span className="text-xs text-accent-mint">운용 자산</span>
                       <span className="text-xs font-medium tabular-nums text-accent-mint">₩{totalSavingsAmt.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between px-5 py-1.5 pl-8">
-                      <span className="text-xs text-muted-foreground">보유 현금</span>
+                      <span className="text-xs text-muted-foreground">가용 현금</span>
                       <span className={`text-xs font-medium tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{cashBalance.toLocaleString()}</span>
                     </div>
                     <div className="border-t border-border mx-5 my-2" />
