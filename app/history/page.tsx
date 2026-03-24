@@ -246,7 +246,7 @@ export default function History() {
           </div>
         )}
         {viewMode === 'monthly' && (
-          <div className="py-3">
+          <div className="py-3 flex items-center">
             <button
               onClick={() => { setViewMode('yearly'); setCameFromYearly(false) }}
               className="text-xs text-accent-blue flex items-center gap-1"
