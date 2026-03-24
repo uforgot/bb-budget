@@ -276,15 +276,23 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     let attempts = 0
     const tryScroll = () => {
       if (listRef.current) {
-        listRef.current.scrollToRow({ index: focusedMonthIndex, align: 'start' })
+        // Calculate offset to focusedMonthIndex
+        let offset = 0
+        for (let i = 0; i < focusedMonthIndex; i++) {
+          offset += monthRowHeight(months[i])
+        }
+        const el = listRef.current.element
+        if (el) {
+          el.scrollTop = offset
+        }
         setScrolledToCenter(true)
-      } else if (attempts < 10) {
+      } else if (attempts < 20) {
         attempts++
         requestAnimationFrame(tryScroll)
       }
     }
     requestAnimationFrame(tryScroll)
-  }, [listRef, scrolledToCenter, focusedMonthIndex])
+  }, [listRef, scrolledToCenter, focusedMonthIndex, months])
 
   // After prepend: adjust scrollTop
   useLayoutEffect(() => {
