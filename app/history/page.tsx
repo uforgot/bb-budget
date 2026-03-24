@@ -427,7 +427,7 @@ export default function History() {
                       else next.add(weekNum)
                       setExpandedWeeks(next)
                     }}
-                    className="flex items-center justify-between px-5 py-3 cursor-pointer active:bg-muted/30 bg-surface rounded-[18px] mb-1"
+                    className="flex items-center justify-between px-2 py-4 cursor-pointer active:bg-muted/30 bg-surface rounded-[18px] mb-3"
                   >
                     <span className="text-sm font-semibold">{actualMonth}월 {weekNum}주 차</span>
                     <div className="flex items-center gap-2">
