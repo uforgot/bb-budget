@@ -147,35 +147,32 @@ export default function History() {
       >
         <div
           onClick={() => { setEditTx(tx); setModalOpen(true) }}
-          className="flex items-center gap-3 px-5 py-2 cursor-pointer active:bg-muted/30"
+          className="px-5 py-2 cursor-pointer active:bg-muted/30"
         >
-          {/* 날짜/요일 — 같은 날은 빈칸 */}
-          <div className="w-14 flex-shrink-0">
-            {showDate ? (
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-sm font-medium">{weekday}</span>
-                <span className="text-xs text-muted-foreground tabular-nums">{dayNum}</span>
-              </div>
-            ) : null}
-          </div>
-
-          {/* 카테고리 + 메모 */}
-          <div className="flex-1 min-w-0">
-            <span className="text-xs bg-muted px-3 py-1 rounded-full inline-block">
-              {!cat ? <span className="text-muted-foreground">미분류</span> : cat.parent_id ? (() => {
-                const parent = categories.find((c: any) => c.id === cat.parent_id)
-                return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
-              })() : <span className="text-foreground">{catName}</span>}
+          <div className="flex items-center gap-3">
+            <div className="w-14 flex-shrink-0">
+              {showDate ? (
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-sm font-medium">{weekday}</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">{dayNum}</span>
+                </div>
+              ) : null}
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-xs bg-muted px-3 py-1 rounded-full inline-block">
+                {!cat ? <span className="text-muted-foreground">미분류</span> : cat.parent_id ? (() => {
+                  const parent = categories.find((c: any) => c.id === cat.parent_id)
+                  return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
+                })() : <span className="text-foreground">{catName}</span>}
+              </span>
+            </div>
+            <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
+              tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+            }`}>
+              ₩{tx.amount.toLocaleString()}
             </span>
-            {desc && <p className="text-[10px] text-muted-foreground truncate mt-1">{desc}</p>}
           </div>
-
-          {/* 금액 */}
-          <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
-            tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
-          }`}>
-            ₩{tx.amount.toLocaleString()}
-          </span>
+          {desc && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{desc}</p>}
         </div>
       </SwipeToDelete>
     )
