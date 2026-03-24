@@ -322,20 +322,20 @@ export default function History() {
 
               {/* 주차별 요약 */}
               {weekSummaries.map(({ weekNum, income, expense, savings }) => (
-                <div key={weekNum} className="bg-surface rounded-[14px] px-4 py-3">
-                  <p className="text-xs font-semibold text-foreground mb-2">{actualMonth}월 {weekNum}주 차</p>
-                  <div className="grid grid-cols-3 gap-2">
+                <div key={weekNum} className="bg-surface rounded-[18px] px-5 py-4">
+                  <p className="text-sm font-semibold text-foreground mb-3">{actualMonth}월 {weekNum}주 차</p>
+                  <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <p className="text-[10px] text-muted-foreground mb-0.5">수입</p>
-                      <p className="text-xs tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground mb-1">수입</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-muted-foreground mb-0.5">지출</p>
-                      <p className="text-xs tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground mb-1">지출</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-muted-foreground mb-0.5">저축</p>
-                      <p className="text-xs tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground mb-1">저축</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
