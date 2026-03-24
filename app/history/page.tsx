@@ -69,7 +69,8 @@ function getFullCatDisplay(tx: Transaction) {
 export default function History() {
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
   const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출', '수입', '저축']))
-  const [weekOffset, setWeekOffset] = useState(0) // 0=이번주, -1=지난주, 1=다음주
+  const [weekOffset, setWeekOffset] = useState(0)
+  const [monthOffset, setMonthOffset] = useState(0)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -191,7 +192,7 @@ export default function History() {
             return (
               <button
                 key={mode}
-                onClick={() => { setViewMode(mode); setWeekOffset(0) }}
+                onClick={() => { setViewMode(mode); setWeekOffset(0); setMonthOffset(0) }}
                 className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
                   viewMode === mode
                     ? 'text-foreground border-b-2 border-foreground'
@@ -206,7 +207,7 @@ export default function History() {
 
         {/* Filter chips: 지출 / 수입 / 저축 */}
         <div className="flex items-center justify-end gap-2 py-3">
-          {(['지출', '수입', '저축'] as TabType[]).map((tab) => {
+          {(['수입', '지출', '저축'] as TabType[]).map((tab) => {
             const isActive = activeFilters.has(tab)
             const chipColors: Record<TabType, string> = {
               '지출': isActive ? 'bg-accent-coral/20 text-accent-coral border-accent-coral/40' : 'bg-muted text-muted-foreground border-transparent',
@@ -274,6 +275,65 @@ export default function History() {
               )}
             </div>
           )
+        })() : viewMode === 'monthly' ? (() => {
+          // 월간 뷰: offset 기반
+          const now = new Date()
+          const targetMonth = now.getMonth() + 1 + monthOffset
+          const targetYear = now.getFullYear() + Math.floor((targetMonth - 1) / 12)
+          const actualMonth = ((targetMonth - 1) % 12 + 12) % 12 + 1
+          const monthLabel = `${targetYear}년 ${actualMonth}월`
+
+          // 해당 월 트랜잭션
+          const monthTxs = transactions.filter(t => {
+            const d = new Date(t.date)
+            return d.getFullYear() === targetYear && d.getMonth() + 1 === actualMonth
+          })
+          const monthTotal = monthTxs.reduce((sum, t) => t.type === 'expense' ? sum - t.amount : sum + t.amount, 0)
+
+          // 주차별 요약
+          const daysInMonth = new Date(targetYear, actualMonth, 0).getDate()
+          const totalWeeks = Math.ceil(daysInMonth / 7)
+          const weekSummaries = Array.from({ length: totalWeeks }, (_, i) => {
+            const weekNum = i + 1
+            const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
+            const income = weekTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+            const expense = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+            const savings = weekTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+            return { weekNum, income, expense, savings }
+          })
+
+          return (
+            <div className="flex flex-col gap-3">
+              {/* 헤더 */}
+              <div className="flex items-center px-2 py-4 bg-surface rounded-[18px]">
+                <button onClick={() => setMonthOffset(m => m - 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <div className="flex-1 flex items-center justify-between px-2">
+                  <span className="text-sm font-semibold text-foreground">{monthLabel}</span>
+                  <span className="text-sm font-medium tabular-nums text-foreground">
+                    {monthTotal < 0 ? "-" : ""}₩{Math.abs(monthTotal).toLocaleString()}
+                  </span>
+                </div>
+                <button onClick={() => setMonthOffset(m => m + 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+              </div>
+
+              {/* 주차별 요약 */}
+              {weekSummaries.map(({ weekNum, income, expense, savings }) => (
+                <div key={weekNum} className="px-5 py-2">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">{actualMonth}월 {weekNum}주 차</p>
+                  <div className="flex gap-4 text-xs tabular-nums">
+                    {income > 0 && <span className="text-accent-blue">수입 ₩{income.toLocaleString()}</span>}
+                    {expense > 0 && <span className="text-accent-coral">지출 ₩{expense.toLocaleString()}</span>}
+                    {savings > 0 && <span className="text-accent-mint">저축 ₩{savings.toLocaleString()}</span>}
+                    {income === 0 && expense === 0 && savings === 0 && <span className="text-muted-foreground">내역 없음</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         })() : Object.keys(grouped).length === 0 ? (
           <p className="text-sm text-muted-foreground text-center mt-20">내역이 없어요</p>
         ) : (
@@ -283,42 +343,6 @@ export default function History() {
                 if (t.type === 'expense') return sum - t.amount
                 return sum + t.amount
               }, 0)
-
-              // 월간 뷰: 그룹 내에서 주차별 서브그룹
-              if (viewMode === 'monthly') {
-                const byWeek: Record<string, Transaction[]> = {}
-                for (const item of items) {
-                  const weekNum = Math.ceil(new Date(item.date).getDate() / 7)
-                  const wk = `${weekNum}주 차`
-                  if (!byWeek[wk]) byWeek[wk] = []
-                  byWeek[wk].push(item)
-                }
-
-                return (
-                  <div key={label} className="">
-                    <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                      <span className="text-sm font-semibold text-foreground">{label}</span>
-                      <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
-                        {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
-                      </span>
-                    </div>
-                    {Object.entries(byWeek).map(([wk, wkItems]) => {
-                      const wkTotal = wkItems.reduce((s, t) => t.type === "expense" ? s - t.amount : s + t.amount, 0)
-                      return (
-                        <div key={wk}>
-                          <div className="flex items-center justify-between px-5 py-2">
-                            <span className="text-[10px] text-muted-foreground">{wk}</span>
-                            <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
-                              {wkTotal < 0 ? "-" : ""}₩{Math.abs(wkTotal).toLocaleString()}
-                            </span>
-                          </div>
-                          {wkItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; const prevDate = lastRenderedDate.current; const showDivider = i > 0 && prevDate !== tx.date; return (<div key={tx.id}>{showDivider && <div className="border-t border-border mx-5 my-2" />}{renderRow(tx)}</div>) })}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              }
 
               // 연간 뷰: 그룹 내에서 월별 서브그룹
               if (viewMode === 'yearly') {
