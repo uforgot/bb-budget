@@ -100,15 +100,8 @@ export default function History() {
     const catName = cat?.name || ''
     const desc = tx.description || ''
 
-    // 주간: 요일 우선 / 월간: 날짜 / 연간: 월.일
-    let dateDisplay: string
-    if (viewMode === 'weekly') {
-      dateDisplay = `${getWeekday(tx.date)}`
-    } else if (viewMode === 'monthly') {
-      dateDisplay = `${new Date(tx.date).getDate()}일`
-    } else {
-      dateDisplay = formatDate(tx.date)
-    }
+    const d = new Date(tx.date)
+    const dateDisplay = `${d.getMonth() + 1}/${d.getDate()}(${getWeekday(tx.date)})`
 
     return (
       <SwipeToDelete
@@ -123,7 +116,7 @@ export default function History() {
           className="flex items-center gap-3 px-4 py-3 border-t border-border/50 cursor-pointer active:bg-muted/50"
         >
           {/* 날짜/요일 */}
-          <span className="text-xs text-muted-foreground tabular-nums w-8 flex-shrink-0 text-center">
+          <span className="text-xs text-muted-foreground tabular-nums w-14 flex-shrink-0">
             {dateDisplay}
           </span>
 
