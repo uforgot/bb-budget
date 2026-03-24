@@ -128,7 +128,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
 
         {/* 금월 수입/지출 */}
         {(monthlyIncome > 0 || monthlyExpense > 0) && (
-          <div className="bg-surface rounded-[18px] mb-4">
+          <div className="bg-background rounded-[18px] mb-4">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <span className="text-sm text-muted-foreground">금월 수입</span>
               <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthlyIncome.toLocaleString()}</span>
