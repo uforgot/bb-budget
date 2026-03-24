@@ -263,7 +263,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onBlur={() => setKeypadActive(true)}
               onFocus={() => setKeypadActive(false)}
               style={{ fontSize: '16px' }}
-              className="w-full bg-surface rounded-xl px-3 py-3.5"
+              className="w-full bg-surface rounded-xl px-5 py-3.5"
             />
           </div>
 
