@@ -347,82 +347,49 @@ export default function History() {
                 </button>
               </div>
 
-              {/* 주차별 내역 — 주간 스타일 */}
-              {weekSummaries.map(({ weekNum, income, expense, savings }) => {
-                const weekTxs = monthTxs
-                  .filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
-                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-
-                const goToWeek = () => {
-                  const targetDate = new Date(targetYear, actualMonth - 1, (weekNum - 1) * 7 + 1)
-                  const now2 = new Date()
-                  const nowStart = new Date(now2)
-                  nowStart.setDate(now2.getDate() - now2.getDay())
-                  nowStart.setHours(0, 0, 0, 0)
-                  const targetStart2 = new Date(targetDate)
-                  targetStart2.setDate(targetDate.getDate() - targetDate.getDay())
-                  targetStart2.setHours(0, 0, 0, 0)
-                  const diffWeeks = Math.round((targetStart2.getTime() - nowStart.getTime()) / (7 * 24 * 60 * 60 * 1000))
-                  setWeekOffset(diffWeeks)
-                  setCameFromMonthly(true)
-                  setViewMode('weekly')
-                }
-
-                return (
-                  <div key={weekNum}>
-                    <div
-                      onClick={goToWeek}
-                      className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30 flex items-center justify-between"
-                    >
-                      <p className="text-sm font-semibold text-foreground">{actualMonth}월 {weekNum}주 차</p>
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs tabular-nums text-muted-foreground">
-                          {income > 0 && <span className="text-accent-blue mr-2">+₩{income.toLocaleString()}</span>}
-                          {expense > 0 && <span className="text-accent-coral">-₩{expense.toLocaleString()}</span>}
-                        </span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
-                      </div>
-                    </div>
-                    {weekTxs.length > 0 ? (
-                      <div className="py-1">
-                        {weekTxs.map((tx, i) => {
-                          const prevTx = i > 0 ? weekTxs[i - 1] : null
-                          const showDivider = prevTx && prevTx.date !== tx.date
-                          const showDate = !prevTx || prevTx.date !== tx.date
-                          const cat = tx.category as any
-                          const catName = cat?.name || '미분류'
-                          const parentCat = cat?.parent_id ? categories.find(c => c.id === cat.parent_id) : null
-                          return (
-                            <div key={tx.id}>
-                              {showDivider && <div className="border-t border-border mx-5 my-1" />}
-                              <div className="flex items-center gap-3 px-5 py-2">
-                                <div className="w-14 flex-shrink-0">
-                                  {showDate && (
-                                    <div className="flex items-baseline gap-1.5">
-                                      <span className="text-sm font-medium">{getWeekday(tx.date)}</span>
-                                      <span className="text-xs text-muted-foreground tabular-nums">{new Date(tx.date).getDate()}일</span>
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
-                                    {parentCat ? <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>}
-                                  </span>
-                                </div>
-                                <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'}`}>
-                                  ₩{tx.amount.toLocaleString()}
-                                </span>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-4">내역 없음</p>
-                    )}
+              {/* 주차별 요약 */}
+              {weekSummaries.map(({ weekNum, income, expense, savings }, idx) => (
+                <div key={weekNum}>
+                  {idx > 0 && <div className="border-t border-border mx-5 my-1" />}
+                <div
+                  onClick={() => {
+                    // 해당 주의 월요일 기준으로 weekOffset 계산
+                    const targetDate = new Date(targetYear, actualMonth - 1, (weekNum - 1) * 7 + 1)
+                    const now = new Date()
+                    const nowStart = new Date(now)
+                    nowStart.setDate(now.getDate() - now.getDay())
+                    nowStart.setHours(0, 0, 0, 0)
+                    const targetStart = new Date(targetDate)
+                    targetStart.setDate(targetDate.getDate() - targetDate.getDay())
+                    targetStart.setHours(0, 0, 0, 0)
+                    const diffWeeks = Math.round((targetStart.getTime() - nowStart.getTime()) / (7 * 24 * 60 * 60 * 1000))
+                    setWeekOffset(diffWeeks)
+                    setCameFromMonthly(true)
+                    setViewMode('weekly')
+                  }}
+                  className="px-5 py-3 cursor-pointer active:bg-muted/30"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-semibold text-foreground">{actualMonth}월 {weekNum}주 차</p>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
                   </div>
-                )
-              })}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">수입</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">지출</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">저축</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              ))}
             </div>
           )
         })() : viewMode === 'yearly' ? (() => {
