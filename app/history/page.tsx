@@ -234,7 +234,7 @@ export default function History() {
                 }
 
                 return (
-                  <div key={label} className="overflow-hidden">
+                  <div key={label} className="">
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
@@ -245,7 +245,7 @@ export default function History() {
                       const wkTotal = wkItems.reduce((s, t) => s + t.amount, 0)
                       return (
                         <div key={wk}>
-                          <div className="flex items-center justify-between px-4 py-1.5 bg-muted/20">
+                          <div className="flex items-center justify-between px-5 py-2">
                             <span className="text-[10px] text-muted-foreground">{wk}</span>
                             <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
                               ₩{wkTotal.toLocaleString()}
@@ -269,7 +269,7 @@ export default function History() {
                 }
 
                 return (
-                  <div key={label} className="overflow-hidden">
+                  <div key={label} className="">
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
@@ -280,7 +280,7 @@ export default function History() {
                       const mTotal = mItems.reduce((s, t) => s + t.amount, 0)
                       return (
                         <div key={mk}>
-                          <div className="flex items-center justify-between px-4 py-1.5 bg-muted/20">
+                          <div className="flex items-center justify-between px-5 py-2">
                             <span className="text-[10px] text-muted-foreground">{mk}</span>
                             <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
                               ₩{mTotal.toLocaleString()}
@@ -296,7 +296,7 @@ export default function History() {
 
               // 주간 뷰: 기본
               return (
-                <div key={label} className="overflow-hidden">
+                <div key={label} className="">
                   <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                     <span className="text-xs font-medium text-muted-foreground">{label}</span>
                     <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>

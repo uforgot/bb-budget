@@ -47,22 +47,22 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
 
   return (
     <div className="relative overflow-hidden">
-      {/* Delete button behind */}
-      <div
-        className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-accent-coral text-white font-medium text-sm"
-        style={{ width: DELETE_THRESHOLD }}
-      >
-        <button onClick={handleDelete} className="w-full h-full">
-          삭제
-        </button>
-      </div>
+      {offset > 0 && (
+        <div
+          className="absolute right-0 top-0 bottom-0 z-0 flex items-center justify-center bg-accent-coral text-white font-medium text-sm"
+          style={{ width: DELETE_THRESHOLD }}
+        >
+          <button onClick={handleDelete} className="w-full h-full">
+            삭제
+          </button>
+        </div>
+      )}
 
-      {/* Content */}
       <div
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative bg-muted transition-transform"
+        className="relative z-10"
         style={{
           transform: `translateX(-${offset}px)`,
           transition: swiping ? 'none' : 'transform 0.2s ease',
