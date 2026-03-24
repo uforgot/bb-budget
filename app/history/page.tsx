@@ -122,10 +122,8 @@ export default function History() {
 
           {/* 카테고리 + 메모 */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground flex-shrink-0">{catName}</span>
-              {desc && <span className="text-[10px] text-muted-foreground truncate">{desc}</span>}
-            </div>
+            <span className="text-sm">{catName}</span>
+            {desc && <p className="text-[10px] text-muted-foreground truncate mt-0.5">{desc}</p>}
           </div>
 
           {/* 금액 */}
