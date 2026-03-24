@@ -113,7 +113,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                               ? 'bg-accent-blue/20'
                               : isSelected
                                 ? 'bg-accent-blue/20'
-                                : 'bg-muted/50'
+                                : 'bg-surface'
                           }`}
                         >
                           <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
@@ -161,7 +161,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
               onClose()
               router.push('/settings/categories')
             }}
-            className="w-full mt-4 mb-4 py-3 rounded-xl bg-muted/50 text-sm font-medium text-muted-foreground"
+            className="w-full mt-4 mb-4 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground"
           >
             카테고리 관리
           </button>

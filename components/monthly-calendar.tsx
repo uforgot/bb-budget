@@ -214,7 +214,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
           return (
             <div className="mt-4">
               {/* 날짜 + 총액 헤더 */}
-              <div className="bg-muted/50 rounded-[18px] flex items-center justify-between px-5 py-4 mb-3">
+              <div className="bg-surface rounded-[18px] flex items-center justify-between px-5 py-4 mb-3">
                 <span className="text-[15px] font-semibold">{month}월 {selectedDay}일 {dayOfWeek}</span>
                 {totalDay > 0 && (
                   <span className={`text-[15px] font-semibold tabular-nums ${
@@ -238,7 +238,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                       ? `${item.parentCategory} · ${item.category}`
                       : item.category
                     return (
-                      <div key={i} onClick={() => onItemClick?.(selectedDay, i)} className="flex items-center justify-between py-2 px-5 cursor-pointer active:bg-muted/50 rounded-lg">
+                      <div key={i} onClick={() => onItemClick?.(selectedDay, i)} className="flex items-center justify-between py-2 px-5 cursor-pointer active:bg-surface rounded-lg">
                         <div className="flex items-center gap-3">
                           <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
                             {item.parentCategory ? (

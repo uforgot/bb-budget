@@ -8,6 +8,7 @@
   --color-accent-blue: var(--accent-blue);
   --color-accent-coral: #CF6679;
   --color-accent-mint: #2dd4bf;
+  --color-surface: var(--surface);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -84,6 +85,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --surface: #e8e9ec;
 }
 
 .dark {
@@ -106,6 +108,7 @@
   --input: #374151;
   --ring: #6b7280;
   --accent-blue: #5865F2;
+  --surface: #141c28;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);

@@ -84,7 +84,7 @@ export default function Home() {
       <div className="px-5">
         <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
 
-        <div className="bg-muted/50 rounded-[18px] mb-6">
+        <div className="bg-surface rounded-[18px] mb-6">
           {summary.map(({ label, value, color }, i) => (
             <div key={label} className={`flex items-center justify-between px-4 py-3 ${
               i < summary.length - 1 ? 'border-b border-border' : ''
