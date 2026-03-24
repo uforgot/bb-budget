@@ -128,7 +128,7 @@ export default function Home() {
         onSave={() => {}}
       />
 
-      <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} hideAdd={modalOpen} />
+      {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
     </div>
   )
 }

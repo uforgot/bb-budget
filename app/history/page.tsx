@@ -498,7 +498,7 @@ export default function History() {
         onSave={() => {}}
       />
 
-      <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} hideAdd={modalOpen} />
+      {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
     </div>
   )
 }
