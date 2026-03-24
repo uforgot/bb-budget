@@ -255,13 +255,37 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             />
           </div>
 
-          {/* 저장 버튼 */}
-          <button
-            onClick={handleSave}
-            className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
-          >
-            {saving ? '저장 중...' : editTransaction ? '수정하기' : '저장하기'}
-          </button>
+          {/* 저장/삭제 버튼 */}
+          {editTransaction ? (
+            <div className="flex gap-3">
+              <button
+                onClick={handleSave}
+                className="flex-1 bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
+              >
+                {saving ? '저장 중...' : '수정하기'}
+              </button>
+              <button
+                onClick={async () => {
+                  const { deleteTransaction } = await import('@/lib/api')
+                  await deleteTransaction(editTransaction.id)
+                  setRawAmount('')
+                  setMemo('')
+                  setEditDate(null)
+                  onClose()
+                }}
+                className="flex-1 bg-accent-coral/10 text-accent-coral rounded-lg py-3 text-sm font-semibold"
+              >
+                삭제하기
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handleSave}
+              className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
+            >
+              {saving ? '저장 중...' : '저장하기'}
+            </button>
+          )}
         </div>
       </div>
 
