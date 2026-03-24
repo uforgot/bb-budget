@@ -176,7 +176,67 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
 
 
   const loadingMonthsRef = useRef<Set<string>>(new Set())
-  const touchStartYRef = useRef<number | null>(null)
+
+  // Touch slider state
+  const sliderRef = useRef<HTMLDivElement>(null)
+  const startXRef = useRef(0)
+  const moveXRef = useRef(0)
+  const isDraggingRef = useRef(false)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  const goMonth = useCallback((dir: -1 | 1) => {
+    setFocusedMonthIndex(prev => {
+      const next = prev + dir
+      if (next < 0 || next >= months.length) return prev
+      const entry = months[next]
+      setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
+      return next
+    })
+  }, [months])
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    if (isAnimating) return
+    isDraggingRef.current = true
+    startXRef.current = e.touches[0].clientX
+    moveXRef.current = e.touches[0].clientX
+  }, [isAnimating])
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDraggingRef.current) return
+    const x = e.touches[0].clientX
+    const diff = x - startXRef.current
+    // 수평 드래그가 수직보다 크면 기본 스크롤 방지
+    if (Math.abs(diff) > 10) {
+      e.preventDefault()
+    }
+    setDragOffset(diff * 0.4) // moveRatio
+    moveXRef.current = x
+  }, [])
+
+  const onTouchEnd = useCallback(() => {
+    if (!isDraggingRef.current) return
+    isDraggingRef.current = false
+    const diff = moveXRef.current - startXRef.current
+
+    if (Math.abs(diff) > 50) {
+      // 충분히 드래그함 → 월 전환
+      const dir = diff > 0 ? -1 : 1
+      setIsAnimating(true)
+      const containerWidth = sliderRef.current?.offsetWidth ?? 300
+      setDragOffset(diff > 0 ? containerWidth : -containerWidth)
+      setTimeout(() => {
+        goMonth(dir)
+        setDragOffset(0)
+        setIsAnimating(false)
+      }, 250)
+    } else {
+      // 드래그 부족 → 원위치 스냅
+      setIsAnimating(true)
+      setDragOffset(0)
+      setTimeout(() => setIsAnimating(false), 250)
+    }
+  }, [goMonth])
 
   // Load data for a specific month
   const loadMonthData = useCallback(async (year: number, month: number) => {
@@ -273,40 +333,35 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         ))}
       </div>
 
-      {/* Single month grid with horizontal swipe */}
+      {/* Touch slider calendar */}
       <div
-        onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientX }}
-        onTouchEnd={(e) => {
-          if (touchStartYRef.current === null) return
-          const diff = e.changedTouches[0].clientX - touchStartYRef.current
-          touchStartYRef.current = null
-          if (Math.abs(diff) > 50) {
-            const dir = diff > 0 ? -1 : 1
-            setFocusedMonthIndex(prev => {
-              const next = prev + dir
-              if (next < 0 || next >= months.length) return prev
-              const entry = months[next]
-              setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
-              const cached = dataCache.get(monthKey(entry.year, entry.month))
-              onMonthChange?.(entry.year, entry.month + 1, cached?.income ?? 0, cached?.expense ?? 0)
-              return next
-            })
-          }
-        }}
+        ref={sliderRef}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        style={{ overflow: 'hidden' }}
       >
-        {(() => {
-          const entry = months[focusedMonthIndex]
-          const cached = dataCache.get(monthKey(entry.year, entry.month))
-          return (
-            <MonthGrid
-              year={entry.year}
-              month={entry.month}
-              data={cached?.daily ?? {}}
-              selectedDay={selectedDay}
-              onDayClick={handleDayClick}
-            />
-          )
-        })()}
+        <div
+          style={{
+            transform: `translate3d(${dragOffset}px, 0, 0)`,
+            transition: isAnimating ? 'transform 0.25s ease-out' : 'none',
+            willChange: 'transform',
+          }}
+        >
+          {(() => {
+            const entry = months[focusedMonthIndex]
+            const cached = dataCache.get(monthKey(entry.year, entry.month))
+            return (
+              <MonthGrid
+                year={entry.year}
+                month={entry.month}
+                data={cached?.daily ?? {}}
+                selectedDay={selectedDay}
+                onDayClick={handleDayClick}
+              />
+            )
+          })()}
+        </div>
       </div>
 
       {/* Selected day detail */}
