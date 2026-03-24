@@ -55,12 +55,20 @@ export default function CategoriesSettings() {
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
 
   const handleDeleteParent = async (id: string) => {
+    const children = childrenOf(id)
+    // 자식 + 부모의 연관 transaction category_id null 처리
+    for (const child of children) {
+      await supabase.from('transactions').update({ category_id: null }).eq('category_id', child.id)
+    }
+    await supabase.from('transactions').update({ category_id: null }).eq('category_id', id)
     await supabase.from('categories').delete().eq('parent_id', id)
     await supabase.from('categories').delete().eq('id', id)
     loadCategories()
   }
 
   const handleDeleteChild = async (id: string) => {
+    // 연관 transaction category_id를 null로
+    await supabase.from('transactions').update({ category_id: null }).eq('category_id', id)
     await supabase.from('categories').delete().eq('id', id)
     loadCategories()
   }
