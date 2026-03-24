@@ -379,7 +379,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
             >
               {/* 이전 달 — 자연 높이 */}
               {prevEntry && (
-                <div className="opacity-30">
+                <div className="opacity-10">
                   <MonthGrid year={prevEntry.year} month={prevEntry.month} data={cachedPrev?.daily ?? {}} selectedDay={null} onDayClick={handleDayClick} />
                 </div>
               )}
@@ -389,7 +389,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
 
               {/* 다음 달 — 자연 높이 */}
               {nextEntry && (
-                <div className="opacity-30">
+                <div className="opacity-10">
                   <MonthGrid year={nextEntry.year} month={nextEntry.month} data={cachedNext?.daily ?? {}} selectedDay={null} onDayClick={handleDayClick} />
                 </div>
               )}
