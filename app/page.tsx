@@ -109,7 +109,7 @@ export default function Home() {
             <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{formatCompact(totalExpense)}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-accent-mint">저축</span>
+            <span className="text-sm text-muted-foreground">저축</span>
             <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{formatCompact(allTimeSavings)}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
