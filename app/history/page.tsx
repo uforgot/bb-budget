@@ -161,15 +161,13 @@ export default function History() {
 
           {/* 카테고리 + 메모 */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
-                {!cat ? <span className="text-muted-foreground">미분류</span> : cat.parent_id ? (() => {
-                  const parent = categories.find((c: any) => c.id === cat.parent_id)
-                  return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
-                })() : <span className="text-foreground">{catName}</span>}
-              </span>
-              {desc && <span className="text-[10px] text-muted-foreground truncate">{desc}</span>}
-            </div>
+            <span className="text-xs bg-muted px-3 py-1 rounded-full inline-block">
+              {!cat ? <span className="text-muted-foreground">미분류</span> : cat.parent_id ? (() => {
+                const parent = categories.find((c: any) => c.id === cat.parent_id)
+                return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
+              })() : <span className="text-foreground">{catName}</span>}
+            </span>
+            {desc && <p className="text-[10px] text-muted-foreground truncate mt-1">{desc}</p>}
           </div>
 
           {/* 금액 */}
