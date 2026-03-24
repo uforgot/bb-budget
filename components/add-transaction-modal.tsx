@@ -203,7 +203,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 style={{ fontSize: '16px' }}
               />
             </label>
-            {type && TYPE_MAP[type] === 'savings' && (
+            {type && TYPE_MAP[type] === 'savings' && editTransaction && (
               <>
                 <span className="text-xs text-muted-foreground">—</span>
                 <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
@@ -234,8 +234,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-accent-blue' : 'bg-border'}`} />
           </div>
 
-          {/* 저축: 만기 금액 — 원금과 동일 폼 */}
-          {type && TYPE_MAP[type] === 'savings' && (
+          {/* 저축: 만기 금액 — 수정 시에만 표시 */}
+          {type && TYPE_MAP[type] === 'savings' && editTransaction && (
             <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(false)}>
               <div className="flex items-baseline justify-center gap-1">
                 <span className="text-4xl font-bold text-muted-foreground">₩</span>
