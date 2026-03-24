@@ -91,7 +91,21 @@ export default function History() {
     loadData()
   }, [loadData])
 
-  const grouped = groupTransactions(transactions, viewMode)
+  // 주간 뷰: 현재 주만 필터
+  const filteredTransactions = viewMode === 'weekly' ? (() => {
+    const now = new Date()
+    const startOfWeek = new Date(now)
+    startOfWeek.setDate(now.getDate() - now.getDay()) // 일요일
+    startOfWeek.setHours(0, 0, 0, 0)
+    const endOfWeek = new Date(startOfWeek)
+    endOfWeek.setDate(startOfWeek.getDate() + 7)
+    return transactions.filter(t => {
+      const d = new Date(t.date)
+      return d >= startOfWeek && d < endOfWeek
+    })
+  })() : transactions
+
+  const grouped = groupTransactions(filteredTransactions, viewMode)
 
   const tabColors: Record<TabType, { active: string; border: string; text: string }> = {
     '지출': { active: 'text-accent-coral', border: 'border-accent-coral', text: 'text-accent-coral' },
@@ -140,9 +154,8 @@ export default function History() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
-                {cat?.parent_id ? (() => {
-                  const allCats = categories
-                  const parent = allCats.find((c: any) => c.id === cat.parent_id)
+                {!cat ? <span className="text-muted-foreground">미분류</span> : cat.parent_id ? (() => {
+                  const parent = categories.find((c: any) => c.id === cat.parent_id)
                   return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
                 })() : <span className="text-foreground">{catName}</span>}
               </span>

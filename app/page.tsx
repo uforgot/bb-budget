@@ -26,8 +26,8 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
-  const [calYear] = useState(2026)
-  const [calMonth] = useState(3)
+  const [calYear, setCalYear] = useState(today.getFullYear())
+  const [calMonth, setCalMonth] = useState(today.getMonth() + 1)
 
   const [totalIncome, setTotalIncome] = useState(0)
   const [totalExpense, setTotalExpense] = useState(0)
@@ -100,6 +100,7 @@ export default function Home() {
           month={calMonth}
           data={dailyData}
           onDaySelect={(day) => setSelectedDay(day)}
+          onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); setSelectedDay(1) }}
           onItemClick={(day, itemIndex) => {
             // 해당 날짜의 트랜잭션 찾기
             const dayTxs = allTransactions.filter(t => new Date(t.date).getDate() === day)
