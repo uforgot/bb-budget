@@ -145,7 +145,7 @@ export default function History() {
       >
         <div
           onClick={() => { setEditTx(tx); setModalOpen(true) }}
-          className="flex items-center gap-3 px-5 py-3 cursor-pointer active:bg-muted/30"
+          className="flex items-center gap-3 px-5 py-2 cursor-pointer active:bg-muted/30"
         >
           {/* 날짜/요일 — 같은 날은 빈칸 */}
           <div className="w-14 flex-shrink-0">
@@ -280,7 +280,7 @@ export default function History() {
                   const showDivider = i > 0 && prevDate !== tx.date
                   return (
                     <div key={tx.id}>
-                      {showDivider && <div className="border-t border-border mx-5 my-2" />}
+                      {showDivider && <div className="border-t border-border mx-5 my-1" />}
                       {renderRow(tx)}
                     </div>
                   )
