@@ -179,17 +179,17 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto p-5">
           {/* 날짜 */}
-          <div className="relative mb-4 text-center">
-            <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1">
-              {formatDateDisplay(date)}
+          <div className="relative mb-4 flex justify-center">
+            <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
+              <span>{formatDateDisplay(date)}</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                 <path d="m6 9 6 6 6-6" />
               </svg>
               <input
                 type="date"
                 value={date}
-                onChange={(e) => setEditDate(e.target.value)}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={(e) => e.target.value && setEditDate(e.target.value)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 style={{ fontSize: '16px' }}
               />
             </label>
