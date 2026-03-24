@@ -114,7 +114,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                                 : 'bg-muted/50'
                           }`}
                         >
-                          <span className="text-xl">{CATEGORY_EMOJI[parent.name] || '📁'}</span>
+                          <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
                           <span className={`text-[11px] font-medium ${
                             isExpanded || isSelected ? 'text-foreground' : 'text-muted-foreground'
                           }`}>

@@ -10,6 +10,7 @@ export interface Category {
   type: 'income' | 'expense' | 'savings'
   sort_order: number
   parent_id: string | null
+  icon?: string | null
 }
 
 export interface Transaction {

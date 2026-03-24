@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
+import { EmojiPicker } from '@/components/emoji-picker'
 
 type TypeTab = 'expense' | 'income' | 'savings'
 const TYPE_LABELS: { key: TypeTab; label: string }[] = [
@@ -19,6 +20,10 @@ const EMOJI_MAP: Record<string, string> = {
   '예적금': '🏦', '투자': '📈',
 }
 
+function getEmoji(cat: Category) {
+  return (cat as any).icon || EMOJI_MAP[cat.name] || '📁'
+}
+
 export default function CategoriesSettings() {
   const router = useRouter()
   const [type, setType] = useState<TypeTab>('expense')
@@ -30,6 +35,7 @@ export default function CategoriesSettings() {
   const [addingSubCat, setAddingSubCat] = useState(false)
   const [addingRoot, setAddingRoot] = useState(false)
   const [newRootName, setNewRootName] = useState('')
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
   const supabase = createClient() as any
 
@@ -105,10 +111,23 @@ export default function CategoriesSettings() {
         <div className="max-w-lg mx-auto px-5 pt-8">
           {/* 이모지 */}
           <div className="flex justify-center mb-8">
-            <div className="w-28 h-28 bg-card rounded-2xl flex flex-col items-center justify-center gap-2 border border-border/50">
-              <span className="text-5xl">{EMOJI_MAP[editingParent.name] || '📁'}</span>
-            </div>
+            <button
+              onClick={() => setEmojiPickerOpen(true)}
+              className="w-28 h-28 bg-card rounded-2xl flex flex-col items-center justify-center gap-1 border border-border/50 relative"
+            >
+              <span className="text-5xl">{getEmoji(editingParent)}</span>
+              <span className="text-[10px] text-muted-foreground">변경</span>
+            </button>
           </div>
+          <EmojiPicker
+            open={emojiPickerOpen}
+            onSelect={async (emoji) => {
+              await supabase.from('categories').update({ icon: emoji }).eq('id', editingParent.id)
+              setEditingParent({ ...editingParent, icon: emoji } as any)
+              loadCategories()
+            }}
+            onClose={() => setEmojiPickerOpen(false)}
+          />
 
           {/* 카테고리명 */}
           <div className="flex items-center gap-3 py-4 border-b border-border">
@@ -225,7 +244,7 @@ export default function CategoriesSettings() {
                 }}
                 className="flex flex-col items-center gap-1.5"
               >
-                <span className="text-3xl">{EMOJI_MAP[parent.name] || '📁'}</span>
+                <span className="text-3xl">{getEmoji(parent)}</span>
                 <span className="text-xs font-medium">{parent.name}</span>
                 <span className="text-[10px] text-muted-foreground">소분류 {children.length}개</span>
               </button>
