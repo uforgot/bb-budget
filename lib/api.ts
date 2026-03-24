@@ -104,9 +104,16 @@ export async function getMonthlySummary(year: number, month: number) {
   const expense = transactions
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
-  const savings = transactions
-    .filter(t => t.type === 'savings')
-    .reduce((sum, t) => sum + t.amount, 0)
+  // 저축: 해당 월까지의 누적 (is_active인 것만)
+  const endOfMonth = `${year}-${String(month).padStart(2, '0')}-${new Date(year, month, 0).getDate()}`
+  const savingsQuery = getSupabase() as any
+  const { data: savingsTxs } = await savingsQuery
+    .from('transactions')
+    .select('amount')
+    .eq('type', 'savings')
+    .lte('date', endOfMonth)
+    .eq('is_active', true)
+  const savings = (savingsTxs || []).reduce((sum: number, t: any) => sum + t.amount, 0)
 
   // 카테고리 전체 로드 (parent 이름 매칭용)
   const allCategories = await getCategories()
