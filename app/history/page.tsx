@@ -67,20 +67,22 @@ function getFullCatDisplay(tx: Transaction) {
 }
 
 export default function History() {
-  const [activeTab, setActiveTab] = useState<TabType>('지출')
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
+  const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출']))
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   const loadData = useCallback(async () => {
     try {
-      const data = await getTransactions({ type: TAB_DB_MAP[activeTab] })
-      setTransactions(data)
+      // 선택된 필터 타입들 모두 가져오기
+      const types = Array.from(activeFilters).map(t => TAB_DB_MAP[t])
+      const results = await Promise.all(types.map(t => getTransactions({ type: t })))
+      setTransactions(results.flat().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
     } catch (e) {
       console.error('내역 로드 실패:', e)
     }
-  }, [activeTab])
+  }, [activeFilters])
 
   useEffect(() => {
     loadData()
@@ -127,7 +129,9 @@ export default function History() {
           </div>
 
           {/* 금액 */}
-          <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tabColors[activeTab].text}`}>
+          <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
+            tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+          }`}>
             ₩{tx.amount.toLocaleString()}
           </span>
         </div>
@@ -140,40 +144,53 @@ export default function History() {
       <div className="px-5">
         <TopHeader title="상세 내역" />
 
-        {/* Tabs: 지출 / 수입 / 저축 */}
+        {/* View mode tabs: 주간 / 월간 / 연간 */}
         <div className="flex border-b border-border">
-          {(['지출', '수입', '저축'] as TabType[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
-                activeTab === tab
-                  ? `${tabColors[tab].active} border-b-2 ${tabColors[tab].border}`
-                  : 'text-muted-foreground'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* View mode: 주간 / 월간 / 연간 */}
-        <div className="flex items-center justify-end py-2">
-          <div className="flex bg-muted rounded-lg p-0.5">
-            {(['weekly', 'monthly', 'yearly'] as ViewMode[]).map((mode) => (
+          {(['weekly', 'monthly', 'yearly'] as ViewMode[]).map((mode) => {
+            const label = mode === 'weekly' ? '주간' : mode === 'monthly' ? '월간' : '연간'
+            return (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`px-3 py-1 text-[11px] rounded-md transition-colors ${
+                className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
                   viewMode === mode
-                    ? 'bg-card text-foreground font-medium shadow-sm'
+                    ? 'text-foreground border-b-2 border-foreground'
                     : 'text-muted-foreground'
                 }`}
               >
-                {mode === 'weekly' ? '주간' : mode === 'monthly' ? '월간' : '연간'}
+                {label}
               </button>
-            ))}
-          </div>
+            )
+          })}
+        </div>
+
+        {/* Filter chips: 지출 / 수입 / 저축 */}
+        <div className="flex items-center gap-2 py-3">
+          {(['지출', '수입', '저축'] as TabType[]).map((tab) => {
+            const isActive = activeFilters.has(tab)
+            const chipColors: Record<TabType, string> = {
+              '지출': isActive ? 'bg-accent-coral/20 text-accent-coral border-accent-coral/40' : 'bg-muted text-muted-foreground border-transparent',
+              '수입': isActive ? 'bg-accent-blue/20 text-accent-blue border-accent-blue/40' : 'bg-muted text-muted-foreground border-transparent',
+              '저축': isActive ? 'bg-accent-mint/20 text-accent-mint border-accent-mint/40' : 'bg-muted text-muted-foreground border-transparent',
+            }
+            return (
+              <button
+                key={tab}
+                onClick={() => {
+                  const next = new Set(activeFilters)
+                  if (next.has(tab)) {
+                    if (next.size > 1) next.delete(tab) // 최소 1개 유지
+                  } else {
+                    next.add(tab)
+                  }
+                  setActiveFilters(next)
+                }}
+                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${chipColors[tab]}`}
+              >
+                {tab}
+              </button>
+            )
+          })}
         </div>
 
         {/* Grouped list */}
@@ -198,7 +215,7 @@ export default function History() {
                   <div key={label} className="bg-card rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-                      <span className={`text-xs font-medium tabular-nums ${tabColors[activeTab].text}`}>
+                      <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                         ₩{groupTotal.toLocaleString()}
                       </span>
                     </div>
@@ -208,7 +225,7 @@ export default function History() {
                         <div key={wk}>
                           <div className="flex items-center justify-between px-4 py-1.5 bg-muted/20">
                             <span className="text-[10px] text-muted-foreground">{wk}</span>
-                            <span className={`text-[10px] tabular-nums ${tabColors[activeTab].text}`}>
+                            <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
                               ₩{wkTotal.toLocaleString()}
                             </span>
                           </div>
@@ -233,7 +250,7 @@ export default function History() {
                   <div key={label} className="bg-card rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-                      <span className={`text-xs font-medium tabular-nums ${tabColors[activeTab].text}`}>
+                      <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                         ₩{groupTotal.toLocaleString()}
                       </span>
                     </div>
@@ -243,7 +260,7 @@ export default function History() {
                         <div key={mk}>
                           <div className="flex items-center justify-between px-4 py-1.5 bg-muted/20">
                             <span className="text-[10px] text-muted-foreground">{mk}</span>
-                            <span className={`text-[10px] tabular-nums ${tabColors[activeTab].text}`}>
+                            <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
                               ₩{mTotal.toLocaleString()}
                             </span>
                           </div>
@@ -260,7 +277,7 @@ export default function History() {
                 <div key={label} className="bg-card rounded-xl overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                     <span className="text-xs font-medium text-muted-foreground">{label}</span>
-                    <span className={`text-xs font-medium tabular-nums ${tabColors[activeTab].text}`}>
+                    <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                       ₩{groupTotal.toLocaleString()}
                     </span>
                   </div>
