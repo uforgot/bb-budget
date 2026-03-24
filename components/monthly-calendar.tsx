@@ -219,7 +219,10 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
           })}
         </div>
 
-        {/* Selected day detail */}
+      </div>
+      {/* Selected day detail — bg-background */}
+      <div className="bg-background pt-4 px-0 -mx-5">
+        <div className="px-5">
         {selectedDay !== null && (() => {
           const dayOfWeek = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'][new Date(year, month - 1, selectedDay).getDay()]
           const totalExpense = selectedData?.expense ?? 0
@@ -280,6 +283,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
             </div>
           )
         })()}
+        </div>
       </div>
     </div>
   )
