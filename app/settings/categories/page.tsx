@@ -129,8 +129,8 @@ export default function CategoriesSettings() {
               onClick={() => setEmojiPickerOpen(true)}
               className="w-28 h-28 bg-card rounded-2xl flex flex-col items-center justify-center gap-1 border border-border/50 relative"
             >
-              <span className="text-5xl">{getEmoji(editingParent)}</span>
-              <span className="text-[10px] text-muted-foreground mt-2">변경</span>
+              <span className="text-6xl">{getEmoji(editingParent)}</span>
+              <span className="text-[10px] text-muted-foreground mt-4">변경</span>
             </button>
           </div>
           <EmojiPicker
