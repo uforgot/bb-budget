@@ -394,7 +394,7 @@ export default function History() {
 
                 return (
                   <div className="mb-2">
-                    <p className="text-xs text-muted-foreground px-5 mb-2">이번 달 요약</p>
+
                     <div className="flex items-center justify-between px-5 py-2">
                       <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">수입</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
@@ -414,7 +414,7 @@ export default function History() {
                       <span className={`text-xs font-medium tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{cashBalance.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between px-5 py-1.5 pl-8">
-                      <span className="text-xs text-muted-foreground">저축</span>
+                      <span className="text-xs text-accent-mint">저축</span>
                       <span className="text-xs font-medium tabular-nums text-accent-mint">₩{totalSavingsAmt.toLocaleString()}</span>
                     </div>
                     <div className="border-t border-border mx-5 my-2" />
@@ -444,7 +444,7 @@ export default function History() {
                     <span className="text-sm font-semibold">{actualMonth}월 {weekNum}주 차</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium tabular-nums">₩{weekTotal.toLocaleString()}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? '' : '-rotate-90'}`}><path d="m6 9 6 6 6-6" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>
                     </div>
                   </div>
 
