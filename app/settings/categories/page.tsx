@@ -99,12 +99,18 @@ export default function CategoriesSettings() {
     }
   }
 
+  const [savingRoot, setSavingRoot] = useState(false)
   const handleAddRoot = async () => {
-    if (!newRootName.trim()) return
-    await addCategory(newRootName.trim(), type)
-    setNewRootName('')
-    setAddingRoot(false)
-    loadCategories()
+    if (!newRootName.trim() || savingRoot) return
+    setSavingRoot(true)
+    try {
+      await addCategory(newRootName.trim(), type)
+      setNewRootName('')
+      setAddingRoot(false)
+      await loadCategories()
+    } finally {
+      setSavingRoot(false)
+    }
   }
 
   // 편집 상세 페이지
