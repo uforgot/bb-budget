@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { getTransactions, deleteTransaction, type Transaction } from '@/lib/api'
+import { getTransactions, deleteTransaction, getCategories, type Transaction, type Category } from '@/lib/api'
 import { SwipeToDelete } from '@/components/swipe-to-delete'
 
 type TabType = '지출' | '수입' | '저축'
@@ -72,12 +72,15 @@ export default function History() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
 
   const loadData = useCallback(async () => {
     try {
-      // 선택된 필터 타입들 모두 가져오기
-      const types = Array.from(activeFilters).map(t => TAB_DB_MAP[t])
-      const results = await Promise.all(types.map(t => getTransactions({ type: t })))
+      const [cats, ...results] = await Promise.all([
+        getCategories(),
+        ...Array.from(activeFilters).map(t => getTransactions({ type: TAB_DB_MAP[t] })),
+      ])
+      setCategories(cats)
       setTransactions(results.flat().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
     } catch (e) {
       console.error('내역 로드 실패:', e)
@@ -135,8 +138,16 @@ export default function History() {
 
           {/* 카테고리 + 메모 */}
           <div className="flex-1 min-w-0">
-            <span className="text-sm">{catName}</span>
-            {desc && <p className="text-[10px] text-muted-foreground truncate mt-0.5">{desc}</p>}
+            <div className="flex items-center gap-2">
+              <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
+                {cat?.parent_id ? (() => {
+                  const allCats = categories
+                  const parent = allCats.find((c: any) => c.id === cat.parent_id)
+                  return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
+                })() : <span className="text-foreground">{catName}</span>}
+              </span>
+              {desc && <span className="text-[10px] text-muted-foreground truncate">{desc}</span>}
+            </div>
           </div>
 
           {/* 금액 */}
