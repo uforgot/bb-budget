@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react'
-import { List, useListRef } from 'react-window'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { getMonthlySummary, type Transaction } from '@/lib/api'
 
 // ─── Types ────────────────────────────────────────────────────
@@ -40,22 +39,9 @@ interface SelectedDay {
 // ─── Constants ────────────────────────────────────────────────
 
 const INITIAL_RANGE = 12
-const EXTEND_COUNT = 12
-const EDGE_THRESHOLD = 3
+
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
-const WEEK_ROW_H = 52
-const MONTH_HEADER_H = 8
-const MONTH_PAD = 8
 
-function getWeeksInMonth(year: number, month: number): number {
-  const firstDay = new Date(year, month, 1).getDay()
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
-  return Math.ceil((firstDay + daysInMonth) / 7)
-}
-
-function monthRowHeight(entry: MonthEntry): number {
-  return getWeeksInMonth(entry.year, entry.month) * WEEK_ROW_H + MONTH_HEADER_H + MONTH_PAD
-}
 
 function buildInitialMonths(anchor: Date): MonthEntry[] {
   const months: MonthEntry[] = []
@@ -167,48 +153,6 @@ function MonthGrid({
   )
 }
 
-// ─── MonthRow (for react-window) ──────────────────────────────
-
-interface RowExtraProps {
-  months: MonthEntry[]
-  focusedMonthIndex: number
-  dataCache: Map<string, CachedMonth>
-  selectedDay: SelectedDay | null
-  onDayClick: (year: number, month: number, day: number) => void
-}
-
-function MonthRow({
-  index,
-  style,
-  months,
-  focusedMonthIndex,
-  dataCache,
-  selectedDay,
-  onDayClick,
-}: {
-  index: number
-  style: React.CSSProperties
-} & RowExtraProps) {
-  const { year, month } = months[index]
-  const isFocused = index === focusedMonthIndex
-  const cached = dataCache.get(monthKey(year, month))
-
-  return (
-    <div
-      style={{ ...style, scrollSnapAlign: 'start' }}
-      className={`${isFocused ? 'opacity-100' : 'opacity-30'} transition-opacity duration-100`}
-    >
-      <MonthGrid
-        year={year}
-        month={month}
-        data={cached?.daily ?? {}}
-        selectedDay={selectedDay}
-        onDayClick={onDayClick}
-      />
-    </div>
-  )
-}
-
 // ─── Main Calendar Component ─────────────────────────────────
 
 export interface MonthlyCalendarProps {
@@ -232,13 +176,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
 
 
   const loadingMonthsRef = useRef<Set<string>>(new Set())
-  const listRef = useListRef(null)
-  const pendingPrependRef = useRef<number>(0)
-  const extendingRef = useRef(false)
-  // 달력 고정 높이: 6행 기준
-  const calendarHeight = 6 * WEEK_ROW_H + MONTH_HEADER_H + MONTH_PAD
-
-
+  const touchStartXRef = useRef<number | null>(null)
 
   // Load data for a specific month
   const loadMonthData = useCallback(async (year: number, month: number) => {
@@ -246,7 +184,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     if (loadingMonthsRef.current.has(key)) return
     loadingMonthsRef.current.add(key)
     try {
-      const summary = await getMonthlySummary(year, month + 1) // API uses 1-indexed month
+      const summary = await getMonthlySummary(year, month + 1)
       setDataCache(prev => {
         const next = new Map(prev)
         next.set(key, {
@@ -264,36 +202,6 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       loadingMonthsRef.current.delete(key)
     }
   }, [])
-
-  const [scrolledToCenter, setScrolledToCenter] = useState(false)
-
-  // Scroll to current month on mount
-  useEffect(() => {
-    if (scrolledToCenter) return
-    let attempts = 0
-    const tryScroll = () => {
-      if (listRef.current?.element) {
-        listRef.current.scrollToRow({ index: INITIAL_RANGE, align: 'start', behavior: 'auto' })
-        setScrolledToCenter(true)
-      } else if (attempts < 30) {
-        attempts++
-        setTimeout(tryScroll, 50)
-      }
-    }
-    setTimeout(tryScroll, 100)
-  }, [listRef, scrolledToCenter])
-
-  // After prepend: adjust scrollTop
-  useLayoutEffect(() => {
-    if (pendingPrependRef.current > 0) {
-      const el = listRef.current?.element
-      if (el) {
-        el.scrollTop += pendingPrependRef.current
-      }
-      pendingPrependRef.current = 0
-      extendingRef.current = false
-    }
-  }, [months, listRef])
 
   // Refresh data when refreshKey changes
   useEffect(() => {
@@ -316,65 +224,6 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       }
     }
   }, [focusedMonthIndex, months, dataCache, loadMonthData, onMonthChange])
-
-  const loadVisibleData = useCallback((startIdx: number, stopIdx: number) => {
-    for (let i = Math.max(0, startIdx - 1); i <= Math.min(months.length - 1, stopIdx + 1); i++) {
-      const entry = months[i]
-      const key = monthKey(entry.year, entry.month)
-      if (!dataCache.has(key)) {
-        loadMonthData(entry.year, entry.month)
-      }
-    }
-  }, [months, dataCache, loadMonthData])
-
-  const getRowHeight = useCallback(
-    (index: number) => monthRowHeight(months[index]),
-    [months]
-  )
-
-  const handleRowsRendered = useCallback(
-    (visibleRows: { startIndex: number; stopIndex: number }) => {
-      if (!scrolledToCenter) return // 초기 스크롤 완료 전에는 무시
-      const entry = months[visibleRows.startIndex]
-      if (entry) {
-        setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
-        setFocusedMonthIndex(visibleRows.startIndex)
-        const cached = dataCache.get(`${entry.year}-${entry.month}`)
-        onMonthChange?.(entry.year, entry.month + 1, cached?.income ?? 0, cached?.expense ?? 0)
-      }
-      loadVisibleData(visibleRows.startIndex, visibleRows.stopIndex)
-      if (extendingRef.current) return
-      if (visibleRows.stopIndex >= months.length - EDGE_THRESHOLD) {
-        extendingRef.current = true
-        setMonths(prev => {
-          const last = prev[prev.length - 1]
-          const newMonths: MonthEntry[] = []
-          for (let i = 1; i <= EXTEND_COUNT; i++) {
-            const d = new Date(last.year, last.month + i, 1)
-            newMonths.push({ year: d.getFullYear(), month: d.getMonth() })
-          }
-          extendingRef.current = false
-          return [...prev, ...newMonths]
-        })
-      }
-      if (visibleRows.startIndex <= EDGE_THRESHOLD) {
-        extendingRef.current = true
-        const first = months[0]
-        const newMonths: MonthEntry[] = []
-        let totalHeight = 0
-        for (let i = EXTEND_COUNT; i >= 1; i--) {
-          const d = new Date(first.year, first.month - i, 1)
-          const entry = { year: d.getFullYear(), month: d.getMonth() }
-          newMonths.push(entry)
-          totalHeight += monthRowHeight(entry)
-        }
-        pendingPrependRef.current = totalHeight
-        setFocusedMonthIndex(prev => prev + EXTEND_COUNT)
-        setMonths(prev => [...newMonths, ...prev])
-      }
-    },
-    [months, onMonthChange, loadVisibleData, dataCache, scrolledToCenter]
-  )
 
   const handleDayClick = useCallback((year: number, month: number, day: number) => {
     setSelectedDay(prev => {
@@ -424,25 +273,40 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         ))}
       </div>
 
-      {/* Virtual scroll calendar (fixed height = current month) */}
-      <div style={{ height: calendarHeight, overflowY: 'auto', overflowX: 'hidden' }} className="scrollbar-hide">
-        <List
-          listRef={listRef}
-          rowCount={months.length}
-          rowHeight={getRowHeight}
-          rowComponent={MonthRow as any}
-          rowProps={{
-            months,
-            focusedMonthIndex,
-            dataCache,
-            selectedDay,
-            onDayClick: handleDayClick,
-          } as RowExtraProps}
-          overscanCount={2}
-          onRowsRendered={handleRowsRendered}
-          className="scrollbar-hide"
-          style={{ height: calendarHeight }}
-        />
+      {/* Single month grid with swipe */}
+      <div
+        onTouchStart={(e) => { touchStartXRef.current = e.touches[0].clientX }}
+        onTouchEnd={(e) => {
+          if (touchStartXRef.current === null) return
+          const diff = e.changedTouches[0].clientX - touchStartXRef.current
+          touchStartXRef.current = null
+          if (Math.abs(diff) > 50) {
+            const dir = diff > 0 ? -1 : 1
+            setFocusedMonthIndex(prev => {
+              const next = prev + dir
+              if (next < 0 || next >= months.length) return prev
+              const entry = months[next]
+              setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
+              const cached = dataCache.get(monthKey(entry.year, entry.month))
+              onMonthChange?.(entry.year, entry.month + 1, cached?.income ?? 0, cached?.expense ?? 0)
+              return next
+            })
+          }
+        }}
+      >
+        {(() => {
+          const entry = months[focusedMonthIndex]
+          const cached = dataCache.get(monthKey(entry.year, entry.month))
+          return (
+            <MonthGrid
+              year={entry.year}
+              month={entry.month}
+              data={cached?.daily ?? {}}
+              selectedDay={selectedDay}
+              onDayClick={handleDayClick}
+            />
+          )
+        })()}
       </div>
 
       {/* Selected day detail */}

@@ -63,7 +63,7 @@ export default function Home() {
   const cashBalance = totalAssets - allTimeSavings
 
   return (
-    <div className="min-h-dvh bg-background pb-32" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div className="min-h-dvh bg-background pb-32">
       <div className="px-5">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="가용 현금" />
 
