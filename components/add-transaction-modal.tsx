@@ -142,9 +142,9 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   }
 
   const typeColors: Record<TransactionType, { active: string; inactive: string }> = {
-    '지출': { active: 'bg-accent-coral text-white', inactive: 'bg-muted text-muted-foreground' },
-    '수입': { active: 'bg-accent-blue text-white', inactive: 'bg-muted text-muted-foreground' },
-    '저축': { active: 'bg-accent-mint text-white', inactive: 'bg-muted text-muted-foreground' },
+    '지출': { active: 'bg-accent-coral text-white', inactive: 'bg-surface text-muted-foreground' },
+    '수입': { active: 'bg-accent-blue text-white', inactive: 'bg-surface text-muted-foreground' },
+    '저축': { active: 'bg-accent-mint text-white', inactive: 'bg-surface text-muted-foreground' },
   }
 
   const keypadKeys = [
@@ -209,7 +209,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setType(t)
                     setCategoryPickerOpen(true)
                   }}
-                  className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex-1 py-3.5 rounded-xl text-sm font-medium transition-colors ${
                     type === t ? typeColors[t].active : typeColors[t].inactive
                   }`}
                 >
@@ -220,7 +220,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             {categoryId && (
               <button
                 onClick={() => setCategoryPickerOpen(true)}
-                className="w-full bg-card rounded-lg px-3 py-2.5 text-sm text-left flex items-center justify-between"
+                className="w-full bg-surface rounded-xl px-3 py-3.5 text-sm text-left flex items-center justify-between"
               >
                 <span>{categoryLabel}</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
@@ -251,7 +251,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onBlur={() => setKeypadActive(true)}
               onFocus={() => setKeypadActive(false)}
               style={{ fontSize: '16px' }}
-              className="w-full bg-card rounded-lg px-3 py-2.5"
+              className="w-full bg-surface rounded-xl px-3 py-3.5"
             />
           </div>
 
@@ -260,7 +260,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className="flex gap-3">
               <button
                 onClick={handleSave}
-                className="flex-1 bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
+                className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold"
               >
                 {saving ? '저장 중...' : '수정하기'}
               </button>
@@ -273,7 +273,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   setEditDate(null)
                   onClose()
                 }}
-                className="flex-1 bg-accent-coral/10 text-accent-coral rounded-lg py-3 text-sm font-semibold"
+                className="flex-1 bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
               >
                 삭제하기
               </button>
@@ -281,7 +281,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           ) : (
             <button
               onClick={handleSave}
-              className="w-full bg-primary text-primary-foreground rounded-lg py-3 text-sm font-semibold"
+              className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold"
             >
               {saving ? '저장 중...' : '저장하기'}
             </button>
