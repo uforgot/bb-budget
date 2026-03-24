@@ -21,6 +21,8 @@ interface MonthlyCalendarProps {
   year: number
   month: number // 1-indexed
   data?: Record<number, DayData>
+  monthlyIncome?: number
+  monthlyExpense?: number
   onDaySelect?: (day: number) => void
   onMonthChange?: (year: number, month: number) => void
   onItemClick?: (day: number, itemIndex: number) => void
@@ -42,7 +44,7 @@ function formatAmount(amount: number): string {
   return amount.toLocaleString()
 }
 
-export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, onDaySelect, onMonthChange, onItemClick }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, monthlyIncome = 0, monthlyExpense = 0, onDaySelect, onMonthChange, onItemClick }: MonthlyCalendarProps) {
   const today = new Date()
   const [year, setYear] = useState(initYear)
   const [month, setMonth] = useState(initMonth)
@@ -123,6 +125,20 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
             </svg>
           </button>
         </div>
+
+        {/* 금월 수입/지출 */}
+        {(monthlyIncome > 0 || monthlyExpense > 0) && (
+          <div className="bg-surface rounded-[18px] mb-4">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+              <span className="text-sm text-muted-foreground">금월 수입</span>
+              <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthlyIncome.toLocaleString()}</span>
+            </div>
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm text-muted-foreground">금월 지출</span>
+              <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthlyExpense.toLocaleString()}</span>
+            </div>
+          </div>
+        )}
 
         {/* Weekday header */}
         <div className="grid grid-cols-7 pb-2 mb-2 border-b border-border">

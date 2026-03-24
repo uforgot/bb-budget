@@ -99,15 +99,8 @@ export default function Home() {
       <div className="px-5">
         <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
 
-        <div className="bg-surface rounded-[18px] mb-6">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-muted-foreground">금월 수입</span>
-            <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{formatCompact(totalIncome)}</span>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-muted-foreground">금월 지출</span>
-            <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{formatCompact(totalExpense)}</span>
-          </div>
+        {/* 자산 구성 */}
+        <div className="bg-surface rounded-[18px] mb-4">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <span className="text-sm text-muted-foreground">운용 자산</span>
             <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{formatCompact(allTimeSavings)}</span>
@@ -122,6 +115,8 @@ export default function Home() {
           year={calYear}
           month={calMonth}
           data={dailyData}
+          monthlyIncome={totalIncome}
+          monthlyExpense={totalExpense}
           onDaySelect={(day) => setSelectedDay(day)}
           onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); setSelectedDay(1) }}
           onItemClick={(day, itemIndex) => {
