@@ -402,7 +402,12 @@ export default function History() {
               {(() => {
                 const cumulativeIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
                 const cumulativeExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const balance = cumulativeIncome - cumulativeExpense
+                const totalAssets = cumulativeIncome - cumulativeExpense
+                const monthEnd = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`
+                const activeSavings = savingsTxs.filter(t => t.date <= monthEnd)
+                const totalSavingsAmt = activeSavings.reduce((s, t) => s + t.amount, 0)
+                const cashBalance = totalAssets - totalSavingsAmt
+
                 return (
                   <div className="mb-2">
                     <p className="text-xs text-muted-foreground px-5 mb-2">이번 달 요약</p>
@@ -415,22 +420,19 @@ export default function History() {
                       <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">잔고</span>
-                      <span className={`text-sm font-bold tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
+                      <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">자산</span>
+                      <span className="text-sm font-bold tabular-nums">₩{totalAssets.toLocaleString()}</span>
                     </div>
-                    <div className="border-t border-border mx-5 my-2" />
-                  </div>
-                )
-              })()}
-
-              {/* 활성 저축 (전체 기간 — 해당 월 이전에 기록된 것 포함) */}
-              {(() => {
-                const monthEnd = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`
-                const activeSavings = savingsTxs.filter(t => t.date <= monthEnd)
-                if (activeSavings.length === 0) return null
-                return (
-                  <div className="mb-2">
-                    <p className="text-xs text-muted-foreground px-5 mb-2">활성 저축</p>
+                    {/* 자산 하위: 잔고 + 저축 */}
+                    <div className="flex items-center justify-between px-5 py-1.5 pl-10">
+                      <span className="text-xs text-muted-foreground">잔고</span>
+                      <span className={`text-xs font-medium tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{cashBalance.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-5 py-1.5 pl-10">
+                      <span className="text-xs text-muted-foreground">저축</span>
+                      <span className="text-xs font-medium tabular-nums text-accent-mint">₩{totalSavingsAmt.toLocaleString()}</span>
+                    </div>
+                    {/* 저축 상세 */}
                     {activeSavings.map(tx => {
                       const cat = tx.category as any
                       const catName = cat?.name || '미분류'
@@ -438,13 +440,10 @@ export default function History() {
                         <div
                           key={tx.id}
                           onClick={() => { setEditTx(tx); setModalOpen(true) }}
-                          className="flex items-center justify-between px-5 py-2 cursor-pointer active:bg-muted/30"
+                          className="flex items-center justify-between px-5 py-1.5 pl-14 cursor-pointer active:bg-muted/30"
                         >
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
-                            {tx.description && <span className="text-[10px] text-muted-foreground">{tx.description}</span>}
-                          </div>
-                          <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
+                          <span className="text-xs bg-accent-mint/20 text-accent-mint px-2.5 py-0.5 rounded-full">{catName}</span>
+                          <span className="text-xs font-medium tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
                         </div>
                       )
                     })}
