@@ -116,7 +116,7 @@ export default function CategoriesSettings() {
               className="w-28 h-28 bg-card rounded-2xl flex flex-col items-center justify-center gap-1 border border-border/50 relative"
             >
               <span className="text-5xl">{getEmoji(editingParent)}</span>
-              <span className="text-[10px] text-muted-foreground">변경</span>
+              <span className="text-[10px] text-muted-foreground mt-2">변경</span>
             </button>
           </div>
           <EmojiPicker
@@ -143,9 +143,9 @@ export default function CategoriesSettings() {
           </div>
 
           {/* 세부 카테고리 */}
-          <div className="flex gap-3 py-4">
-            <span className="text-xs text-muted-foreground w-16 flex-shrink-0 pt-1">세부 카테고리</span>
-            <div className="flex-1">
+          <div className="py-4">
+            <span className="text-xs text-muted-foreground mb-2 block">세부 카테고리</span>
+            <div>
               <div className="flex flex-wrap gap-2">
                 {children.map((child) => (
                   <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
