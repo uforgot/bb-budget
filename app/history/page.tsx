@@ -266,7 +266,7 @@ export default function History() {
                               {wkTotal >= 0 ? "+" : ""}₩{Math.abs(wkTotal).toLocaleString()}
                             </span>
                           </div>
-                          {wkItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; const prevDate = lastRenderedDate.current; const showDivider = i > 0 && prevDate !== tx.date; return (<div key={tx.id}>{showDivider && <div className="border-t border-border/30 mx-5 my-1" />}{renderRow(tx)}</div>) })}
+                          {wkItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; const prevDate = lastRenderedDate.current; const showDivider = i > 0 && prevDate !== tx.date; return (<div key={tx.id}>{showDivider && <div className="border-t border-border mx-5 my-2" />}{renderRow(tx)}</div>) })}
                         </div>
                       )
                     })}
@@ -324,7 +324,7 @@ export default function History() {
                     const showDivider = i > 0 && prevDate !== tx.date
                     return (
                       <div key={tx.id}>
-                        {showDivider && <div className="border-t border-border/30 mx-5 my-1" />}
+                        {showDivider && <div className="border-t border-border mx-5 my-2" />}
                         {renderRow(tx)}
                       </div>
                     )
