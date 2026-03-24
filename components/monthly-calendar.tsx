@@ -129,11 +129,11 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
         {/* 금월 수입/지출 */}
         {(monthlyIncome > 0 || monthlyExpense > 0) && (
           <div className="mb-4">
-            <div className="flex items-center justify-between px-2 py-1.5">
+            <div className="flex items-center justify-between px-5 py-2">
               <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">금월 수입</span>
               <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthlyIncome.toLocaleString()}</span>
             </div>
-            <div className="flex items-center justify-between px-2 py-1.5">
+            <div className="flex items-center justify-between px-5 py-2">
               <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">금월 지출</span>
               <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthlyExpense.toLocaleString()}</span>
             </div>
