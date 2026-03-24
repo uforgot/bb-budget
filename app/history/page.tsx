@@ -165,7 +165,7 @@ export default function History() {
         </div>
 
         {/* Filter chips: 지출 / 수입 / 저축 */}
-        <div className="flex items-center gap-2 py-3">
+        <div className="flex items-center justify-end gap-2 py-3">
           {(['지출', '수입', '저축'] as TabType[]).map((tab) => {
             const isActive = activeFilters.has(tab)
             const chipColors: Record<TabType, string> = {
