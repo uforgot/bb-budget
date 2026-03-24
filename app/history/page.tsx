@@ -336,7 +336,10 @@ export default function History() {
             const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
             const income = weekTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
             const expense = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-            const savings = weekTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+            // 저축: 해당 주 끝일까지의 누적
+            const weekEndDay = Math.min(weekNum * 7, daysInMonth)
+            const weekEndDate = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(weekEndDay).padStart(2,'0')}`
+            const savings = transactions.filter(t => t.type === 'savings' && t.date <= weekEndDate).reduce((s, t) => s + t.amount, 0)
             return { weekNum, income, expense, savings }
           })
 
@@ -419,7 +422,9 @@ export default function History() {
             const monthTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === month)
             const income = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
             const expense = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-            const savings = monthTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+            // 저축: 해당 월 끝까지의 누적
+            const monthEnd = `${targetYear}-${String(month).padStart(2,'0')}-${String(new Date(targetYear, month, 0).getDate()).padStart(2,'0')}`
+            const savings = transactions.filter(t => t.type === 'savings' && t.date <= monthEnd).reduce((s, t) => s + t.amount, 0)
             return { month, income, expense, savings }
           })
 
