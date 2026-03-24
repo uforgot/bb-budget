@@ -210,6 +210,53 @@ export default function History() {
 
 
 
+        {/* 뷰별 상단 버튼 */}
+        {viewMode === 'weekly' && (
+          <div className="flex items-center justify-between py-3">
+            <button
+              onClick={() => { setViewMode('monthly'); setCameFromMonthly(false) }}
+              className="text-xs text-accent-blue flex items-center gap-1"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+              월간 전체 보기
+            </button>
+            <div className="flex items-center gap-2">
+              {(['수입', '지출', '저축'] as TabType[]).map((tab) => {
+                const isActive = activeFilters.has(tab)
+                const chipColors: Record<TabType, string> = {
+                  '지출': isActive ? 'bg-accent-coral/20 text-accent-coral border-accent-coral/40' : 'bg-muted text-muted-foreground border-transparent',
+                  '수입': isActive ? 'bg-accent-blue/20 text-accent-blue border-accent-blue/40' : 'bg-muted text-muted-foreground border-transparent',
+                  '저축': isActive ? 'bg-accent-mint/20 text-accent-mint border-accent-mint/40' : 'bg-muted text-muted-foreground border-transparent',
+                }
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      const next = new Set(activeFilters)
+                      if (next.has(tab)) { if (next.size > 1) next.delete(tab) } else { next.add(tab) }
+                      setActiveFilters(next)
+                    }}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${chipColors[tab]}`}
+                  >
+                    {tab}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+        {viewMode === 'monthly' && (
+          <div className="py-3">
+            <button
+              onClick={() => { setViewMode('yearly'); setCameFromYearly(false) }}
+              className="text-xs text-accent-blue flex items-center gap-1"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+              연간 전체 보기
+            </button>
+          </div>
+        )}
+
         {/* Grouped list */}
         {viewMode === 'weekly' ? (() => {
           const { start } = getWeekRange(weekOffset)
@@ -233,40 +280,6 @@ export default function History() {
                 <button onClick={() => setWeekOffset(w => w + 1)} className="text-muted-foreground p-1 flex-shrink-0">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
-              </div>
-
-              {/* 월간 전체 보기 + 필터 칩 */}
-              <div className="flex items-center justify-between py-2 px-2">
-                <button
-                  onClick={() => { setViewMode('monthly'); setCameFromMonthly(false) }}
-                  className="text-xs text-accent-blue flex items-center gap-1"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                  월간 전체 보기
-                </button>
-                <div className="flex items-center gap-2">
-                  {(['수입', '지출', '저축'] as TabType[]).map((tab) => {
-                    const isActive = activeFilters.has(tab)
-                    const chipColors: Record<TabType, string> = {
-                      '지출': isActive ? 'bg-accent-coral/20 text-accent-coral border-accent-coral/40' : 'bg-muted text-muted-foreground border-transparent',
-                      '수입': isActive ? 'bg-accent-blue/20 text-accent-blue border-accent-blue/40' : 'bg-muted text-muted-foreground border-transparent',
-                      '저축': isActive ? 'bg-accent-mint/20 text-accent-mint border-accent-mint/40' : 'bg-muted text-muted-foreground border-transparent',
-                    }
-                    return (
-                      <button
-                        key={tab}
-                        onClick={() => {
-                          const next = new Set(activeFilters)
-                          if (next.has(tab)) { if (next.size > 1) next.delete(tab) } else { next.add(tab) }
-                          setActiveFilters(next)
-                        }}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${chipColors[tab]}`}
-                      >
-                        {tab}
-                      </button>
-                    )
-                  })}
-                </div>
               </div>
 
               {filteredTransactions.length === 0 ? (
@@ -330,18 +343,6 @@ export default function History() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
               </div>
-
-              {/* ← 연간 전체 보기 */}
-              <button
-                onClick={() => {
-                  setViewMode('yearly')
-                  setCameFromYearly(false)
-                }}
-                className="text-xs text-accent-blue flex items-center gap-1 px-2 py-1"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                연간 전체 보기
-              </button>
 
               {/* 주차별 요약 */}
               {weekSummaries.map(({ weekNum, income, expense, savings }) => (
