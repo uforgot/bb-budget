@@ -115,7 +115,7 @@ export default function History() {
       >
         <div
           onClick={() => { setEditTx(tx); setModalOpen(true) }}
-          className="flex items-center gap-3 px-4 py-3 border-t border-border/30 cursor-pointer active:bg-muted/30"
+          className="flex items-center gap-3 px-4 py-3 border-t border-border/30 cursor-pointer active:bg-muted/30 bg-surface"
         >
           {/* 날짜/요일 */}
           <span className="text-xs text-muted-foreground tabular-nums w-14 flex-shrink-0">
