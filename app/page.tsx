@@ -82,7 +82,7 @@ export default function Home() {
     }
   }, [loadData])
 
-  const totalAssets = allTimeIncome - allTimeExpense + allTimeSavings
+  const totalAssets = allTimeIncome - allTimeExpense
 
   const summary = [
     { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-accent-blue' },
