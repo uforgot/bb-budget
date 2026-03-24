@@ -20,7 +20,7 @@ function getWeekday(dateStr: string) {
 function getWeekLabel(dateStr: string) {
   const d = new Date(dateStr)
   const weekNum = Math.ceil(d.getDate() / 7)
-  return `${d.getMonth() + 1}월 ${weekNum}주차`
+  return `${d.getMonth() + 1}월 ${weekNum}주 차`
 }
 
 function getMonthLabel(dateStr: string) {
@@ -243,7 +243,7 @@ export default function History() {
                 const byWeek: Record<string, Transaction[]> = {}
                 for (const item of items) {
                   const weekNum = Math.ceil(new Date(item.date).getDate() / 7)
-                  const wk = `${weekNum}주차`
+                  const wk = `${weekNum}주 차`
                   if (!byWeek[wk]) byWeek[wk] = []
                   byWeek[wk].push(item)
                 }
@@ -251,8 +251,8 @@ export default function History() {
                 return (
                   <div key={label} className="">
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-                      <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
+                      <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                      <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
                         {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                       </span>
                     </div>
@@ -286,8 +286,8 @@ export default function History() {
                 return (
                   <div key={label} className="">
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-                      <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
+                      <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                      <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
                         {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                       </span>
                     </div>
@@ -313,8 +313,8 @@ export default function History() {
               return (
                 <div key={label} className="">
                   <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                    <span className="text-xs font-medium text-muted-foreground">{label}</span>
-                    <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
+                    <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                    <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
                       {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                     </span>
                   </div>
