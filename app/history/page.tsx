@@ -322,13 +322,21 @@ export default function History() {
 
               {/* 주차별 요약 */}
               {weekSummaries.map(({ weekNum, income, expense, savings }) => (
-                <div key={weekNum} className="px-5 py-2">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">{actualMonth}월 {weekNum}주 차</p>
-                  <div className="flex gap-4 text-xs tabular-nums">
-                    {income > 0 && <span className="text-accent-blue">수입 ₩{income.toLocaleString()}</span>}
-                    {expense > 0 && <span className="text-accent-coral">지출 ₩{expense.toLocaleString()}</span>}
-                    {savings > 0 && <span className="text-accent-mint">저축 ₩{savings.toLocaleString()}</span>}
-                    {income === 0 && expense === 0 && savings === 0 && <span className="text-muted-foreground">내역 없음</span>}
+                <div key={weekNum} className="bg-surface rounded-[14px] px-4 py-3">
+                  <p className="text-xs font-semibold text-foreground mb-2">{actualMonth}월 {weekNum}주 차</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground mb-0.5">수입</p>
+                      <p className="text-xs tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground mb-0.5">지출</p>
+                      <p className="text-xs tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground mb-0.5">저축</p>
+                      <p className="text-xs tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
               ))}
