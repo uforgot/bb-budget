@@ -7,20 +7,31 @@ import { createClient } from '@/lib/supabase'
 
 type TypeTab = 'expense' | 'income' | 'savings'
 const TYPE_LABELS: { key: TypeTab; label: string }[] = [
-  { key: 'expense', label: '지출' },
   { key: 'income', label: '수입' },
+  { key: 'expense', label: '지출' },
   { key: 'savings', label: '저축' },
 ]
+
+const EMOJI_MAP: Record<string, string> = {
+  '식비': '🍽️', '생활': '🏠', '주거': '🏢', '교통': '🚗', '쇼핑': '🛍️',
+  '건강': '💊', '여가': '🎬', '자녀': '👶', '반려동물': '🐾', '경조사': '💐',
+  '보험': '🛡️', '세금': '📋', '월급': '💰', '상여금': '🎁', '부수입': '💵',
+  '예적금': '🏦', '투자': '📈',
+}
 
 export default function CategoriesSettings() {
   const router = useRouter()
   const [type, setType] = useState<TypeTab>('expense')
   const [categories, setCategories] = useState<Category[]>([])
-  const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editValue, setEditValue] = useState('')
-  const [adding, setAdding] = useState<string | null>(null) // null=not adding, 'root'=1depth, parentId=2depth
-  const [newCat, setNewCat] = useState('')
+  const [editMode, setEditMode] = useState(false)
+  const [editingParent, setEditingParent] = useState<Category | null>(null)
+  const [editName, setEditName] = useState('')
+  const [newSubCat, setNewSubCat] = useState('')
+  const [addingSubCat, setAddingSubCat] = useState(false)
+  const [addingRoot, setAddingRoot] = useState(false)
+  const [newRootName, setNewRootName] = useState('')
+
+  const supabase = createClient() as any
 
   const loadCategories = async () => {
     const cats = await getCategories(type)
@@ -29,81 +40,150 @@ export default function CategoriesSettings() {
 
   useEffect(() => {
     loadCategories()
-    setExpandedId(null)
+    setEditingParent(null)
+    setEditMode(false)
   }, [type])
 
   const parents = categories.filter(c => !c.parent_id).sort((a, b) => a.sort_order - b.sort_order)
   const childrenOf = (parentId: string) =>
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
 
-  const supabase = createClient() as any
-
-  const handleRename = async (id: string) => {
-    const trimmed = editValue.trim()
-    if (!trimmed) return
-    await supabase.from('categories').update({ name: trimmed }).eq('id', id)
-    setEditingId(null)
-    setEditValue('')
-    loadCategories()
-  }
-
-  const handleDelete = async (id: string) => {
-    // 자식도 삭제
+  const handleDeleteParent = async (id: string) => {
     await supabase.from('categories').delete().eq('parent_id', id)
     await supabase.from('categories').delete().eq('id', id)
     loadCategories()
   }
 
-  const handleAdd = async (parentId: string | null) => {
-    const trimmed = newCat.trim()
-    if (!trimmed) return
-    await addCategory(trimmed, type)
-    // parent_id 설정이 필요하면 업데이트
-    if (parentId) {
-      const allCats = await getCategories(type)
-      const newOne = allCats.find(c => c.name === trimmed && !c.parent_id)
-      if (newOne) {
-        await supabase.from('categories').update({ parent_id: parentId }).eq('id', newOne.id)
-      }
-    }
-    setNewCat('')
-    setAdding(null)
+  const handleDeleteChild = async (id: string) => {
+    await supabase.from('categories').delete().eq('id', id)
     loadCategories()
   }
 
-  const renderEditRow = (id: string) => (
-    <div className="flex items-center gap-2 px-4 py-2">
-      <input
-        type="text"
-        value={editValue}
-        onChange={(e) => setEditValue(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleRename(id)}
-        autoFocus
-        style={{ fontSize: '16px' }}
-        className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5"
-      />
-      <button onClick={() => handleRename(id)} className="text-sm text-accent-blue font-medium">저장</button>
-      <button onClick={() => { setEditingId(null); setEditValue('') }} className="text-sm text-muted-foreground">취소</button>
-    </div>
-  )
+  const handleRenameSave = async () => {
+    if (!editingParent || !editName.trim()) return
+    await supabase.from('categories').update({ name: editName.trim() }).eq('id', editingParent.id)
+    setEditingParent({ ...editingParent, name: editName.trim() })
+    loadCategories()
+  }
 
-  const renderAddRow = (parentId: string | null) => (
-    <div className="flex items-center gap-2 px-4 py-2">
-      <input
-        type="text"
-        placeholder="카테고리명"
-        value={newCat}
-        onChange={(e) => setNewCat(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleAdd(parentId)}
-        autoFocus
-        style={{ fontSize: '16px' }}
-        className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5"
-      />
-      <button onClick={() => handleAdd(parentId)} className="text-sm text-accent-blue font-medium">추가</button>
-      <button onClick={() => { setAdding(null); setNewCat('') }} className="text-sm text-muted-foreground">취소</button>
-    </div>
-  )
+  const handleAddSubCat = async () => {
+    if (!editingParent || !newSubCat.trim()) return
+    await supabase.from('categories').insert({
+      name: newSubCat.trim(),
+      type,
+      parent_id: editingParent.id,
+      sort_order: childrenOf(editingParent.id).length + 1,
+    })
+    setNewSubCat('')
+    setAddingSubCat(false)
+    loadCategories()
+  }
 
+  const handleAddRoot = async () => {
+    if (!newRootName.trim()) return
+    await addCategory(newRootName.trim(), type)
+    setNewRootName('')
+    setAddingRoot(false)
+    loadCategories()
+  }
+
+  // 편집 상세 페이지
+  if (editingParent) {
+    const children = childrenOf(editingParent.id)
+    return (
+      <div className="min-h-dvh bg-background">
+        <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 border-b border-border">
+          <button onClick={() => { setEditingParent(null); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <h1 className="text-[17px] font-semibold">카테고리 편집</h1>
+          <button onClick={() => { setEditingParent(null); loadCategories() }} className="text-sm text-accent-blue font-medium">완료</button>
+        </header>
+
+        <div className="max-w-lg mx-auto px-5 pt-8">
+          {/* 이모지 */}
+          <div className="flex justify-center mb-8">
+            <div className="w-28 h-28 bg-card rounded-2xl flex flex-col items-center justify-center gap-2 border border-border/50">
+              <span className="text-5xl">{EMOJI_MAP[editingParent.name] || '📁'}</span>
+            </div>
+          </div>
+
+          {/* 카테고리명 */}
+          <div className="flex items-center gap-3 py-4 border-b border-border">
+            <span className="text-xs text-muted-foreground w-16 flex-shrink-0">카테고리명</span>
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              onBlur={handleRenameSave}
+              style={{ fontSize: '16px' }}
+              className="flex-1 bg-transparent outline-none"
+            />
+          </div>
+
+          {/* 세부 카테고리 */}
+          <div className="flex gap-3 py-4">
+            <span className="text-xs text-muted-foreground w-16 flex-shrink-0 pt-1">세부 카테고리</span>
+            <div className="flex-1">
+              <div className="flex flex-wrap gap-2">
+                {children.map((child) => (
+                  <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
+                    {child.name}
+                    <button onClick={() => handleDeleteChild(child.id)} className="text-muted-foreground hover:text-foreground">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+
+                {/* 추가 */}
+                {addingSubCat ? (
+                  <span className="inline-flex items-center gap-1">
+                    <input
+                      type="text"
+                      value={newSubCat}
+                      onChange={(e) => setNewSubCat(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddSubCat()}
+                      autoFocus
+                      placeholder="이름"
+                      style={{ fontSize: '14px' }}
+                      className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
+                    />
+                    <button onClick={handleAddSubCat} className="text-xs text-accent-blue">확인</button>
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setAddingSubCat(true)}
+                    className="inline-flex items-center bg-muted px-3 py-1.5 rounded-full text-sm text-muted-foreground"
+                  >
+                    추가
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 삭제 */}
+          <div className="mt-10">
+            <button
+              onClick={async () => {
+                await handleDeleteParent(editingParent.id)
+                setEditingParent(null)
+              }}
+              className="w-full py-3 text-accent-coral text-sm font-medium rounded-xl bg-accent-coral/10"
+            >
+              카테고리 삭제
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 목록 페이지
   return (
     <div className="min-h-dvh bg-background">
       <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 border-b border-border">
@@ -116,15 +196,15 @@ export default function CategoriesSettings() {
         <div className="w-8" />
       </header>
 
-      <div className="max-w-lg mx-auto px-4">
-        {/* Type tabs */}
-        <div className="flex gap-2 mt-4 mb-4">
+      <div className="max-w-lg mx-auto px-5">
+        {/* Segment control */}
+        <div className="flex bg-muted rounded-xl p-1 mt-4 mb-6">
           {TYPE_LABELS.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setType(key)}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-                type === key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                type === key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
               }`}
             >
               {label}
@@ -132,95 +212,53 @@ export default function CategoriesSettings() {
           ))}
         </div>
 
-        {/* Category list */}
-        {parents.map((parent) => {
-          const children = childrenOf(parent.id)
-          const isExpanded = expandedId === parent.id
+        {/* 4-column grid */}
+        <div className="grid grid-cols-4 gap-y-5 gap-x-2">
+          {parents.map((parent) => {
+            const children = childrenOf(parent.id)
+            return (
+              <button
+                key={parent.id}
+                onClick={() => {
+                  setEditingParent(parent)
+                  setEditName(parent.name)
+                }}
+                className="flex flex-col items-center gap-1.5"
+              >
+                <span className="text-3xl">{EMOJI_MAP[parent.name] || '📁'}</span>
+                <span className="text-xs font-medium">{parent.name}</span>
+                <span className="text-[10px] text-muted-foreground">소분류 {children.length}개</span>
+              </button>
+            )
+          })}
+        </div>
 
-          return (
-            <div key={parent.id} className="mb-2">
-              {/* 1depth */}
-              <div className="bg-card rounded-xl overflow-hidden">
-                {editingId === parent.id ? (
-                  renderEditRow(parent.id)
-                ) : (
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <button
-                      onClick={() => setExpandedId(isExpanded ? null : parent.id)}
-                      className="flex items-center gap-2 flex-1"
-                    >
-                      <span className="text-[15px]">{parent.name}</span>
-                      {children.length > 0 && (
-                        <span className="text-[11px] text-muted-foreground">({children.length})</span>
-                      )}
-                      {children.length > 0 && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-                          <path d="m6 9 6 6 6-6" />
-                        </svg>
-                      )}
-                    </button>
-                    <div className="flex items-center gap-3">
-                      <button onClick={() => { setEditingId(parent.id); setEditValue(parent.name) }} className="text-xs text-accent-blue">수정</button>
-                      <button onClick={() => handleDelete(parent.id)} className="text-xs text-accent-coral">삭제</button>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2depth */}
-                {isExpanded && (
-                  <div className="bg-muted/30">
-                    {children.map((child) => (
-                      <div key={child.id}>
-                        {editingId === child.id ? (
-                          renderEditRow(child.id)
-                        ) : (
-                          <div className="flex items-center justify-between pl-8 pr-4 py-2.5 border-t border-border/30">
-                            <span className="text-sm">{child.name}</span>
-                            <div className="flex items-center gap-3">
-                              <button onClick={() => { setEditingId(child.id); setEditValue(child.name) }} className="text-xs text-accent-blue">수정</button>
-                              <button onClick={() => handleDelete(child.id)} className="text-xs text-accent-coral">삭제</button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-
-                    {/* 2depth 추가 */}
-                    {adding === parent.id ? (
-                      renderAddRow(parent.id)
-                    ) : (
-                      <button
-                        onClick={() => setAdding(parent.id)}
-                        className="w-full pl-8 pr-4 py-2.5 border-t border-border/30 text-xs text-muted-foreground text-left"
-                      >
-                        + 하위 카테고리 추가
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )
-        })}
-
-        {/* 1depth 추가 */}
-        <div className="mt-3">
-          {adding === 'root' ? (
-            <div className="bg-card rounded-xl p-3">
-              {renderAddRow(null)}
+        {/* 하단 버튼 */}
+        <div className="flex gap-3 mt-8 pb-10">
+          {addingRoot ? (
+            <div className="flex items-center gap-2 flex-1">
+              <input
+                type="text"
+                placeholder="카테고리명"
+                value={newRootName}
+                onChange={(e) => setNewRootName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddRoot()}
+                autoFocus
+                style={{ fontSize: '16px' }}
+                className="flex-1 bg-card border border-border rounded-xl px-4 py-3"
+              />
+              <button onClick={handleAddRoot} className="px-4 py-3 bg-accent-blue text-white rounded-xl text-sm font-medium">추가</button>
+              <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="text-sm text-muted-foreground">취소</button>
             </div>
           ) : (
-            <button
-              onClick={() => setAdding('root')}
-              className="w-full bg-card rounded-xl px-4 py-3 flex items-center gap-3 text-sm text-muted-foreground"
-            >
-              <span className="size-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14" /><path d="M5 12h14" />
-                </svg>
-              </span>
-              카테고리 추가
-            </button>
+            <>
+              <button
+                onClick={() => setAddingRoot(true)}
+                className="flex-1 py-3 rounded-xl border border-border text-sm font-medium text-foreground"
+              >
+                추가
+              </button>
+            </>
           )}
         </div>
       </div>
