@@ -413,15 +413,41 @@ export default function History() {
                 </div>
               </div>
 
+              {/* 활성 저축 (전체 기간 — 해당 월 이전에 기록된 것 포함) */}
+              {(() => {
+                const monthEnd = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`
+                const activeSavings = savingsTxs.filter(t => t.date <= monthEnd)
+                if (activeSavings.length === 0) return null
+                return (
+                  <div className="mb-2">
+                    <p className="text-xs text-muted-foreground px-5 mb-2">활성 저축</p>
+                    {activeSavings.map(tx => {
+                      const cat = tx.category as any
+                      const catName = cat?.name || '미분류'
+                      return (
+                        <div
+                          key={tx.id}
+                          onClick={() => { setEditTx(tx); setModalOpen(true) }}
+                          className="flex items-center justify-between px-5 py-2 cursor-pointer active:bg-muted/30"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
+                            {tx.description && <span className="text-[10px] text-muted-foreground">{tx.description}</span>}
+                          </div>
+                          <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
+                        </div>
+                      )
+                    })}
+                    <div className="border-t border-border mx-5 my-2" />
+                  </div>
+                )
+              })()}
+
               {/* 주차별 아코디언 */}
               {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
                 const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
                   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                const weekSavingsTxs = savingsTxs.filter(t => {
-                  const d = new Date(t.date)
-                  return d.getFullYear() === targetYear && d.getMonth() + 1 === actualMonth && Math.ceil(d.getDate() / 7) === weekNum
-                })
                 const weekNonSavingsTxs = weekTxs.filter(t => t.type !== 'savings')
 
                 return (
@@ -448,30 +474,8 @@ export default function History() {
                   {/* 펼친 내역 */}
                   {isExpanded && (
                     <div className="pb-2">
-                      {/* 활성 저축 */}
-                      {weekSavingsTxs.length > 0 && (
-                        <div className="mt-1 mb-2">
-                          <p className="text-xs text-muted-foreground px-5 mb-2">활성 저축</p>
-                          {weekSavingsTxs.map(tx => {
-                            const cat = tx.category as any
-                            const catName = cat?.name || '미분류'
-                            return (
-                              <div
-                                key={tx.id}
-                                onClick={() => { setEditTx(tx); setModalOpen(true) }}
-                                className="flex items-center justify-between px-5 py-2 cursor-pointer active:bg-muted/30"
-                              >
-                                <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
-                                <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
-                              </div>
-                            )
-                          })}
-                          {weekNonSavingsTxs.length > 0 && <div className="border-t border-border mx-5 my-2" />}
-                        </div>
-                      )}
-
                       {/* 일별 내역 */}
-                      {weekNonSavingsTxs.length === 0 && weekSavingsTxs.length === 0 ? (
+                      {weekNonSavingsTxs.length === 0 ? (
                         <p className="text-sm text-muted-foreground text-center py-4">내역이 없어요</p>
                       ) : (() => {
                         let lastDate: string | null = null
