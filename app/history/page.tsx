@@ -124,7 +124,7 @@ export default function History() {
       >
         <div
           onClick={() => { setEditTx(tx); setModalOpen(true) }}
-          className="flex items-center gap-3 px-4 py-3 border-t border-border/50 cursor-pointer active:bg-muted/50"
+          className="flex items-center gap-3 px-5 py-3 cursor-pointer active:bg-muted/30"
         >
           {/* 날짜/요일 — 같은 날은 빈칸 */}
           <div className="w-14 flex-shrink-0">
@@ -235,7 +235,7 @@ export default function History() {
 
                 return (
                   <div key={label} className="overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3 bg-surface rounded-[18px]">
+                    <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                         ₩{groupTotal.toLocaleString()}
@@ -270,7 +270,7 @@ export default function History() {
 
                 return (
                   <div key={label} className="overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3 bg-surface rounded-[18px]">
+                    <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                         ₩{groupTotal.toLocaleString()}
@@ -297,7 +297,7 @@ export default function History() {
               // 주간 뷰: 기본
               return (
                 <div key={label} className="overflow-hidden">
-                  <div className="flex items-center justify-between px-5 py-3 bg-surface rounded-[18px]">
+                  <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
                     <span className="text-xs font-medium text-muted-foreground">{label}</span>
                     <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                       ₩{groupTotal.toLocaleString()}
