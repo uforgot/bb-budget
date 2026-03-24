@@ -250,23 +250,7 @@ export default function History() {
           </div>
         )}
         {viewMode === 'monthly' && (
-          <div className="flex items-center justify-between py-3">
-            <button
-              onClick={() => {
-                // 현재 월간에서 보고 있는 월의 연도로 이동
-                const now2 = new Date()
-                const targetMonth2 = now2.getMonth() + 1 + monthOffset
-                const targetYear2 = now2.getFullYear() + Math.floor((targetMonth2 - 1) / 12)
-                setYearOffset(targetYear2 - now2.getFullYear())
-                setViewMode('yearly')
-                setCameFromYearly(false)
-              }}
-              className="text-xs text-accent-blue flex items-center gap-1 py-1.5 border border-transparent"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-              연간 전체 보기
-            </button>
-          </div>
+          <div className="h-[10px]" />
         )}
         {viewMode === 'yearly' && (
           <div className="h-[10px]" />
@@ -419,34 +403,20 @@ export default function History() {
                       <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">지출</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
                     </div>
+                    <div className="border-t border-border mx-5 my-2" />
                     <div className="flex items-center justify-between px-5 py-2">
                       <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">자산</span>
                       <span className="text-sm font-bold tabular-nums">₩{totalAssets.toLocaleString()}</span>
                     </div>
-                    {/* 자산 하위: 잔고 + 저축 */}
-                    <div className="flex items-center justify-between px-5 py-1.5 pl-10">
+                    {/* 자산 하위: 잔고 + 저축 (같은 좌정렬) */}
+                    <div className="flex items-center justify-between px-5 py-1.5 pl-8">
                       <span className="text-xs text-muted-foreground">잔고</span>
                       <span className={`text-xs font-medium tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{cashBalance.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center justify-between px-5 py-1.5 pl-10">
+                    <div className="flex items-center justify-between px-5 py-1.5 pl-8">
                       <span className="text-xs text-muted-foreground">저축</span>
                       <span className="text-xs font-medium tabular-nums text-accent-mint">₩{totalSavingsAmt.toLocaleString()}</span>
                     </div>
-                    {/* 저축 상세 */}
-                    {activeSavings.map(tx => {
-                      const cat = tx.category as any
-                      const catName = cat?.name || '미분류'
-                      return (
-                        <div
-                          key={tx.id}
-                          onClick={() => { setEditTx(tx); setModalOpen(true) }}
-                          className="flex items-center justify-between px-5 py-1.5 pl-14 cursor-pointer active:bg-muted/30"
-                        >
-                          <span className="text-xs bg-accent-mint/20 text-accent-mint px-2.5 py-0.5 rounded-full">{catName}</span>
-                          <span className="text-xs font-medium tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
-                        </div>
-                      )
-                    })}
                     <div className="border-t border-border mx-5 my-2" />
                   </div>
                 )
