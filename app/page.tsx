@@ -32,6 +32,9 @@ export default function Home() {
   const [totalIncome, setTotalIncome] = useState(0)
   const [totalExpense, setTotalExpense] = useState(0)
   const [totalSavings, setTotalSavings] = useState(0)
+  const [allTimeIncome, setAllTimeIncome] = useState(0)
+  const [allTimeExpense, setAllTimeExpense] = useState(0)
+  const [allTimeSavings, setAllTimeSavings] = useState(0)
   const [dailyData, setDailyData] = useState<Record<number, { income?: number; expense?: number; savings?: number; items?: { type: 'income' | 'expense' | 'savings'; category: string; parentCategory?: string; description: string; amount: number }[] }>>({})
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
@@ -49,6 +52,23 @@ export default function Home() {
     }
   }, [calYear, calMonth])
 
+  // 전체 기간 자산 총합 (1회 로드)
+  const loadAllTime = useCallback(async () => {
+    try {
+      const { getTransactions } = await import('@/lib/api')
+      const all = await getTransactions({})
+      setAllTimeIncome(all.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0))
+      setAllTimeExpense(all.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0))
+      setAllTimeSavings(all.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0))
+    } catch (e) {
+      console.error('전체 자산 로드 실패:', e)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadAllTime()
+  }, [loadAllTime])
+
   useEffect(() => {
     loadData()
     // 탭 전환 시 자동 새로고침
@@ -62,7 +82,7 @@ export default function Home() {
     }
   }, [loadData])
 
-  const totalAssets = totalIncome - totalExpense + totalSavings
+  const totalAssets = allTimeIncome - allTimeExpense + allTimeSavings
 
   const summary = [
     { label: '수입', value: `₩${formatCompact(totalIncome)}`, color: 'text-accent-blue' },
@@ -124,6 +144,7 @@ export default function Home() {
           setModalOpen(false)
           setEditTx(null)
           loadData()
+          loadAllTime()
         }}
         onSave={() => {}}
       />
