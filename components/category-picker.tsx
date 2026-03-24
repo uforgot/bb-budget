@@ -95,7 +95,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                       const isExpanded = expandedParent === parent.id
                       const children = childrenOf(parent.id)
                       const hasChildren = children.length > 0
-                      const isSelected = selected === parent.id || children.some(c => c.id === selected)
+                      const isSelected = selected === parent.id || (expandedParent === parent.id && children.some(c => c.id === selected))
 
                       return (
                         <button
