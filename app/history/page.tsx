@@ -234,7 +234,47 @@ export default function History() {
         </div>
 
         {/* Grouped list */}
-        {Object.keys(grouped).length === 0 ? (
+        {viewMode === 'weekly' ? (() => {
+          const { start } = getWeekRange(weekOffset)
+          const weekMonth = start.getMonth() + 1
+          const weekNum = Math.ceil(start.getDate() / 7)
+          const weekLabel = `${weekMonth}월 ${weekNum}주 차`
+          const weekTotal = filteredTransactions.reduce((sum, t) => t.type === 'expense' ? sum - t.amount : sum + t.amount, 0)
+
+          return (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center px-2 py-4 bg-surface rounded-[18px]">
+                <button onClick={() => setWeekOffset(w => w - 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <div className="flex-1 flex items-center justify-between px-2">
+                  <span className="text-sm font-semibold text-foreground">{weekLabel}</span>
+                  <span className="text-sm font-medium tabular-nums text-foreground">
+                    {weekTotal < 0 ? "-" : ""}₩{Math.abs(weekTotal).toLocaleString()}
+                  </span>
+                </div>
+                <button onClick={() => setWeekOffset(w => w + 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+              </div>
+              {filteredTransactions.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
+              ) : (
+                filteredTransactions.map((tx, i) => {
+                  if (i === 0) lastRenderedDate.current = null
+                  const prevDate = lastRenderedDate.current
+                  const showDivider = i > 0 && prevDate !== tx.date
+                  return (
+                    <div key={tx.id}>
+                      {showDivider && <div className="border-t border-border mx-5 my-2" />}
+                      {renderRow(tx)}
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          )
+        })() : Object.keys(grouped).length === 0 ? (
           <p className="text-sm text-muted-foreground text-center mt-20">내역이 없어요</p>
         ) : (
           <div className="flex flex-col gap-3">
@@ -315,36 +355,8 @@ export default function History() {
                 )
               }
 
-              // 주간 뷰: 기본
-              return (
-                <div key={label} className="">
-                  <div className="flex items-center px-2 py-4 bg-surface rounded-[18px]">
-                    <button onClick={() => setWeekOffset(w => w - 1)} className="text-muted-foreground p-1 flex-shrink-0">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                    </button>
-                    <div className="flex-1 flex items-center justify-between px-2">
-                      <span className="text-sm font-semibold text-foreground">{label}</span>
-                      <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
-                        {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
-                      </span>
-                    </div>
-                    <button onClick={() => setWeekOffset(w => w + 1)} className="text-muted-foreground p-1 flex-shrink-0">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                    </button>
-                  </div>
-                  {items.map((tx, i) => {
-                    if (i === 0) lastRenderedDate.current = null
-                    const prevDate = lastRenderedDate.current
-                    const showDivider = i > 0 && prevDate !== tx.date
-                    return (
-                      <div key={tx.id}>
-                        {showDivider && <div className="border-t border-border mx-5 my-2" />}
-                        {renderRow(tx)}
-                      </div>
-                    )
-                  })}
-                </div>
-              )
+              // 주간은 위에서 처리됨
+              return null
             })}
           </div>
         )}
