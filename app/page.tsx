@@ -101,19 +101,19 @@ export default function Home() {
 
         <div className="bg-surface rounded-[18px] mb-6">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-muted-foreground">수입</span>
+            <span className="text-sm text-muted-foreground">이번 달 수입</span>
             <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{formatCompact(totalIncome)}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-muted-foreground">지출</span>
+            <span className="text-sm text-muted-foreground">이번 달 지출</span>
             <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{formatCompact(totalExpense)}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-muted-foreground">저축</span>
+            <span className="text-sm text-muted-foreground">투자 자산</span>
             <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{formatCompact(allTimeSavings)}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-muted-foreground">현금</span>
+            <span className="text-sm text-muted-foreground">보유 현금</span>
             <span className={`text-sm font-semibold tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{formatCompact(cashBalance)}</span>
           </div>
         </div>
