@@ -127,10 +127,10 @@ export default function CategoriesSettings() {
           <div className="flex justify-center mb-8">
             <button
               onClick={() => setEmojiPickerOpen(true)}
-              className="w-28 h-28 bg-card rounded-2xl flex flex-col items-center justify-center gap-1 border border-border/50 relative pt-2"
+              className="w-36 h-36 bg-card rounded-3xl flex flex-col items-center justify-center border border-border/50 relative"
             >
-              <span style={{ fontSize: '55px' }}>{getEmoji(editingParent)}</span>
-              <span className="text-[10px] text-muted-foreground mt-4">변경</span>
+              <span style={{ fontSize: '64px' }}>{getEmoji(editingParent)}</span>
+              <span className="text-xs text-muted-foreground mt-3">변경</span>
             </button>
           </div>
           <EmojiPicker
