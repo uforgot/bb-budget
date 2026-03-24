@@ -176,7 +176,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
 
 
   const loadingMonthsRef = useRef<Set<string>>(new Set())
-  const touchStartXRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
 
   // Load data for a specific month
   const loadMonthData = useCallback(async (year: number, month: number) => {
@@ -273,15 +273,15 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         ))}
       </div>
 
-      {/* Single month grid with swipe */}
+      {/* Single month grid with vertical swipe */}
       <div
-        onTouchStart={(e) => { touchStartXRef.current = e.touches[0].clientX }}
+        onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientY }}
         onTouchEnd={(e) => {
-          if (touchStartXRef.current === null) return
-          const diff = e.changedTouches[0].clientX - touchStartXRef.current
-          touchStartXRef.current = null
-          if (Math.abs(diff) > 50) {
-            const dir = diff > 0 ? -1 : 1
+          if (touchStartYRef.current === null) return
+          const diff = e.changedTouches[0].clientY - touchStartYRef.current
+          touchStartYRef.current = null
+          if (Math.abs(diff) > 40) {
+            const dir = diff > 0 ? -1 : 1  // 아래로 드래그 = 이전 달, 위로 = 다음 달
             setFocusedMonthIndex(prev => {
               const next = prev + dir
               if (next < 0 || next >= months.length) return prev
