@@ -34,9 +34,12 @@ export async function getCategories(type?: string) {
 }
 
 export async function addCategory(name: string, type: string) {
+  // 기존 최대 sort_order + 1
+  const existing = await getCategories(type)
+  const maxOrder = existing.reduce((max, c) => Math.max(max, c.sort_order), 0)
   const { data, error } = await getSupabase()
     .from('categories')
-    .insert({ name, type } as any)
+    .insert({ name, type, sort_order: maxOrder + 1 } as any)
     .select()
     .single()
   if (error) throw error
