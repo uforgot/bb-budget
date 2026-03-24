@@ -408,14 +408,14 @@ export default function History() {
                       <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">자산</span>
                       <span className="text-sm font-bold tabular-nums">₩{totalAssets.toLocaleString()}</span>
                     </div>
-                    {/* 자산 하위: 잔고 + 저축 (같은 좌정렬) */}
-                    <div className="flex items-center justify-between px-5 py-1.5 pl-8">
-                      <span className="text-xs text-muted-foreground">잔고</span>
-                      <span className={`text-xs font-medium tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{cashBalance.toLocaleString()}</span>
-                    </div>
+                    {/* 자산 하위: 저축 + 잔고 */}
                     <div className="flex items-center justify-between px-5 py-1.5 pl-8">
                       <span className="text-xs text-accent-mint">저축</span>
                       <span className="text-xs font-medium tabular-nums text-accent-mint">₩{totalSavingsAmt.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-5 py-1.5 pl-8">
+                      <span className="text-xs text-muted-foreground">잔고</span>
+                      <span className={`text-xs font-medium tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{cashBalance.toLocaleString()}</span>
                     </div>
                     <div className="border-t border-border mx-5 my-2" />
                   </div>
