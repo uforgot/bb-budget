@@ -235,11 +235,8 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
   const listRef = useListRef(null)
   const pendingPrependRef = useRef<number>(0)
   const extendingRef = useRef(false)
-  // 현재 달의 높이 (고정 높이 컨테이너용)
-  const currentMonthHeight = useMemo(() => {
-    const entry = months[focusedMonthIndex]
-    return entry ? monthRowHeight(entry) : 5 * WEEK_ROW_H + MONTH_HEADER_H + MONTH_PAD
-  }, [months, focusedMonthIndex])
+  // 달력 고정 높이: 6행 기준
+  const calendarHeight = 6 * WEEK_ROW_H + MONTH_HEADER_H + MONTH_PAD
 
 
 
@@ -305,7 +302,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     loadingMonthsRef.current.clear()
   }, [refreshKey])
 
-  // Load focused month data
+  // Load focused month data + notify parent
   useEffect(() => {
     const entry = months[focusedMonthIndex]
     if (entry) {
@@ -313,8 +310,12 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       if (!dataCache.has(key)) {
         loadMonthData(entry.year, entry.month)
       }
+      const cached = dataCache.get(key)
+      if (cached) {
+        onMonthChange?.(entry.year, entry.month + 1, cached.income, cached.expense)
+      }
     }
-  }, [focusedMonthIndex, months, dataCache, loadMonthData])
+  }, [focusedMonthIndex, months, dataCache, loadMonthData, onMonthChange])
 
   const loadVisibleData = useCallback((startIdx: number, stopIdx: number) => {
     for (let i = Math.max(0, startIdx - 1); i <= Math.min(months.length - 1, stopIdx + 1); i++) {
@@ -333,6 +334,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
 
   const handleRowsRendered = useCallback(
     (visibleRows: { startIndex: number; stopIndex: number }) => {
+      if (!scrolledToCenter) return // 초기 스크롤 완료 전에는 무시
       const entry = months[visibleRows.startIndex]
       if (entry) {
         setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
@@ -371,7 +373,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         setMonths(prev => [...newMonths, ...prev])
       }
     },
-    [months, onMonthChange, loadVisibleData, dataCache]
+    [months, onMonthChange, loadVisibleData, dataCache, scrolledToCenter]
   )
 
   const handleDayClick = useCallback((year: number, month: number, day: number) => {
@@ -423,7 +425,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       </div>
 
       {/* Virtual scroll calendar (fixed height = current month) */}
-      <div style={{ height: currentMonthHeight, overflowY: 'auto', overflowX: 'hidden' }} className="scrollbar-hide">
+      <div style={{ height: calendarHeight, overflowY: 'auto', overflowX: 'hidden' }} className="scrollbar-hide">
         <List
           listRef={listRef}
           rowCount={months.length}
@@ -439,7 +441,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
           overscanCount={2}
           onRowsRendered={handleRowsRendered}
           className="scrollbar-hide"
-          style={{ height: currentMonthHeight }}
+          style={{ height: calendarHeight }}
         />
       </div>
 
