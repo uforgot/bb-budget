@@ -241,7 +241,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                         <div className="flex items-center gap-3">
                           <span className="text-xs bg-muted px-3 py-1.5 rounded-full text-muted-foreground">{catLabel}</span>
                           {item.description && (
-                            <span className="text-[11px] text-muted-foreground">{item.description}</span>
+                            <span className="text-[10px] text-muted-foreground line-clamp-2">{item.description}</span>
                           )}
                         </div>
                         <span className={`text-[15px] font-semibold tabular-nums ${colorClass}`}>
