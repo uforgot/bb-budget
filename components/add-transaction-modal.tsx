@@ -189,7 +189,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto p-5">
           {/* 날짜 */}
-          <div className="relative mb-4 flex justify-center">
+          <div className="relative mb-4 flex justify-center items-center gap-2">
             <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
               <span>{formatDateDisplay(date)}</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
@@ -203,6 +203,24 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 style={{ fontSize: '16px' }}
               />
             </label>
+            {type && TYPE_MAP[type] === 'savings' && (
+              <>
+                <span className="text-xs text-muted-foreground">—</span>
+                <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
+                  <span>{endDate ? formatDateDisplay(endDate) : '만기일 설정'}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    style={{ fontSize: '16px' }}
+                  />
+                </label>
+              </>
+            )}
           </div>
 
           {/* 금액 표시 */}
@@ -215,6 +233,27 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
             <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-accent-blue' : 'bg-border'}`} />
           </div>
+
+          {/* 저축: 만기 금액 */}
+          {type && TYPE_MAP[type] === 'savings' && (
+            <div className="mb-4">
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-2xl font-bold text-muted-foreground">₩</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="만기 금액"
+                  value={endAmount ? parseInt(endAmount).toLocaleString() : ''}
+                  onChange={(e) => setEndAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                  onFocus={() => setKeypadActive(false)}
+                  onBlur={() => setKeypadActive(true)}
+                  style={{ fontSize: '24px' }}
+                  className="font-bold tabular-nums bg-transparent border-none outline-none text-center text-muted-foreground w-full"
+                />
+              </div>
+              <div className="h-px mt-1 mx-12 bg-border" />
+            </div>
+          )}
 
           {/* 유형 + 카테고리 */}
           <div className="mb-3">
@@ -261,38 +300,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onClose={() => setCategoryPickerOpen(false)}
             />
           </div>
-
-          {/* 저축 전용: 만기일 + 예상 금액 */}
-          {type && TYPE_MAP[type] === 'savings' && (
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">만기일</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  onFocus={() => setKeypadActive(false)}
-                  onBlur={() => setKeypadActive(true)}
-                  style={{ fontSize: '16px' }}
-                  className="w-full bg-surface rounded-xl px-5 py-3.5 text-sm"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">인출 시 금액</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="₩0"
-                  value={endAmount ? `₩${parseInt(endAmount).toLocaleString()}` : ''}
-                  onChange={(e) => setEndAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                  onFocus={() => setKeypadActive(false)}
-                  onBlur={() => setKeypadActive(true)}
-                  style={{ fontSize: '16px' }}
-                  className="w-full bg-surface rounded-xl px-5 py-3.5"
-                />
-              </div>
-            </div>
-          )}
 
           {/* 메모 */}
           <div className="mb-4">
