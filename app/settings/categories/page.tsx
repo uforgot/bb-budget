@@ -127,7 +127,7 @@ export default function CategoriesSettings() {
           <div className="flex justify-center mb-8">
             <button
               onClick={() => setEmojiPickerOpen(true)}
-              className="w-36 h-36 bg-card rounded-3xl flex flex-col items-center justify-center border border-border/50 relative"
+              className="w-36 h-36 bg-muted rounded-3xl flex flex-col items-center justify-center border border-border/50 relative"
             >
               <span style={{ fontSize: '64px' }}>{getEmoji(editingParent)}</span>
               <span className="text-xs text-muted-foreground mt-3">변경</span>
@@ -287,7 +287,7 @@ export default function CategoriesSettings() {
             <>
               <button
                 onClick={() => setAddingRoot(true)}
-                className="flex-1 py-3 rounded-xl bg-muted/50 text-sm font-medium text-muted-foreground"
+                className="flex-1 py-3 rounded-xl bg-muted text-sm font-medium text-muted-foreground"
               >
                 추가
               </button>
