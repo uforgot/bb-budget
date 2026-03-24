@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback, useLayoutEffect, useMemo, CSSProperties, ReactElement } from 'react'
-import { List, useListRef } from 'react-window'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { getMonthlySummary, type Transaction } from '@/lib/api'
 
 // ─── Types ────────────────────────────────────────────────────
@@ -170,51 +169,6 @@ function MonthGrid({
   )
 }
 
-// ─── MonthRow (for react-window) ──────────────────────────────
-
-interface RowExtraProps {
-  months: MonthEntry[]
-  focusedMonthIndex: number
-  dataCache: Map<string, CachedMonth>
-  selectedDay: SelectedDay | null
-  onDayClick: (year: number, month: number, day: number) => void
-}
-
-function MonthRow({
-  index,
-  style,
-  months,
-  focusedMonthIndex,
-  dataCache,
-  selectedDay,
-  onDayClick,
-}: {
-  index: number
-  style: CSSProperties
-  ariaAttributes: { 'aria-posinset': number; 'aria-setsize': number; role: 'listitem' }
-} & RowExtraProps): ReactElement {
-  const { year, month } = months[index]
-  const isFocused = index === focusedMonthIndex
-  const key = monthKey(year, month)
-  const cached = dataCache.get(key)
-
-  return (
-    <div
-      style={{ ...style, scrollSnapAlign: 'start' }}
-      className={`${isFocused ? 'opacity-100' : 'opacity-30'} transition-opacity duration-100`}
-    >
-      <MonthGrid
-        year={year}
-        month={month}
-        data={cached?.daily ?? {}}
-
-        selectedDay={selectedDay}
-        onDayClick={onDayClick}
-      />
-    </div>
-  )
-}
-
 // ─── Main Calendar Component ─────────────────────────────────
 
 export interface MonthlyCalendarProps {
@@ -225,7 +179,6 @@ export interface MonthlyCalendarProps {
 
 export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey = 0 }: MonthlyCalendarProps) {
   const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(new Date()))
-  const [centerIndex, setCenterIndex] = useState(INITIAL_RANGE)
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
   const [headerLabel, setHeaderLabel] = useState(() => {
     const now = new Date()
@@ -237,51 +190,23 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
   })
   const [dataCache, setDataCache] = useState<Map<string, CachedMonth>>(new Map())
 
-  const listRef = useListRef(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [containerHeight, setContainerHeight] = useState(0)
-  const [scrolledToCenter, setScrolledToCenter] = useState(false)
-  const pendingPrependRef = useRef<number>(0)
-  const extendingRef = useRef(false)
+
   const loadingMonthsRef = useRef<Set<string>>(new Set())
+  const touchStartXRef = useRef<number | null>(null)
 
-  // Measure container height
-  useEffect(() => {
-    if (!containerRef.current) return
-    const ro = new ResizeObserver(([entry]) => {
-      setContainerHeight(entry.contentRect.height)
+  const goMonth = useCallback((dir: -1 | 1) => {
+    setFocusedMonthIndex(prev => {
+      const next = prev + dir
+      if (next < 0 || next >= months.length) return prev
+      const entry = months[next]
+      setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
+      const cached = dataCache.get(`${entry.year}-${entry.month}`)
+      onMonthChange?.(entry.year, entry.month + 1, cached?.income ?? 0, cached?.expense ?? 0)
+      return next
     })
-    ro.observe(containerRef.current)
-    return () => ro.disconnect()
-  }, [])
+  }, [months, dataCache, onMonthChange])
 
-  // Scroll to current month on mount
-  useEffect(() => {
-    if (scrolledToCenter) return
-    let attempts = 0
-    const tryScroll = () => {
-      if (listRef.current) {
-        listRef.current.scrollToRow({ index: centerIndex, align: 'start' })
-        setScrolledToCenter(true)
-      } else if (attempts < 10) {
-        attempts++
-        requestAnimationFrame(tryScroll)
-      }
-    }
-    requestAnimationFrame(tryScroll)
-  }, [listRef, scrolledToCenter, centerIndex])
 
-  // After prepend: adjust scrollTop
-  useLayoutEffect(() => {
-    if (pendingPrependRef.current > 0) {
-      const el = listRef.current?.element
-      if (el) {
-        el.scrollTop += pendingPrependRef.current
-      }
-      pendingPrependRef.current = 0
-      extendingRef.current = false
-    }
-  }, [months, listRef])
 
   // Load data for a specific month
   const loadMonthData = useCallback(async (year: number, month: number) => {
@@ -308,88 +233,23 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     }
   }, [])
 
-  // Load visible months data
-  const loadVisibleData = useCallback((startIdx: number, stopIdx: number) => {
-    for (let i = Math.max(0, startIdx - 1); i <= Math.min(months.length - 1, stopIdx + 1); i++) {
-      const entry = months[i]
+  // Refresh data when refreshKey changes
+  useEffect(() => {
+    if (refreshKey === 0) return
+    setDataCache(new Map())
+    loadingMonthsRef.current.clear()
+  }, [refreshKey])
+
+  // Load focused month data
+  useEffect(() => {
+    const entry = months[focusedMonthIndex]
+    if (entry) {
       const key = monthKey(entry.year, entry.month)
       if (!dataCache.has(key)) {
         loadMonthData(entry.year, entry.month)
       }
     }
-  }, [months, dataCache, loadMonthData])
-
-  // Refresh data when refreshKey changes
-  useEffect(() => {
-    if (refreshKey === 0) return
-    // Clear cache and reload visible months
-    setDataCache(new Map())
-    loadingMonthsRef.current.clear()
-  }, [refreshKey])
-
-  // Reload focused month when cache is cleared
-  useEffect(() => {
-    if (dataCache.size === 0 && months.length > 0) {
-      const entry = months[focusedMonthIndex]
-      if (entry) loadMonthData(entry.year, entry.month)
-    }
-  }, [dataCache.size, months, focusedMonthIndex, loadMonthData])
-
-  const getRowHeight = useCallback(
-    (index: number, _rowProps: RowExtraProps) => monthRowHeight(months[index]),
-    [months]
-  )
-
-  const handleRowsRendered = useCallback(
-    (visibleRows: { startIndex: number; stopIndex: number }) => {
-      // Update header and focused month
-      const entry = months[visibleRows.startIndex]
-      if (entry) {
-        setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
-        setFocusedMonthIndex(visibleRows.startIndex)
-        const cached = dataCache.get(`${entry.year}-${entry.month}`)
-        onMonthChange?.(entry.year, entry.month + 1, cached?.income ?? 0, cached?.expense ?? 0)
-      }
-
-      // Load data for visible months
-      loadVisibleData(visibleRows.startIndex, visibleRows.stopIndex)
-
-      if (extendingRef.current) return
-
-      // Append: near bottom
-      if (visibleRows.stopIndex >= months.length - EDGE_THRESHOLD) {
-        extendingRef.current = true
-        setMonths(prev => {
-          const last = prev[prev.length - 1]
-          const newMonths: MonthEntry[] = []
-          for (let i = 1; i <= EXTEND_COUNT; i++) {
-            const d = new Date(last.year, last.month + i, 1)
-            newMonths.push({ year: d.getFullYear(), month: d.getMonth() })
-          }
-          extendingRef.current = false
-          return [...prev, ...newMonths]
-        })
-      }
-
-      // Prepend: near top
-      if (visibleRows.startIndex <= EDGE_THRESHOLD) {
-        extendingRef.current = true
-        const first = months[0]
-        const newMonths: MonthEntry[] = []
-        let totalHeight = 0
-        for (let i = EXTEND_COUNT; i >= 1; i--) {
-          const d = new Date(first.year, first.month - i, 1)
-          const entry = { year: d.getFullYear(), month: d.getMonth() }
-          newMonths.push(entry)
-          totalHeight += monthRowHeight(entry)
-        }
-        pendingPrependRef.current = totalHeight
-        setCenterIndex(prev => prev + EXTEND_COUNT)
-        setMonths(prev => [...newMonths, ...prev])
-      }
-    },
-    [months, onMonthChange, loadVisibleData]
-  )
+  }, [focusedMonthIndex, months, dataCache, loadMonthData])
 
   const handleDayClick = useCallback((year: number, month: number, day: number) => {
     setSelectedDay(prev => {
@@ -421,16 +281,8 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     if (dayTxs[itemIndex]) onTransactionClick(dayTxs[itemIndex])
   }, [selectedDay, dataCache, onTransactionClick])
 
-  const rowProps: RowExtraProps = {
-    months,
-    focusedMonthIndex,
-    dataCache,
-    selectedDay,
-    onDayClick: handleDayClick,
-  }
-
   return (
-    <div className="flex flex-col h-full">
+    <div>
       {/* Header: current visible month */}
       <div className="flex items-center justify-center w-full py-3">
         <h1 className="text-base font-semibold text-foreground">
@@ -447,21 +299,29 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         ))}
       </div>
 
-      {/* Virtual scroll calendar */}
-      <div ref={containerRef} className="flex-1 min-h-0">
-        {containerHeight > 0 && (
-          <List
-            listRef={listRef}
-            rowCount={months.length}
-            rowHeight={getRowHeight}
-            rowComponent={MonthRow}
-            rowProps={rowProps}
-            overscanCount={3}
-            onRowsRendered={handleRowsRendered}
-            className="scrollbar-hide"
-            style={{ height: containerHeight }}
-          />
-        )}
+      {/* Single month grid with swipe */}
+      <div
+        onTouchStart={(e) => { touchStartXRef.current = e.touches[0].clientX }}
+        onTouchEnd={(e) => {
+          if (touchStartXRef.current === null) return
+          const diff = e.changedTouches[0].clientX - touchStartXRef.current
+          touchStartXRef.current = null
+          if (Math.abs(diff) > 50) goMonth(diff > 0 ? -1 : 1)
+        }}
+      >
+        {(() => {
+          const entry = months[focusedMonthIndex]
+          const cached = dataCache.get(`${entry.year}-${entry.month}`)
+          return (
+            <MonthGrid
+              year={entry.year}
+              month={entry.month}
+              data={cached?.daily ?? {}}
+              selectedDay={selectedDay}
+              onDayClick={handleDayClick}
+            />
+          )
+        })()}
       </div>
 
       {/* Selected day detail */}
@@ -476,7 +336,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         const totalDay = totalExpense + totalIncome + totalSavings
 
         return (
-          <div className="border-t border-border max-h-[40vh] overflow-y-auto">
+          <div className="mt-4">
             {/* Date + total header */}
             <div className="bg-surface flex items-center justify-between px-5 py-3">
               <span className="text-sm font-semibold">

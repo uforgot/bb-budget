@@ -63,7 +63,7 @@ export default function Home() {
   const cashBalance = totalAssets - allTimeSavings
 
   return (
-    <div className="h-dvh flex flex-col bg-background">
+    <div className="min-h-dvh bg-background pb-32">
       <div className="px-5">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="가용 현금" />
 
@@ -78,9 +78,7 @@ export default function Home() {
             <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 min-h-0 px-5">
         <MonthlyCalendar
           onMonthChange={(y, m, inc, exp) => { setCalYear(y); setCalMonth(m); setSelectedDay(1); setMonthIncome(inc); setMonthExpense(exp) }}
           onTransactionClick={(tx) => {
