@@ -273,15 +273,15 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         ))}
       </div>
 
-      {/* Single month grid with vertical swipe */}
+      {/* Single month grid with horizontal swipe */}
       <div
-        onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientY }}
+        onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientX }}
         onTouchEnd={(e) => {
           if (touchStartYRef.current === null) return
-          const diff = e.changedTouches[0].clientY - touchStartYRef.current
+          const diff = e.changedTouches[0].clientX - touchStartYRef.current
           touchStartYRef.current = null
-          if (Math.abs(diff) > 40) {
-            const dir = diff > 0 ? -1 : 1  // 아래로 드래그 = 이전 달, 위로 = 다음 달
+          if (Math.abs(diff) > 50) {
+            const dir = diff > 0 ? -1 : 1
             setFocusedMonthIndex(prev => {
               const next = prev + dir
               if (next < 0 || next >= months.length) return prev
