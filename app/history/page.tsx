@@ -256,6 +256,9 @@ export default function History() {
             </button>
           </div>
         )}
+        {viewMode === 'yearly' && (
+          <div className="py-3"><div className="py-1.5 border border-transparent" /></div>
+        )}
 
         {/* Grouped list */}
         {viewMode === 'weekly' ? (() => {
