@@ -398,26 +398,25 @@ export default function History() {
                 </button>
               </div>
 
-              {/* 수입/지출/잔고 요약 */}
+              {/* 이번 달 요약 */}
               {(() => {
-                // 잔고 = 초기자산 + 해당 월 말까지 누적 수입 - 누적 지출
-                const cumulativeIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const cumulativeExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const balance = cumulativeIncome - cumulativeExpense
+                const balance = monthIncome - monthExpense
                 return (
-                  <div className="px-5 pb-4 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">수입</span>
+                  <div className="mb-2">
+                    <p className="text-xs text-muted-foreground px-5 mb-2">이번 달 요약</p>
+                    <div className="flex items-center justify-between px-5 py-2">
+                      <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">수입</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">지출</span>
+                    <div className="flex items-center justify-between px-5 py-2">
+                      <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">지출</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">잔고</span>
-                      <span className="text-sm font-bold tabular-nums">₩{balance.toLocaleString()}</span>
+                    <div className="flex items-center justify-between px-5 py-2">
+                      <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">잔고</span>
+                      <span className={`text-sm font-bold tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
                     </div>
+                    <div className="border-t border-border mx-5 my-2" />
                   </div>
                 )
               })()}
