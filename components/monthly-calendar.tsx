@@ -423,7 +423,7 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       </div>
 
       {/* Virtual scroll calendar (fixed height = current month) */}
-      <div style={{ height: currentMonthHeight, overflow: 'hidden' }}>
+      <div style={{ height: currentMonthHeight, overflowY: 'auto', overflowX: 'hidden' }} className="scrollbar-hide">
         <List
           listRef={listRef}
           rowCount={months.length}
