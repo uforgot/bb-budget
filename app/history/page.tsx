@@ -362,6 +362,13 @@ export default function History() {
           // 주차별 요약 (최신 주차 먼저)
           const daysInMonth = new Date(targetYear, actualMonth, 0).getDate()
           const totalWeeks = Math.ceil(daysInMonth / 7)
+          const today = new Date()
+          const currentWeekNum = (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1)
+            ? Math.ceil(today.getDate() / 7)
+            : (targetYear < today.getFullYear() || (targetYear === today.getFullYear() && actualMonth < today.getMonth() + 1))
+              ? totalWeeks  // 과거 월은 전부 표시
+              : 0           // 미래 월은 표시 안 함
+
           const weekSummaries = Array.from({ length: totalWeeks }, (_, i) => {
             const weekNum = i + 1
             const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
@@ -372,7 +379,7 @@ export default function History() {
               return sum
             }, 0)
             return { weekNum, weekTotal }
-          }).reverse()
+          }).filter(w => w.weekNum <= currentWeekNum).reverse()
 
           // 활성 저축 (전체)
           const savingsTxs = transactions.filter(t => t.type === 'savings')
