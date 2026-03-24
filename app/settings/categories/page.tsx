@@ -72,17 +72,23 @@ export default function CategoriesSettings() {
     loadCategories()
   }
 
+  const [savingSub, setSavingSub] = useState(false)
   const handleAddSubCat = async () => {
-    if (!editingParent || !newSubCat.trim()) return
-    await supabase.from('categories').insert({
-      name: newSubCat.trim(),
-      type,
-      parent_id: editingParent.id,
-      sort_order: childrenOf(editingParent.id).length + 1,
-    })
-    setNewSubCat('')
-    setAddingSubCat(false)
-    loadCategories()
+    if (!editingParent || !newSubCat.trim() || savingSub) return
+    setSavingSub(true)
+    try {
+      await supabase.from('categories').insert({
+        name: newSubCat.trim(),
+        type,
+        parent_id: editingParent.id,
+        sort_order: childrenOf(editingParent.id).length + 1,
+      })
+      setNewSubCat('')
+      setAddingSubCat(false)
+      await loadCategories()
+    } finally {
+      setSavingSub(false)
+    }
   }
 
   const handleAddRoot = async () => {
