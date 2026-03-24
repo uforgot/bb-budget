@@ -99,15 +99,15 @@ export default function Home() {
       <div className="px-5">
         <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
 
-        {/* 자산 구성 */}
-        <div className="bg-surface rounded-[18px] mb-4">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-muted-foreground">운용 자산</span>
+        {/* 자산 구성 — 블랙 배경으로 구분 */}
+        <div className="bg-black rounded-[18px] mb-8 px-4 py-4">
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-gray-400">운용 자산</span>
             <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{formatCompact(allTimeSavings)}</span>
           </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-muted-foreground">가용 현금</span>
-            <span className={`text-sm font-semibold tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{formatCompact(cashBalance)}</span>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-gray-400">가용 현금</span>
+            <span className={`text-sm font-semibold tabular-nums ${cashBalance >= 0 ? 'text-white' : 'text-accent-coral'}`}>₩{formatCompact(cashBalance)}</span>
           </div>
         </div>
 
