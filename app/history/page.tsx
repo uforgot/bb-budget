@@ -296,6 +296,35 @@ export default function History() {
                 </button>
               </div>
 
+              {/* 활성 저축 표시 */}
+              {(() => {
+                const savingsTxs = transactions.filter(t => t.type === 'savings')
+                if (savingsTxs.length === 0) return null
+                return (
+                  <div className="mt-2">
+                    <p className="text-xs text-muted-foreground px-5 mb-2">활성 저축</p>
+                    {savingsTxs.map(tx => {
+                      const cat = tx.category as any
+                      const catName = cat?.name || '미분류'
+                      return (
+                        <div
+                          key={tx.id}
+                          onClick={() => { setEditTx(tx); setModalOpen(true) }}
+                          className="flex items-center justify-between px-5 py-2 cursor-pointer active:bg-muted/30"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
+                            {tx.description && <span className="text-[10px] text-muted-foreground">{tx.description}</span>}
+                          </div>
+                          <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
+                        </div>
+                      )
+                    })}
+                    <div className="border-t border-border mx-5 my-2" />
+                  </div>
+                )
+              })()}
+
               {filteredTransactions.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
               ) : (
