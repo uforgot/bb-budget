@@ -61,10 +61,19 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setType(REVERSE_TYPE_MAP[editTransaction.type] || null)
       setRawAmount(String(editTransaction.amount))
       setCategoryId(editTransaction.category_id)
-      const catName = (editTransaction.category as any)?.name || ''
-      setCategoryLabel(catName)
       setMemo(editTransaction.description || '')
       setEditDate(editTransaction.date)
+      // parent > child 라벨 구성
+      const dbType = editTransaction.type
+      getCategories(dbType).then(cats => {
+        const cat = cats.find(c => c.id === editTransaction.category_id)
+        if (cat?.parent_id) {
+          const parent = cats.find(c => c.id === cat.parent_id)
+          setCategoryLabel(parent ? `${parent.name} > ${cat.name}` : cat.name)
+        } else if (cat) {
+          setCategoryLabel(cat.name)
+        }
+      })
     } else if (!editTransaction && open) {
       // Reset for new entry
     }
