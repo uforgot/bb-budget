@@ -349,58 +349,77 @@ export default function History() {
           const targetMonth = now.getMonth() + 1 + monthOffset
           const targetYear = now.getFullYear() + Math.floor((targetMonth - 1) / 12)
           const actualMonth = ((targetMonth - 1) % 12 + 12) % 12 + 1
-          const monthLabel = `${targetYear}년 ${actualMonth}월`
 
           // 해당 월 트랜잭션
           const monthTxs = transactions.filter(t => {
             const d = new Date(t.date)
             return d.getFullYear() === targetYear && d.getMonth() + 1 === actualMonth
           })
-          const monthTotal = monthTxs.reduce((sum, t) => t.type === 'expense' ? sum - t.amount : sum + t.amount, 0)
+          const monthIncome = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+          const monthExpense = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+          const monthSavings = monthTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
 
-          // 주차별 요약
+          // 주차별 요약 (최신 주차 먼저)
           const daysInMonth = new Date(targetYear, actualMonth, 0).getDate()
           const totalWeeks = Math.ceil(daysInMonth / 7)
           const weekSummaries = Array.from({ length: totalWeeks }, (_, i) => {
             const weekNum = i + 1
             const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
-            const income = weekTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-            const expense = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-            // 저축: 해당 주 끝일까지의 누적
-            const weekEndDay = Math.min(weekNum * 7, daysInMonth)
-            const weekEndDate = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(weekEndDay).padStart(2,'0')}`
-            const savings = transactions.filter(t => t.type === 'savings' && t.date <= weekEndDate).reduce((s, t) => s + t.amount, 0)
-            return { weekNum, income, expense, savings }
-          })
+            const weekTotal = weekTxs.reduce((sum, t) => {
+              if (t.type === 'expense') return sum + t.amount
+              if (t.type === 'income') return sum + t.amount
+              if (t.type === 'savings') return sum + t.amount
+              return sum
+            }, 0)
+            return { weekNum, weekTotal }
+          }).reverse()
+
+          // 활성 저축 (전체)
+          const savingsTxs = transactions.filter(t => t.type === 'savings')
 
           return (
-            <div className="flex flex-col gap-3 mt-2">
-              {/* 헤더 */}
-              <div className="flex items-center px-2 py-4 bg-surface rounded-[18px]">
-                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1 flex-shrink-0">
+            <div className="flex flex-col mt-2">
+              {/* 월 헤더 + 좌우 화살표 */}
+              <div className="flex items-center justify-between px-5 py-3">
+                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
-                <div className="flex-1 flex items-center justify-between px-2">
-                  <span className="text-sm font-semibold text-foreground">{monthLabel}</span>
-                  <span className="text-sm font-medium tabular-nums text-foreground">
-                    {monthTotal < 0 ? "-" : ""}₩{Math.abs(monthTotal).toLocaleString()}
-                  </span>
-                </div>
-                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1 flex-shrink-0">
+                <span className="text-lg font-bold">{actualMonth}월</span>
+                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
               </div>
 
+              {/* 수입/지출/저축 요약 */}
+              <div className="grid grid-cols-3 gap-3 px-5 pb-4">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">수입</p>
+                  <p className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">지출</p>
+                  <p className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">저축</p>
+                  <p className="text-sm font-semibold tabular-nums text-accent-mint">₩{monthSavings.toLocaleString()}</p>
+                </div>
+              </div>
+
               {/* 주차별 아코디언 */}
-              {weekSummaries.map(({ weekNum, income, expense, savings }, idx) => {
+              {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
                 const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
                   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                const weekSavingsTxs = savingsTxs.filter(t => {
+                  const d = new Date(t.date)
+                  return d.getFullYear() === targetYear && d.getMonth() + 1 === actualMonth && Math.ceil(d.getDate() / 7) === weekNum
+                })
+                const weekNonSavingsTxs = weekTxs.filter(t => t.type !== 'savings')
 
                 return (
                 <div key={weekNum}>
-                  {idx > 0 && <div className="border-t border-border mx-5 my-1" />}
-                <div>
+                  {/* 주차 헤더 */}
                   <div
                     onClick={() => {
                       const next = new Set(expandedWeeks)
@@ -408,36 +427,46 @@ export default function History() {
                       else next.add(weekNum)
                       setExpandedWeeks(next)
                     }}
-                    className="px-5 py-3 cursor-pointer active:bg-muted/30"
+                    className="flex items-center justify-between px-5 py-3 cursor-pointer active:bg-muted/30 bg-surface rounded-xl mx-3 mb-1"
                   >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? '' : '-rotate-90'}`}><path d="m6 9 6 6 6-6" /></svg>
-                        <p className="text-sm font-semibold text-foreground">{actualMonth}월 {weekNum}주 차</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">수입</p>
-                        <p className="text-sm font-medium tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">지출</p>
-                        <p className="text-sm font-medium tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">저축</p>
-                        <p className="text-sm font-medium tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
-                      </div>
+                    <span className="text-sm font-semibold">{actualMonth}월 {weekNum}주 차</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium tabular-nums">₩{weekTotal.toLocaleString()}</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? '' : '-rotate-90'}`}><path d="m6 9 6 6 6-6" /></svg>
                     </div>
                   </div>
+
+                  {/* 펼친 내역 */}
                   {isExpanded && (
-                    <div className="bg-muted/20">
-                      {weekTxs.length === 0 ? (
+                    <div className="pb-2">
+                      {/* 활성 저축 */}
+                      {weekSavingsTxs.length > 0 && (
+                        <div className="mt-1 mb-2">
+                          <p className="text-xs text-muted-foreground px-5 mb-2">활성 저축</p>
+                          {weekSavingsTxs.map(tx => {
+                            const cat = tx.category as any
+                            const catName = cat?.name || '미분류'
+                            return (
+                              <div
+                                key={tx.id}
+                                onClick={() => { setEditTx(tx); setModalOpen(true) }}
+                                className="flex items-center justify-between px-5 py-2 cursor-pointer active:bg-muted/30"
+                              >
+                                <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
+                                <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
+                              </div>
+                            )
+                          })}
+                          {weekNonSavingsTxs.length > 0 && <div className="border-t border-border mx-5 my-2" />}
+                        </div>
+                      )}
+
+                      {/* 일별 내역 */}
+                      {weekNonSavingsTxs.length === 0 && weekSavingsTxs.length === 0 ? (
                         <p className="text-sm text-muted-foreground text-center py-4">내역이 없어요</p>
                       ) : (() => {
                         let lastDate: string | null = null
-                        return weekTxs.map((tx) => {
+                        return weekNonSavingsTxs.map((tx) => {
                           const showDivider = lastDate !== null && lastDate !== tx.date
                           const showDate = lastDate !== tx.date
                           lastDate = tx.date
@@ -481,7 +510,6 @@ export default function History() {
                       })()}
                     </div>
                   )}
-                </div>
                 </div>
                 )
               })}
