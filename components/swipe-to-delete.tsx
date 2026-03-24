@@ -62,7 +62,7 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative bg-muted transition-transform"
+        className="relative bg-muted/50 transition-transform"
         style={{
           transform: `translateX(-${offset}px)`,
           transition: swiping ? 'none' : 'transform 0.2s ease',

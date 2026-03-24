@@ -214,7 +214,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
           return (
             <div className="mt-4">
               {/* 날짜 + 총액 헤더 */}
-              <div className="bg-muted rounded-[18px] flex items-center justify-between px-5 py-4 mb-3">
+              <div className="bg-muted/50 rounded-[18px] flex items-center justify-between px-5 py-4 mb-3">
                 <span className="text-[15px] font-semibold">{month}월 {selectedDay}일 {dayOfWeek}</span>
                 {totalDay > 0 && (
                   <span className={`text-[15px] font-semibold tabular-nums ${

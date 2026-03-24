@@ -212,7 +212,7 @@ export default function History() {
                 }
 
                 return (
-                  <div key={label} className="bg-muted rounded-xl overflow-hidden">
+                  <div key={label} className="bg-muted/50 rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
@@ -247,7 +247,7 @@ export default function History() {
                 }
 
                 return (
-                  <div key={label} className="bg-muted rounded-xl overflow-hidden">
+                  <div key={label} className="bg-muted/50 rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
@@ -274,7 +274,7 @@ export default function History() {
 
               // 주간 뷰: 기본
               return (
-                <div key={label} className="bg-muted rounded-xl overflow-hidden">
+                <div key={label} className="bg-muted/50 rounded-xl overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                     <span className="text-xs font-medium text-muted-foreground">{label}</span>
                     <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
