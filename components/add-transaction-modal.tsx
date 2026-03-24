@@ -298,7 +298,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         {/* 저장/취소 버튼 */}
         {editTransaction ? (
           <div className="flex gap-3 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-surface text-foreground rounded-xl py-3.5 text-sm font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
               {saving ? '저장 중...' : '수정하기'}
             </button>
             <button
@@ -315,7 +315,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
         ) : (
           <div className="flex gap-3 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-surface text-foreground rounded-xl py-3.5 text-sm font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
               {saving ? '저장 중...' : '저장하기'}
             </button>
             <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-xl py-3.5 text-sm font-semibold">
