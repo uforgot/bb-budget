@@ -68,7 +68,7 @@ function getFullCatDisplay(tx: Transaction) {
 
 export default function History() {
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
-  const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출']))
+  const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출', '수입', '저축']))
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])

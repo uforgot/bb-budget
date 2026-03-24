@@ -5,7 +5,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { getMonthlySummary } from '@/lib/api'
+import { getMonthlySummary, type Transaction } from '@/lib/api'
 
 function formatCompact(amount: number): string {
   if (amount >= 100000000) {
@@ -24,6 +24,8 @@ export default function Home() {
   const today = new Date()
   const [selectedDay, setSelectedDay] = useState(today.getDate())
   const [modalOpen, setModalOpen] = useState(false)
+  const [editTx, setEditTx] = useState<Transaction | null>(null)
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
   const [calYear] = useState(2026)
   const [calMonth] = useState(3)
 
@@ -41,6 +43,7 @@ export default function Home() {
       setTotalExpense(summary.expense)
       setTotalSavings(summary.savings)
       setDailyData(summary.daily)
+      setAllTransactions(summary.transactions)
     } catch (e) {
       console.error('데이터 로드 실패:', e)
     }
@@ -97,6 +100,14 @@ export default function Home() {
           month={calMonth}
           data={dailyData}
           onDaySelect={(day) => setSelectedDay(day)}
+          onItemClick={(day, itemIndex) => {
+            // 해당 날짜의 트랜잭션 찾기
+            const dayTxs = allTransactions.filter(t => new Date(t.date).getDate() === day)
+            if (dayTxs[itemIndex]) {
+              setEditTx(dayTxs[itemIndex])
+              setModalOpen(true)
+            }
+          }}
         />
 
         {pulling && (
@@ -107,14 +118,16 @@ export default function Home() {
       <AddTransactionModal
         open={modalOpen}
         initialDate={selectedDate}
+        editTransaction={editTx}
         onClose={() => {
           setModalOpen(false)
-          loadData() // 저장 후 데이터 새로고침
+          setEditTx(null)
+          loadData()
         }}
         onSave={() => {}}
       />
 
-      <BottomNav onAdd={() => setModalOpen(true)} hideAdd={modalOpen} />
+      <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} hideAdd={modalOpen} />
     </div>
   )
 }

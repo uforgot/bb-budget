@@ -23,6 +23,7 @@ interface MonthlyCalendarProps {
   data?: Record<number, DayData>
   onDaySelect?: (day: number) => void
   onMonthChange?: (year: number, month: number) => void
+  onItemClick?: (day: number, itemIndex: number) => void
 }
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
@@ -41,7 +42,7 @@ function formatAmount(amount: number): string {
   return amount.toLocaleString()
 }
 
-export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, onDaySelect, onMonthChange }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, onDaySelect, onMonthChange, onItemClick }: MonthlyCalendarProps) {
   const today = new Date()
   const [year, setYear] = useState(initYear)
   const [month, setMonth] = useState(initMonth)
@@ -237,7 +238,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                       ? `${item.parentCategory} · ${item.category}`
                       : item.category
                     return (
-                      <div key={i} className="flex items-center justify-between py-2 px-5">
+                      <div key={i} onClick={() => onItemClick?.(selectedDay, i)} className="flex items-center justify-between py-2 px-5 cursor-pointer active:bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <span className="text-xs bg-muted px-3 py-1.5 rounded-full text-muted-foreground">{catLabel}</span>
                           {item.description && (
