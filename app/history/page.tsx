@@ -115,7 +115,7 @@ export default function History() {
       >
         <div
           onClick={() => { setEditTx(tx); setModalOpen(true) }}
-          className="flex items-center gap-3 px-4 py-3 border-t border-border/30 cursor-pointer active:bg-muted/30 bg-surface"
+          className="flex items-center gap-3 px-4 py-3 border-t border-border/50 cursor-pointer active:bg-muted/50"
         >
           {/* 날짜/요일 */}
           <span className="text-xs text-muted-foreground tabular-nums w-14 flex-shrink-0">
@@ -165,7 +165,7 @@ export default function History() {
         </div>
 
         {/* Filter chips: 지출 / 수입 / 저축 */}
-        <div className="flex items-center justify-end gap-2 py-3">
+        <div className="flex items-center gap-2 py-3">
           {(['지출', '수입', '저축'] as TabType[]).map((tab) => {
             const isActive = activeFilters.has(tab)
             const chipColors: Record<TabType, string> = {
@@ -212,8 +212,8 @@ export default function History() {
                 }
 
                 return (
-                  <div key={label} className="bg-surface rounded-xl overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-2.5 bg-muted">
+                  <div key={label} className="bg-muted rounded-xl overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                         ₩{groupTotal.toLocaleString()}
@@ -247,8 +247,8 @@ export default function History() {
                 }
 
                 return (
-                  <div key={label} className="bg-surface rounded-xl overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-2.5 bg-muted">
+                  <div key={label} className="bg-muted rounded-xl overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                       <span className="text-xs font-medium text-muted-foreground">{label}</span>
                       <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                         ₩{groupTotal.toLocaleString()}
@@ -274,8 +274,8 @@ export default function History() {
 
               // 주간 뷰: 기본
               return (
-                <div key={label} className="bg-surface rounded-xl overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2.5 bg-muted">
+                <div key={label} className="bg-muted rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                     <span className="text-xs font-medium text-muted-foreground">{label}</span>
                     <span className={`text-xs font-medium tabular-nums ${'text-foreground'}`}>
                       ₩{groupTotal.toLocaleString()}

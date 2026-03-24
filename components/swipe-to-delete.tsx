@@ -24,8 +24,8 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
     if (diff > 10) {
       setSwiping(true)
       setOffset(Math.min(diff, DELETE_THRESHOLD))
-    } else if (diff < -10 && offset > 0) {
-      setOffset(Math.max(0, offset + diff))
+    } else {
+      setOffset(0)
     }
   }
 
@@ -47,24 +47,22 @@ export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
 
   return (
     <div className="relative overflow-hidden">
-      {/* Delete button — only when swiped */}
-      {offset > 0 && (
-        <div
-          className="absolute right-0 top-0 bottom-0 z-0 flex items-center justify-center bg-accent-coral text-white font-medium text-sm"
-          style={{ width: DELETE_THRESHOLD }}
-        >
-          <button onClick={handleDelete} className="w-full h-full">
-            삭제
-          </button>
-        </div>
-      )}
+      {/* Delete button behind */}
+      <div
+        className="absolute right-0 top-0 bottom-0 flex items-center justify-center bg-accent-coral text-white font-medium text-sm"
+        style={{ width: DELETE_THRESHOLD }}
+      >
+        <button onClick={handleDelete} className="w-full h-full">
+          삭제
+        </button>
+      </div>
 
-      {/* Content — opaque background to fully cover delete area */}
+      {/* Content */}
       <div
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative z-10"
+        className="relative bg-muted transition-transform"
         style={{
           transform: `translateX(-${offset}px)`,
           transition: swiping ? 'none' : 'transform 0.2s ease',
