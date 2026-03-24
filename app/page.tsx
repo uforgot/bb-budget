@@ -19,6 +19,8 @@ export default function Home() {
   const [calYear, setCalYear] = useState(today.getFullYear())
   const [calMonth, setCalMonth] = useState(today.getMonth() + 1)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [monthIncome, setMonthIncome] = useState(0)
+  const [monthExpense, setMonthExpense] = useState(0)
 
   const [allTimeIncome, setAllTimeIncome] = useState(0)
   const [allTimeExpense, setAllTimeExpense] = useState(0)
@@ -64,11 +66,23 @@ export default function Home() {
     <div className="h-dvh flex flex-col bg-background">
       <div className="px-5">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="가용 현금" />
+
+        {/* 금월 수입/지출 */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between px-5 py-2">
+            <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">금월 수입</span>
+            <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
+          </div>
+          <div className="flex items-center justify-between px-5 py-2">
+            <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">금월 지출</span>
+            <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
+          </div>
+        </div>
       </div>
 
       <div className="flex-1 min-h-0 px-5">
         <MonthlyCalendar
-          onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); setSelectedDay(1) }}
+          onMonthChange={(y, m, inc, exp) => { setCalYear(y); setCalMonth(m); setSelectedDay(1); setMonthIncome(inc); setMonthExpense(exp) }}
           onTransactionClick={(tx) => {
             setEditTx(tx)
             setModalOpen(true)

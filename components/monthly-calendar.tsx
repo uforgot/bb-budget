@@ -44,7 +44,7 @@ const EXTEND_COUNT = 12
 const EDGE_THRESHOLD = 3
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 const WEEK_ROW_H = 52
-const MONTH_HEADER_H = 52
+const MONTH_HEADER_H = 8
 const MONTH_PAD = 8
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -94,16 +94,13 @@ function MonthGrid({
   year,
   month,
   data,
-  monthlyIncome,
-  monthlyExpense,
+
   selectedDay,
   onDayClick,
 }: {
   year: number
   month: number // 0-indexed
   data: Record<number, DayData>
-  monthlyIncome: number
-  monthlyExpense: number
   selectedDay: SelectedDay | null
   onDayClick: (year: number, month: number, day: number) => void
 }) {
@@ -123,24 +120,8 @@ function MonthGrid({
 
   return (
     <div className="w-full px-2">
-      {/* Month summary header */}
-      <div className="flex items-center gap-3 px-3 h-[52px]">
-        {monthlyIncome > 0 && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] bg-accent-blue/20 text-accent-blue px-2 py-0.5 rounded-full">수입</span>
-            <span className="text-xs font-semibold tabular-nums text-accent-blue">₩{monthlyIncome.toLocaleString()}</span>
-          </div>
-        )}
-        {monthlyExpense > 0 && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] bg-accent-coral/20 text-accent-coral px-2 py-0.5 rounded-full">지출</span>
-            <span className="text-xs font-semibold tabular-nums text-accent-coral">₩{monthlyExpense.toLocaleString()}</span>
-          </div>
-        )}
-        {monthlyIncome === 0 && monthlyExpense === 0 && (
-          <span className="text-xs text-muted-foreground">내역 없음</span>
-        )}
-      </div>
+      {/* Month separator */}
+      <div className="h-2" />
 
       {/* Day grid */}
       <div className="grid grid-cols-7">
@@ -226,8 +207,7 @@ function MonthRow({
         year={year}
         month={month}
         data={cached?.daily ?? {}}
-        monthlyIncome={cached?.income ?? 0}
-        monthlyExpense={cached?.expense ?? 0}
+
         selectedDay={selectedDay}
         onDayClick={onDayClick}
       />
@@ -238,7 +218,7 @@ function MonthRow({
 // ─── Main Calendar Component ─────────────────────────────────
 
 export interface MonthlyCalendarProps {
-  onMonthChange?: (year: number, month: number) => void
+  onMonthChange?: (year: number, month: number, income: number, expense: number) => void
   onTransactionClick?: (transaction: Transaction) => void
   refreshKey?: number
 }
@@ -367,7 +347,8 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       if (entry) {
         setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
         setFocusedMonthIndex(visibleRows.startIndex)
-        onMonthChange?.(entry.year, entry.month + 1)
+        const cached = dataCache.get(`${entry.year}-${entry.month}`)
+        onMonthChange?.(entry.year, entry.month + 1, cached?.income ?? 0, cached?.expense ?? 0)
       }
 
       // Load data for visible months
