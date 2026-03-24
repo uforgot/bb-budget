@@ -96,27 +96,8 @@ export default function Home() {
 
   return (
     <div className="min-h-dvh bg-background pb-32">
-      {/* 자산 영역 — 배경 분리 */}
-      <div className="pb-6">
-        <div className="px-5">
-          <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
-
-          <div className="bg-surface rounded-[18px]">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <span className="text-sm text-muted-foreground">운용 자산</span>
-              <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{formatCompact(allTimeSavings)}</span>
-            </div>
-            <div className="flex items-center justify-between px-4 py-3">
-              <span className="text-sm text-muted-foreground">가용 현금</span>
-              <span className={`text-sm font-semibold tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{formatCompact(cashBalance)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 달력 영역 */}
-      <div className="px-5 pt-6">
-        <div className="bg-surface -mx-5 px-5 pt-6 rounded-t-[24px]">
+      <div className="px-5">
+        <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="가용 현금" />
         <MonthlyCalendar
           year={calYear}
           month={calMonth}
@@ -134,7 +115,6 @@ export default function Home() {
             }
           }}
         />
-        </div>
 
         {pulling && (
           <p className="text-xs text-muted-foreground text-center py-2">새로고침 중...</p>
