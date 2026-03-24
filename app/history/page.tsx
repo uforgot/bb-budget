@@ -526,10 +526,12 @@ export default function History() {
             return { month, assets }
           })
 
-          // 변동 계산 (전월 대비)
-          const withDelta = monthSummaries.map((m, i) => {
-            const prevAssets = i > 0 ? monthSummaries[i - 1].assets : null
-            const delta = prevAssets !== null ? m.assets - prevAssets : null
+          // 변동 계산 (해당 월 수입-지출)
+          const withDelta = monthSummaries.map((m) => {
+            const monthTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === m.month)
+            const monthInc = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+            const monthExp = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+            const delta = monthInc - monthExp
             return { ...m, delta }
           })
 
@@ -540,9 +542,6 @@ export default function History() {
           })
 
           const formatCompactAmt = (v: number) => {
-            const abs = Math.abs(v)
-            if (abs >= 100000000) return `${(v / 100000000).toFixed(1)}억`
-            if (abs >= 10000) return `${Math.round(v / 10000).toLocaleString()}만`
             return v.toLocaleString()
           }
 
@@ -573,12 +572,12 @@ export default function History() {
                     }}
                     className="flex items-center justify-between px-5 py-3 cursor-pointer active:bg-muted/30"
                   >
-                    <span className="text-sm font-semibold w-10">{month}월</span>
-                    <span className={`text-sm font-medium tabular-nums ${delta !== null ? (delta >= 0 ? 'text-accent-blue' : 'text-accent-coral') : 'text-muted-foreground'}`}>
-                      {delta !== null ? `${delta >= 0 ? '+' : ''}₩${formatCompactAmt(delta)}` : '—'}
+                    <span className="text-sm font-semibold w-10 flex-shrink-0">{month}월</span>
+                    <span className={`text-sm font-medium tabular-nums flex-1 ${delta >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
+                      {delta >= 0 ? '+' : ''}₩{formatCompactAmt(delta)}
                     </span>
-                    <span className="text-sm tabular-nums text-muted-foreground">₩{formatCompactAmt(assets)}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
+                    <span className="text-sm tabular-nums text-muted-foreground text-right">₩{formatCompactAmt(assets)}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground ml-2 flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
                   </div>
                 </div>
               ))}
