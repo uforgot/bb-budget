@@ -71,7 +71,9 @@ export default function History() {
   const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출', '수입', '저축']))
   const [weekOffset, setWeekOffset] = useState(0)
   const [monthOffset, setMonthOffset] = useState(0)
+  const [yearOffset, setYearOffset] = useState(0)
   const [cameFromMonthly, setCameFromMonthly] = useState(false)
+  const [cameFromYearly, setCameFromYearly] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -193,7 +195,7 @@ export default function History() {
             return (
               <button
                 key={mode}
-                onClick={() => { setViewMode(mode); setWeekOffset(0); setMonthOffset(0); setCameFromMonthly(false) }}
+                onClick={() => { setViewMode(mode); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
                 className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
                   viewMode === mode
                     ? 'text-foreground border-b-2 border-foreground'
@@ -336,6 +338,18 @@ export default function History() {
                 </button>
               </div>
 
+              {/* ← 연간 전체 보기 */}
+              <button
+                onClick={() => {
+                  setViewMode('yearly')
+                  setCameFromYearly(false)
+                }}
+                className="text-xs text-accent-blue flex items-center gap-1 px-2 py-1"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                연간 전체 보기
+              </button>
+
               {/* 주차별 요약 */}
               {weekSummaries.map(({ weekNum, income, expense, savings }) => (
                 <div
@@ -379,56 +393,81 @@ export default function History() {
               ))}
             </div>
           )
-        })() : Object.keys(grouped).length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center mt-20">내역이 없어요</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {Object.entries(grouped).map(([label, items]) => {
-              const groupTotal = items.reduce((sum, t) => {
-                if (t.type === 'expense') return sum - t.amount
-                return sum + t.amount
-              }, 0)
+        })() : viewMode === 'yearly' ? (() => {
+          // 연간 뷰: 월별 카드 그리드
+          const now = new Date()
+          const targetYear = now.getFullYear() + yearOffset
+          const yearLabel = `${targetYear}년`
 
-              // 연간 뷰: 그룹 내에서 월별 서브그룹
-              if (viewMode === 'yearly') {
-                const byMonth: Record<string, Transaction[]> = {}
-                for (const item of items) {
-                  const mk = `${new Date(item.date).getMonth() + 1}월`
-                  if (!byMonth[mk]) byMonth[mk] = []
-                  byMonth[mk].push(item)
-                }
+          // 해당 연도 트랜잭션
+          const yearTxs = transactions.filter(t => new Date(t.date).getFullYear() === targetYear)
+          const yearTotal = yearTxs.reduce((sum, t) => t.type === 'expense' ? sum - t.amount : sum + t.amount, 0)
 
-                return (
-                  <div key={label} className="">
-                    <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                      <span className="text-sm font-semibold text-foreground">{label}</span>
-                      <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
-                        {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
-                      </span>
-                    </div>
-                    {Object.entries(byMonth).map(([mk, mItems]) => {
-                      const mTotal = mItems.reduce((s, t) => t.type === "expense" ? s - t.amount : s + t.amount, 0)
-                      return (
-                        <div key={mk}>
-                          <div className="flex items-center justify-between px-5 py-2">
-                            <span className="text-[10px] text-muted-foreground">{mk}</span>
-                            <span className={`text-[10px] tabular-nums ${'text-foreground'}`}>
-                              {mTotal < 0 ? "-" : ""}₩{Math.abs(mTotal).toLocaleString()}
-                            </span>
-                          </div>
-                          {mItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; return renderRow(tx) })}
-                        </div>
-                      )
-                    })}
+          // 월별 요약
+          const monthSummaries = Array.from({ length: 12 }, (_, i) => {
+            const month = i + 1
+            const monthTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === month)
+            const income = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+            const expense = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+            const savings = monthTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+            return { month, income, expense, savings }
+          })
+
+          return (
+            <div className="flex flex-col gap-3">
+              {/* 헤더 */}
+              <div className="flex items-center px-2 py-4 bg-surface rounded-[18px]">
+                <button onClick={() => setYearOffset(y => y - 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <div className="flex-1 flex items-center justify-between px-2">
+                  <span className="text-sm font-semibold text-foreground">{yearLabel}</span>
+                  <span className="text-sm font-medium tabular-nums text-foreground">
+                    {yearTotal < 0 ? "-" : ""}₩{Math.abs(yearTotal).toLocaleString()}
+                  </span>
+                </div>
+                <button onClick={() => setYearOffset(y => y + 1)} className="text-muted-foreground p-1 flex-shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+              </div>
+
+              {/* 월별 카드 */}
+              {monthSummaries.map(({ month, income, expense, savings }) => (
+                <div
+                  key={month}
+                  onClick={() => {
+                    // 해당 월로 월간 뷰 이동
+                    const now2 = new Date()
+                    const diff = (targetYear - now2.getFullYear()) * 12 + (month - (now2.getMonth() + 1))
+                    setMonthOffset(diff)
+                    setCameFromYearly(true)
+                    setViewMode('monthly')
+                  }}
+                  className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-semibold text-foreground">{month}월</p>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
                   </div>
-                )
-              }
-
-              // 주간은 위에서 처리됨
-              return null
-            })}
-          </div>
-        )}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">수입</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-blue">₩{income.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">지출</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-coral">₩{expense.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">저축</p>
+                      <p className="text-sm font-medium tabular-nums text-accent-mint">₩{savings.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        })() : null}
       </div>
 
       <AddTransactionModal
