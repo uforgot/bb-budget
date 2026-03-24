@@ -234,11 +234,11 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-accent-blue' : 'bg-border'}`} />
           </div>
 
-          {/* 저축: 만기 금액 */}
+          {/* 저축: 만기 금액 — 원금과 동일 폼 */}
           {type && TYPE_MAP[type] === 'savings' && (
-            <div className="mb-4">
-              <div className="flex items-baseline justify-center gap-2">
-                <span className="text-2xl font-bold text-muted-foreground">₩</span>
+            <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(false)}>
+              <div className="flex items-baseline justify-center gap-1">
+                <span className="text-4xl font-bold text-muted-foreground">₩</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -247,11 +247,11 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   onChange={(e) => setEndAmount(e.target.value.replace(/[^0-9]/g, ''))}
                   onFocus={() => setKeypadActive(false)}
                   onBlur={() => setKeypadActive(true)}
-                  style={{ fontSize: '24px' }}
+                  style={{ fontSize: '36px' }}
                   className="font-bold tabular-nums bg-transparent border-none outline-none text-center text-muted-foreground w-full"
                 />
               </div>
-              <div className="h-px mt-1 mx-12 bg-border" />
+              <div className="h-px mt-2 mx-8 bg-border" />
             </div>
           )}
 
