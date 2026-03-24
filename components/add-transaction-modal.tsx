@@ -179,9 +179,21 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto p-5">
           {/* 날짜 */}
-          <p className="text-xs text-muted-foreground mb-4 text-center">
-            {formatDateDisplay(date)}
-          </p>
+          <div className="relative mb-4 text-center">
+            <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1">
+              {formatDateDisplay(date)}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setEditDate(e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                style={{ fontSize: '16px' }}
+              />
+            </label>
+          </div>
 
           {/* 금액 표시 */}
           <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(true)}>
