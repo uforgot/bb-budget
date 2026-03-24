@@ -54,6 +54,19 @@ function buildInitialMonths(anchor: Date): MonthEntry[] {
   return months
 }
 
+const ROW_H = 52
+const SEP_H = 8 // separator height
+
+function getWeeksInMonth(year: number, month: number): number {
+  const firstDay = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  return Math.ceil((firstDay + daysInMonth) / 7)
+}
+
+function getMonthHeight(year: number, month: number): number {
+  return getWeeksInMonth(year, month) * ROW_H + SEP_H
+}
+
 function monthKey(year: number, month: number): string {
   return `${year}-${month}`
 }
@@ -222,8 +235,12 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
     if (Math.abs(diff) > 40) {
       const dir = diff > 0 ? -1 : 1
       setIsAnimating(true)
-      const GRID_H = 6 * 52 + 8
-      setDragOffset(diff > 0 ? GRID_H : -GRID_H)
+      const entry = months[focusedMonthIndex]
+      const currH = getMonthHeight(entry.year, entry.month)
+      // 위로 드래그(다음 달): currH만큼 밀기, 아래로(이전 달): prevH만큼
+      const prevEntry = focusedMonthIndex > 0 ? months[focusedMonthIndex - 1] : null
+      const slideH = dir === 1 ? currH : (prevEntry ? getMonthHeight(prevEntry.year, prevEntry.month) : currH)
+      setDragOffset(diff > 0 ? slideH : -slideH)
       setTimeout(() => {
         goMonth(dir)
         setDragOffset(0)
@@ -333,17 +350,17 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
         ))}
       </div>
 
-      {/* Touch slider calendar — 고정 높이 + 3개월 세로 슬라이드 */}
+      {/* Touch slider calendar — 동적 높이 + 3개월 세로 슬라이드 */}
       {(() => {
-        // 현재 달 높이 계산 (6행 고정)
-        const FIXED_ROWS = 6
-        const ROW_H = 52
-        const GRID_H = FIXED_ROWS * ROW_H + 8 // 8px separator
-
         const entry = months[focusedMonthIndex]
-        const cachedCurr = dataCache.get(monthKey(entry.year, entry.month))
         const prevEntry = focusedMonthIndex > 0 ? months[focusedMonthIndex - 1] : null
         const nextEntry = focusedMonthIndex < months.length - 1 ? months[focusedMonthIndex + 1] : null
+
+        const currH = getMonthHeight(entry.year, entry.month)
+        const prevH = prevEntry ? getMonthHeight(prevEntry.year, prevEntry.month) : 0
+        const nextH = nextEntry ? getMonthHeight(nextEntry.year, nextEntry.month) : 0
+
+        const cachedCurr = dataCache.get(monthKey(entry.year, entry.month))
         const cachedPrev = prevEntry ? dataCache.get(monthKey(prevEntry.year, prevEntry.month)) : null
         const cachedNext = nextEntry ? dataCache.get(monthKey(nextEntry.year, nextEntry.month)) : null
 
@@ -353,29 +370,29 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
-            style={{ height: GRID_H, overflow: 'hidden', touchAction: 'none' }}
+            style={{ height: currH, overflow: 'hidden', touchAction: 'none' }}
           >
             <div
               style={{
-                transform: `translate3d(0, ${dragOffset - GRID_H}px, 0)`,
+                transform: `translate3d(0, ${dragOffset - prevH}px, 0)`,
                 transition: isAnimating ? 'transform 0.25s ease-out' : 'none',
                 willChange: 'transform',
               }}
             >
               {/* 이전 달 */}
-              <div style={{ height: GRID_H }} className="opacity-30">
+              <div style={{ height: prevH }} className="opacity-30">
                 {prevEntry && (
                   <MonthGrid year={prevEntry.year} month={prevEntry.month} data={cachedPrev?.daily ?? {}} selectedDay={null} onDayClick={handleDayClick} />
                 )}
               </div>
 
               {/* 현재 달 */}
-              <div style={{ height: GRID_H }}>
+              <div style={{ height: currH }}>
                 <MonthGrid year={entry.year} month={entry.month} data={cachedCurr?.daily ?? {}} selectedDay={selectedDay} onDayClick={handleDayClick} />
               </div>
 
               {/* 다음 달 */}
-              <div style={{ height: GRID_H }} className="opacity-30">
+              <div style={{ height: nextH }} className="opacity-30">
                 {nextEntry && (
                   <MonthGrid year={nextEntry.year} month={nextEntry.month} data={cachedNext?.daily ?? {}} selectedDay={null} onDayClick={handleDayClick} />
                 )}
