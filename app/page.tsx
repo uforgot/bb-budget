@@ -115,7 +115,7 @@ export default function Home() {
       </div>
 
       {/* 달력 영역 */}
-      <div className="px-5 pt-6 bg-surface">
+      <div className="px-5 pt-6">
         <MonthlyCalendar
           year={calYear}
           month={calMonth}
