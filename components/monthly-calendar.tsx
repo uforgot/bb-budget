@@ -234,7 +234,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                         ? 'text-accent-coral'
                         : 'text-accent-blue'
                     const catLabel = item.parentCategory
-                      ? item.category
+                      ? `${item.parentCategory} · ${item.category}`
                       : item.category
                     return (
                       <div key={i} className="flex items-center justify-between py-2 px-5">
