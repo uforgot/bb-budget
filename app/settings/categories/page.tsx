@@ -251,8 +251,8 @@ export default function CategoriesSettings() {
                 className="flex flex-col items-center gap-1.5"
               >
                 <span className="text-3xl">{getEmoji(parent)}</span>
-                <span className="text-xs font-medium">{parent.name}</span>
-                <span className="text-[10px] text-muted-foreground">소분류 {children.length}개</span>
+                <span className="text-sm font-medium">{parent.name}</span>
+                <span className="text-xs text-muted-foreground">소분류 {children.length}개</span>
               </button>
             )
           })}
