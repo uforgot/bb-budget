@@ -130,7 +130,6 @@ export default function History() {
 
     return (
       <SwipeToDelete
-        key={tx.id}
         onDelete={async () => {
           await deleteTransaction(tx.id)
           loadData()
@@ -264,7 +263,7 @@ export default function History() {
                               ₩{wkTotal.toLocaleString()}
                             </span>
                           </div>
-                          {wkItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; return renderRow(tx) })}
+                          {wkItems.map((tx, i) => { if (i === 0) lastRenderedDate.current = null; const prevDate = lastRenderedDate.current; const showDivider = i > 0 && prevDate !== tx.date; return (<div key={tx.id}>{showDivider && <div className="border-t border-border/30 mx-5 my-1" />}{renderRow(tx)}</div>) })}
                         </div>
                       )
                     })}
@@ -318,7 +317,14 @@ export default function History() {
                   </div>
                   {items.map((tx, i) => {
                     if (i === 0) lastRenderedDate.current = null
-                    return renderRow(tx)
+                    const prevDate = lastRenderedDate.current
+                    const showDivider = i > 0 && prevDate !== tx.date
+                    return (
+                      <div key={tx.id}>
+                        {showDivider && <div className="border-t border-border/30 mx-5 my-1" />}
+                        {renderRow(tx)}
+                      </div>
+                    )
                   })}
                 </div>
               )
