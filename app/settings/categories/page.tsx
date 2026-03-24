@@ -156,10 +156,10 @@ export default function CategoriesSettings() {
             />
           </div>
 
-          {/* 세부 카테고리 */}
-          <div className="py-4">
-            <span className="text-xs text-muted-foreground mb-2 block">세부 카테고리</span>
-            <div>
+          {/* 소분류 */}
+          <div className="flex items-center gap-3 py-4 border-b border-border">
+            <span className="text-xs text-muted-foreground w-16 flex-shrink-0">소분류</span>
+            <div className="flex-1">
               <div className="flex flex-wrap gap-2">
                 {children.map((child) => (
                   <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
