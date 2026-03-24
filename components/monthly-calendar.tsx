@@ -146,7 +146,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
             <div
               key={day}
               className={`text-center text-[11px] font-medium ${
-                i === 0 ? 'text-accent-coral' : i === 6 ? 'text-accent-blue' : 'text-muted-foreground'
+                'text-muted-foreground'
               }`}
             >
               {day}
@@ -190,11 +190,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
                         className={`relative text-sm tabular-nums leading-none ${
                           isToday
                             ? 'text-primary-foreground font-semibold'
-                            : dayOfWeek === 0
-                              ? 'text-accent-coral'
-                              : dayOfWeek === 6
-                                ? 'text-accent-blue'
-                                : 'text-foreground'
+                            : 'text-foreground'
                         }`}
                       >
                         {day}
