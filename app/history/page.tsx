@@ -69,6 +69,7 @@ function getFullCatDisplay(tx: Transaction) {
 export default function History() {
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
   const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출', '수입', '저축']))
+  const [weekOffset, setWeekOffset] = useState(0) // 0=이번주, -1=지난주, 1=다음주
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -91,17 +92,22 @@ export default function History() {
     loadData()
   }, [loadData])
 
-  // 주간 뷰: 현재 주만 필터
-  const filteredTransactions = viewMode === 'weekly' ? (() => {
+  // 주간 뷰: offset 기반 주 필터
+  const getWeekRange = (offset: number) => {
     const now = new Date()
     const startOfWeek = new Date(now)
-    startOfWeek.setDate(now.getDate() - now.getDay()) // 일요일
+    startOfWeek.setDate(now.getDate() - now.getDay() + offset * 7)
     startOfWeek.setHours(0, 0, 0, 0)
     const endOfWeek = new Date(startOfWeek)
     endOfWeek.setDate(startOfWeek.getDate() + 7)
+    return { start: startOfWeek, end: endOfWeek }
+  }
+
+  const filteredTransactions = viewMode === 'weekly' ? (() => {
+    const { start, end } = getWeekRange(weekOffset)
     return transactions.filter(t => {
       const d = new Date(t.date)
-      return d >= startOfWeek && d < endOfWeek
+      return d >= start && d < end
     })
   })() : transactions
 
@@ -185,7 +191,7 @@ export default function History() {
             return (
               <button
                 key={mode}
-                onClick={() => setViewMode(mode)}
+                onClick={() => { setViewMode(mode); setWeekOffset(0) }}
                 className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
                   viewMode === mode
                     ? 'text-foreground border-b-2 border-foreground'
@@ -251,7 +257,7 @@ export default function History() {
                 return (
                   <div key={label} className="">
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                      <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                      <span className="text-sm font-semibold text-foreground">{label}</span>
                       <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
                         {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                       </span>
@@ -286,7 +292,7 @@ export default function History() {
                 return (
                   <div key={label} className="">
                     <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                      <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                      <span className="text-sm font-semibold text-foreground">{label}</span>
                       <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
                         {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                       </span>
@@ -313,7 +319,15 @@ export default function History() {
               return (
                 <div key={label} className="">
                   <div className="flex items-center justify-between px-5 py-4 bg-surface rounded-[18px]">
-                    <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setWeekOffset(w => w - 1)} className="text-muted-foreground p-0.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                      </button>
+                      <span className="text-sm font-semibold text-foreground">{label}</span>
+                      <button onClick={() => setWeekOffset(w => w + 1)} className="text-muted-foreground p-0.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                      </button>
+                    </div>
                     <span className={`text-sm font-medium tabular-nums ${'text-foreground'}`}>
                       {groupTotal < 0 ? "-" : ""}₩{Math.abs(groupTotal).toLocaleString()}
                     </span>
