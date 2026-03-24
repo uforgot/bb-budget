@@ -97,7 +97,7 @@ export default function Home() {
   return (
     <div className="min-h-dvh bg-background pb-32">
       {/* 자산 영역 — 배경 분리 */}
-      <div className="bg-black pb-6" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <div className="pb-6">
         <div className="px-5">
           <TopHeader title={`₩${totalAssets.toLocaleString()}`} subtitle="자산 보유 중" />
 
@@ -114,8 +114,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 달력 영역 */}
-      <div className="px-5 pt-6">
+      {/* 달력 영역 — 밝은 배경 */}
+      <div className="px-5 pt-6 bg-[#1a2236] rounded-t-[24px] -mt-2">
         <MonthlyCalendar
           year={calYear}
           month={calMonth}
