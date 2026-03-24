@@ -160,9 +160,9 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, o
                   setSelectedDay(newDay)
                   if (newDay && onDaySelect) onDaySelect(newDay)
                 }}
-                className={`relative flex flex-col items-center rounded-lg transition-colors ${
-                  day ? 'cursor-pointer py-2 min-h-[64px]' : ''
-                } ${isSelected ? 'bg-accent' : ''}`}
+                className={`relative flex flex-col items-center ${
+                  day ? 'cursor-pointer py-2 min-h-[64px] rounded-lg transition-colors' : ''
+                } ${day && isSelected ? 'bg-accent' : ''}`}
               >
                 {day && (
                   <>
