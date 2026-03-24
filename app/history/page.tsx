@@ -257,7 +257,7 @@ export default function History() {
           </div>
         )}
         {viewMode === 'yearly' && (
-          <div className="py-3" />
+          <div className="h-[10px]" />
         )}
 
         {/* Grouped list */}
