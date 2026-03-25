@@ -57,6 +57,33 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [endDate, setEndDate] = useState('')
   const [endAmount, setEndAmount] = useState('')
   const [recoverOpen, setRecoverOpen] = useState(false)
+  const [recentCategories, setRecentCategories] = useState<Array<{ id: string; label: string; type: string }>>([])
+
+  // 최근 사용 카테고리 로드
+  useEffect(() => {
+    if (!open) return
+    ;(async () => {
+      try {
+        const { getTransactions, getCategories: getCats } = await import('@/lib/api')
+        const txs = await getTransactions({})
+        const cats = await getCats()
+        // 최근 트랜잭션에서 카테고리 ID 추출 (중복 제거, 최근 순)
+        const seen = new Set<string>()
+        const recent: Array<{ id: string; label: string; type: string }> = []
+        for (const tx of txs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())) {
+          if (!tx.category_id || seen.has(tx.category_id)) continue
+          seen.add(tx.category_id)
+          const cat = cats.find(c => c.id === tx.category_id)
+          if (!cat) continue
+          const parent = cat.parent_id ? cats.find(c => c.id === cat.parent_id) : null
+          const label = parent ? `${parent.name} · ${cat.name}` : cat.name
+          recent.push({ id: cat.id, label, type: tx.type })
+          if (recent.length >= 5) break
+        }
+        setRecentCategories(recent)
+      } catch {}
+    })()
+  }, [open])
   const [recoverDate, setRecoverDate] = useState(() => {
     const now = new Date()
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
@@ -225,6 +252,31 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
 
 
+
+          {/* 최근 카테고리 chip */}
+          {!editTransaction && recentCategories.length > 0 && (
+            <div className="mb-3 flex gap-2 flex-wrap">
+              {recentCategories.map(rc => (
+                <button
+                  key={rc.id}
+                  onClick={() => {
+                    setCategoryId(rc.id)
+                    setCategoryLabel(rc.label)
+                    const dbType = rc.type as 'income' | 'expense' | 'savings'
+                    const reverseMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
+                    setType(reverseMap[dbType] || null)
+                  }}
+                  className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+                    categoryId === rc.id
+                      ? 'bg-accent-blue/20 text-accent-blue'
+                      : 'bg-surface text-muted-foreground'
+                  }`}
+                >
+                  {rc.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* 유형 + 카테고리 — 일렬 */}
           <div className="mb-3">
