@@ -300,7 +300,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       setType(t)
                       setCategoryPickerOpen(true)
                     }}
-                    className={`flex-1 py-2.5 rounded-xl text-[15px] font-medium transition-colors ${
+                    className={`flex-1 py-2.5 rounded-[18px] text-[15px] font-medium transition-colors ${
                       type === t ? typeColors[t].active : typeColors[t].inactive
                     }`}
                   >
@@ -314,7 +314,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 <div className="w-14" />
                 <button
                   onClick={() => setCategoryPickerOpen(true)}
-                  className="flex-1 bg-surface rounded-xl px-4 py-2.5 text-[15px] text-left flex items-center justify-between"
+                  className="flex-1 bg-surface rounded-[18px] px-4 py-2.5 text-[15px] text-left flex items-center justify-between"
                 >
                   <span>{categoryLabel}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
@@ -346,7 +346,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onBlur={() => setKeypadActive(true)}
               onFocus={() => setKeypadActive(false)}
               style={{ fontSize: '15px' }}
-              className="flex-1 bg-surface rounded-xl px-4 py-2.5"
+              className="flex-1 bg-surface rounded-[18px] px-4 py-2.5"
             />
           </div>
 
@@ -381,13 +381,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         {/* 저장/취소 버튼 */}
         {editTransaction ? (
           <div className="flex gap-2 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-sm font-semibold">
               {saving ? '저장 중...' : '수정하기'}
             </button>
             {editTransaction.type === 'savings' && (
               <button
                 onClick={() => setRecoverOpen(true)}
-                className="flex-1 bg-accent-mint/10 text-accent-mint rounded-xl py-3.5 text-sm font-semibold"
+                className="flex-1 bg-accent-mint/10 text-accent-mint rounded-[18px] py-3.5 text-sm font-semibold"
               >
                 회수하기
               </button>
@@ -399,17 +399,17 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 setRawAmount(''); setMemo(''); setEditDate(null)
                 onClose()
               }}
-              className="flex-1 bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
+              className="flex-1 bg-accent-coral/10 text-accent-coral rounded-[18px] py-3.5 text-sm font-semibold"
             >
               삭제하기
             </button>
           </div>
         ) : (
           <div className="flex gap-3 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-sm font-semibold">
               {saving ? '저장 중...' : '저장하기'}
             </button>
-            <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-xl py-3.5 text-sm font-semibold">
+            <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-[18px] py-3.5 text-sm font-semibold">
               취소하기
             </button>
           </div>
@@ -500,7 +500,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setSaving(false)
                   }
                 }}
-                className="w-full mt-4 mb-4 py-3.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
+                className="w-full mt-4 mb-4 py-3.5 rounded-[18px] bg-primary text-primary-foreground text-sm font-semibold"
               >
                 {saving ? '처리 중...' : '적용하기'}
               </button>

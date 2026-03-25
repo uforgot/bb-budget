@@ -212,7 +212,7 @@ export default function CategoriesSettings() {
                 await handleDeleteParent(editingParent.id)
                 setEditingParent(null)
               }}
-              className="w-full py-3 text-accent-coral text-sm font-medium rounded-xl bg-accent-coral/10"
+              className="w-full py-3 text-accent-coral text-sm font-medium rounded-[18px] bg-accent-coral/10"
             >
               카테고리 삭제
             </button>
@@ -237,7 +237,7 @@ export default function CategoriesSettings() {
 
       <div className="max-w-lg mx-auto px-5">
         {/* Segment control */}
-        <div className="flex bg-muted rounded-xl p-1 mt-4 mb-6">
+        <div className="flex bg-muted rounded-[18px] p-1 mt-4 mb-6">
           {TYPE_LABELS.map(({ key, label }) => (
             <button
               key={key}
@@ -284,16 +284,16 @@ export default function CategoriesSettings() {
                 onKeyDown={(e) => e.key === 'Enter' && handleAddRoot()}
                 autoFocus
                 style={{ fontSize: '16px' }}
-                className="flex-1 bg-card border border-border rounded-xl px-4 py-3"
+                className="flex-1 bg-card border border-border rounded-[18px] px-4 py-3"
               />
-              <button onClick={handleAddRoot} className="px-4 py-3 bg-surface text-muted-foreground rounded-xl text-sm font-medium">추가</button>
+              <button onClick={handleAddRoot} className="px-4 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">추가</button>
               <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="text-sm text-muted-foreground">취소</button>
             </div>
           ) : (
             <>
               <button
                 onClick={() => setAddingRoot(true)}
-                className="flex-1 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground"
+                className="flex-1 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
               >
                 추가
               </button>

@@ -176,13 +176,13 @@ export default function RecurringPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleAdd}
-                className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
+                className="flex-1 py-3 rounded-[18px] bg-primary text-primary-foreground text-sm font-semibold"
               >
                 {saving ? '저장 중...' : '저장'}
               </button>
               <button
                 onClick={() => setAdding(false)}
-                className="flex-1 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground border border-border"
+                className="flex-1 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground border border-border"
               >
                 취소
               </button>
@@ -202,7 +202,7 @@ export default function RecurringPage() {
         ) : (
           <button
             onClick={() => setAdding(true)}
-            className="w-full mt-4 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground"
+            className="w-full mt-4 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
           >
             + 반복 지출 추가
           </button>

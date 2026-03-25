@@ -108,7 +108,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                               onClose()
                             }
                           }}
-                          className={`flex flex-col items-center gap-1 py-3 rounded-xl transition-colors ${
+                          className={`flex flex-col items-center gap-1 py-3 rounded-[18px] transition-colors ${
                             isExpanded
                               ? 'bg-accent-blue/20'
                               : isSelected
@@ -129,7 +129,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
 
                   {/* 2depth inline below this row */}
                   {expandedInRow && expandedChildren.length > 0 && (
-                    <div className="bg-accent-blue/20 rounded-xl p-2 mb-2">
+                    <div className="bg-accent-blue/20 rounded-[18px] p-2 mb-2">
                       <div className="grid grid-cols-4 gap-1.5">
                         {expandedChildren.map((child) => (
                           <button
@@ -161,7 +161,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
               onClose()
               router.push('/settings/categories')
             }}
-            className="w-full mt-4 mb-4 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground"
+            className="w-full mt-4 mb-4 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
           >
             카테고리 관리
           </button>
