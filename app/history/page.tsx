@@ -208,7 +208,7 @@ export default function History() {
   return (
     <div className="min-h-dvh bg-background pb-32">
       <div className="px-5">
-        <TopHeader title="상세 내역" />
+        <TopHeader title="내역" />
 
         {/* View mode tabs: 월간 / 연간 + 검색 */}
         <div className="flex items-center border-b border-border">
