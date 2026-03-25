@@ -203,24 +203,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 style={{ fontSize: '16px' }}
               />
             </label>
-            {type && TYPE_MAP[type] === 'savings' && editTransaction && (
-              <>
-                <span className="text-sm text-muted-foreground">—</span>
-                <label className="text-sm text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
-                  <span>{endDate ? formatDateDisplay(endDate) : '만기일 설정'}</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    style={{ fontSize: '16px' }}
-                  />
-                </label>
-              </>
-            )}
+
           </div>
 
           {/* 금액 표시 */}
@@ -233,25 +216,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
           </div>
 
-          {/* 저축: 만기 금액 — 수정 시에만 표시 */}
-          {type && TYPE_MAP[type] === 'savings' && editTransaction && (
-            <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(false)}>
-              <div className="flex items-baseline justify-center gap-1">
-                <span className="text-5xl font-bold text-muted-foreground">₩</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="만기 금액"
-                  value={endAmount ? parseInt(endAmount).toLocaleString() : ''}
-                  onChange={(e) => setEndAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                  onFocus={() => setKeypadActive(false)}
-                  onBlur={() => setKeypadActive(true)}
-                  className="text-5xl font-bold tabular-nums bg-transparent border-none outline-none text-center text-foreground"
-                  style={{ width: endAmount ? `${Math.max(2, endAmount.length)}ch` : '6ch' }}
-                />
-              </div>
-            </div>
-          )}
+
 
           {/* 유형 + 카테고리 — 일렬 */}
           <div className="mb-3">
@@ -349,21 +314,56 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
         {/* 저장/취소 버튼 */}
         {editTransaction ? (
-          <div className="flex gap-3 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
-              {saving ? '저장 중...' : '수정하기'}
-            </button>
-            <button
-              onClick={async () => {
-                const { deleteTransaction } = await import('@/lib/api')
-                await deleteTransaction(editTransaction.id)
-                setRawAmount(''); setMemo(''); setEditDate(null)
-                onClose()
-              }}
-              className="flex-1 bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
-            >
-              삭제하기
-            </button>
+          <div className="flex flex-col gap-2 mb-2">
+            <div className="flex gap-3">
+              <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
+                {saving ? '저장 중...' : '수정하기'}
+              </button>
+              <button
+                onClick={async () => {
+                  const { deleteTransaction } = await import('@/lib/api')
+                  await deleteTransaction(editTransaction.id)
+                  setRawAmount(''); setMemo(''); setEditDate(null)
+                  onClose()
+                }}
+                className="flex-1 bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
+              >
+                삭제하기
+              </button>
+            </div>
+            {editTransaction.type === 'savings' && (
+              <button
+                onClick={async () => {
+                  // 회수: 기존 저축 금액을 수입으로 새 트랜잭션 생성 + 기존 저축 삭제
+                  const amount = parseInt(rawAmount, 10) || editTransaction.amount
+                  const { addTransaction, deleteTransaction } = await import('@/lib/api')
+                  setSaving(true)
+                  try {
+                    // 1. 수입 트랜잭션 생성 (카테고리 없이, 메모에 원래 카테고리 기록)
+                    const catName = (editTransaction.category as any)?.name || '저축'
+                    await addTransaction({
+                      type: 'income',
+                      amount,
+                      category_id: editTransaction.category_id,
+                      description: `${catName} 회수` + (memo ? ` (${memo})` : ''),
+                      date: new Date().toISOString().split('T')[0],
+                    })
+                    // 2. 기존 저축 삭제
+                    await deleteTransaction(editTransaction.id)
+                    setRawAmount(''); setMemo(''); setEditDate(null)
+                    onClose()
+                  } catch (e: unknown) {
+                    const msg = e instanceof Error ? e.message : JSON.stringify(e)
+                    alert(`회수 실패: ${msg}`)
+                  } finally {
+                    setSaving(false)
+                  }
+                }}
+                className="bg-accent-mint/10 text-accent-mint rounded-xl py-3.5 text-sm font-semibold"
+              >
+                회수하기
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex gap-3 mb-2">
