@@ -99,6 +99,16 @@ export default function RecurringPage() {
       </header>
 
       <div className="px-5 pt-6">
+        {/* 추가 버튼 (상단) */}
+        {!adding && (
+          <button
+            onClick={() => { setAdding(true); setEditingId(null); setAmount(''); setDayOfMonth('10'); setCategoryId(''); setCategoryLabel(''); setDescription('') }}
+            className="w-full mb-4 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
+          >
+            반복 지출 추가하기
+          </button>
+        )}
+
         {/* 기존 반복 지출 목록 */}
         {items.length === 0 && !adding && (
           <p className="text-sm text-muted-foreground text-center py-8">등록된 반복 지출이 없어요</p>
@@ -293,14 +303,7 @@ export default function RecurringPage() {
               onClose={() => setCategoryPickerOpen(false)}
             />
           </div>
-        ) : (
-          <button
-            onClick={() => setAdding(true)}
-            className="w-full mt-4 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
-          >
-            반복 지출 추가하기
-          </button>
-        )}
+        ) : null}
       </div>
     </div>
   )
