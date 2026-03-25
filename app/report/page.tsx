@@ -266,7 +266,7 @@ export default function Report() {
                   <p className="text-sm font-semibold">총자산</p>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); alert('총자산 = 저축 + 잔액\n현재 시점 기준 운용 자산과 가용 가능한 현금의 총합입니다.') }}
+                    onClick={(e) => { e.stopPropagation(); alert("총자산\n운용 중인 모든 투자금과 현금 잔액을 합친 '나의 전체 자산'") }}
                     className="w-4 h-4 rounded-full bg-muted text-muted-foreground text-[10px] flex items-center justify-center"
                   >?</button>
                 </div>
@@ -352,7 +352,7 @@ export default function Report() {
                   <p className="text-sm font-semibold">실질 수입·지출 추이</p>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); alert('실질 수입 = 수입 - 저축\n전체 수입에서 저축을 제외한 자금을 의미합니다.') }}
+                    onClick={(e) => { e.stopPropagation(); alert("실질 수입\n이번 달 수입에서 저축액을 제외한 '실제 활동 가능 금액'") }}
                     className="w-4 h-4 rounded-full bg-muted text-muted-foreground text-[10px] flex items-center justify-center"
                   >?</button>
                 </div>
