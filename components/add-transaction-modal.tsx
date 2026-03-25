@@ -246,10 +246,10 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   onChange={(e) => setEndAmount(e.target.value.replace(/[^0-9]/g, ''))}
                   onFocus={() => setKeypadActive(false)}
                   onBlur={() => setKeypadActive(true)}
-                  className="text-5xl font-bold tabular-nums bg-transparent border-none outline-none text-center text-muted-foreground w-full"
+                  className="text-5xl font-bold tabular-nums bg-transparent border-none outline-none text-center text-foreground"
+                  style={{ width: endAmount ? `${Math.max(2, endAmount.length)}ch` : '6ch' }}
                 />
               </div>
-              <div className="h-px mt-2 mx-8 bg-border" />
             </div>
           )}
 
