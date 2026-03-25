@@ -426,6 +426,9 @@ export default function History() {
               })()}
 
               {/* 주차별 아코디언 */}
+              {weekSummaries.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">아직 내역이 없어요</p>
+              )}
               {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
                 const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
@@ -581,6 +584,9 @@ export default function History() {
 
               {/* 월별 카드 */}
               <div className="flex flex-col gap-3">
+                {activeMonths.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">아직 내역이 없어요</p>
+                )}
                 {activeMonths.map(({ month, income, expense, savings, balance }) => (
                   <div
                     key={month}
