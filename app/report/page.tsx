@@ -439,10 +439,34 @@ export default function Report() {
               <YAxis hide />
               <Tooltip
                 cursor={false}
-                labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
-                formatter={(v, name) => [fmt(Number(v)), name === 'expense' ? '지출' : '수입']}
-                contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: '#9ca3af' }}
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null
+                  const monthNum = parseInt(String(label))
+                  return (
+                    <div className="bg-background rounded-lg px-3 py-2 text-xs">
+                      <p className="text-muted-foreground mb-1">{label}</p>
+                      {payload.map((p: any) => {
+                        const val = Number(p.value)
+                        const key = p.dataKey as string
+                        const prevMonth = monthNum - 1
+                        const prevData = prevMonth > 0 ? yearlyData.find(d => d.label === `${prevMonth}월`) : null
+                        const prevVal = prevData ? Number((prevData as any)[key] || 0) : 0
+                        const diff = val - prevVal
+                        const isExpense = key === 'expense'
+                        return (
+                          <div key={key} className="mb-0.5">
+                            <span style={{ color: p.stroke }}>{isExpense ? '지출' : '수입'} {fmt(val)}</span>
+                            {prevMonth > 0 && (
+                              <span className={`ml-1 ${diff > 0 ? (isExpense ? 'text-accent-coral' : 'text-accent-blue') : (isExpense ? 'text-accent-blue' : 'text-accent-coral')}`}>
+                                {diff >= 0 ? '↑' : '↓'}{fmt(Math.abs(diff))}
+                              </span>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                }}
               />
               {(trendMode === 'expense' || trendMode === 'all') && (
                 <Line type="monotone" dataKey="expense" stroke="#CF6679" strokeWidth={2} dot={{ r: 3, fill: '#CF6679' }} connectNulls />
