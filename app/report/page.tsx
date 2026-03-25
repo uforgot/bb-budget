@@ -205,7 +205,7 @@ export default function Report() {
   const yearSavings = transactions.filter(t => t.type === 'savings' && t.date.startsWith(String(curYear)) && !t.end_date).reduce((s, t) => s + t.amount, 0)
   const yearBalance = yearIncome - yearExpense
 
-  // ─── 순자산 추이 ──────────────────────────────────────
+  // ─── 총자산 추이 ──────────────────────────────────────
   const netWorthData: { label: string; value: number }[] = []
   let cumIncome = 0
   let cumExpense = 0
@@ -262,7 +262,14 @@ export default function Report() {
             const netPct = janValue > 0 ? Math.round(Math.abs(netDiff / janValue) * 100) : 0
             return (
               <div className="flex-1 text-left pr-1">
-                <p className="text-sm font-semibold">순자산</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-sm font-semibold">총자산</p>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); alert('총자산 = 저축 + 잔액\n현재 시점 기준 운용 자산과 가용 가능한 현금의 총합입니다.') }}
+                    className="w-4 h-4 rounded-full bg-muted text-muted-foreground text-[10px] flex items-center justify-center"
+                  >?</button>
+                </div>
                 <div className="flex items-baseline gap-2">
                   <p className="text-lg font-bold tabular-nums text-foreground">{fmt(nowValue)}</p>
                   <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 {now.getDate()}일 기준</span>
@@ -342,16 +349,16 @@ export default function Report() {
             return (
               <div className="flex-1 text-left pr-1">
                 <div className="flex items-center gap-1">
-                  <p className="text-sm font-semibold">실수입·지출 추이</p>
+                  <p className="text-sm font-semibold">실질 수입·지출 추이</p>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); alert('실수입 = 수입 - 저축\n실제로 쓸 수 있는 돈을 의미합니다.') }}
+                    onClick={(e) => { e.stopPropagation(); alert('실질 수입 = 수입 - 저축\n전체 수입에서 저축을 제외한 자금을 의미합니다.') }}
                     className="w-4 h-4 rounded-full bg-muted text-muted-foreground text-[10px] flex items-center justify-center"
                   >?</button>
                 </div>
                 <div className="flex items-baseline gap-2">
                   <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(yearIncome - yearSavings)}</p>
-                  <span className="text-[10px] text-muted-foreground">{curYear}년 누적 실수입</span>
+                  <span className="text-[10px] text-muted-foreground">{curYear}년 누적 실질 수입</span>
                 </div>
                 <div className="flex items-baseline gap-2">
                   <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(yearExpense)}</p>
