@@ -349,7 +349,7 @@ export default function Report() {
             return (
               <div className="flex-1 text-left pr-1">
                 <div className="flex items-center gap-1 mb-1">
-                  <p className="text-sm font-semibold">실질 수입·지출 추이</p>
+                  <p className="text-sm font-semibold">연간 실질 수입 · 지출</p>
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); alert("실질 수입\n이번 달 수입에서 저축액을 제외한 '실제 활동 가능 금액'") }}
