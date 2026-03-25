@@ -75,6 +75,7 @@ export default function History() {
   const [cameFromMonthly, setCameFromMonthly] = useState(false)
   const [cameFromYearly, setCameFromYearly] = useState(false)
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set())
+  const [autoExpanded, setAutoExpanded] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -357,9 +358,10 @@ export default function History() {
               ? totalWeeks  // 과거 월은 전부 표시
               : 0           // 미래 월은 표시 안 함
 
-          // 최신 주차 기본 펼침
-          if (expandedWeeks.size === 0 && currentWeekNum > 0) {
+          // 최신 주차 기본 펼침 (최초 1회만)
+          if (!autoExpanded && expandedWeeks.size === 0 && currentWeekNum > 0) {
             setExpandedWeeks(new Set([currentWeekNum]))
+            setAutoExpanded(true)
           }
 
           const weekSummaries = Array.from({ length: totalWeeks }, (_, i) => {
@@ -378,11 +380,11 @@ export default function History() {
             <div className="flex flex-col mt-2">
               {/* 월 헤더 + 좌우 화살표 */}
               <div className="flex items-center justify-between px-5 py-3">
-                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()) /* 다음 렌더에서 최신 주차 자동 펼침 */ }} className="text-muted-foreground p-1">
+                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="text-muted-foreground p-1">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
                 <span className="text-lg font-bold">{targetYear}년 {actualMonth}월</span>
-                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1">
+                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="text-muted-foreground p-1">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
               </div>
