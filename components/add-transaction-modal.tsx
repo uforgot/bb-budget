@@ -255,7 +255,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
           {/* 최근 카테고리 chip */}
           {!editTransaction && recentCategories.length > 0 && (
-            <div className="mb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
+            <div className="mb-3 flex gap-1.5 flex-wrap justify-center">
               {recentCategories.map(rc => (
                 <button
                   key={rc.id}
@@ -272,7 +272,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       setType(reverseMap[dbType] || null)
                     }
                   }}
-                  className={`text-[10px] px-2.5 py-1 rounded-full transition-colors whitespace-nowrap flex-shrink-0 ${
+                  className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${
                     categoryId === rc.id
                       ? 'bg-accent-blue/20 text-accent-blue'
                       : 'bg-surface text-muted-foreground'
