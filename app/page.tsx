@@ -65,19 +65,19 @@ export default function Home() {
   return (
     <div className="min-h-dvh bg-background pb-32">
       <div className="sticky top-0 z-30 bg-background px-5 border-b border-border">
-        <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="가용 현금" />
+        <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="잔액" />
       </div>
 
       <div className="px-5">
 
         {/* 금월 수입/지출 */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between px-5 py-2">
-            <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">금월 수입</span>
+        <div className="bg-surface rounded-[18px] mb-4">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <span className="text-sm text-muted-foreground">금월 수입</span>
             <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
           </div>
-          <div className="flex items-center justify-between px-5 py-2">
-            <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">금월 지출</span>
+          <div className="flex items-center justify-between px-4 py-3">
+            <span className="text-sm text-muted-foreground">금월 지출</span>
             <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
           </div>
         </div>
