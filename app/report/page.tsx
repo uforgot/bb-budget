@@ -548,6 +548,7 @@ export default function Report() {
                     {/* 2depth 연간 라인 차트 */}
                     <ResponsiveContainer width="100%" height={200}>
                       <LineChart data={eChartData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
                         <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
                         <YAxis hide />
                         <Tooltip
@@ -640,6 +641,7 @@ export default function Report() {
                     {/* 2depth 연간 라인 차트 */}
                     <ResponsiveContainer width="100%" height={200}>
                       <LineChart data={iChartData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
                         <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
                         <YAxis hide />
                         <Tooltip
