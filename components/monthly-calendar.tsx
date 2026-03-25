@@ -132,11 +132,11 @@ function MonthGrid({
             <div
               key={day}
               onClick={() => onDayClick(year, month, day)}
-              className={`relative flex flex-col items-center cursor-pointer py-1.5 h-[52px] rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors ${
                 selected ? 'bg-accent' : ''
               }`}
             >
-              <span className="relative flex items-center justify-center size-6">
+              <span className="relative flex items-center justify-center size-6 flex-shrink-0">
                 {isToday && <span className="absolute inset-0 rounded-full bg-primary" />}
                 <span
                   className={`relative text-sm tabular-nums leading-none ${
@@ -146,7 +146,7 @@ function MonthGrid({
                   {day}
                 </span>
               </span>
-              <div className="mt-0.5 flex flex-col items-center gap-0">
+              <div className="flex flex-col items-center gap-0 mt-0.5">
                 {(dayData?.income ?? 0) > 0 && (
                   <span className="text-[8px] tabular-nums text-accent-blue leading-tight">
                     {formatAmount(dayData!.income!)}
