@@ -265,7 +265,7 @@ export default function Report() {
                   <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 {now.getDate()}일 기준</span>
                 </div>
                 <span className={`text-xs ${netDiff >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                  1월 대비 {netDiff >= 0 ? '↑' : '↓'} {netPct}% · {netDiff >= 0 ? '+' : ''}{fmt(netDiff)}
+                  연초 대비 {netDiff >= 0 ? '↑' : '↓'} {netPct}% · {netDiff >= 0 ? '+' : ''}{fmt(netDiff)}
                 </span>
               </div>
             )
