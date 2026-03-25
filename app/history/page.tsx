@@ -403,7 +403,7 @@ export default function History() {
                 const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
                 const monthBalance = cumIncome - cumExpense - cumSavings
                 return (
-                  <div className="mb-2">
+                  <div className="mb-4">
                     <div className="flex items-center justify-between px-5 py-2">
                       <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{actualMonth}월 수입</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
@@ -425,8 +425,7 @@ export default function History() {
                 )
               })()}
 
-              {/* 주차별 아코디언 — 연간 월별 카드와 같은 간격 */}
-              <div className="mt-4" />
+              {/* 주차별 아코디언 */}
               {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
                 const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
