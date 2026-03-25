@@ -290,7 +290,7 @@ export default function Report() {
           </div>
 
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={yearlyData} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+            <LineChart data={yearlyData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
               <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
               <YAxis hide />
