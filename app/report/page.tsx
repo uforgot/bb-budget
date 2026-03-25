@@ -320,7 +320,6 @@ export default function Report() {
 
         {/* ── 카드 1: N월 지출 ───────────────────────── */}
         <Card
-          defaultOpen
           header={(open) => (
             <div className="flex-1 flex items-center justify-between pr-1">
               <div className="text-left">
