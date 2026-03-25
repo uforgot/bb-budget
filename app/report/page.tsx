@@ -196,7 +196,7 @@ export default function Report() {
         <section className="bg-surface rounded-[18px] px-5 py-4 mb-4">
           <h2 className="text-sm font-semibold mb-3">월별 카테고리별 지출</h2>
           {(() => {
-            const CAT_COLORS = ['#CF6679', '#5865F2', '#43B581', '#FAA61A', '#7289DA', '#9B59B6', '#E67E22', '#1ABC9C']
+            const CAT_COLORS = ['#CF6679', '#5865F2', '#43B581', '#7289DA', '#9B59B6', '#1ABC9C', '#E67E22', '#2ECC71']
 
             // 전체 기간 TOP 5 카테고리 (고정 색상 배정)
             const allCatExpense = new Map<string, number>()
