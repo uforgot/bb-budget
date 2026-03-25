@@ -187,9 +187,9 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-md mx-auto p-5">
+        <div className="w-full max-w-md mx-auto px-5 pt-4">
           {/* 날짜 */}
-          <div className="relative mb-6 mt-4 flex justify-center items-center gap-2">
+          <div className="relative mb-6 flex justify-center items-center gap-2">
             <label className="text-sm text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
               <span>{formatDateDisplay(date)}</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
