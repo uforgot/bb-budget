@@ -307,7 +307,7 @@ export default function Report() {
                     <YAxis hide />
                     <Tooltip
                       cursor={false}
-                      labelFormatter={(v) => `${v}월`}
+                      labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
                       formatter={(v, name) => [fmt(Number(v)), name === 'cash' ? '잔액' : '저축']}
                       contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
                       labelStyle={{ color: '#9ca3af' }}
@@ -341,7 +341,14 @@ export default function Report() {
             const hasLastYear = prevYearIncome > 0 || prevYearExpense > 0
             return (
               <div className="flex-1 text-left pr-1">
-                <p className="text-sm font-semibold">실수입·지출 추이</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-sm font-semibold">실수입·지출 추이</p>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); alert('실수입 = 수입 - 저축\n실제로 쓸 수 있는 돈을 의미합니다.') }}
+                    className="w-4 h-4 rounded-full bg-muted text-muted-foreground text-[10px] flex items-center justify-center"
+                  >?</button>
+                </div>
                 <div className="flex items-baseline gap-2">
                   <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(yearIncome - yearSavings)}</p>
                   <span className="text-[10px] text-muted-foreground">{curYear}년 누적 실수입</span>
@@ -382,7 +389,7 @@ export default function Report() {
               <YAxis hide />
               <Tooltip
                 cursor={false}
-                labelFormatter={(v) => `${v}월`}
+                labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
                 formatter={(v, name) => [fmt(Number(v)), name === 'expense' ? '지출' : '수입']}
                 contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
                 labelStyle={{ color: '#9ca3af' }}
