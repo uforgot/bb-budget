@@ -506,35 +506,20 @@ export default function History() {
           const yearTxs = transactions.filter(t => new Date(t.date).getFullYear() === targetYear)
           const yearTotal = yearTxs.reduce((sum, t) => t.type === 'expense' ? sum - t.amount : sum + t.amount, 0)
 
-          // 월별 요약 — 자산 변동 포함
+          // 월별 요약
           const monthSummaries = Array.from({ length: 12 }, (_, i) => {
             const month = i + 1
-            const monthEnd = `${targetYear}-${String(month).padStart(2,'0')}-${String(new Date(targetYear, month, 0).getDate()).padStart(2,'0')}`
-            // 해당 월 말까지 누적 자산
-            const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEnd).reduce((s, t) => s + t.amount, 0)
-            const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEnd).reduce((s, t) => s + t.amount, 0)
-            const assets = cumIncome - cumExpense
-            return { month, assets }
+            const mTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === month)
+            const income = mTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+            const expense = mTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+            const balance = income - expense
+            return { month, income, expense, balance, hasData: mTxs.length > 0 }
           })
 
-          // 변동 계산 (해당 월 수입-지출)
-          const withDelta = monthSummaries.map((m) => {
-            const monthTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === m.month)
-            const monthInc = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-            const monthExp = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-            const delta = monthInc - monthExp
-            return { ...m, delta }
-          })
+          const yearIncome = yearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+          const yearExpense = yearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
 
-          // 데이터 있는 월만 (수입 또는 지출이 있는)
-          const activeMonths = withDelta.filter(m => {
-            const monthTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === m.month)
-            return monthTxs.length > 0
-          })
-
-          const formatCompactAmt = (v: number) => {
-            return v.toLocaleString()
-          }
+          const activeMonths = monthSummaries.filter(m => m.hasData)
 
           return (
             <div className="flex flex-col mt-2">
@@ -549,29 +534,54 @@ export default function History() {
                 </button>
               </div>
 
-              {/* 월별 리스트 */}
-              {activeMonths.map(({ month, assets, delta }, idx) => (
-                <div key={month}>
-                  {idx > 0 && <div className="border-t border-border mx-5 my-1" />}
+              {/* 연간 수입/지출 — 2열 박스 */}
+              <div className="flex gap-3 mb-4 px-0">
+                <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
+                  <p className="text-xs text-muted-foreground mb-1">{targetYear}년 수입</p>
+                  <p className="text-sm font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</p>
+                </div>
+                <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
+                  <p className="text-xs text-muted-foreground mb-1">{targetYear}년 지출</p>
+                  <p className="text-sm font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</p>
+                </div>
+              </div>
+
+              {/* 월별 카드 */}
+              <div className="flex flex-col gap-3">
+                {activeMonths.map(({ month, income, expense, balance }) => (
                   <div
+                    key={month}
                     onClick={() => {
                       const now2 = new Date()
                       const diff = (targetYear - now2.getFullYear()) * 12 + (month - (now2.getMonth() + 1))
                       setMonthOffset(diff)
-                      setCameFromYearly(true)
+                      setExpandedWeeks(new Set())
+                      setAutoExpanded(false)
                       setViewMode('monthly')
                     }}
-                    className="flex items-center justify-between px-5 py-3 cursor-pointer active:bg-muted/30"
+                    className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30"
                   >
-                    <span className="text-sm font-semibold w-10 flex-shrink-0">{month}월</span>
-                    <span className={`text-sm font-medium tabular-nums flex-1 ${delta >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                      {delta >= 0 ? '+' : ''}₩{formatCompactAmt(delta)}
-                    </span>
-                    <span className="text-sm tabular-nums text-muted-foreground text-right">₩{formatCompactAmt(assets)}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground ml-2 flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold">{targetYear}년 {month}월</span>
+                      <div className="flex flex-col items-end gap-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-muted-foreground">수입</span>
+                          <span className="text-xs tabular-nums text-accent-blue">₩{income.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-muted-foreground">지출</span>
+                          <span className="text-xs tabular-nums text-accent-coral">₩{expense.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-muted-foreground">잔액</span>
+                          <span className={`text-xs tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )
         })() : null}
