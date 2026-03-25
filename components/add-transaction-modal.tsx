@@ -189,8 +189,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto p-5">
           {/* 날짜 */}
-          <div className="relative mb-4 flex justify-center items-center gap-2">
-            <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
+          <div className="relative mb-6 mt-4 flex justify-center items-center gap-2">
+            <label className="text-sm text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
               <span>{formatDateDisplay(date)}</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                 <path d="m6 9 6 6 6-6" />
@@ -224,14 +224,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
 
           {/* 금액 표시 */}
-          <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(true)}>
+          <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(true)}>
             <div className="flex items-baseline justify-center gap-1">
-              <span className="text-4xl font-bold text-muted-foreground">₩</span>
-              <span className="text-4xl font-bold tabular-nums">
+              <span className="text-5xl font-bold text-muted-foreground">₩</span>
+              <span className="text-5xl font-bold tabular-nums">
                 {formatAmount(rawAmount)}
               </span>
             </div>
-            <div className={`h-px mt-2 mx-8 ${keypadActive ? 'bg-accent-blue' : 'bg-border'}`} />
           </div>
 
           {/* 저축: 만기 금액 — 수정 시에만 표시 */}
@@ -255,39 +254,44 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
           )}
 
-          {/* 유형 + 카테고리 */}
+          {/* 유형 + 카테고리 — 일렬 */}
           <div className="mb-3">
-            <label className="text-xs text-muted-foreground mb-1 block">카테고리</label>
-            <div className="flex gap-2 mb-2">
-              {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => {
-                    if (type !== t) {
-                      setCategoryId('')
-                      setCategoryLabel('카테고리 선택')
-                    }
-                    setType(t)
-                    setCategoryPickerOpen(true)
-                  }}
-                  className={`flex-1 py-3.5 rounded-xl text-sm font-medium transition-colors ${
-                    type === t ? typeColors[t].active : typeColors[t].inactive
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
+            <div className="flex items-center gap-3 mb-3">
+              <label className="text-xs text-muted-foreground flex-shrink-0 w-14">카테고리</label>
+              <div className="flex gap-2 flex-1">
+                {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => {
+                      if (type !== t) {
+                        setCategoryId('')
+                        setCategoryLabel('카테고리 선택')
+                      }
+                      setType(t)
+                      setCategoryPickerOpen(true)
+                    }}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      type === t ? typeColors[t].active : typeColors[t].inactive
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
             </div>
             {categoryId && (
-              <button
-                onClick={() => setCategoryPickerOpen(true)}
-                className="w-full bg-surface rounded-xl px-3 py-3.5 text-sm text-left flex items-center justify-between"
-              >
-                <span>{categoryLabel}</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-14" />
+                <button
+                  onClick={() => setCategoryPickerOpen(true)}
+                  className="flex-1 bg-surface rounded-xl px-3 py-2.5 text-sm text-left flex items-center justify-between"
+                >
+                  <span>{categoryLabel}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+              </div>
             )}
             <CategoryPicker
               open={categoryPickerOpen && type !== null}
@@ -301,9 +305,9 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             />
           </div>
 
-          {/* 메모 */}
-          <div className="mb-4">
-            <label className="text-xs text-muted-foreground mb-1 block">메모</label>
+          {/* 메모 — 일렬 */}
+          <div className="mb-4 flex items-center gap-3">
+            <label className="text-xs text-muted-foreground flex-shrink-0 w-14">메모</label>
             <input
               type="text"
               placeholder="메모를 입력하세요"
@@ -312,7 +316,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onBlur={() => setKeypadActive(true)}
               onFocus={() => setKeypadActive(false)}
               style={{ fontSize: '16px' }}
-              className="w-full bg-surface rounded-xl px-5 py-3.5"
+              className="flex-1 bg-surface rounded-xl px-4 py-2.5"
             />
           </div>
 
