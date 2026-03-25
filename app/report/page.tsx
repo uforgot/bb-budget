@@ -510,7 +510,12 @@ export default function Report() {
                 ) : (
                   <>
                     {/* 카테고리 선택 pill */}
-                    <div className="flex gap-1.5 flex-wrap mb-4">
+                    <div className="flex gap-1.5 flex-wrap mb-4 items-center">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setExpSelectedCats(new Set(eTop5.map(c => c.catId))) }}
+                        className="text-[10px] px-2 py-1 rounded-full bg-border text-muted-foreground"
+                      >↻</button>
                       {eRanked.slice(0, 10).map((cat, i) => {
                         const isSelected = expSelectedCats.has(cat.catId)
                         const color = CAT_COLORS[i % CAT_COLORS.length]
@@ -629,7 +634,12 @@ export default function Report() {
                 ) : (
                   <>
                     {/* 카테고리 선택 pill */}
-                    <div className="flex gap-1.5 flex-wrap mb-4">
+                    <div className="flex gap-1.5 flex-wrap mb-4 items-center">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setIncSelectedCats(new Set(iTop5.map(c => c.catId))) }}
+                        className="text-[10px] px-2 py-1 rounded-full bg-border text-muted-foreground"
+                      >↻</button>
                       {iRanked.slice(0, 10).map((cat, i) => {
                         const isSelected = incSelectedCats.has(cat.catId)
                         const color = CAT_COLORS[i % CAT_COLORS.length]
