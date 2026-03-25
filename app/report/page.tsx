@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import {
   XAxis, YAxis, ResponsiveContainer,
   LineChart, Line, CartesianGrid, Tooltip,
+  BarChart, Bar,
 } from 'recharts'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
@@ -271,9 +272,8 @@ export default function Report() {
             )
           }}
         >
-          {/* 월별 저축+잔액 가로 막대 */}
+          {/* 월별 저축+잔액 세로 스택 막대 */}
           {(() => {
-            // 각 월별 저축(누적) + 잔액 계산
             const monthlyAssets: { label: string; savings: number; cash: number; total: number }[] = []
             let cumI = 0, cumE = 0
             for (const tx of transactions) {
@@ -288,34 +288,30 @@ export default function Report() {
               if (bucket) { cumI += bucket.income; cumE += bucket.expense }
               const hasData = bucket && (bucket.income > 0 || bucket.expense > 0)
               if (!hasData && m > curMonth) {
-                monthlyAssets.push({ label: `${m}월`, savings: 0, cash: 0, total: 0 })
+                monthlyAssets.push({ label: `${m}`, savings: 0, cash: 0, total: 0 })
               } else {
                 const cumSav = transactions.filter(t => t.type === 'savings' && t.date <= `${curYear}-${String(m).padStart(2,'0')}-31` && !t.end_date).reduce((s, t) => s + t.amount, 0)
                 const total = cumI - cumE
                 const cash = total - cumSav
-                monthlyAssets.push({ label: `${m}월`, savings: cumSav, cash, total })
+                monthlyAssets.push({ label: `${m}`, savings: cumSav, cash: Math.max(cash, 0), total })
               }
             }
-            const maxTotal = Math.max(...monthlyAssets.map(d => d.total), 1)
 
             return (
-              <div className="space-y-2">
-                {monthlyAssets.filter(d => d.total > 0).map(d => (
-                  <div key={d.label}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-muted-foreground w-8">{d.label}</span>
-                      <span className="text-xs text-muted-foreground tabular-nums">{fmt(d.total)}</span>
-                    </div>
-                    <div className="h-5 rounded-full bg-border overflow-hidden flex">
-                      {d.total > 0 && (
-                        <>
-                          <div style={{ width: `${(d.cash / maxTotal) * 100}%`, backgroundColor: '#5865F2' }} className="h-full" />
-                          <div style={{ width: `${(d.savings / maxTotal) * 100}%`, backgroundColor: '#43B581' }} className="h-full" />
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
+              <>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={monthlyAssets} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+                    <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
+                    <YAxis hide />
+                    <Tooltip
+                      formatter={(v, name) => [fmt(Number(v)), name === 'cash' ? '잔액' : '저축']}
+                      contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
+                      labelStyle={{ color: '#9ca3af' }}
+                    />
+                    <Bar dataKey="cash" stackId="a" fill="#5865F2" radius={[0, 0, 0, 0]} />
+                    <Bar dataKey="savings" stackId="a" fill="#43B581" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
                 {/* 범례 */}
                 <div className="flex gap-4 mt-3">
                   <div className="flex items-center gap-1.5">
@@ -327,7 +323,7 @@ export default function Report() {
                     <span className="text-xs text-muted-foreground">저축</span>
                   </div>
                 </div>
-              </div>
+              </>
             )
           })()}
         </Card>
