@@ -486,25 +486,6 @@ export default function Report() {
             const eVisible = eRanked.filter(c => expSelectedCats.has(c.catId))
             return (
               <>
-                {/* 월 네비게이션 */}
-                <div className="flex items-center justify-between px-2 py-3">
-                  <button type="button" onClick={(e) => { e.stopPropagation(); setExpMonthOffset(o => o - 1) }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m15 18-6-6 6-6" /></svg>
-                  </button>
-                  <span className="text-lg font-bold">{ey}년 {em}월</span>
-                  <button type="button" onClick={(e) => { e.stopPropagation(); setExpMonthOffset(o => o + 1) }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
-                  </button>
-                </div>
-
-                {/* 총 지출 — 월 아래 */}
-                {eTotal > 0 && (
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm text-muted-foreground">총 지출</span>
-                    <span className="text-sm font-bold tabular-nums text-accent-coral">{fmt(eTotal)}</span>
-                  </div>
-                )}
-
                 {eRanked.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
@@ -610,25 +591,6 @@ export default function Report() {
             const iVisible = iRanked.filter(c => incSelectedCats.has(c.catId))
             return (
               <>
-                {/* 월 네비게이션 */}
-                <div className="flex items-center justify-between px-2 py-3">
-                  <button type="button" onClick={(e) => { e.stopPropagation(); setIncMonthOffset(o => o - 1) }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m15 18-6-6 6-6" /></svg>
-                  </button>
-                  <span className="text-lg font-bold">{iy}년 {im}월</span>
-                  <button type="button" onClick={(e) => { e.stopPropagation(); setIncMonthOffset(o => o + 1) }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
-                  </button>
-                </div>
-
-                {/* 총 수입 — 월 아래 */}
-                {iTotal > 0 && (
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm text-muted-foreground">총 수입</span>
-                    <span className="text-sm font-bold tabular-nums text-accent-blue">{fmt(iTotal)}</span>
-                  </div>
-                )}
-
                 {iRanked.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
