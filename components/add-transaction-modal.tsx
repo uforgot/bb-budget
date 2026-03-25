@@ -442,7 +442,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setSaving(false)
                   }
                 }}
-                className="w-full mt-4 mb-4 py-3 rounded-xl bg-white dark:bg-surface text-sm font-medium text-foreground"
+                className="w-full mt-4 mb-4 py-3.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
               >
                 {saving ? '처리 중...' : '적용하기'}
               </button>
