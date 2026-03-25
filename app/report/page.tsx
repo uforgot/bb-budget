@@ -59,7 +59,7 @@ export default function Report() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
-  const [trendMode, setTrendMode] = useState<'expense' | 'income' | 'all'>('expense')
+  const [trendMode, setTrendMode] = useState<'expense' | 'income' | 'all'>('all')
 
   useEffect(() => {
     ;(async () => {
@@ -257,16 +257,19 @@ export default function Report() {
         <Card
           header={() => (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">{curYear}년 추이</p>
-              <p className={`text-lg font-bold tabular-nums ${yearBalance >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                {yearBalance >= 0 ? '+' : ''}{fmt(yearBalance)}
-              </p>
+              <p className="text-sm font-semibold">순자산</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold tabular-nums text-foreground">{fmt(nowValue)}</p>
+                <span className={`text-xs ${netDiff >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
+                  1월 대비 {netDiff >= 0 ? '+' : ''}{fmt(netDiff)}
+                </span>
+              </div>
             </div>
           )}
         >
           {/* 토글 pill */}
           <div className="flex gap-1 mb-4 bg-border rounded-full p-1 w-fit">
-            {([['expense', '지출'], ['income', '수입'], ['all', '전체']] as const).map(([val, label]) => (
+            {([['all', '전체'], ['expense', '지출'], ['income', '수입']] as const).map(([val, label]) => (
               <button
                 key={val}
                 type="button"
@@ -450,44 +453,7 @@ export default function Report() {
           </div>
         </Card>
 
-        {/* ── 카드 4: 순자산 추이 ─────────────────────── */}
-        <Card
-          header={() => (
-            <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">순자산</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-lg font-bold tabular-nums">{fmt(nowValue)}</span>
-                <span className={`text-xs ${netDiff >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                  1월 대비 {netDiff >= 0 ? '+' : ''}{fmt(netDiff)}
-                </span>
-              </div>
-            </div>
-          )}
-        >
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={netWorthData} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
-              <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip
-                formatter={(v) => [fmt(Number(v)), '순자산']}
-                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: '#9ca3af' }}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#5865F2"
-                strokeWidth={2}
-                dot={{ r: 3, fill: '#5865F2' }}
-                activeDot={{ r: 5 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            1월 대비 {netDiff >= 0 ? '+' : ''}{fmt(netDiff)} 변동
-          </p>
-        </Card>
+
 
       </div>
 
