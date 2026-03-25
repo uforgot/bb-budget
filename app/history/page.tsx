@@ -534,15 +534,15 @@ export default function History() {
                 </button>
               </div>
 
-              {/* 연간 수입/지출 — 2열 박스 */}
-              <div className="flex gap-3 mb-4 px-0">
-                <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
-                  <p className="text-xs text-muted-foreground mb-1">{targetYear}년 수입</p>
-                  <p className="text-sm font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</p>
+              {/* 연간 수입/지출 */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between px-5 py-2">
+                  <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{targetYear}년 수입</span>
+                  <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</span>
                 </div>
-                <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
-                  <p className="text-xs text-muted-foreground mb-1">{targetYear}년 지출</p>
-                  <p className="text-sm font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</p>
+                <div className="flex items-center justify-between px-5 py-2">
+                  <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{targetYear}년 지출</span>
+                  <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</span>
                 </div>
               </div>
 
