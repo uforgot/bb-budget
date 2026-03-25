@@ -561,23 +561,23 @@ export default function History() {
                     }}
                     className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold">{targetYear}년 {month}월</span>
-                      <div className="flex flex-col items-end gap-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-muted-foreground">수입</span>
-                          <span className="text-xs tabular-nums text-accent-blue">₩{income.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-muted-foreground">지출</span>
-                          <span className="text-xs tabular-nums text-accent-coral">₩{expense.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-muted-foreground">잔액</span>
-                          <span className={`text-xs tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
-                        </div>
-                      </div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-base font-semibold">{targetYear}년 {month}월</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">수입</span>
+                        <span className="text-sm tabular-nums text-accent-blue">₩{income.toLocaleString()}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">지출</span>
+                        <span className="text-sm tabular-nums text-accent-coral">₩{expense.toLocaleString()}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">잔액</span>
+                        <span className={`text-sm font-medium tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
+                      </div>
                     </div>
                   </div>
                 ))}
