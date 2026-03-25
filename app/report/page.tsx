@@ -341,16 +341,22 @@ export default function Report() {
               <div className="flex-1 text-left pr-1">
                 <p className="text-sm font-semibold">수입·지출 추이</p>
                 <div className="flex items-baseline gap-2">
-                  <p className="text-[15px] font-bold tabular-nums text-accent-blue">{fmt(yearIncome)}</p>
+                  <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(yearIncome)}</p>
                   <span className="text-[10px] text-muted-foreground">{curYear}년 누적 수입</span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <p className="text-[15px] font-bold tabular-nums text-accent-coral">{fmt(yearExpense)}</p>
+                  <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(yearExpense)}</p>
                   <span className="text-[10px] text-muted-foreground">{curYear}년 누적 지출</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground">
-                  작년 대비 {hasLastYear ? `수입 ${yearIncome >= prevYearIncome ? '↑' : '↓'} ${Math.abs(Math.round(((yearIncome - prevYearIncome) / prevYearIncome) * 100))}% · 지출 ${yearExpense >= prevYearExpense ? '↑' : '↓'} ${Math.abs(Math.round(((yearExpense - prevYearExpense) / prevYearExpense) * 100))}%` : '—'}
-                </span>
+                {hasLastYear ? (
+                  <span className="text-xs text-muted-foreground">
+                    작년 대비 {yearIncome >= prevYearIncome ? '↑' : '↓'} {Math.abs(Math.round(((yearIncome - prevYearIncome) / prevYearIncome) * 100))}% · {yearIncome >= prevYearIncome ? '+' : ''}{fmt(yearIncome - prevYearIncome)}
+                  </span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    작년 대비 — —% · —
+                  </span>
+                )}
               </div>
             )
           }}
