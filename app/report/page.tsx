@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import {
-  BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, LabelList,
+  XAxis, YAxis, ResponsiveContainer,
   LineChart, Line, CartesianGrid, Tooltip,
 } from 'recharts'
 import { BottomNav } from '@/components/bottom-nav'
@@ -180,60 +180,96 @@ export default function Report() {
           </div>
         </div>
 
-        {/* ── 2. 월별 지출 추이 (가로 막대) ──────── */}
+        {/* ── 2. 월별 카테고리 지출 (스택 바 + 범례) ──────── */}
         <section className="bg-surface rounded-[18px] px-5 py-4 mb-4">
-          <h2 className="text-sm font-semibold mb-3">월별 지출 추이</h2>
-          <ResponsiveContainer width="100%" height={last6.length * 40 + 8}>
-            <BarChart data={last6} layout="vertical" margin={{ left: 0, right: 60, top: 0, bottom: 0 }}>
-              <XAxis type="number" hide />
-              <YAxis type="category" dataKey="label" width={36} tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <Bar dataKey="expense" radius={[0, 6, 6, 0]} barSize={20}>
-                {last6.map((entry) => (
-                  <Cell
-                    key={entry.key}
-                    fill={entry.key === curKey ? '#CF6679' : '#CF667940'}
-                  />
-                ))}
-                <LabelList
-                  dataKey="expense"
-                  position="right"
-                  formatter={(v) => fmt(Number(v))}
-                  style={{ fontSize: 11, fill: '#9ca3af' }}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </section>
+          <h2 className="text-sm font-semibold mb-3">월별 카테고리별 지출</h2>
+          {(() => {
+            const CAT_COLORS = ['#CF6679', '#5865F2', '#43B581', '#FAA61A', '#7289DA', '#9B59B6', '#E67E22', '#1ABC9C']
 
-        {/* ── 3. 카테고리별 지출 (div 막대) ──────── */}
-        <section className="bg-surface rounded-[18px] px-5 py-4 mb-4">
-          <h2 className="text-sm font-semibold mb-3">{curMonth}월 카테고리별 지출</h2>
-          {catSorted.length === 0 ? (
-            <p className="text-xs text-muted-foreground">지출 내역이 없어요</p>
-          ) : (
-            <div className="space-y-3">
-              {catSorted.map((cat) => {
-                const pct = catTotal > 0 ? Math.round((cat.amount / catTotal) * 100) : 0
-                const barWidth = Math.max((cat.amount / catMax) * 100, 2)
-                return (
-                  <div key={cat.name}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm">{cat.name}</span>
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {fmt(cat.amount)} · {pct}%
-                      </span>
+            // 전체 기간 TOP 5 카테고리 (고정 색상 배정)
+            const allCatExpense = new Map<string, number>()
+            for (const tx of transactions) {
+              if (tx.type !== 'expense') continue
+              const name = catMap[tx.category_id]?.name || '기타'
+              allCatExpense.set(name, (allCatExpense.get(name) || 0) + tx.amount)
+            }
+            const top5 = [...allCatExpense.entries()]
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 5)
+              .map(([name], i) => ({ name, color: CAT_COLORS[i % CAT_COLORS.length] }))
+            const top5Names = new Set(top5.map(t => t.name))
+            const colorMap = Object.fromEntries(top5.map(t => [t.name, t.color]))
+
+            // 최근 6개월 스택 데이터
+            const stackData = last6.map(({ label, key }) => {
+              const monthTxs = transactions.filter(tx => tx.type === 'expense' && getMonthKey(tx.date) === key)
+              const catAmounts: Record<string, number> = {}
+              let others = 0
+              for (const tx of monthTxs) {
+                const name = catMap[tx.category_id]?.name || '기타'
+                if (top5Names.has(name)) catAmounts[name] = (catAmounts[name] || 0) + tx.amount
+                else others += tx.amount
+              }
+              return { label, ...catAmounts, 기타: others, total: monthTxs.reduce((s, t) => s + t.amount, 0) }
+            })
+
+            return (
+              <>
+                {/* 스택 바 차트 */}
+                <div className="space-y-2 mb-4">
+                  {stackData.map((row) => (
+                    <div key={row.label}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-muted-foreground w-8">{row.label}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{fmt(row.total)}</span>
+                      </div>
+                      <div className="h-5 rounded-full bg-border overflow-hidden flex">
+                        {row.total > 0 && top5.map(({ name, color }) => {
+                          const amount = (row as any)[name] || 0
+                          if (amount === 0) return null
+                          const pct = (amount / row.total) * 100
+                          return (
+                            <div
+                              key={name}
+                              style={{ width: `${pct}%`, backgroundColor: color }}
+                              className="h-full"
+                            />
+                          )
+                        })}
+                        {row.total > 0 && (row as any)['기타'] > 0 && (
+                          <div
+                            style={{ width: `${((row as any)['기타'] / row.total) * 100}%`, backgroundColor: '#4B5563' }}
+                            className="h-full"
+                          />
+                        )}
+                      </div>
                     </div>
-                    <div className="h-2 rounded-full bg-border overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-accent-coral"
-                        style={{ width: `${barWidth}%` }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+                  ))}
+                </div>
+
+                {/* 범례 (TOP 5) */}
+                <div className="space-y-2">
+                  {top5.map(({ name, color }) => {
+                    const curAmount = catExpense.get(
+                      categories.find(c => c.name === name)?.id || ''
+                    ) || 0
+                    const pct = catTotal > 0 ? Math.round((curAmount / catTotal) * 100) : 0
+                    return (
+                      <div key={name} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                          <span className="text-sm">{name}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground tabular-nums">
+                          {fmt(curAmount)} · {pct}%
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )
+          })()}
         </section>
 
         {/* ── 4. 순자산 추이 (라인 차트) ─────────── */}
