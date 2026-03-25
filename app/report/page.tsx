@@ -255,17 +255,21 @@ export default function Report() {
 
         {/* ── 카드 3: 연간 추이 ──────────────────────── */}
         <Card
-          header={() => (
-            <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">순자산</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold tabular-nums text-foreground">{fmt(nowValue)}</p>
+          header={() => {
+            const netPct = janValue > 0 ? Math.round(Math.abs(netDiff / janValue) * 100) : 0
+            return (
+              <div className="flex-1 text-left pr-1">
+                <p className="text-sm font-semibold">순자산</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-lg font-bold tabular-nums text-foreground">{fmt(nowValue)}</p>
+                  <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 {now.getDate()}일 기준</span>
+                </div>
                 <span className={`text-xs ${netDiff >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                  1월 대비 {netDiff >= 0 ? '+' : ''}{fmt(netDiff)}
+                  1월 대비 {netDiff >= 0 ? '↑' : '↓'} {netPct}% · {netDiff >= 0 ? '+' : ''}{fmt(netDiff)}
                 </span>
               </div>
-            </div>
-          )}
+            )
+          }}
         >
           {/* 토글 pill */}
           <div className="flex gap-1 mb-4 bg-border rounded-full p-1 w-fit">
@@ -324,19 +328,23 @@ export default function Report() {
 
         {/* ── 카드 1: N월 지출 ───────────────────────── */}
         <Card
-          header={(open) => (
-            <div className="flex-1 flex items-center justify-between pr-1">
-              <div className="text-left">
-                <p className="text-sm font-semibold">지출 추이</p>
+          header={() => {
+            const expDiff = curData.expense - prevData.expense
+            return (
+            <div className="flex-1 text-left pr-1">
+              <p className="text-sm font-semibold">지출 추이</p>
+              <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(curData.expense)}</p>
+                <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
               </div>
               {expChange.dir !== 'same' && (
                 <span className={`text-xs ${expChange.dir === 'up' ? 'text-accent-coral' : 'text-accent-blue'}`}>
-                  전월 대비 {expChange.dir === 'up' ? '↑' : '↓'} {expChange.pct}%
+                  전월 대비 {expChange.dir === 'up' ? '↑' : '↓'} {expChange.pct}% · {expDiff >= 0 ? '+' : ''}{fmt(expDiff)}
                 </span>
               )}
             </div>
-          )}
+            )
+          }}
         >
           {/* 스택 바 차트 */}
           <div className="space-y-2 mb-4">
@@ -395,19 +403,23 @@ export default function Report() {
 
         {/* ── 카드 2: N월 수입 ───────────────────────── */}
         <Card
-          header={(open) => (
-            <div className="flex-1 flex items-center justify-between pr-1">
-              <div className="text-left">
-                <p className="text-sm font-semibold">수입 추이</p>
+          header={() => {
+            const incDiff = curData.income - prevData.income
+            return (
+            <div className="flex-1 text-left pr-1">
+              <p className="text-sm font-semibold">수입 추이</p>
+              <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(curData.income)}</p>
+                <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
               </div>
               {incChange.dir !== 'same' && (
                 <span className={`text-xs ${incChange.dir === 'up' ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                  전월 대비 {incChange.dir === 'up' ? '↑' : '↓'} {incChange.pct}%
+                  전월 대비 {incChange.dir === 'up' ? '↑' : '↓'} {incChange.pct}% · {incDiff >= 0 ? '+' : ''}{fmt(incDiff)}
                 </span>
               )}
             </div>
-          )}
+            )
+          }}
         >
           {/* 수입 6개월 막대 */}
           <div className="space-y-2 mb-4">
