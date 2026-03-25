@@ -47,6 +47,17 @@ export default function Report() {
 
   const catMap = Object.fromEntries(categories.map(c => [c.id, c]))
 
+  // 1depth 카테고리명 가져오기 (parent가 있으면 parent 이름)
+  function getCatRootName(catId: string): string {
+    const cat = catMap[catId]
+    if (!cat) return '기타'
+    if (cat.parent_id) {
+      const parent = catMap[cat.parent_id]
+      return parent?.name || cat.name
+    }
+    return cat.name
+  }
+
   const now = new Date()
   const curYear = now.getFullYear()
   const curMonth = now.getMonth() + 1
@@ -93,15 +104,16 @@ export default function Report() {
   }
 
   // ─── 카테고리별 지출 ───────────────────────────────
-  const catExpense = new Map<string, number>()
+  // 1depth 기준 합산
+  const catExpenseByName = new Map<string, number>()
   for (const tx of transactions) {
     if (tx.type !== 'expense') continue
     if (getMonthKey(tx.date) !== curKey) continue
-    const catId = tx.category_id
-    catExpense.set(catId, (catExpense.get(catId) || 0) + tx.amount)
+    const name = getCatRootName(tx.category_id)
+    catExpenseByName.set(name, (catExpenseByName.get(name) || 0) + tx.amount)
   }
-  const catSorted = [...catExpense.entries()]
-    .map(([id, amount]) => ({ name: catMap[id]?.name || '기타', amount }))
+  const catSorted = [...catExpenseByName.entries()]
+    .map(([name, amount]) => ({ name, amount }))
     .sort((a, b) => b.amount - a.amount)
   const catTotal = catSorted.reduce((s, c) => s + c.amount, 0)
   const catMax = catSorted[0]?.amount || 1
@@ -190,7 +202,7 @@ export default function Report() {
             const allCatExpense = new Map<string, number>()
             for (const tx of transactions) {
               if (tx.type !== 'expense') continue
-              const name = catMap[tx.category_id]?.name || '기타'
+              const name = getCatRootName(tx.category_id)
               allCatExpense.set(name, (allCatExpense.get(name) || 0) + tx.amount)
             }
             const top5 = [...allCatExpense.entries()]
@@ -206,7 +218,7 @@ export default function Report() {
               const catAmounts: Record<string, number> = {}
               let others = 0
               for (const tx of monthTxs) {
-                const name = catMap[tx.category_id]?.name || '기타'
+                const name = getCatRootName(tx.category_id)
                 if (top5Names.has(name)) catAmounts[name] = (catAmounts[name] || 0) + tx.amount
                 else others += tx.amount
               }
@@ -250,9 +262,7 @@ export default function Report() {
                 {/* 범례 (TOP 5) */}
                 <div className="space-y-2">
                   {top5.map(({ name, color }) => {
-                    // 같은 이름의 카테고리 모든 id에서 합산
-                    const matchIds = categories.filter(c => c.name === name).map(c => c.id)
-                    const curAmount = matchIds.reduce((s, id) => s + (catExpense.get(id) || 0), 0)
+                    const curAmount = catExpenseByName.get(name) || 0
                     const pct = catTotal > 0 ? Math.round((curAmount / catTotal) * 100) : 0
                     return (
                       <div key={name} className="flex items-center justify-between">
