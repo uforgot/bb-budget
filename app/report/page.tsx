@@ -46,12 +46,7 @@ function Card({
         onClick={() => setOpen(o => !o)}
       >
         {header(open)}
-        <span
-          className="text-muted-foreground text-sm ml-2 transition-transform duration-200"
-          style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
-        >
-          ▼
-        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {open && <div className="mt-4">{children}</div>}
     </div>
@@ -189,17 +184,23 @@ export default function Report() {
     .sort((a, b) => b.amount - a.amount)
   const catIncomeTotal = catIncomeSorted.reduce((s, c) => s + c.amount, 0)
 
-  // ─── 연간 추이 (1월~현재) ─────────────────────────────
-  const yearlyData: { label: string; expense: number; income: number }[] = []
-  for (let m = 1; m <= curMonth; m++) {
+  // ─── 연간 추이 (1~12월 전체, 데이터 있는 달만 값) ──────
+  const yearlyData: { label: string; expense: number | null; income: number | null }[] = []
+  for (let m = 1; m <= 12; m++) {
     const key = `${curYear}-${String(m).padStart(2, '0')}`
     const bucket = monthlyMap.get(key)
+    const hasData = bucket && (bucket.income > 0 || bucket.expense > 0)
     yearlyData.push({
       label: `${m}월`,
-      expense: bucket?.expense || 0,
-      income: bucket?.income || 0,
+      expense: hasData ? (bucket?.expense || 0) : null,
+      income: hasData ? (bucket?.income || 0) : null,
     })
   }
+  
+  // 연간 합계
+  const yearIncome = transactions.filter(t => t.type === 'income' && t.date.startsWith(String(curYear))).reduce((s, t) => s + t.amount, 0)
+  const yearExpense = transactions.filter(t => t.type === 'expense' && t.date.startsWith(String(curYear))).reduce((s, t) => s + t.amount, 0)
+  const yearBalance = yearIncome - yearExpense
 
   // ─── 순자산 추이 ──────────────────────────────────────
   const netWorthData: { label: string; value: number }[] = []
@@ -214,14 +215,15 @@ export default function Report() {
     }
   }
 
-  for (let m = 1; m <= curMonth; m++) {
+  for (let m = 1; m <= 12; m++) {
     const key = `${curYear}-${String(m).padStart(2, '0')}`
     const bucket = monthlyMap.get(key)
+    const hasData = bucket && (bucket.income > 0 || bucket.expense > 0)
     if (bucket) {
       cumIncome += bucket.income
       cumExpense += bucket.expense
     }
-    netWorthData.push({ label: `${m}월`, value: cumIncome - cumExpense })
+    netWorthData.push({ label: `${m}월`, value: hasData || m <= curMonth ? cumIncome - cumExpense : null as any })
   }
 
   const janValue = netWorthData[0]?.value || 0
@@ -249,6 +251,72 @@ export default function Report() {
       </div>
 
       <div className="px-5 mt-3">
+
+        {/* ── 카드 3: 연간 추이 ──────────────────────── */}
+        <Card
+          header={() => (
+            <div className="flex-1 text-left pr-1">
+              <p className="text-sm font-semibold">{curYear}년 추이</p>
+              <p className={`text-lg font-bold tabular-nums ${yearBalance >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
+                {yearBalance >= 0 ? '+' : ''}{fmt(yearBalance)}
+              </p>
+            </div>
+          )}
+        >
+          {/* 토글 pill */}
+          <div className="flex gap-1 mb-4 bg-border rounded-full p-1 w-fit">
+            {([['expense', '지출'], ['income', '수입'], ['all', '전체']] as const).map(([val, label]) => (
+              <button
+                key={val}
+                type="button"
+                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  trendMode === val
+                    ? 'bg-surface text-foreground font-semibold'
+                    : 'text-muted-foreground'
+                }`}
+                onClick={() => setTrendMode(val)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={yearlyData} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
+              <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+              <YAxis hide />
+              <Tooltip
+                formatter={(v, name) => [
+                  fmt(Number(v)),
+                  name === 'expense' ? '지출' : '수입',
+                ]}
+                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
+                labelStyle={{ color: '#9ca3af' }}
+              />
+              {(trendMode === 'expense' || trendMode === 'all') && (
+                <Line
+                  type="monotone"
+                  dataKey="expense"
+                  stroke="#CF6679"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: '#CF6679' }}
+                  activeDot={{ r: 5 }}
+                />
+              )}
+              {(trendMode === 'income' || trendMode === 'all') && (
+                <Line
+                  type="monotone"
+                  dataKey="income"
+                  stroke="#5865F2"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: '#5865F2' }}
+                  activeDot={{ r: 5 }}
+                />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
 
         {/* ── 카드 1: N월 지출 ───────────────────────── */}
         <Card
@@ -380,83 +448,6 @@ export default function Report() {
               <p className="text-xs text-muted-foreground text-center">수입 데이터 없음</p>
             )}
           </div>
-        </Card>
-
-        {/* ── 카드 3: 연간 추이 ──────────────────────── */}
-        <Card
-          header={() => (
-            <div className="flex-1 flex items-center gap-3 pr-1">
-              <span className="text-sm font-semibold">{curYear}년 추이</span>
-              <div className="flex-1 max-w-[100px]">
-                <ResponsiveContainer width="100%" height={30}>
-                  <LineChart data={yearlyData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
-                    <Line
-                      type="monotone"
-                      dataKey="expense"
-                      stroke="#CF6679"
-                      strokeWidth={1.5}
-                      dot={false}
-                      isAnimationActive={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          )}
-        >
-          {/* 토글 pill */}
-          <div className="flex gap-1 mb-4 bg-border rounded-full p-1 w-fit">
-            {([['expense', '지출'], ['income', '수입'], ['all', '전체']] as const).map(([val, label]) => (
-              <button
-                key={val}
-                type="button"
-                className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                  trendMode === val
-                    ? 'bg-surface text-foreground font-semibold'
-                    : 'text-muted-foreground'
-                }`}
-                onClick={() => setTrendMode(val)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={yearlyData} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
-              <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip
-                formatter={(v, name) => [
-                  fmt(Number(v)),
-                  name === 'expense' ? '지출' : '수입',
-                ]}
-                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: '#9ca3af' }}
-              />
-              {(trendMode === 'expense' || trendMode === 'all') && (
-                <Line
-                  type="monotone"
-                  dataKey="expense"
-                  stroke="#CF6679"
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: '#CF6679' }}
-                  activeDot={{ r: 5 }}
-                />
-              )}
-              {(trendMode === 'income' || trendMode === 'all') && (
-                <Line
-                  type="monotone"
-                  dataKey="income"
-                  stroke="#5865F2"
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: '#5865F2' }}
-                  activeDot={{ r: 5 }}
-                />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
         </Card>
 
         {/* ── 카드 4: 순자산 추이 ─────────────────────── */}
