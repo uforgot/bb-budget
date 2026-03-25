@@ -492,7 +492,7 @@ export default function Report() {
                   <div key={cat.catId} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-muted-foreground w-12">연간 {i + 1}위</span>
-                      <span className="text-sm">{cat.name}</span>
+                      <span className="text-xs bg-muted px-3 py-1 rounded-full">{cat.name}</span>
                     </div>
                     <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{cat.yearTotal.toLocaleString()}</span>
                   </div>
@@ -588,7 +588,7 @@ export default function Report() {
                   <div key={cat.catId} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-muted-foreground w-12">연간 {i + 1}위</span>
-                      <span className="text-sm">{cat.name}</span>
+                      <span className="text-xs bg-muted px-3 py-1 rounded-full">{cat.name}</span>
                     </div>
                     <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{cat.yearTotal.toLocaleString()}</span>
                   </div>
