@@ -120,23 +120,23 @@ export default function RecurringPage() {
         {adding ? (
           <div className="mt-4 bg-surface rounded-[18px] px-5 py-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-muted-foreground">금액</span>
+              <span className="text-[15px] text-muted-foreground">금액</span>
               <div className="flex items-baseline gap-1">
-                <span className="text-sm text-muted-foreground">₩</span>
+                <span className="text-[15px] text-muted-foreground">₩</span>
                 <input
                   type="text"
                   inputMode="numeric"
                   placeholder="0"
                   value={amount ? parseInt(amount).toLocaleString() : ''}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                  className="text-sm font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
-                  style={{ fontSize: '16px' }}
+                  className="text-[15px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
+                  style={{ fontSize: '15px' }}
                 />
               </div>
             </div>
 
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-muted-foreground">매월</span>
+              <span className="text-[15px] text-muted-foreground">매월</span>
               <div className="flex items-center gap-1">
                 <input
                   type="number"
@@ -144,47 +144,47 @@ export default function RecurringPage() {
                   max="31"
                   value={dayOfMonth}
                   onChange={(e) => setDayOfMonth(e.target.value)}
-                  className="text-sm font-semibold bg-transparent border-none outline-none text-right w-10"
-                  style={{ fontSize: '16px' }}
+                  className="text-[15px] font-semibold bg-transparent border-none outline-none text-right w-10"
+                  style={{ fontSize: '15px' }}
                 />
-                <span className="text-sm text-muted-foreground">일</span>
+                <span className="text-[15px] text-muted-foreground">일</span>
               </div>
             </div>
 
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-muted-foreground">카테고리</span>
+              <span className="text-[15px] text-muted-foreground">카테고리</span>
               <button
                 onClick={() => setCategoryPickerOpen(true)}
-                className="text-sm text-foreground"
+                className="text-[15px] text-foreground"
               >
                 {categoryLabel || '선택'}
               </button>
             </div>
 
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-muted-foreground">메모</span>
+              <span className="text-[15px] text-muted-foreground">메모</span>
               <input
                 type="text"
                 placeholder="월세, 보험 등"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="text-sm bg-transparent border-none outline-none text-right w-40"
-                style={{ fontSize: '16px' }}
+                className="text-[15px] bg-transparent border-none outline-none text-right w-40"
+                style={{ fontSize: '15px' }}
               />
             </div>
 
             <div className="flex gap-3">
               <button
                 onClick={handleAdd}
-                className="flex-1 py-3 rounded-[18px] bg-primary text-primary-foreground text-sm font-semibold"
+                className="flex-1 py-3.5 rounded-[18px] bg-primary text-primary-foreground text-sm font-semibold"
               >
-                {saving ? '저장 중...' : '저장'}
+                {saving ? '저장 중...' : '저장하기'}
               </button>
               <button
                 onClick={() => setAdding(false)}
-                className="flex-1 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground border border-border"
+                className="flex-1 py-3.5 rounded-[18px] bg-muted text-sm font-medium text-muted-foreground"
               >
-                취소
+                취소하기
               </button>
             </div>
 
