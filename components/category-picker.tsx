@@ -163,7 +163,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
             }}
             className="w-full mt-4 mb-4 py-3 rounded-[18px] bg-muted text-sm font-medium text-muted-foreground"
           >
-            카테고리 관리
+            카테고리 관리하기
           </button>
         </div>
       </div>
