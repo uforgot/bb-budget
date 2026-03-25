@@ -61,6 +61,8 @@ export default function Report() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [trendMode, setTrendMode] = useState<'expense' | 'income' | 'all'>('all')
+  const [expMonthOffset, setExpMonthOffset] = useState(0)
+  const [incMonthOffset, setIncMonthOffset] = useState(0)
 
   useEffect(() => {
     ;(async () => {
@@ -133,57 +135,31 @@ export default function Report() {
     last6.push({ label: monthLabel(y, m), expense: bucket?.expense || 0, income: bucket?.income || 0, key })
   }
 
-  // ─── 카테고리별 지출 (이번 달, 1depth) ────────────────
-  const catExpenseByName = new Map<string, number>()
-  for (const tx of transactions) {
-    if (tx.type !== 'expense') continue
-    if (getMonthKey(tx.date) !== curKey) continue
-    const name = getCatRootName(tx.category_id)
-    catExpenseByName.set(name, (catExpenseByName.get(name) || 0) + tx.amount)
+  // ─── 월 오프셋으로 year/month/key 계산 ─────────────────
+  function getOffsetMonth(offset: number) {
+    let m = curMonth + offset
+    let y = curYear
+    while (m <= 0) { m += 12; y -= 1 }
+    while (m > 12) { m -= 12; y += 1 }
+    const key = `${y}-${String(m).padStart(2, '0')}`
+    return { year: y, month: m, key }
   }
-  const catExpenseSorted = [...catExpenseByName.entries()]
-    .map(([name, amount]) => ({ name, amount }))
-    .sort((a, b) => b.amount - a.amount)
-  const catExpenseTotal = catExpenseSorted.reduce((s, c) => s + c.amount, 0)
 
-  // 전체 기간 TOP 5 카테고리 (고정 색상)
-  const allCatExpense = new Map<string, number>()
-  for (const tx of transactions) {
-    if (tx.type !== 'expense') continue
-    const name = getCatRootName(tx.category_id)
-    allCatExpense.set(name, (allCatExpense.get(name) || 0) + tx.amount)
-  }
-  const top5 = [...allCatExpense.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([name], i) => ({ name, color: CAT_COLORS[i % CAT_COLORS.length] }))
-  const top5Names = new Set(top5.map(t => t.name))
-
-  // 스택 바 데이터
-  const stackData = last6.map(({ label, key }) => {
-    const monthTxs = transactions.filter(tx => tx.type === 'expense' && getMonthKey(tx.date) === key)
-    const catAmounts: Record<string, number> = {}
-    let others = 0
-    for (const tx of monthTxs) {
+  // ─── 특정 월의 카테고리별 집계 (1depth) ─────────────────
+  function getCatBreakdown(type: 'expense' | 'income', monthKey: string) {
+    const byName = new Map<string, number>()
+    for (const tx of transactions) {
+      if (tx.type !== type) continue
+      if (getMonthKey(tx.date) !== monthKey) continue
       const name = getCatRootName(tx.category_id)
-      if (top5Names.has(name)) catAmounts[name] = (catAmounts[name] || 0) + tx.amount
-      else others += tx.amount
+      byName.set(name, (byName.get(name) || 0) + tx.amount)
     }
-    return { label, ...catAmounts, _others: others, total: monthTxs.reduce((s, t) => s + t.amount, 0), key }
-  })
-
-  // ─── 카테고리별 수입 (이번 달, 1depth) ────────────────
-  const catIncomeByName = new Map<string, number>()
-  for (const tx of transactions) {
-    if (tx.type !== 'income') continue
-    if (getMonthKey(tx.date) !== curKey) continue
-    const name = getCatRootName(tx.category_id)
-    catIncomeByName.set(name, (catIncomeByName.get(name) || 0) + tx.amount)
+    const sorted = [...byName.entries()]
+      .map(([name, amount]) => ({ name, amount }))
+      .sort((a, b) => b.amount - a.amount)
+    const total = sorted.reduce((s, c) => s + c.amount, 0)
+    return { sorted, total }
   }
-  const catIncomeSorted = [...catIncomeByName.entries()]
-    .map(([name, amount]) => ({ name, amount }))
-    .sort((a, b) => b.amount - a.amount)
-  const catIncomeTotal = catIncomeSorted.reduce((s, c) => s + c.amount, 0)
 
   // ─── 연간 추이 (1~12월 전체, 데이터 있는 달만 값) ──────
   const yearlyData: { label: string; expense: number | null; income: number | null }[] = []
@@ -432,59 +408,57 @@ export default function Report() {
             )
           }}
         >
-          {/* 스택 바 차트 */}
-          <div className="space-y-2 mb-4">
-            {stackData.map((row) => {
-              const isCurrent = row.key === curKey
-              return (
-                <div key={row.label} className={isCurrent ? 'opacity-100' : 'opacity-60'}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-muted-foreground w-8">{row.label}</span>
-                    <span className="text-xs text-muted-foreground tabular-nums">{fmt(row.total)}</span>
-                  </div>
-                  <div className="h-5 rounded-full bg-border overflow-hidden flex">
-                    {row.total > 0 && top5.map(({ name, color }) => {
-                      const amount = (row as Record<string, unknown>)[name] as number || 0
-                      if (amount === 0) return null
-                      const pct = (amount / row.total) * 100
-                      return (
-                        <div
-                          key={name}
-                          style={{ width: `${pct}%`, backgroundColor: color }}
-                          className="h-full"
-                        />
-                      )
-                    })}
-                    {row.total > 0 && row._others > 0 && (
-                      <div
-                        style={{ width: `${(row._others / row.total) * 100}%`, backgroundColor: '#4B5563' }}
-                        className="h-full"
-                      />
-                    )}
-                  </div>
+          {(() => {
+            const { year: ey, month: em, key: eKey } = getOffsetMonth(expMonthOffset)
+            const { sorted: eSorted, total: eTotal } = getCatBreakdown('expense', eKey)
+            const maxAmount = eSorted.length > 0 ? eSorted[0].amount : 1
+            return (
+              <>
+                {/* 월 네비게이션 */}
+                <div className="flex items-center justify-between px-2 py-3">
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setExpMonthOffset(o => o - 1) }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m15 18-6-6 6-6" /></svg>
+                  </button>
+                  <span className="text-lg font-bold">{ey}년 {em}월</span>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setExpMonthOffset(o => o + 1) }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
+                  </button>
                 </div>
-              )
-            })}
-          </div>
 
-          {/* 범례 (TOP 5) */}
-          <div className="space-y-2">
-            {top5.map(({ name, color }) => {
-              const curAmount = catExpenseByName.get(name) || 0
-              const pct = catExpenseTotal > 0 ? Math.round((curAmount / catExpenseTotal) * 100) : 0
-              return (
-                <div key={name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                    <span className="text-sm">{name}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {fmt(curAmount)} · {pct}%
-                  </span>
-                </div>
-              )
-            })}
-          </div>
+                {eSorted.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
+                ) : (
+                  <>
+                    <div className="space-y-3">
+                      {eSorted.map(({ name, amount }, i) => {
+                        const pct = eTotal > 0 ? Math.round((amount / eTotal) * 100) : 0
+                        const barW = (amount / maxAmount) * 100
+                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                        return (
+                          <div key={name}>
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: color }} />
+                                <span className="text-sm">{name}</span>
+                              </div>
+                              <span className="text-xs text-muted-foreground tabular-nums">{fmt(amount)} · {pct}%</span>
+                            </div>
+                            <div className="h-2 rounded-full bg-border overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${barW}%`, backgroundColor: color }} />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                      <span className="text-sm font-semibold">총 지출</span>
+                      <span className="text-sm font-bold tabular-nums text-accent-coral">{fmt(eTotal)}</span>
+                    </div>
+                  </>
+                )}
+              </>
+            )
+          })()}
         </Card>
 
         {/* ── 카드 2: N월 수입 ───────────────────────── */}
@@ -508,52 +482,57 @@ export default function Report() {
             )
           }}
         >
-          {/* 수입 6개월 막대 */}
-          <div className="space-y-2 mb-4">
-            {last6.map(({ label, income, key }) => {
-              const maxIncome = Math.max(...last6.map(d => d.income), 1)
-              const isCurrent = key === curKey
-              return (
-                <div key={label} className={isCurrent ? 'opacity-100' : 'opacity-60'}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-muted-foreground w-8">{label}</span>
-                    <span className="text-xs text-muted-foreground tabular-nums">{fmt(income)}</span>
-                  </div>
-                  <div className="h-5 rounded-full bg-border overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${(income / maxIncome) * 100}%`,
-                        backgroundColor: '#5865F2',
-                      }}
-                    />
-                  </div>
+          {(() => {
+            const { year: iy, month: im, key: iKey } = getOffsetMonth(incMonthOffset)
+            const { sorted: iSorted, total: iTotal } = getCatBreakdown('income', iKey)
+            const maxAmount = iSorted.length > 0 ? iSorted[0].amount : 1
+            return (
+              <>
+                {/* 월 네비게이션 */}
+                <div className="flex items-center justify-between px-2 py-3">
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setIncMonthOffset(o => o - 1) }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m15 18-6-6 6-6" /></svg>
+                  </button>
+                  <span className="text-lg font-bold">{iy}년 {im}월</span>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setIncMonthOffset(o => o + 1) }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
+                  </button>
                 </div>
-              )
-            })}
-          </div>
 
-          {/* 수입 카테고리 리스트 (컬러 범례) */}
-          <div className="space-y-2">
-            {catIncomeSorted.map(({ name, amount }, i) => {
-              const pct = catIncomeTotal > 0 ? Math.round((amount / catIncomeTotal) * 100) : 0
-              const color = CAT_COLORS[i % CAT_COLORS.length]
-              return (
-                <div key={name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                    <span className="text-sm">{name}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {fmt(amount)} · {pct}%
-                  </span>
-                </div>
-              )
-            })}
-            {catIncomeSorted.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center">수입 데이터 없음</p>
-            )}
-          </div>
+                {iSorted.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
+                ) : (
+                  <>
+                    <div className="space-y-3">
+                      {iSorted.map(({ name, amount }, i) => {
+                        const pct = iTotal > 0 ? Math.round((amount / iTotal) * 100) : 0
+                        const barW = (amount / maxAmount) * 100
+                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                        return (
+                          <div key={name}>
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: color }} />
+                                <span className="text-sm">{name}</span>
+                              </div>
+                              <span className="text-xs text-muted-foreground tabular-nums">{fmt(amount)} · {pct}%</span>
+                            </div>
+                            <div className="h-2 rounded-full bg-border overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${barW}%`, backgroundColor: color }} />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                      <span className="text-sm font-semibold">총 수입</span>
+                      <span className="text-sm font-bold tabular-nums text-accent-blue">{fmt(iTotal)}</span>
+                    </div>
+                  </>
+                )}
+              </>
+            )
+          })()}
         </Card>
 
 
