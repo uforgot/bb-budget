@@ -9,165 +9,172 @@
 | Layer | 선택 | 이유 |
 |-------|------|------|
 | Frontend | Next.js + TypeScript + Tailwind | 표준 스택, PWA 지원 |
-| DB | Supabase (`budget` 스키마, bb-todo 프로젝트 공유) | 무료 플랜 제약 |
-| Auth | Supabase Auth | magic link or anonymous |
+| DB | Supabase (public 스키마) | 무료 플랜 |
 | Deploy | Vercel | git push 자동 배포 |
+| Charts | recharts | 리포트 그래프 |
 
-## 작업 현황 (2026-03-24)
+## 컬러 시스템
 
-### 적용 완료
+| 용도 | 변수 | 값 |
+|------|------|-----|
+| 지출 | accent-coral | #CF6679 |
+| 수입 | accent-blue | #5865F2 |
+| 저축 | accent-mint | #2dd4bf |
+| 배경 (다크) | background | #0a0f1a |
+| 카드 (다크) | surface | #141c28 |
+| 버튼/pill (다크) | muted | #1f2937 |
 
-**저축 모달 (add-transaction-modal.tsx)**
-- 만기일/만기금액: 수정 모드에서만 표시 (최초 기록 시 숨김)
+## 작업 현황 (2026-03-26)
 
-**월간 내역 (history/page.tsx)**
-- 주간 탭 삭제 → 월간이 기본 뷰
-- 월간 아코디언 구조: 주차별 헤더(▼/▲) 클릭으로 접기/펼치기
-  - 최신 주차가 상단, 기본 접힌 상태
-  - 오늘 날짜 기준 아직 안 온 주차는 비표시
-  - 펼치면 일별 상세 (요일, 카테고리 pill, 금액, 메모)
-- 월 헤더: "2026년 3월" (연도 포함)
-- 월간 요약 구조:
-  - 금월 수입 (파란 pill) / 금월 지출 (빨간 pill)
-  - 구분선
-  - 자산 (누적수입 - 누적지출)
-    - 운용 자산 (민트) = 활성 저축 합계
-    - 가용 현금 = 자산 - 운용자산
+### 홈 (app/page.tsx)
+- ✅ 최상단: ₩잔액 "잔액" (sticky header)
+- ✅ N월 수입/지출 2열 박스 (달력 스크롤 시 자동 업데이트)
+- ✅ 달력: 세로 터치 슬라이더 (이전/현재/다음 3개월 연결, 6행 고정 컨테이너)
+- ✅ 날짜별 지출(빨간)/수입(파란) 금액 표시 (1만 이상 n만, 미만 풀 표시)
+- ✅ 날짜 클릭 → 상세 내역 (라운드 박스)
+- ✅ "오늘" 버튼 (pill 스타일, 현재 달+날짜로 이동)
+- ✅ Pull to refresh (당겨서 새로고침)
+- ✅ 토/일 컬러 제거 (통일)
+- ✅ 오늘 날짜: 파란 glow + 흰 볼드
 
-**연간 뷰**
-- 심플 한 줄: N월 +₩변동 ₩자산
-- 변동 = 해당 월 수입-지출 (파란/빨간)
-- 자산 = 해당 월 말 누적
-- 클릭 → 해당 월간 뷰 이동, 데이터 있는 월만 표시
+### 월간 내역 (app/history/page.tsx)
+- ✅ 주간 탭 삭제 → 월간 기본 뷰
+- ✅ 월 헤더: "2026년 3월" (연도 포함)
+- ✅ 주차별 아코디언 (▼/▲ 꺽쇠, 최신 주차 기본 펼침)
+- ✅ 오늘 기준 아직 안 온 주차 비표시
+- ✅ 서머리: N월 수입(파란 pill) / N월 지출(빨간 pill) / N월 저축(민트 pill) → 구분선 → 잔액
+- ✅ 저축: 해당 월까지 누적 표시 (1월 저축이 2,3월에도)
+- ✅ 잔액: 누적 수입 - 누적 지출 - 누적 저축
 
-**홈 (page.tsx)**
-- 최상단: ₩가용현금 "가용 현금" (기존 총자산에서 변경)
-- 운용자산/가용현금 박스 삭제
-- 달력 헤더 아래: 금월 수입/지출 pill 스타일
-- 달력 토/일 컬러 제거 (통일)
+### 연간 내역
+- ✅ 연간 수입/지출 pill 서머리
+- ✅ 월별 카드 (최신순, 수입/지출/저축/잔액)
+- ✅ 저축/잔액 누적 기준
+- ✅ 카드 클릭 → 해당 월 월간 뷰 이동
 
-**자산 로직**
-- 초기자산 ₩85,351,278은 1월 1일 수입(income)으로 DB 기록됨
-- 자산 = 누적 수입 - 누적 지출
-- 가용 현금 = 자산 - 운용자산(저축)
-- 운용 자산 = 활성 저축 합계 (예금 + 금)
+### 검색
+- ✅ 내역 화면 탭 바에 🔍 아이콘 (탭 스타일 토글)
+- ✅ 카테고리명, 메모, 금액, "미분류" 검색
+- ✅ 전체 기간 대상, 실시간 필터
+- ✅ 결과 클릭 → 수정 모달
 
-**라벨 통일 (홈 + 월간)**
-- 수입 → 금월 수입, 지출 → 금월 지출
-- 저축 → 운용 자산, 잔고 → 가용 현금
+### 기록하기/수정하기 (components/add-transaction-modal.tsx)
+- ✅ 날짜/금액/카테고리/메모 입력
+- ✅ 최근 카테고리 chip (TOP 5, 토글 on/off, 가운데 정렬)
+- ✅ 금액: text-5xl, 파란 라인 삭제
+- ✅ 카테고리/메모 일렬 레이아웃 (w-14 라벨)
+- ✅ 폰트 text-[15px] 통일
+- ✅ 하단 버튼 여백 40px + safe-area 통일
 
-### 남은 이슈
+### 저축
+- ✅ 저축 기록 시 수입에서 차감 (수입 - 지출 - 저축 = 잔액)
+- ✅ 누적 표시 (1월 저축 → 이후 달에도 계속)
+- ✅ end_date로 종료 관리 (삭제 안 함, 취소선 표시)
+- ✅ 회수 바텀시트 (카테고리 피커 스타일)
+  - 회수일 + 회수 금액 입력
+  - 적용 → income 트랜잭션 생성 + 기존 저축 end_date 기록
+- ✅ 수정 화면: [수정하기] [회수하기] [삭제하기] 일렬
 
-1. **홈 자산/달력 영역 시각적 구분** — 여러 방식 시도 (bg 분리, 라운드, 컬러 변경) → 결론 안 남. 현재 전체 bg-background 단일
-2. **저축 불입/인출 시 자산 연동** — 저축 추가=현금에서 빠짐, 인출=현금 돌아옴. 미구현
-3. **홈 수입/지출 월 전환 시 데이터 연동** — 달력 월 이동 시 해당 월 데이터로 갱신되는지 확인 필요
-4. **달력 가상 스크롤 (재작업 필요)** — react-window 시도했으나 가상 스크롤이 페이지 스크롤을 먹는 문제. 현재는 스와이프 월 전환으로 원복. 다음 방향: 달력 영역을 한 달 고정 높이로 잡고, 그 안에서만 세로 스크롤(가상 스크롤)로 월 이동. 아래 상세 내역은 달력 바깥 페이지 스크롤. react-window는 설치됨.
-5. **연간 뷰 디자인** — 현재 심플 한 줄, 추가 요청 가능
-5. **빵계부(구글 시트) 연동** — 시트 데이터는 앱 DB로 이관 완료. 금 시세 업데이트만 시트에서 계속 (요약 탭 C34:E34)
+### 반복 지출
+- ✅ DB: public.recurring_transactions 테이블
+- ✅ 설정 > 반복 지출 관리 페이지
+- ✅ 매주/매월/매년 선택 (주=요일, 월=일자, 년=날짜)
+- ✅ CRUD (추가/편집/삭제)
+- ✅ 예정 표시: 현재 달+미래 달에 연하게 (확정 안 된 것만)
+- ✅ 자동 확정: 홈 로드 시 날짜 지난 반복 지출 자동 트랜잭션 생성
+- ✅ 카드 클릭 → 편집 모드
 
----
+### 리포트 (app/report/page.tsx)
+- ✅ 4개 카드 아코디언 (기본 닫힘)
+- ✅ **총자산**: 세로 스택 막대 (잔액 파란 + 저축 초록), 1~12월
+- ✅ **연간 실질 수입·지출**: [전체/지출/수입] 토글 라인 차트
+  - 실질 수입 = 수입 - 저축
+  - 커스텀 툴팁 (전월 대비 증감)
+  - 닫힘: 연간 누적 실수입/지출 + 작년 대비
+- ✅ **지출 카테고리별 분석**: 2depth TOP 5 연간 라인 차트
+  - 사용자 선택 pill (on/off 토글 + ↻ 초기화)
+  - 연간 총액 기준 TOP 5 고정
+  - 닫힘: 연간 TOP 3 리스트 (연간 1위/2위/3위)
+- ✅ **수입 카테고리별 분석**: 동일 구조
+- ✅ 물음표(?) 툴팁 (총자산, 실질수입, 지출분석, 수입분석)
+- ✅ 차트 점선 그리드, cursor false 툴팁
+
+### 자산 로직
+- 초기자산 ₩85,351,278 = 1월 1일 수입(income)으로 DB 기록
+- 총자산 = 누적 수입 - 누적 지출
+- 잔액(가용현금) = 총자산 - 운용자산(저축)
+- 운용자산 = 활성 저축 합계 (end_date 없는 것만)
+- 실질 수입 = 수입 - 저축
+
+### 라벨 통일
+- 금월 수입/지출 → N월 수입/지출
+- 저축 → 운용 자산 (자산 컨텍스트)
+- 잔고 → 잔액/가용 현금
+- 상세 내역 → 내역
+
+### 디자인 통일
+- rounded-[18px] 전체 통일
+- 폰트: text-[15px] (입력/버튼), text-sm (라벨)
+- 라이트 모드: surface=#ffffff, muted=#ffffff
+- 다크 모드: surface=#141c28, muted=#1f2937
+- 플로팅 탭 바: 라이트=bg-white/80, 다크=bg-black/85
+- 하단 여백: calc(40px + safe-area) 통일
+
+## 남은 이슈
+
+1. **PWA 아이콘** — icon-192.png, icon-512.png 없음. 이미지 만들어서 public/에 추가 필요
+2. **반복 지출 주기 DB 컬럼** — 현재 day_of_month만 있음. 매주/매년 구분 컬럼 필요 (frequency)
+3. **빵계부 구글 시트** — 금 시세 업데이트만 시트에서 계속 (요약 탭 C34:E34)
+4. **라이트 모드 세부 조정** — 일부 컴포넌트 라이트 대응 미완
+5. **달력 터치 슬라이더** — KIA ControlSlider 방식 적용 완료, 추가 개선 가능
 
 ## Roadmap
 
 ### Phase 0 — 기획 확정 ✅
 - [x] 유리님 요구사항 확인
 - [x] 기존 빵계부 시트 구조 파악
-- [ ] 카카오뱅크 SMS 알림 활성화 (월 300원) 여부 확인
 
 ### Phase 1 — MVP ✅
 - [x] 프로젝트 셋업 (Next.js + Supabase + Vercel)
-- [x] Supabase budget 스키마 + 테이블 생성
-- [x] 수입/지출/저축 수동 입력 (금액, 카테고리, 날짜, 메모)
-- [x] 카테고리 관리 (2depth: 대분류 > 소분류)
-- [x] 월별 달력 뷰 + 수입/지출 합계 요약
-- [x] PWA 설정 (홈화면 추가)
+- [x] Supabase 테이블 생성
+- [x] 수입/지출/저축 수동 입력
+- [x] 카테고리 관리 (2depth)
+- [x] 월별 달력 뷰 + 수입/지출 합계
+- [x] PWA 설정
 - [x] 모바일 퍼스트 UI
-- [x] 저축 기록 (만기일/만기금액은 수정 시에만)
-- [ ] 카드 결제 SMS 자동 파싱 크론 (Mac Messages chat.db → Supabase)
+- [x] 저축 기록 + 회수
 
-### Phase 2 — 데이터 이관 + 뷰 개선 (진행 중)
+### Phase 2 — 뷰 개선 + 분석 ✅
 - [x] Google Sheets 빵계부 데이터 이관
-- [x] 월간 아코디언 (주차별 접기/펼치기)
-- [x] 연간 뷰 (월별 변동/자산 한 줄)
-- [x] 홈 헤더 가용현금 표시
-- [x] 홈 달력 아래 금월 수입/지출 pill 스타일
-- [x] 자산 로직 (누적수입-누적지출, 가용현금=자산-운용자산)
-- [ ] 홈 자산/달력 영역 시각적 구분 (디자인 결정 필요)
-- [ ] 저축 불입/인출 시 자산 연동
-- [ ] 카테고리별 지출 그래프 (pie/bar)
-- [ ] 월별 추이 그래프 (line)
-- [ ] 예산 설정 + 잔여 예산 표시
+- [x] 월간 아코디언 (주차별)
+- [x] 연간 뷰 (월별 카드)
+- [x] 검색 기능
+- [x] 리포트 (총자산, 수입/지출 추이, 카테고리 분석)
+- [x] 반복 지출 관리
+- [x] 예정 내역 표시 + 자동 확정
+- [x] Pull to refresh
+- [x] 최근 카테고리 추천
 
 ### Phase 3 — 확장
-- [ ] 반복 지출 자동 등록 (월세, 보험, 구독 등)
-- [ ] 지출 챌린지
+- [ ] PWA 아이콘 추가
+- [ ] 반복 지출 frequency DB 컬럼
+- [ ] 카드 결제 SMS 자동 파싱
+- [ ] 예산 설정 + 잔여 예산 표시
 - [ ] 2인 공유 (형주 + 유리님)
-- [ ] 영수증 OCR (Naver CLOVA / Google Vision)
 
-## DB Schema (draft)
+## DB 테이블
 
-```sql
-create schema if not exists budget;
+### public.transactions
+- id, type (income/expense/savings), amount, category_id, description, date, created_at, end_date
 
-create table budget.categories (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  icon text,
-  type text not null check (type in ('income', 'expense')),
-  sort_order int default 0,
-  created_at timestamptz default now()
-);
+### public.categories
+- id, name, type, parent_id, icon, sort_order, created_at
 
-create table budget.transactions (
-  id uuid primary key default gen_random_uuid(),
-  type text not null check (type in ('income', 'expense')),
-  amount int not null,
-  category_id uuid references budget.categories(id),
-  description text,
-  date date not null default current_date,
-  source text default 'manual', -- 'manual' | 'sms'
-  receipt_url text,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
+### public.recurring_transactions
+- id, type, amount, category_id, description, day_of_month, active, created_at
 
-create table budget.monthly_budgets (
-  id uuid primary key default gen_random_uuid(),
-  year_month text not null,
-  total_budget int not null,
-  created_at timestamptz default now(),
-  unique(year_month)
-);
-```
-
-## SMS 자동 파싱 (Phase 1 핵심 기능)
-
-형주 Apple 계정으로 유리님 카드 결제 문자 수신 중
-→ Mac Messages.app chat.db 크론 스캔
-→ 카드사 패턴 매칭 (금액, 가맹점, 날짜)
-→ Supabase 자동 등록 + 가맹점→카테고리 매핑
-
-- 카카오뱅크 SMS 알림 활성화 필요 (앱 푸시는 Mac 캡처 불가)
-- 카드사 문자 패턴은 형주가 제공
-
-## References
-
-- [SMTM](https://github.com/2022-Winter-Bootcamp-Team-C/docker) — 영수증 OCR + 그래프 레퍼런스
-- [pink-tracker](https://pink-tracker-dun.vercel.app) — UI 레퍼런스
-- [docs/plan.md](./docs/plan.md) — 상세 기획 및 의사결정 로그
-
-## Setup (형주가 직접 설정)
-
-- [ ] Vercel 프로젝트 생성 + GitHub 연동
-- [ ] Supabase bb-todo 프로젝트에 `budget` 스키마 생성
-- [ ] Vercel 환경변수 설정 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
-
-## UI Library
-
-**shadcn/ui** — pink-tracker에서 유리님이 마음에 들어했던 UI 패키지.
-
-- 공식 사이트: https://ui.shadcn.com
-- GitHub: https://github.com/shadcn-ui/ui
-- 컴포넌트 데모: https://ui.shadcn.com/examples/dashboard
-
-Tailwind 기반, 컴포넌트 소스코드를 직접 프로젝트에 복사하는 방식 (npm 패키지 아님).
+## 빵계부 구글 시트 연동
+- Spreadsheet ID: 1KmxklHl9Zp-UoHAvkryanIyzCtHjOqvVBCm9N-BpZUE
+- 서비스 계정: bb-management-bot@bb-management-488517.iam.gserviceaccount.com
+- 금 시세 업데이트: 요약 탭 C34:E34 (KRX 기준)
+- 가이드: docs/bbang-budget-guide.md
