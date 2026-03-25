@@ -398,7 +398,6 @@ export default function Report() {
                 <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(curData.expense)}</p>
                 <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
               </div>
-              <p className="text-[10px] text-muted-foreground">연간 누적 {fmt(yearExpense)}</p>
               {expChange.dir !== 'same' && (
                 <span className={`text-xs ${expChange.dir === 'up' ? 'text-accent-coral' : 'text-accent-blue'}`}>
                   전월 대비 {expChange.dir === 'up' ? '↑' : '↓'} {expChange.pct}% · {expDiff >= 0 ? '+' : ''}{fmt(expDiff)}
@@ -425,6 +424,14 @@ export default function Report() {
                   </button>
                 </div>
 
+                {/* 총 지출 — 월 아래 */}
+                {eTotal > 0 && (
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm text-muted-foreground">총 지출</span>
+                    <span className="text-sm font-bold tabular-nums text-accent-coral">{fmt(eTotal)}</span>
+                  </div>
+                )}
+
                 {eSorted.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
@@ -450,10 +457,7 @@ export default function Report() {
                         )
                       })}
                     </div>
-                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
-                      <span className="text-sm font-semibold">총 지출</span>
-                      <span className="text-sm font-bold tabular-nums text-accent-coral">{fmt(eTotal)}</span>
-                    </div>
+
                   </>
                 )}
               </>
@@ -472,7 +476,6 @@ export default function Report() {
                 <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(curData.income)}</p>
                 <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
               </div>
-              <p className="text-[10px] text-muted-foreground">연간 누적 {fmt(yearIncome)}</p>
               {incChange.dir !== 'same' && (
                 <span className={`text-xs ${incChange.dir === 'up' ? 'text-accent-blue' : 'text-accent-coral'}`}>
                   전월 대비 {incChange.dir === 'up' ? '↑' : '↓'} {incChange.pct}% · {incDiff >= 0 ? '+' : ''}{fmt(incDiff)}
@@ -499,6 +502,14 @@ export default function Report() {
                   </button>
                 </div>
 
+                {/* 총 수입 — 월 아래 */}
+                {iTotal > 0 && (
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm text-muted-foreground">총 수입</span>
+                    <span className="text-sm font-bold tabular-nums text-accent-blue">{fmt(iTotal)}</span>
+                  </div>
+                )}
+
                 {iSorted.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
@@ -524,10 +535,7 @@ export default function Report() {
                         )
                       })}
                     </div>
-                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
-                      <span className="text-sm font-semibold">총 수입</span>
-                      <span className="text-sm font-bold tabular-nums text-accent-blue">{fmt(iTotal)}</span>
-                    </div>
+
                   </>
                 )}
               </>
