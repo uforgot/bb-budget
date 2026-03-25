@@ -40,7 +40,7 @@ function Card({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="bg-surface rounded-[18px] px-5 py-4 mb-3">
+    <div className="bg-surface rounded-[18px] px-5 py-5 mb-3">
       <button
         type="button"
         className="w-full flex items-center justify-between"
