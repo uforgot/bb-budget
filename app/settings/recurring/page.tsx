@@ -10,7 +10,13 @@ export default function RecurringPage() {
   const [items, setItems] = useState<RecurringTransaction[]>([])
   const [adding, setAdding] = useState(false)
   const [amount, setAmount] = useState('')
+  const [frequency, setFrequency] = useState<'weekly' | 'monthly' | 'yearly'>('monthly')
   const [dayOfMonth, setDayOfMonth] = useState('10')
+  const [dayOfWeek, setDayOfWeek] = useState('1') // 0=일, 1=월...
+  const [yearDate, setYearDate] = useState(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  })
   const [categoryId, setCategoryId] = useState('')
   const [categoryLabel, setCategoryLabel] = useState('')
   const [description, setDescription] = useState('')
@@ -36,12 +42,15 @@ export default function RecurringPage() {
     }
     setSaving(true)
     try {
+      const dayVal = frequency === 'weekly' ? parseInt(dayOfWeek, 10)
+        : frequency === 'monthly' ? parseInt(dayOfMonth, 10)
+        : parseInt(yearDate.split('-')[2], 10)
       await addRecurringTransaction({
         type: 'expense',
         amount: numAmount,
         category_id: categoryId,
         description: description || null,
-        day_of_month: parseInt(dayOfMonth, 10),
+        day_of_month: dayVal,
       })
       setAmount('')
       setDayOfMonth('10')
@@ -77,7 +86,7 @@ export default function RecurringPage() {
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <h1 className="text-[17px] font-semibold">반복 지출</h1>
+        <h1 className="text-[17px] font-semibold">반복 지출 관리</h1>
         <div className="w-8" />
       </header>
 
@@ -135,21 +144,84 @@ export default function RecurringPage() {
               </div>
             </div>
 
+            {/* 주기 선택 */}
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[15px] text-muted-foreground">매월</span>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="1"
-                  max="31"
-                  value={dayOfMonth}
-                  onChange={(e) => setDayOfMonth(e.target.value)}
-                  className="text-[15px] font-semibold bg-transparent border-none outline-none text-right w-10"
-                  style={{ fontSize: '15px' }}
-                />
-                <span className="text-[15px] text-muted-foreground">일</span>
+              <span className="text-[15px] text-muted-foreground">주기</span>
+              <div className="flex gap-1.5">
+                {(['weekly', 'monthly', 'yearly'] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setFrequency(f)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      frequency === f ? 'bg-accent-blue/20 text-accent-blue' : 'bg-surface text-muted-foreground'
+                    }`}
+                  >
+                    {f === 'weekly' ? '매주' : f === 'monthly' ? '매월' : '매년'}
+                  </button>
+                ))}
               </div>
             </div>
+
+            {/* 주기별 날짜 선택 */}
+            {frequency === 'weekly' && (
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[15px] text-muted-foreground">요일</span>
+                <div className="flex gap-1">
+                  {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setDayOfWeek(String(i))}
+                      className={`w-8 h-8 rounded-full text-xs font-medium transition-colors ${
+                        dayOfWeek === String(i) ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground'
+                      }`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {frequency === 'monthly' && (
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[15px] text-muted-foreground">매월</span>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={dayOfMonth}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9]/g, '')
+                      if (v === '' || (parseInt(v) >= 1 && parseInt(v) <= 31)) setDayOfMonth(v)
+                    }}
+                    className="text-[15px] font-semibold bg-transparent border-none outline-none text-right w-10"
+                    style={{ fontSize: '15px' }}
+                  />
+                  <span className="text-[15px] text-muted-foreground">일</span>
+                </div>
+              </div>
+            )}
+            {frequency === 'yearly' && (
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[15px] text-muted-foreground">날짜</span>
+                <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
+                  <span>{yearDate ? (() => {
+                    const d = new Date(yearDate + 'T00:00:00')
+                    return `${d.getMonth() + 1}월 ${d.getDate()}일`
+                  })() : '선택'}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                  <input
+                    type="date"
+                    value={yearDate}
+                    onChange={(e) => e.target.value && setYearDate(e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    style={{ fontSize: '16px' }}
+                  />
+                </label>
+              </div>
+            )}
 
             <div className="flex items-center justify-between mb-3">
               <span className="text-[15px] text-muted-foreground">카테고리</span>
@@ -165,7 +237,7 @@ export default function RecurringPage() {
               <span className="text-[15px] text-muted-foreground">메모</span>
               <input
                 type="text"
-                placeholder="월세, 보험 등"
+                placeholder="메모를 입력하세요"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="text-[15px] bg-transparent border-none outline-none text-right w-40"
@@ -204,7 +276,7 @@ export default function RecurringPage() {
             onClick={() => setAdding(true)}
             className="w-full mt-4 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
           >
-            + 반복 지출 추가
+            반복 지출 추가하기
           </button>
         )}
       </div>
