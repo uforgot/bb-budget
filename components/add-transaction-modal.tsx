@@ -205,8 +205,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </label>
             {type && TYPE_MAP[type] === 'savings' && editTransaction && (
               <>
-                <span className="text-xs text-muted-foreground">—</span>
-                <label className="text-xs text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
+                <span className="text-sm text-muted-foreground">—</span>
+                <label className="text-sm text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
                   <span>{endDate ? formatDateDisplay(endDate) : '만기일 설정'}</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                     <path d="m6 9 6 6 6-6" />
@@ -235,9 +235,9 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
           {/* 저축: 만기 금액 — 수정 시에만 표시 */}
           {type && TYPE_MAP[type] === 'savings' && editTransaction && (
-            <div className="mb-4 cursor-pointer" onClick={() => setKeypadActive(false)}>
+            <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(false)}>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-bold text-muted-foreground">₩</span>
+                <span className="text-5xl font-bold text-muted-foreground">₩</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -246,8 +246,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   onChange={(e) => setEndAmount(e.target.value.replace(/[^0-9]/g, ''))}
                   onFocus={() => setKeypadActive(false)}
                   onBlur={() => setKeypadActive(true)}
-                  style={{ fontSize: '36px' }}
-                  className="font-bold tabular-nums bg-transparent border-none outline-none text-center text-muted-foreground w-full"
+                  className="text-5xl font-bold tabular-nums bg-transparent border-none outline-none text-center text-muted-foreground w-full"
                 />
               </div>
               <div className="h-px mt-2 mx-8 bg-border" />
