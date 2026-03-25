@@ -147,14 +147,14 @@ function MonthGrid({
                 </span>
               </span>
               <div className="flex flex-col items-center gap-0 mt-0.5">
-                {(dayData?.income ?? 0) > 0 && (
-                  <span className="text-[8px] tabular-nums text-accent-blue leading-tight">
-                    {formatAmount(dayData!.income!)}
-                  </span>
-                )}
                 {(dayData?.expense ?? 0) > 0 && (
                   <span className="text-[8px] tabular-nums text-accent-coral leading-tight">
                     {formatAmount(dayData!.expense!)}
+                  </span>
+                )}
+                {(dayData?.income ?? 0) > 0 && (
+                  <span className="text-[8px] tabular-nums text-accent-blue leading-tight">
+                    {formatAmount(dayData!.income!)}
                   </span>
                 )}
               </div>
