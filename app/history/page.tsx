@@ -88,7 +88,11 @@ export default function History() {
         ...Array.from(activeFilters).map(t => getTransactions({ type: TAB_DB_MAP[t] })),
       ])
       setCategories(cats)
-      setTransactions(results.flat().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
+      setTransactions(results.flat().sort((a, b) => {
+        const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime()
+        if (dateDiff !== 0) return dateDiff
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      }))
     } catch (e) {
       console.error('내역 로드 실패:', e)
     }
@@ -409,7 +413,11 @@ export default function History() {
               {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
                 const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
-                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                  .sort((a, b) => {
+                    const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime()
+                    if (dateDiff !== 0) return dateDiff
+                    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                  })
                 const weekNonSavingsTxs = weekTxs.filter(t => t.type !== 'savings')
 
                 return (
