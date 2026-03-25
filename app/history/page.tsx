@@ -396,7 +396,11 @@ export default function History() {
               {/* 이번 달 수입/지출/저축/잔액 */}
               {(() => {
                 const monthSavingsAmt = monthTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
-                const monthBalance = monthIncome - monthExpense - monthSavingsAmt
+                // 잔액 = 누적수입 - 누적지출 - 누적저축 (해당 월 말까지)
+                const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const monthBalance = cumIncome - cumExpense - cumSavings
                 return (
                   <div className="mb-2">
                     <div className="flex items-center justify-between px-5 py-2">
