@@ -260,11 +260,17 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 <button
                   key={rc.id}
                   onClick={() => {
-                    setCategoryId(rc.id)
-                    setCategoryLabel(rc.label)
-                    const dbType = rc.type as 'income' | 'expense' | 'savings'
-                    const reverseMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
-                    setType(reverseMap[dbType] || null)
+                    if (categoryId === rc.id) {
+                      setCategoryId('')
+                      setCategoryLabel('카테고리 선택')
+                      setType(null)
+                    } else {
+                      setCategoryId(rc.id)
+                      setCategoryLabel(rc.label)
+                      const dbType = rc.type as 'income' | 'expense' | 'savings'
+                      const reverseMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
+                      setType(reverseMap[dbType] || null)
+                    }
                   }}
                   className={`text-[10px] px-2.5 py-1 rounded-full transition-colors whitespace-nowrap flex-shrink-0 ${
                     categoryId === rc.id
