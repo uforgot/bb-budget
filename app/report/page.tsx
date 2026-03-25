@@ -227,7 +227,8 @@ export default function Report() {
   }
 
   const janValue = netWorthData[0]?.value || 0
-  const nowValue = netWorthData[netWorthData.length - 1]?.value || 0
+  const lastWithData = netWorthData.filter(d => d.value !== null)
+  const nowValue = lastWithData[lastWithData.length - 1]?.value || 0
   const netDiff = nowValue - janValue
 
   // ─── loading ──────────────────────────────────────────
