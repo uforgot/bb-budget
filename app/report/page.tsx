@@ -486,12 +486,14 @@ export default function Report() {
             return (
             <div className="flex-1 text-left pr-1">
               <p className="text-sm font-semibold mb-3">지출 카테고리별 분석</p>
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 {top3.map((cat, i) => (
-                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-2 py-2">
-                    <p className="text-[10px] text-muted-foreground mb-1">연간 {i + 1}위</p>
-                    <p className="text-xs font-medium truncate">{cat.name}</p>
-                    <p className="text-xs font-semibold tabular-nums text-accent-coral mt-1">₩{cat.yearTotal.toLocaleString()}</p>
+                  <div key={cat.catId} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground w-12">연간 {i + 1}위</span>
+                      <span className="text-sm">{cat.name}</span>
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{cat.yearTotal.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
@@ -580,12 +582,14 @@ export default function Report() {
             return (
             <div className="flex-1 text-left pr-1">
               <p className="text-sm font-semibold mb-3">수입 카테고리별 분석</p>
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 {top3.map((cat, i) => (
-                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-2 py-2">
-                    <p className="text-[10px] text-muted-foreground mb-1">연간 {i + 1}위</p>
-                    <p className="text-xs font-medium truncate">{cat.name}</p>
-                    <p className="text-xs font-semibold tabular-nums text-accent-blue mt-1">₩{cat.yearTotal.toLocaleString()}</p>
+                  <div key={cat.catId} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground w-12">연간 {i + 1}위</span>
+                      <span className="text-sm">{cat.name}</span>
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{cat.yearTotal.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
