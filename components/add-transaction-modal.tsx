@@ -255,7 +255,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
           {/* 최근 카테고리 chip */}
           {!editTransaction && recentCategories.length > 0 && (
-            <div className="mb-3 flex gap-1.5 flex-wrap justify-center">
+            <div className="mb-5 flex gap-1.5 flex-wrap justify-center">
               {recentCategories.map(rc => (
                 <button
                   key={rc.id}
