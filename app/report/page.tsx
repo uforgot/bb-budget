@@ -481,19 +481,20 @@ export default function Report() {
         {/* ── 카드 1: N월 지출 ───────────────────────── */}
         <Card
           header={() => {
-            const expDiff = curData.expense - prevData.expense
+            const { ranked: eAll } = get2depthTop5LineData('expense', curKey)
+            const top3 = eAll.slice(0, 3)
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold mb-1">지출 상세</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(curData.expense)}</p>
-                <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
+              <p className="text-sm font-semibold mb-2">지출 상세</p>
+              <div className="flex gap-2">
+                {top3.map((cat, i) => (
+                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-3 py-2.5">
+                    <p className="text-[10px] text-muted-foreground mb-1">{i + 1}위</p>
+                    <p className="text-xs font-medium truncate">{cat.name}</p>
+                    <p className="text-xs font-semibold tabular-nums text-accent-coral mt-1">₩{cat.selectedAmount.toLocaleString()}</p>
+                  </div>
+                ))}
               </div>
-              {expChange.dir !== 'same' && (
-                <span className={`text-xs ${expChange.dir === 'up' ? 'text-accent-coral' : 'text-accent-blue'}`}>
-                  전월 대비 {expChange.dir === 'up' ? '↑' : '↓'} {expChange.pct}% · {expDiff >= 0 ? '+' : ''}{fmt(expDiff)}
-                </span>
-              )}
             </div>
             )
           }}
@@ -587,19 +588,20 @@ export default function Report() {
         {/* ── 카드 2: N월 수입 ───────────────────────── */}
         <Card
           header={() => {
-            const incDiff = curData.income - prevData.income
+            const { ranked: iAll } = get2depthTop5LineData('income', curKey)
+            const top3 = iAll.slice(0, 3)
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold mb-1">수입 상세</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(curData.income)}</p>
-                <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
+              <p className="text-sm font-semibold mb-2">수입 상세</p>
+              <div className="flex gap-2">
+                {top3.map((cat, i) => (
+                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-3 py-2.5">
+                    <p className="text-[10px] text-muted-foreground mb-1">{i + 1}위</p>
+                    <p className="text-xs font-medium truncate">{cat.name}</p>
+                    <p className="text-xs font-semibold tabular-nums text-accent-blue mt-1">₩{cat.selectedAmount.toLocaleString()}</p>
+                  </div>
+                ))}
               </div>
-              {incChange.dir !== 'same' && (
-                <span className={`text-xs ${incChange.dir === 'up' ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                  전월 대비 {incChange.dir === 'up' ? '↑' : '↓'} {incChange.pct}% · {incDiff >= 0 ? '+' : ''}{fmt(incDiff)}
-                </span>
-              )}
             </div>
             )
           }}
