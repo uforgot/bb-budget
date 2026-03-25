@@ -293,7 +293,7 @@ export default function CategoriesSettings() {
             <>
               <button
                 onClick={() => setAddingRoot(true)}
-                className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
+                className="flex-1 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground"
               >
                 추가
               </button>

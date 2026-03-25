@@ -161,7 +161,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
               onClose()
               router.push('/settings/categories')
             }}
-            className="w-full mt-4 mb-4 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
+            className="w-full mt-4 mb-4 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground"
           >
             카테고리 관리
           </button>
