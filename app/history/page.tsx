@@ -393,8 +393,10 @@ export default function History() {
                 </button>
               </div>
 
-              {/* 이번 달 수입/지출 */}
+              {/* 이번 달 수입/지출/저축/잔액 */}
               {(() => {
+                const monthSavingsAmt = monthTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+                const monthBalance = monthIncome - monthExpense - monthSavingsAmt
                 return (
                   <div className="mb-2">
                     <div className="flex items-center justify-between px-5 py-2">
@@ -404,6 +406,15 @@ export default function History() {
                     <div className="flex items-center justify-between px-5 py-2">
                       <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{actualMonth}월 지출</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-5 py-2">
+                      <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{actualMonth}월 저축</span>
+                      <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{monthSavingsAmt.toLocaleString()}</span>
+                    </div>
+                    <div className="border-t border-border mx-5 my-1" />
+                    <div className="flex items-center justify-between px-5 py-2">
+                      <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">잔액</span>
+                      <span className={`text-sm font-bold tabular-nums ${monthBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{monthBalance.toLocaleString()}</span>
                     </div>
                   </div>
                 )
@@ -512,12 +523,15 @@ export default function History() {
             const mTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === month)
             const income = mTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
             const expense = mTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-            const balance = income - expense
-            return { month, income, expense, balance, hasData: mTxs.length > 0 }
+            const savings = mTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+            const balance = income - expense - savings
+            return { month, income, expense, savings, balance, hasData: mTxs.length > 0 }
           })
 
           const yearIncome = yearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
           const yearExpense = yearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+          const yearSavings = yearTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+          const yearBalance = yearIncome - yearExpense - yearSavings
 
           const activeMonths = monthSummaries.filter(m => m.hasData).reverse()
 
@@ -544,11 +558,20 @@ export default function History() {
                   <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{targetYear}년 지출</span>
                   <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</span>
                 </div>
+                <div className="flex items-center justify-between px-5 py-2">
+                  <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{targetYear}년 저축</span>
+                  <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{yearSavings.toLocaleString()}</span>
+                </div>
+                <div className="border-t border-border mx-5 my-1" />
+                <div className="flex items-center justify-between px-5 py-2">
+                  <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">{targetYear}년 잔액</span>
+                  <span className={`text-sm font-bold tabular-nums ${yearBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{yearBalance.toLocaleString()}</span>
+                </div>
               </div>
 
               {/* 월별 카드 */}
               <div className="flex flex-col gap-3">
-                {activeMonths.map(({ month, income, expense, balance }) => (
+                {activeMonths.map(({ month, income, expense, savings, balance }) => (
                   <div
                     key={month}
                     onClick={() => {
@@ -574,6 +597,11 @@ export default function History() {
                         <span className="text-xs text-muted-foreground">지출</span>
                         <span className="text-sm tabular-nums text-accent-coral">₩{expense.toLocaleString()}</span>
                       </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">저축</span>
+                        <span className="text-sm tabular-nums text-accent-mint">₩{savings.toLocaleString()}</span>
+                      </div>
+                      <div className="border-t border-border my-1" />
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">잔액</span>
                         <span className={`text-sm font-medium tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
