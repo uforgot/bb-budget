@@ -9,6 +9,7 @@ export default function RecurringPage() {
   const router = useRouter()
   const [items, setItems] = useState<RecurringTransaction[]>([])
   const [adding, setAdding] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [amount, setAmount] = useState('')
   const [frequency, setFrequency] = useState<'weekly' | 'monthly' | 'yearly'>('monthly')
   const [dayOfMonth, setDayOfMonth] = useState('10')
@@ -45,19 +46,26 @@ export default function RecurringPage() {
       const dayVal = frequency === 'weekly' ? parseInt(dayOfWeek, 10)
         : frequency === 'monthly' ? parseInt(dayOfMonth, 10)
         : parseInt(yearDate.split('-')[2], 10)
-      await addRecurringTransaction({
+      const payload = {
         type: 'expense',
         amount: numAmount,
         category_id: categoryId,
         description: description || null,
         day_of_month: dayVal,
-      })
+      }
+      if (editingId) {
+        const { updateRecurringTransaction } = await import('@/lib/api')
+        await updateRecurringTransaction(editingId, payload)
+      } else {
+        await addRecurringTransaction(payload)
+      }
       setAmount('')
       setDayOfMonth('10')
       setCategoryId('')
       setCategoryLabel('')
       setDescription('')
       setAdding(false)
+      setEditingId(null)
       loadData()
     } catch (e) {
       alert('추가 실패')
@@ -102,7 +110,21 @@ export default function RecurringPage() {
             const catName = cat?.name || '미분류'
             const parentCat = cat?.parent_id ? items.find(() => false) : null // simplified
             return (
-              <div key={item.id} className="bg-surface rounded-[18px] px-5 py-4">
+              <div
+                key={item.id}
+                onClick={() => {
+                  setEditingId(item.id)
+                  setAmount(String(item.amount))
+                  setDayOfMonth(String(item.day_of_month))
+                  setDescription(item.description || '')
+                  setCategoryId(item.category_id)
+                  const cat2 = item.category as any
+                  setCategoryLabel(cat2?.name || '')
+                  setFrequency('monthly')
+                  setAdding(true)
+                }}
+                className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30"
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold">{item.description || catName}</p>
@@ -111,7 +133,7 @@ export default function RecurringPage() {
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{item.amount.toLocaleString()}</span>
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}
                       className="text-muted-foreground"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -250,10 +272,10 @@ export default function RecurringPage() {
                 onClick={handleAdd}
                 className="flex-1 py-3.5 rounded-[18px] bg-primary text-primary-foreground text-sm font-semibold"
               >
-                {saving ? '저장 중...' : '저장하기'}
+                {saving ? '저장 중...' : editingId ? '수정하기' : '저장하기'}
               </button>
               <button
-                onClick={() => setAdding(false)}
+                onClick={() => { setAdding(false); setEditingId(null) }}
                 className="flex-1 py-3.5 rounded-[18px] bg-muted text-sm font-medium text-muted-foreground"
               >
                 취소하기
