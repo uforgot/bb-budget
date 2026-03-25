@@ -446,13 +446,17 @@ export default function Report() {
             })}
           </div>
 
-          {/* 수입 카테고리 리스트 */}
+          {/* 수입 카테고리 리스트 (컬러 범례) */}
           <div className="space-y-2">
-            {catIncomeSorted.map(({ name, amount }) => {
+            {catIncomeSorted.map(({ name, amount }, i) => {
               const pct = catIncomeTotal > 0 ? Math.round((amount / catIncomeTotal) * 100) : 0
+              const color = CAT_COLORS[i % CAT_COLORS.length]
               return (
                 <div key={name} className="flex items-center justify-between">
-                  <span className="text-sm">{name}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                    <span className="text-sm">{name}</span>
+                  </div>
                   <span className="text-xs text-muted-foreground tabular-nums">
                     {fmt(amount)} · {pct}%
                   </span>
