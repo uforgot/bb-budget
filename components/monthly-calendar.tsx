@@ -349,7 +349,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
               onDaySelect?.(now.getFullYear(), now.getMonth() + 1, now.getDate())
             }
           }}
-          className="px-2 py-1 rounded-full text-xs font-semibold text-accent-blue"
+          className="px-3 py-1 rounded-full text-xs font-semibold text-accent-blue bg-accent-blue/15"
           aria-label="오늘"
         >
           오늘
