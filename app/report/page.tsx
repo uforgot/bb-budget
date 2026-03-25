@@ -332,11 +332,28 @@ export default function Report() {
 
         {/* ── 수입·지출 추이 카드 ──────────────────────── */}
         <Card
-          header={() => (
-            <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">수입·지출 추이</p>
-            </div>
-          )}
+          header={() => {
+            // 작년 데이터
+            const prevYearIncome = transactions.filter(t => t.type === 'income' && t.date.startsWith(String(curYear - 1))).reduce((s, t) => s + t.amount, 0)
+            const prevYearExpense = transactions.filter(t => t.type === 'expense' && t.date.startsWith(String(curYear - 1))).reduce((s, t) => s + t.amount, 0)
+            const hasLastYear = prevYearIncome > 0 || prevYearExpense > 0
+            return (
+              <div className="flex-1 text-left pr-1">
+                <p className="text-sm font-semibold">수입·지출 추이</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-[15px] font-bold tabular-nums text-accent-blue">{fmt(yearIncome)}</p>
+                  <span className="text-[10px] text-muted-foreground">{curYear}년 누적 수입</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-[15px] font-bold tabular-nums text-accent-coral">{fmt(yearExpense)}</p>
+                  <span className="text-[10px] text-muted-foreground">{curYear}년 누적 지출</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground">
+                  작년 대비 {hasLastYear ? `수입 ${yearIncome >= prevYearIncome ? '↑' : '↓'} ${Math.abs(Math.round(((yearIncome - prevYearIncome) / prevYearIncome) * 100))}% · 지출 ${yearExpense >= prevYearExpense ? '↑' : '↓'} ${Math.abs(Math.round(((yearExpense - prevYearExpense) / prevYearExpense) * 100))}%` : '—'}
+                </span>
+              </div>
+            )
+          }}
         >
           {/* 토글 pill */}
           <div className="flex gap-1 mb-4 bg-border rounded-full p-1 w-fit">
