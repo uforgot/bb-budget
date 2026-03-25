@@ -304,8 +304,9 @@ export default function Report() {
                     <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
                     <YAxis hide />
                     <Tooltip
+                      cursor={false}
                       formatter={(v, name) => [fmt(Number(v)), name === 'cash' ? '잔액' : '저축']}
-                      contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
+                      contentStyle={{ background: '#141c28', border: '1px solid #1f2937', borderRadius: 8, fontSize: 12 }}
                       labelStyle={{ color: '#9ca3af' }}
                     />
                     <Bar dataKey="cash" stackId="a" fill="#5865F2" radius={[0, 0, 0, 0]} />
