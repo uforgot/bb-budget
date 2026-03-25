@@ -242,7 +242,7 @@ export default function History() {
         {/* 검색 모드 */}
         {searchMode && (
           <div className="py-3">
-            <div className="flex items-center gap-2 bg-surface rounded-xl px-4 py-2.5">
+            <div className="flex items-center gap-2 bg-surface rounded-[18px] px-5 py-4">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
               </svg>
