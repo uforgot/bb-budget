@@ -218,9 +218,9 @@ export default function History() {
             return (
               <button
                 key={mode}
-                onClick={() => { setViewMode(mode); setSearchMode(false); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
+                onClick={() => { setViewMode(mode); setSearchMode(false); setSearchQuery(''); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
                 className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
-                  viewMode === mode
+                  !searchMode && viewMode === mode
                     ? 'text-foreground border-b-2 border-foreground'
                     : 'text-muted-foreground'
                 }`}
@@ -231,7 +231,7 @@ export default function History() {
           })}
           <button
             onClick={() => { setSearchMode(!searchMode); setSearchQuery('') }}
-            className={`px-3 pb-2.5 flex-shrink-0 ${searchMode ? 'text-accent-blue' : 'text-muted-foreground'}`}
+            className={`px-3 pb-2.5 flex-shrink-0 transition-colors ${searchMode ? 'text-foreground border-b-2 border-foreground' : 'text-muted-foreground'}`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
