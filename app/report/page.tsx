@@ -117,17 +117,22 @@ export default function Report() {
       monthMap.set(txMonth, (monthMap.get(txMonth) || 0) + tx.amount)
     }
 
-    // 선택된 월 기준 금액으로 정렬 → TOP 5
+    // 연간 총액 기준 TOP 5 (월 이동해도 고정)
     const selectedMonth = parseInt(selectedMonthKey.slice(5, 7))
     const ranked = [...byCat.entries()]
-      .map(([catId, monthMap]) => ({
-        catId,
-        name: get2depthCatName(catId),
-        selectedAmount: monthMap.get(selectedMonth) || 0,
-        monthMap,
-      }))
-      .filter(c => c.selectedAmount > 0)
-      .sort((a, b) => b.selectedAmount - a.selectedAmount)
+      .map(([catId, monthMap]) => {
+        let yearTotal = 0
+        monthMap.forEach(v => yearTotal += v)
+        return {
+          catId,
+          name: get2depthCatName(catId),
+          selectedAmount: monthMap.get(selectedMonth) || 0,
+          yearTotal,
+          monthMap,
+        }
+      })
+      .filter(c => c.yearTotal > 0)
+      .sort((a, b) => b.yearTotal - a.yearTotal)
       .slice(0, 5)
 
     // 라인 차트 데이터: 1~12월
