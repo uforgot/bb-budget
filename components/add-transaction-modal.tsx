@@ -298,7 +298,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
       {/* 키패드 (하단 고정) */}
       {/* 키패드 + 버튼 (하단 고정) */}
-      <div className={`w-full max-w-md mx-auto px-4 flex-shrink-0 ${keypadActive ? '' : 'hidden'}`} style={{ paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}>
+      <div className={`w-full max-w-md mx-auto px-4 flex-shrink-0 ${keypadActive ? '' : 'hidden'}`} style={{ paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}>
         <div className="grid grid-cols-3 gap-px mb-3">
           {keypadKeys.map((row, ri) =>
             row.map((key) => (
@@ -427,7 +427,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   }
                 }}
                 className="w-full bg-accent-mint text-white rounded-xl py-3.5 text-sm font-semibold mb-2"
-                style={{ paddingBottom: 'calc(14px + env(safe-area-inset-bottom, 0px))' }}
+                style={{ paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}
               >
                 {saving ? '처리 중...' : '적용하기'}
               </button>
