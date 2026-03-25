@@ -95,6 +95,52 @@ export async function deleteTransaction(id: string) {
   if (error) throw error
 }
 
+// ─── 반복 지출 ─────────────────────────────────────────
+
+export interface RecurringTransaction {
+  id: string
+  type: string
+  amount: number
+  category_id: string
+  description: string | null
+  day_of_month: number
+  active: boolean
+  created_at: string
+  category?: Category
+}
+
+export async function getRecurringTransactions(): Promise<RecurringTransaction[]> {
+  const { data, error } = await (getSupabase() as any)
+    .from('recurring_transactions')
+    .select('*, category:categories(*)')
+    .order('day_of_month')
+  if (error) throw error
+  return data || []
+}
+
+export async function addRecurringTransaction(tx: Record<string, unknown>) {
+  const { error } = await (getSupabase() as any)
+    .from('recurring_transactions')
+    .insert(tx)
+  if (error) throw error
+}
+
+export async function updateRecurringTransaction(id: string, tx: Record<string, unknown>) {
+  const { error } = await (getSupabase() as any)
+    .from('recurring_transactions')
+    .update(tx)
+    .eq('id', id)
+  if (error) throw error
+}
+
+export async function deleteRecurringTransaction(id: string) {
+  const { error } = await (getSupabase() as any)
+    .from('recurring_transactions')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
 // 월별 요약
 export async function getMonthlySummary(year: number, month: number) {
   const transactions = await getTransactions({ year, month })
