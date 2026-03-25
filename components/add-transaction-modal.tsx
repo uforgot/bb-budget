@@ -319,20 +319,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
                 {saving ? '저장 중...' : '수정하기'}
               </button>
-              <button
-                onClick={async () => {
-                  const { deleteTransaction } = await import('@/lib/api')
-                  await deleteTransaction(editTransaction.id)
-                  setRawAmount(''); setMemo(''); setEditDate(null)
-                  onClose()
-                }}
-                className="flex-1 bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
-              >
-                삭제하기
-              </button>
-            </div>
-            {editTransaction.type === 'savings' && (
-              <button
+              {editTransaction.type === 'savings' && (
+                <button
                 onClick={async () => {
                   // 회수: 기존 저축 금액을 수입으로 새 트랜잭션 생성 + 기존 저축 삭제
                   const amount = parseInt(rawAmount, 10) || editTransaction.amount
@@ -359,11 +347,23 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setSaving(false)
                   }
                 }}
-                className="bg-accent-mint/10 text-accent-mint rounded-xl py-3.5 text-sm font-semibold"
-              >
-                회수하기
-              </button>
-            )}
+                  className="flex-1 bg-accent-mint/10 text-accent-mint rounded-xl py-3.5 text-sm font-semibold"
+                >
+                  회수하기
+                </button>
+              )}
+            </div>
+            <button
+              onClick={async () => {
+                const { deleteTransaction } = await import('@/lib/api')
+                await deleteTransaction(editTransaction.id)
+                setRawAmount(''); setMemo(''); setEditDate(null)
+                onClose()
+              }}
+              className="bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
+            >
+              삭제하기
+            </button>
           </div>
         ) : (
           <div className="flex gap-3 mb-2">
