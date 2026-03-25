@@ -425,7 +425,8 @@ export default function History() {
                 )
               })()}
 
-              {/* 주차별 아코디언 */}
+              {/* 주차별 아코디언 — 연간 월별 카드와 같은 간격 */}
+              <div className="mt-4" />
               {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
                 const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
