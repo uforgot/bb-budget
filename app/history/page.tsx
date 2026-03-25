@@ -357,6 +357,11 @@ export default function History() {
               ? totalWeeks  // 과거 월은 전부 표시
               : 0           // 미래 월은 표시 안 함
 
+          // 최신 주차 기본 펼침
+          if (expandedWeeks.size === 0 && currentWeekNum > 0) {
+            setExpandedWeeks(new Set([currentWeekNum]))
+          }
+
           const weekSummaries = Array.from({ length: totalWeeks }, (_, i) => {
             const weekNum = i + 1
             const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
@@ -373,7 +378,7 @@ export default function History() {
             <div className="flex flex-col mt-2">
               {/* 월 헤더 + 좌우 화살표 */}
               <div className="flex items-center justify-between px-5 py-3">
-                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()) }} className="text-muted-foreground p-1">
+                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()) /* 다음 렌더에서 최신 주차 자동 펼침 */ }} className="text-muted-foreground p-1">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
                 <span className="text-lg font-bold">{targetYear}년 {actualMonth}월</span>
@@ -382,42 +387,18 @@ export default function History() {
                 </button>
               </div>
 
-              {/* 이번 달 요약 */}
+              {/* 이번 달 수입/지출 */}
               {(() => {
-                const cumulativeIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const cumulativeExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const totalAssets = cumulativeIncome - cumulativeExpense
-                const monthEnd = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`
-                const activeSavings = savingsTxs.filter(t => t.date <= monthEnd)
-                const totalSavingsAmt = activeSavings.reduce((s, t) => s + t.amount, 0)
-                const cashBalance = totalAssets - totalSavingsAmt
-
                 return (
                   <div className="mb-2">
-
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">금월 수입</span>
+                      <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{actualMonth}월 수입</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">금월 지출</span>
+                      <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{actualMonth}월 지출</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
                     </div>
-                    <div className="border-t border-border mx-5 my-2" />
-                    <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">자산</span>
-                      <span className="text-sm font-bold tabular-nums">₩{totalAssets.toLocaleString()}</span>
-                    </div>
-                    {/* 자산 하위: 저축 + 현금 */}
-                    <div className="flex items-center justify-between px-5 py-1.5 pl-8">
-                      <span className="text-xs text-accent-mint">운용 자산</span>
-                      <span className="text-xs font-medium tabular-nums text-accent-mint">₩{totalSavingsAmt.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between px-5 py-1.5 pl-8">
-                      <span className="text-xs text-muted-foreground">가용 현금</span>
-                      <span className={`text-xs font-medium tabular-nums ${cashBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{cashBalance.toLocaleString()}</span>
-                    </div>
-                    <div className="border-t border-border mx-5 my-2" />
                   </div>
                 )
               })()}
