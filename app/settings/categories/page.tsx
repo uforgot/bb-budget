@@ -286,7 +286,7 @@ export default function CategoriesSettings() {
                 style={{ fontSize: '16px' }}
                 className="flex-1 bg-card border border-border rounded-[18px] px-4 py-3"
               />
-              <button onClick={handleAddRoot} className="px-4 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">추가</button>
+              <button onClick={handleAddRoot} className="px-4 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">카테고리 추가하기</button>
               <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="text-sm text-muted-foreground">취소</button>
             </div>
           ) : (
@@ -295,7 +295,7 @@ export default function CategoriesSettings() {
                 onClick={() => setAddingRoot(true)}
                 className="flex-1 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
               >
-                추가
+                카테고리 추가하기
               </button>
             </>
           )}
