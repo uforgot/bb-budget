@@ -70,14 +70,14 @@ export default function Home() {
 
       <div className="px-5">
 
-        {/* 금월 수입/지출 */}
-        <div className="bg-surface rounded-[18px] mb-4">
+        {/* N월 수입/지출 */}
+        <div className="bg-surface rounded-[18px] mb-4 mt-3">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <span className="text-sm text-muted-foreground">금월 수입</span>
+            <span className="text-sm text-muted-foreground">{calMonth}월 수입</span>
             <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-muted-foreground">금월 지출</span>
+            <span className="text-sm text-muted-foreground">{calMonth}월 지출</span>
             <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
           </div>
         </div>
