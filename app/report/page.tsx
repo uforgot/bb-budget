@@ -563,21 +563,7 @@ export default function Report() {
                       </LineChart>
                     </ResponsiveContainer>
 
-                    {/* 범례 */}
-                    <div className="space-y-2 mt-3">
-                      {eVisible.map((cat, i) => {
-                        const pct = eTotalSel > 0 ? Math.round((cat.selectedAmount / eTotalSel) * 100) : 0
-                        return (
-                          <div key={cat.catId} className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: CAT_COLORS[i % CAT_COLORS.length] }} />
-                              <span className="text-xs">{cat.name}</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground tabular-nums">{fmt(cat.selectedAmount)} · {pct}%</span>
-                          </div>
-                        )
-                      })}
-                    </div>
+
                   </>
                 )}
               </>
@@ -669,21 +655,7 @@ export default function Report() {
                       </LineChart>
                     </ResponsiveContainer>
 
-                    {/* 범례 */}
-                    <div className="space-y-2 mt-3">
-                      {iVisible.map((cat, i) => {
-                        const pct = iTotalSel > 0 ? Math.round((cat.selectedAmount / iTotalSel) * 100) : 0
-                        return (
-                          <div key={cat.catId} className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: CAT_COLORS[i % CAT_COLORS.length] }} />
-                              <span className="text-xs">{cat.name}</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground tabular-nums">{fmt(cat.selectedAmount)} · {pct}%</span>
-                          </div>
-                        )
-                      })}
-                    </div>
+
                   </>
                 )}
               </>
