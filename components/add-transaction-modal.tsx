@@ -418,10 +418,11 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 onClick={async () => {
                   const amount = parseInt(recoverAmount, 10)
                   if (!amount) { alert('금액을 입력해주세요'); return }
-                  const { addTransaction, deleteTransaction } = await import('@/lib/api')
+                  const { addTransaction, updateTransaction } = await import('@/lib/api')
                   setSaving(true)
                   try {
                     const catName = (editTransaction.category as any)?.name || '저축'
+                    // 1. 수입 트랜잭션 생성
                     await addTransaction({
                       type: 'income',
                       amount,
@@ -429,7 +430,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       description: `${catName} 회수`,
                       date: recoverDate,
                     })
-                    await deleteTransaction(editTransaction.id)
+                    // 2. 기존 저축에 end_date 기록 (삭제 안 함)
+                    await updateTransaction(editTransaction.id, { end_date: recoverDate })
                     setRawAmount(''); setMemo(''); setEditDate(null)
                     setRecoverOpen(false)
                     onClose()

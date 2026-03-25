@@ -396,11 +396,11 @@ export default function History() {
               {/* 이번 달 수입/지출/저축/잔액 */}
               {(() => {
                 // 저축: 해당 월 말까지 누적 (1월에 넣은 것도 2,3월에 표시)
-                const monthSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const monthSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
                 // 잔액 = 누적수입 - 누적지출 - 누적저축 (해당 월 말까지)
                 const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
                 const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+                const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
                 const monthBalance = cumIncome - cumExpense - cumSavings
                 return (
                   <div className="mb-4">
@@ -474,7 +474,7 @@ export default function History() {
                             <div key={tx.id}>
                               {showDivider && <div className="border-t border-border mx-5 my-1" />}
                               <SwipeToDelete onDelete={async () => { await deleteTransaction(tx.id); loadData() }}>
-                                <div onClick={() => { setEditTx(tx); setModalOpen(true) }} className="px-5 py-2 cursor-pointer active:bg-muted/30">
+                                <div onClick={() => { setEditTx(tx); setModalOpen(true) }} className={`px-5 py-2 cursor-pointer active:bg-muted/30 ${tx.end_date ? 'opacity-40' : ''}`}>
                                   <div className="flex items-center gap-3">
                                     <div className="w-14 flex-shrink-0">
                                       {showDate && (
@@ -485,20 +485,20 @@ export default function History() {
                                       )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <span className="text-xs bg-muted px-3 py-1 rounded-full inline-block">
+                                      <span className={`text-xs bg-muted px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`}>
                                         {!cat ? <span className="text-muted-foreground">미분류</span> : cat.parent_id ? (() => {
                                           const parent = categories.find((c: any) => c.id === cat.parent_id)
                                           return parent ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName}</span>
                                         })() : <span className="text-foreground">{catName}</span>}
                                       </span>
                                     </div>
-                                    <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
+                                    <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.end_date ? 'line-through ' : ''}${
                                       tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
                                     }`}>
                                       ₩{tx.amount.toLocaleString()}
                                     </span>
                                   </div>
-                                  {tx.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{tx.description}</p>}
+                                  {tx.description && <p className={`text-[10px] text-muted-foreground truncate mt-1 pl-[68px] ${tx.end_date ? 'line-through' : ''}`}>{tx.description}</p>}
                                 </div>
                               </SwipeToDelete>
                             </div>
@@ -530,7 +530,7 @@ export default function History() {
             const expense = mTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
             // 저축: 해당 월 말까지 누적
             const mEnd = `${targetYear}-${String(month).padStart(2,'0')}-${String(new Date(targetYear, month, 0).getDate()).padStart(2,'0')}`
-            const savings = transactions.filter(t => t.type === 'savings' && t.date <= mEnd).reduce((s, t) => s + t.amount, 0)
+            const savings = transactions.filter(t => t.type === 'savings' && t.date <= mEnd && (!t.end_date || t.end_date > mEnd)).reduce((s, t) => s + t.amount, 0)
             // 잔액: 해당 월 말까지 누적
             const cumInc = transactions.filter(t => t.type === 'income' && t.date <= mEnd).reduce((s, t) => s + t.amount, 0)
             const cumExp = transactions.filter(t => t.type === 'expense' && t.date <= mEnd).reduce((s, t) => s + t.amount, 0)

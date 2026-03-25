@@ -21,6 +21,7 @@ export interface Transaction {
   description: string | null
   date: string
   created_at: string
+  end_date?: string | null
   category?: Category
 }
 
