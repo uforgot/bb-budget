@@ -180,7 +180,7 @@ export async function confirmRecurringTransactions(year: number, month: number) 
   return created
 }
 
-/** 미래 달에 표시할 반복 지출 예정 목록 생성 */
+/** 해당 달에 아직 확정 안 된 반복 지출 예정 목록 (현재 달 포함) */
 export async function getRecurringPreview(year: number, month: number): Promise<{
   day: number
   type: string
@@ -193,17 +193,25 @@ export async function getRecurringPreview(year: number, month: number): Promise<
   const active = recurring.filter(r => r.active)
   if (active.length === 0) return []
 
+  // 해당 월 이미 확정된 트랜잭션 체크
+  const monthTxs = await getTransactions({ year, month })
+
   const daysInMonth = new Date(year, month, 0).getDate()
-  return active.map(r => {
-    const day = Math.min(r.day_of_month, daysInMonth)
-    return {
-      day,
-      type: r.type,
-      amount: r.amount,
-      category_id: r.category_id,
-      description: r.description ? `${r.description} (예정)` : '(예정)',
-      categoryName: r.category?.name || '',
-    }
+  return active
+    .filter(r => {
+      // 이미 확정된 건 제외
+      return !monthTxs.some(t => t.category_id === r.category_id && t.amount === r.amount)
+    })
+    .map(r => {
+      const day = Math.min(r.day_of_month, daysInMonth)
+      return {
+        day,
+        type: r.type,
+        amount: r.amount,
+        category_id: r.category_id,
+        description: r.description ? `${r.description} (예정)` : '(예정)',
+        categoryName: r.category?.name || '',
+      }
   })
 }
 

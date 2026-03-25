@@ -259,10 +259,8 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
       const summary = await getMonthlySummary(year, month + 1)
       const daily = { ...summary.daily }
 
-      // 미래 달이면 반복 지출 예정 데이터 합산
-      const now = new Date()
-      const isFuture = year > now.getFullYear() || (year === now.getFullYear() && month > now.getMonth())
-      if (isFuture) {
+      // 반복 지출 예정 데이터 합산 (현재 달 포함 — 확정 안 된 것만)
+      {
         const preview = await getRecurringPreview(year, month + 1)
         for (const p of preview) {
           if (!daily[p.day]) daily[p.day] = { income: 0, expense: 0, savings: 0, items: [] }
