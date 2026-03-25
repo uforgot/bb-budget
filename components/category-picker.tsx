@@ -113,7 +113,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
                               ? 'bg-accent-blue/20'
                               : isSelected
                                 ? 'bg-accent-blue/20'
-                                : 'bg-surface'
+                                : 'bg-muted'
                           }`}
                         >
                           <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
