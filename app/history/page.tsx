@@ -395,7 +395,8 @@ export default function History() {
 
               {/* 이번 달 수입/지출/저축/잔액 */}
               {(() => {
-                const monthSavingsAmt = monthTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+                // 저축: 해당 월 말까지 누적 (1월에 넣은 것도 2,3월에 표시)
+                const monthSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
                 // 잔액 = 누적수입 - 누적지출 - 누적저축 (해당 월 말까지)
                 const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
                 const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
