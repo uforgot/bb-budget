@@ -191,16 +191,18 @@ export default function Report() {
     const key = `${curYear}-${String(m).padStart(2, '0')}`
     const bucket = monthlyMap.get(key)
     const hasData = bucket && (bucket.income > 0 || bucket.expense > 0)
+    const monthSav = transactions.filter(t => t.type === 'savings' && !t.end_date && getMonthKey(t.date) === key).reduce((s, t) => s + t.amount, 0)
     yearlyData.push({
       label: `${m}월`,
       expense: hasData ? (bucket?.expense || 0) : null,
-      income: hasData ? (bucket?.income || 0) : null,
+      income: hasData ? ((bucket?.income || 0) - monthSav) : null,
     })
   }
   
   // 연간 합계
   const yearIncome = transactions.filter(t => t.type === 'income' && t.date.startsWith(String(curYear))).reduce((s, t) => s + t.amount, 0)
   const yearExpense = transactions.filter(t => t.type === 'expense' && t.date.startsWith(String(curYear))).reduce((s, t) => s + t.amount, 0)
+  const yearSavings = transactions.filter(t => t.type === 'savings' && t.date.startsWith(String(curYear)) && !t.end_date).reduce((s, t) => s + t.amount, 0)
   const yearBalance = yearIncome - yearExpense
 
   // ─── 순자산 추이 ──────────────────────────────────────
@@ -339,24 +341,18 @@ export default function Report() {
             const hasLastYear = prevYearIncome > 0 || prevYearExpense > 0
             return (
               <div className="flex-1 text-left pr-1">
-                <p className="text-sm font-semibold">수입·지출 추이</p>
+                <p className="text-sm font-semibold">실수입·지출 추이</p>
                 <div className="flex items-baseline gap-2">
-                  <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(yearIncome)}</p>
-                  <span className="text-[10px] text-muted-foreground">{curYear}년 누적 수입</span>
+                  <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(yearIncome - yearSavings)}</p>
+                  <span className="text-[10px] text-muted-foreground">{curYear}년 누적 실수입</span>
                 </div>
                 <div className="flex items-baseline gap-2">
                   <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(yearExpense)}</p>
                   <span className="text-[10px] text-muted-foreground">{curYear}년 누적 지출</span>
                 </div>
-                {hasLastYear ? (
-                  <span className="text-xs text-muted-foreground">
-                    작년 대비 {yearIncome >= prevYearIncome ? '↑' : '↓'} {Math.abs(Math.round(((yearIncome - prevYearIncome) / prevYearIncome) * 100))}% · {yearIncome >= prevYearIncome ? '+' : ''}{fmt(yearIncome - prevYearIncome)}
-                  </span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    작년 대비 — —% · —
-                  </span>
-                )}
+                <span className="text-xs text-muted-foreground">
+                  작년 대비 — —% · —
+                </span>
               </div>
             )
           }}
