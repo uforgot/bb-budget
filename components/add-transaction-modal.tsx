@@ -255,7 +255,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
           {/* 최근 카테고리 chip */}
           {!editTransaction && recentCategories.length > 0 && (
-            <div className="mb-3 flex gap-2 flex-wrap">
+            <div className="mb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
               {recentCategories.map(rc => (
                 <button
                   key={rc.id}
@@ -266,7 +266,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     const reverseMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
                     setType(reverseMap[dbType] || null)
                   }}
-                  className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+                  className={`text-[10px] px-2.5 py-1 rounded-full transition-colors whitespace-nowrap flex-shrink-0 ${
                     categoryId === rc.id
                       ? 'bg-accent-blue/20 text-accent-blue'
                       : 'bg-surface text-muted-foreground'
