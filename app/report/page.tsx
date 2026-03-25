@@ -210,7 +210,7 @@ export default function Report() {
                 if (top5Names.has(name)) catAmounts[name] = (catAmounts[name] || 0) + tx.amount
                 else others += tx.amount
               }
-              return { label, ...catAmounts, 기타: others, total: monthTxs.reduce((s, t) => s + t.amount, 0) }
+              return { label, ...catAmounts, _others: others, total: monthTxs.reduce((s, t) => s + t.amount, 0) }
             })
 
             return (
@@ -236,9 +236,9 @@ export default function Report() {
                             />
                           )
                         })}
-                        {row.total > 0 && (row as any)['기타'] > 0 && (
+                        {row.total > 0 && (row as any)['_others'] > 0 && (
                           <div
-                            style={{ width: `${((row as any)['기타'] / row.total) * 100}%`, backgroundColor: '#4B5563' }}
+                            style={{ width: `${((row as any)['_others'] / row.total) * 100}%`, backgroundColor: '#4B5563' }}
                             className="h-full"
                           />
                         )}
@@ -250,9 +250,9 @@ export default function Report() {
                 {/* 범례 (TOP 5) */}
                 <div className="space-y-2">
                   {top5.map(({ name, color }) => {
-                    const curAmount = catExpense.get(
-                      categories.find(c => c.name === name)?.id || ''
-                    ) || 0
+                    // 같은 이름의 카테고리 모든 id에서 합산
+                    const matchIds = categories.filter(c => c.name === name).map(c => c.id)
+                    const curAmount = matchIds.reduce((s, id) => s + (catExpense.get(id) || 0), 0)
                     const pct = catTotal > 0 ? Math.round((curAmount / catTotal) * 100) : 0
                     return (
                       <div key={name} className="flex items-center justify-between">
