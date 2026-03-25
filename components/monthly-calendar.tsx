@@ -132,10 +132,10 @@ function MonthGrid({
               }`}
             >
               <span className="relative flex items-center justify-center size-6 flex-shrink-0">
-                {isToday && <span className="absolute inset-0 rounded-full bg-primary" />}
+                {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
                 <span
                   className={`relative text-sm tabular-nums leading-none ${
-                    isToday ? 'text-primary-foreground font-semibold' : 'text-foreground'
+                    isToday ? 'text-white font-bold' : 'text-foreground'
                   }`}
                 >
                   {day}
@@ -330,11 +330,33 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
 
   return (
     <div>
-      {/* Header: current visible month */}
-      <div className="flex items-center justify-center w-full py-3">
+      {/* Header: current visible month + today button */}
+      <div className="flex items-center justify-between w-full py-3 px-2">
+        <div className="w-8" />
         <h1 className="text-base font-semibold text-foreground">
           {headerLabel}
         </h1>
+        <button
+          onClick={() => {
+            const now = new Date()
+            const todayIdx = months.findIndex(m => m.year === now.getFullYear() && m.month === now.getMonth())
+            if (todayIdx >= 0) {
+              setFocusedMonthIndex(todayIdx)
+              setHeaderLabel(`${now.getFullYear()}년 ${now.getMonth() + 1}월`)
+              setSelectedDay({ year: now.getFullYear(), month: now.getMonth(), day: now.getDate() })
+              const cached = dataCache.get(monthKey(now.getFullYear(), now.getMonth()))
+              onMonthChange?.(now.getFullYear(), now.getMonth() + 1, cached?.income ?? 0, cached?.expense ?? 0)
+              onDaySelect?.(now.getFullYear(), now.getMonth() + 1, now.getDate())
+            }
+          }}
+          className="w-8 h-8 flex items-center justify-center rounded-full text-accent-blue"
+          aria-label="오늘"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </button>
       </div>
 
       {/* Fixed weekday row */}
