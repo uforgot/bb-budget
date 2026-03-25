@@ -62,7 +62,9 @@ export default function Report() {
   const [loading, setLoading] = useState(true)
   const [trendMode, setTrendMode] = useState<'expense' | 'income' | 'all'>('all')
   const [expMonthOffset, setExpMonthOffset] = useState(0)
+  const [expSelectedCats, setExpSelectedCats] = useState<Set<string>>(new Set())
   const [incMonthOffset, setIncMonthOffset] = useState(0)
+  const [incSelectedCats, setIncSelectedCats] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     ;(async () => {
@@ -133,13 +135,15 @@ export default function Report() {
       })
       .filter(c => c.yearTotal > 0)
       .sort((a, b) => b.yearTotal - a.yearTotal)
-      .slice(0, 5)
+
+    const allCats = ranked // 전체 (TOP 5 제한 없이)
+    const top5 = ranked.slice(0, 5)
 
     // 라인 차트 데이터: 1~12월
     const chartData: Record<string, unknown>[] = []
     for (let m = 1; m <= 12; m++) {
       const row: Record<string, unknown> = { label: `${m}월` }
-      for (const cat of ranked) {
+      for (const cat of allCats) {
         const val = cat.monthMap.get(m)
         row[cat.catId] = val && val > 0 ? val : null
       }
@@ -151,7 +155,7 @@ export default function Report() {
       .filter(tx => tx.type === type && getMonthKey(tx.date) === selectedMonthKey)
       .reduce((s, tx) => s + tx.amount, 0)
 
-    return { ranked, chartData, totalSelected }
+    return { ranked: allCats, top5, chartData, totalSelected }
   }
 
   const now = new Date()
@@ -473,7 +477,13 @@ export default function Report() {
           {(() => {
             const { year: ey, month: em, key: eKey } = getOffsetMonth(expMonthOffset)
             const { sorted: eSorted, total: eTotal } = getCatBreakdown('expense', eKey)
-            const { ranked: eRanked, chartData: eChartData, totalSelected: eTotalSel } = get2depthTop5LineData('expense', eKey)
+            const { ranked: eRanked, top5: eTop5, chartData: eChartData, totalSelected: eTotalSel } = get2depthTop5LineData('expense', eKey)
+            // 초기 선택: TOP 5
+            if (expSelectedCats.size === 0 && eTop5.length > 0) {
+              const initial = new Set(eTop5.map(c => c.catId))
+              setTimeout(() => setExpSelectedCats(initial), 0)
+            }
+            const eVisible = eRanked.filter(c => expSelectedCats.has(c.catId))
             return (
               <>
                 {/* 월 네비게이션 */}
@@ -499,7 +509,32 @@ export default function Report() {
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
                   <>
-                    {/* 2depth TOP 5 연간 라인 차트 */}
+                    {/* 카테고리 선택 pill */}
+                    <div className="flex gap-1.5 flex-wrap mb-4">
+                      {eRanked.slice(0, 10).map((cat, i) => {
+                        const isSelected = expSelectedCats.has(cat.catId)
+                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                        return (
+                          <button
+                            key={cat.catId}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const next = new Set(expSelectedCats)
+                              if (next.has(cat.catId)) next.delete(cat.catId)
+                              else next.add(cat.catId)
+                              setExpSelectedCats(next)
+                            }}
+                            className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${isSelected ? 'text-white' : 'bg-surface text-muted-foreground'}`}
+                            style={isSelected ? { backgroundColor: color } : {}}
+                          >
+                            {cat.name}
+                          </button>
+                        )
+                      })}
+                    </div>
+
+                    {/* 2depth 연간 라인 차트 */}
                     <ResponsiveContainer width="100%" height={200}>
                       <LineChart data={eChartData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
                         <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
@@ -511,7 +546,7 @@ export default function Report() {
                           contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
                           labelStyle={{ color: '#9ca3af' }}
                         />
-                        {eRanked.map((cat, i) => (
+                        {eVisible.map((cat, i) => (
                           <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={CAT_COLORS[i % CAT_COLORS.length]} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
                         ))}
                       </LineChart>
@@ -519,7 +554,7 @@ export default function Report() {
 
                     {/* 범례 */}
                     <div className="space-y-2 mt-3">
-                      {eRanked.map((cat, i) => {
+                      {eVisible.map((cat, i) => {
                         const pct = eTotalSel > 0 ? Math.round((cat.selectedAmount / eTotalSel) * 100) : 0
                         return (
                           <div key={cat.catId} className="flex items-center justify-between">
@@ -562,7 +597,12 @@ export default function Report() {
           {(() => {
             const { year: iy, month: im, key: iKey } = getOffsetMonth(incMonthOffset)
             const { sorted: iSorted, total: iTotal } = getCatBreakdown('income', iKey)
-            const { ranked: iRanked, chartData: iChartData, totalSelected: iTotalSel } = get2depthTop5LineData('income', iKey)
+            const { ranked: iRanked, top5: iTop5, chartData: iChartData, totalSelected: iTotalSel } = get2depthTop5LineData('income', iKey)
+            if (incSelectedCats.size === 0 && iTop5.length > 0) {
+              const initial = new Set(iTop5.map(c => c.catId))
+              setTimeout(() => setIncSelectedCats(initial), 0)
+            }
+            const iVisible = iRanked.filter(c => incSelectedCats.has(c.catId))
             return (
               <>
                 {/* 월 네비게이션 */}
@@ -588,7 +628,32 @@ export default function Report() {
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
                   <>
-                    {/* 2depth TOP 5 연간 라인 차트 */}
+                    {/* 카테고리 선택 pill */}
+                    <div className="flex gap-1.5 flex-wrap mb-4">
+                      {iRanked.slice(0, 10).map((cat, i) => {
+                        const isSelected = incSelectedCats.has(cat.catId)
+                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                        return (
+                          <button
+                            key={cat.catId}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const next = new Set(incSelectedCats)
+                              if (next.has(cat.catId)) next.delete(cat.catId)
+                              else next.add(cat.catId)
+                              setIncSelectedCats(next)
+                            }}
+                            className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${isSelected ? 'text-white' : 'bg-surface text-muted-foreground'}`}
+                            style={isSelected ? { backgroundColor: color } : {}}
+                          >
+                            {cat.name}
+                          </button>
+                        )
+                      })}
+                    </div>
+
+                    {/* 2depth 연간 라인 차트 */}
                     <ResponsiveContainer width="100%" height={200}>
                       <LineChart data={iChartData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
                         <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
@@ -600,7 +665,7 @@ export default function Report() {
                           contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
                           labelStyle={{ color: '#9ca3af' }}
                         />
-                        {iRanked.map((cat, i) => (
+                        {iVisible.map((cat, i) => (
                           <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={CAT_COLORS[i % CAT_COLORS.length]} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
                         ))}
                       </LineChart>
@@ -608,7 +673,7 @@ export default function Report() {
 
                     {/* 범례 */}
                     <div className="space-y-2 mt-3">
-                      {iRanked.map((cat, i) => {
+                      {iVisible.map((cat, i) => {
                         const pct = iTotalSel > 0 ? Math.round((cat.selectedAmount / iTotalSel) * 100) : 0
                         return (
                           <div key={cat.catId} className="flex items-center justify-between">
