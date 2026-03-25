@@ -443,9 +443,9 @@ export default function Report() {
                   if (!active || !payload?.length) return null
                   const monthNum = parseInt(String(label))
                   return (
-                    <div className="bg-background rounded-lg px-3 py-2 text-xs">
-                      <p className="text-muted-foreground mb-1">{label}</p>
-                      {payload.map((p: any) => {
+                    <div className="bg-background rounded-lg px-4 py-3 shadow-lg">
+                      <p className="text-xs text-muted-foreground mb-2">{label}</p>
+                      {payload.map((p: any, idx: number) => {
                         const val = Number(p.value)
                         const key = p.dataKey as string
                         const prevMonth = monthNum - 1
@@ -454,12 +454,12 @@ export default function Report() {
                         const diff = val - prevVal
                         const isExpense = key === 'expense'
                         return (
-                          <div key={key} className="mb-0.5">
-                            <span style={{ color: p.stroke }}>{isExpense ? '지출' : '수입'} {fmt(val)}</span>
+                          <div key={key} className={idx > 0 ? 'mt-2' : ''}>
+                            <p className="text-xs font-semibold" style={{ color: p.stroke }}>{isExpense ? '지출' : '수입'} {fmt(val)}</p>
                             {prevMonth > 0 && (
-                              <span className={`ml-1 ${diff > 0 ? (isExpense ? 'text-accent-coral' : 'text-accent-blue') : (isExpense ? 'text-accent-blue' : 'text-accent-coral')}`}>
-                                {diff >= 0 ? '↑' : '↓'}{fmt(Math.abs(diff))}
-                              </span>
+                              <p className={`text-[10px] mt-0.5 ${diff > 0 ? (isExpense ? 'text-accent-coral' : 'text-accent-blue') : (isExpense ? 'text-accent-blue' : 'text-accent-coral')}`}>
+                                {diff >= 0 ? '↑' : '↓'} {fmt(Math.abs(diff))}
+                              </p>
                             )}
                           </div>
                         )
