@@ -433,7 +433,7 @@ export default function History() {
                     if (dateDiff !== 0) return dateDiff
                     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                   })
-                const weekNonSavingsTxs = weekTxs.filter(t => t.type !== 'savings')
+                const weekNonSavingsTxs = weekTxs
 
                 return (
                 <div key={weekNum}>
