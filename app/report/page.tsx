@@ -330,6 +330,54 @@ export default function Report() {
           })()}
         </Card>
 
+        {/* ── 수입·지출 추이 카드 ──────────────────────── */}
+        <Card
+          header={() => (
+            <div className="flex-1 text-left pr-1">
+              <p className="text-sm font-semibold">수입·지출 추이</p>
+            </div>
+          )}
+        >
+          {/* 토글 pill */}
+          <div className="flex gap-1 mb-4 bg-border rounded-full p-1 w-fit">
+            {([['all', '전체'], ['expense', '지출'], ['income', '수입']] as const).map(([val, label]) => (
+              <button
+                key={val}
+                type="button"
+                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  trendMode === val
+                    ? 'bg-surface text-foreground font-semibold'
+                    : 'text-muted-foreground'
+                }`}
+                onClick={() => setTrendMode(val)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={yearlyData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
+              <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
+              <YAxis hide />
+              <Tooltip
+                cursor={false}
+                labelFormatter={(v) => `${v}월`}
+                formatter={(v, name) => [fmt(Number(v)), name === 'expense' ? '지출' : '수입']}
+                contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
+                labelStyle={{ color: '#9ca3af' }}
+              />
+              {(trendMode === 'expense' || trendMode === 'all') && (
+                <Line type="monotone" dataKey="expense" stroke="#CF6679" strokeWidth={2} dot={{ r: 3, fill: '#CF6679' }} connectNulls />
+              )}
+              {(trendMode === 'income' || trendMode === 'all') && (
+                <Line type="monotone" dataKey="income" stroke="#5865F2" strokeWidth={2} dot={{ r: 3, fill: '#5865F2' }} connectNulls />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+
         {/* ── 카드 1: N월 지출 ───────────────────────── */}
         <Card
           header={() => {
@@ -351,21 +399,6 @@ export default function Report() {
             )
           }}
         >
-          {/* 지출 추이 꺾은선 */}
-          <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={yearlyData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
-              <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
-              <YAxis hide />
-              <Tooltip
-                formatter={(v) => [fmt(Number(v)), '지출']}
-                contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: '#9ca3af' }}
-              />
-              <Line type="monotone" dataKey="expense" stroke="#CF6679" strokeWidth={2} dot={{ r: 3, fill: '#CF6679' }} connectNulls />
-            </LineChart>
-          </ResponsiveContainer>
-
           {/* 스택 바 차트 */}
           <div className="space-y-2 mb-4">
             {stackData.map((row) => {
@@ -442,21 +475,6 @@ export default function Report() {
             )
           }}
         >
-          {/* 수입 추이 꺾은선 */}
-          <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={yearlyData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
-              <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
-              <YAxis hide />
-              <Tooltip
-                formatter={(v) => [fmt(Number(v)), '수입']}
-                contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: '#9ca3af' }}
-              />
-              <Line type="monotone" dataKey="income" stroke="#5865F2" strokeWidth={2} dot={{ r: 3, fill: '#5865F2' }} connectNulls />
-            </LineChart>
-          </ResponsiveContainer>
-
           {/* 수입 6개월 막대 */}
           <div className="space-y-2 mb-4">
             {last6.map(({ label, income, key }) => {
