@@ -327,12 +327,12 @@ export default function Report() {
           header={(open) => (
             <div className="flex-1 flex items-center justify-between pr-1">
               <div className="text-left">
-                <p className="text-sm font-semibold">{curMonth}월 지출</p>
+                <p className="text-sm font-semibold">지출 추이</p>
                 <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(curData.expense)}</p>
               </div>
               {expChange.dir !== 'same' && (
                 <span className={`text-xs ${expChange.dir === 'up' ? 'text-accent-coral' : 'text-accent-blue'}`}>
-                  {expChange.dir === 'up' ? '↑' : '↓'} {expChange.pct}%
+                  전월 대비 {expChange.dir === 'up' ? '↑' : '↓'} {expChange.pct}%
                 </span>
               )}
             </div>
@@ -398,12 +398,12 @@ export default function Report() {
           header={(open) => (
             <div className="flex-1 flex items-center justify-between pr-1">
               <div className="text-left">
-                <p className="text-sm font-semibold">{curMonth}월 수입</p>
+                <p className="text-sm font-semibold">수입 추이</p>
                 <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(curData.income)}</p>
               </div>
               {incChange.dir !== 'same' && (
                 <span className={`text-xs ${incChange.dir === 'up' ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                  {incChange.dir === 'up' ? '↑' : '↓'} {incChange.pct}%
+                  전월 대비 {incChange.dir === 'up' ? '↑' : '↓'} {incChange.pct}%
                 </span>
               )}
             </div>
