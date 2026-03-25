@@ -519,7 +519,7 @@ export default function History() {
           const yearIncome = yearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
           const yearExpense = yearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
 
-          const activeMonths = monthSummaries.filter(m => m.hasData)
+          const activeMonths = monthSummaries.filter(m => m.hasData).reverse()
 
           return (
             <div className="flex flex-col mt-2">
