@@ -118,7 +118,8 @@ export default function History() {
       const parentName = cat?.parent_id ? categories.find((c: any) => c.id === cat.parent_id)?.name?.toLowerCase() || '' : ''
       const desc = (tx.description || '').toLowerCase()
       const amount = tx.amount.toString()
-      return catName.includes(q) || parentName.includes(q) || desc.includes(q) || amount.includes(q)
+      const isUncategorized = !cat || !catName
+      return catName.includes(q) || parentName.includes(q) || desc.includes(q) || amount.includes(q) || (isUncategorized && '미분류'.includes(q))
     })
     setSearchResults(results)
   }, [searchMode, searchQuery, transactions, categories])
