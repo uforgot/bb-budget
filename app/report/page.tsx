@@ -271,59 +271,65 @@ export default function Report() {
             )
           }}
         >
-          {/* 토글 pill */}
-          <div className="flex gap-1 mb-4 bg-border rounded-full p-1 w-fit">
-            {([['all', '전체'], ['expense', '지출'], ['income', '수입']] as const).map(([val, label]) => (
-              <button
-                key={val}
-                type="button"
-                className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                  trendMode === val
-                    ? 'bg-surface text-foreground font-semibold'
-                    : 'text-muted-foreground'
-                }`}
-                onClick={() => setTrendMode(val)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          {/* 월별 저축+잔액 가로 막대 */}
+          {(() => {
+            // 각 월별 저축(누적) + 잔액 계산
+            const monthlyAssets: { label: string; savings: number; cash: number; total: number }[] = []
+            let cumI = 0, cumE = 0
+            for (const tx of transactions) {
+              if (parseInt(tx.date.slice(0, 4)) < curYear) {
+                if (tx.type === 'income') cumI += tx.amount
+                else if (tx.type === 'expense') cumE += tx.amount
+              }
+            }
+            for (let m = 1; m <= 12; m++) {
+              const key = `${curYear}-${String(m).padStart(2, '0')}`
+              const bucket = monthlyMap.get(key)
+              if (bucket) { cumI += bucket.income; cumE += bucket.expense }
+              const hasData = bucket && (bucket.income > 0 || bucket.expense > 0)
+              if (!hasData && m > curMonth) {
+                monthlyAssets.push({ label: `${m}월`, savings: 0, cash: 0, total: 0 })
+              } else {
+                const cumSav = transactions.filter(t => t.type === 'savings' && t.date <= `${curYear}-${String(m).padStart(2,'0')}-31` && !t.end_date).reduce((s, t) => s + t.amount, 0)
+                const total = cumI - cumE
+                const cash = total - cumSav
+                monthlyAssets.push({ label: `${m}월`, savings: cumSav, cash, total })
+              }
+            }
+            const maxTotal = Math.max(...monthlyAssets.map(d => d.total), 1)
 
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={yearlyData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
-              <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
-              <YAxis hide />
-              <Tooltip
-                formatter={(v, name) => [
-                  fmt(Number(v)),
-                  name === 'expense' ? '지출' : '수입',
-                ]}
-                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: '#9ca3af' }}
-              />
-              {(trendMode === 'expense' || trendMode === 'all') && (
-                <Line
-                  type="monotone"
-                  dataKey="expense"
-                  stroke="#CF6679"
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: '#CF6679' }}
-                  activeDot={{ r: 5 }}
-                />
-              )}
-              {(trendMode === 'income' || trendMode === 'all') && (
-                <Line
-                  type="monotone"
-                  dataKey="income"
-                  stroke="#5865F2"
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: '#5865F2' }}
-                  activeDot={{ r: 5 }}
-                />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
+            return (
+              <div className="space-y-2">
+                {monthlyAssets.filter(d => d.total > 0).map(d => (
+                  <div key={d.label}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-muted-foreground w-8">{d.label}</span>
+                      <span className="text-xs text-muted-foreground tabular-nums">{fmt(d.total)}</span>
+                    </div>
+                    <div className="h-5 rounded-full bg-border overflow-hidden flex">
+                      {d.total > 0 && (
+                        <>
+                          <div style={{ width: `${(d.cash / maxTotal) * 100}%`, backgroundColor: '#5865F2' }} className="h-full" />
+                          <div style={{ width: `${(d.savings / maxTotal) * 100}%`, backgroundColor: '#43B581' }} className="h-full" />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {/* 범례 */}
+                <div className="flex gap-4 mt-3">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#5865F2' }} />
+                    <span className="text-xs text-muted-foreground">잔액</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#43B581' }} />
+                    <span className="text-xs text-muted-foreground">저축</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
         </Card>
 
         {/* ── 카드 1: N월 지출 ───────────────────────── */}
@@ -332,11 +338,12 @@ export default function Report() {
             const expDiff = curData.expense - prevData.expense
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">지출 추이</p>
+              <p className="text-sm font-semibold">지출 상세</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(curData.expense)}</p>
                 <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
               </div>
+              <p className="text-[10px] text-muted-foreground">연간 누적 {fmt(yearExpense)}</p>
               {expChange.dir !== 'same' && (
                 <span className={`text-xs ${expChange.dir === 'up' ? 'text-accent-coral' : 'text-accent-blue'}`}>
                   전월 대비 {expChange.dir === 'up' ? '↑' : '↓'} {expChange.pct}% · {expDiff >= 0 ? '+' : ''}{fmt(expDiff)}
@@ -346,6 +353,21 @@ export default function Report() {
             )
           }}
         >
+          {/* 지출 추이 꺾은선 */}
+          <ResponsiveContainer width="100%" height={150}>
+            <LineChart data={yearlyData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
+              <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
+              <YAxis hide />
+              <Tooltip
+                formatter={(v) => [fmt(Number(v)), '지출']}
+                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
+                labelStyle={{ color: '#9ca3af' }}
+              />
+              <Line type="monotone" dataKey="expense" stroke="#CF6679" strokeWidth={2} dot={{ r: 3, fill: '#CF6679' }} connectNulls />
+            </LineChart>
+          </ResponsiveContainer>
+
           {/* 스택 바 차트 */}
           <div className="space-y-2 mb-4">
             {stackData.map((row) => {
@@ -407,11 +429,12 @@ export default function Report() {
             const incDiff = curData.income - prevData.income
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">수입 추이</p>
+              <p className="text-sm font-semibold">수입 상세</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(curData.income)}</p>
                 <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
               </div>
+              <p className="text-[10px] text-muted-foreground">연간 누적 {fmt(yearIncome)}</p>
               {incChange.dir !== 'same' && (
                 <span className={`text-xs ${incChange.dir === 'up' ? 'text-accent-blue' : 'text-accent-coral'}`}>
                   전월 대비 {incChange.dir === 'up' ? '↑' : '↓'} {incChange.pct}% · {incDiff >= 0 ? '+' : ''}{fmt(incDiff)}
@@ -421,6 +444,21 @@ export default function Report() {
             )
           }}
         >
+          {/* 수입 추이 꺾은선 */}
+          <ResponsiveContainer width="100%" height={150}>
+            <LineChart data={yearlyData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f293780" />
+              <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
+              <YAxis hide />
+              <Tooltip
+                formatter={(v) => [fmt(Number(v)), '수입']}
+                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
+                labelStyle={{ color: '#9ca3af' }}
+              />
+              <Line type="monotone" dataKey="income" stroke="#5865F2" strokeWidth={2} dot={{ r: 3, fill: '#5865F2' }} connectNulls />
+            </LineChart>
+          </ResponsiveContainer>
+
           {/* 수입 6개월 막대 */}
           <div className="space-y-2 mb-4">
             {last6.map(({ label, income, key }) => {
