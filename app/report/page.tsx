@@ -91,6 +91,64 @@ export default function Report() {
     return cat.name
   }
 
+  /** 2depth 카테고리 표시명: "부모 · 자식" 또는 1depth 이름 */
+  function get2depthCatName(catId: string): string {
+    const cat = catMap[catId]
+    if (!cat) return '기타'
+    if (cat.parent_id) {
+      const parent = catMap[cat.parent_id]
+      return parent ? `${parent.name} · ${cat.name}` : cat.name
+    }
+    return cat.name
+  }
+
+  /** 2depth TOP 5 연간 라인 차트 데이터 */
+  function get2depthTop5LineData(type: 'expense' | 'income', selectedMonthKey: string) {
+    // 카테고리별 월별 집계 (2depth 기준 = category_id 그대로)
+    const byCat = new Map<string, Map<number, number>>()
+    for (const tx of transactions) {
+      if (tx.type !== type) continue
+      const txYear = parseInt(tx.date.slice(0, 4))
+      if (txYear !== curYear) continue
+      const txMonth = parseInt(tx.date.slice(5, 7))
+      const catId = tx.category_id
+      if (!byCat.has(catId)) byCat.set(catId, new Map())
+      const monthMap = byCat.get(catId)!
+      monthMap.set(txMonth, (monthMap.get(txMonth) || 0) + tx.amount)
+    }
+
+    // 선택된 월 기준 금액으로 정렬 → TOP 5
+    const selectedMonth = parseInt(selectedMonthKey.slice(5, 7))
+    const ranked = [...byCat.entries()]
+      .map(([catId, monthMap]) => ({
+        catId,
+        name: get2depthCatName(catId),
+        selectedAmount: monthMap.get(selectedMonth) || 0,
+        monthMap,
+      }))
+      .filter(c => c.selectedAmount > 0)
+      .sort((a, b) => b.selectedAmount - a.selectedAmount)
+      .slice(0, 5)
+
+    // 라인 차트 데이터: 1~12월
+    const chartData: Record<string, unknown>[] = []
+    for (let m = 1; m <= 12; m++) {
+      const row: Record<string, unknown> = { label: `${m}월` }
+      for (const cat of ranked) {
+        const val = cat.monthMap.get(m)
+        row[cat.catId] = val && val > 0 ? val : null
+      }
+      chartData.push(row)
+    }
+
+    // 선택된 월의 총액 (해당 type 전체)
+    const totalSelected = transactions
+      .filter(tx => tx.type === type && getMonthKey(tx.date) === selectedMonthKey)
+      .reduce((s, tx) => s + tx.amount, 0)
+
+    return { ranked, chartData, totalSelected }
+  }
+
   const now = new Date()
   const curYear = now.getFullYear()
   const curMonth = now.getMonth() + 1
@@ -410,7 +468,7 @@ export default function Report() {
           {(() => {
             const { year: ey, month: em, key: eKey } = getOffsetMonth(expMonthOffset)
             const { sorted: eSorted, total: eTotal } = getCatBreakdown('expense', eKey)
-            const maxAmount = eSorted.length > 0 ? eSorted[0].amount : 1
+            const { ranked: eRanked, chartData: eChartData, totalSelected: eTotalSel } = get2depthTop5LineData('expense', eKey)
             return (
               <>
                 {/* 월 네비게이션 */}
@@ -432,32 +490,43 @@ export default function Report() {
                   </div>
                 )}
 
-                {eSorted.length === 0 ? (
+                {eRanked.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
                   <>
-                    <div className="space-y-3">
-                      {eSorted.map(({ name, amount }, i) => {
-                        const pct = eTotal > 0 ? Math.round((amount / eTotal) * 100) : 0
-                        const barW = (amount / maxAmount) * 100
-                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                    {/* 2depth TOP 5 연간 라인 차트 */}
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={eChartData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
+                        <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
+                        <YAxis hide />
+                        <Tooltip
+                          cursor={false}
+                          labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
+                          formatter={(v, catId) => [fmt(Number(v)), get2depthCatName(String(catId))]}
+                          contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
+                          labelStyle={{ color: '#9ca3af' }}
+                        />
+                        {eRanked.map((cat, i) => (
+                          <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={CAT_COLORS[i % CAT_COLORS.length]} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
+                        ))}
+                      </LineChart>
+                    </ResponsiveContainer>
+
+                    {/* 범례 */}
+                    <div className="space-y-2 mt-3">
+                      {eRanked.map((cat, i) => {
+                        const pct = eTotalSel > 0 ? Math.round((cat.selectedAmount / eTotalSel) * 100) : 0
                         return (
-                          <div key={name}>
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: color }} />
-                                <span className="text-sm">{name}</span>
-                              </div>
-                              <span className="text-xs text-muted-foreground tabular-nums">{fmt(amount)} · {pct}%</span>
+                          <div key={cat.catId} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: CAT_COLORS[i % CAT_COLORS.length] }} />
+                              <span className="text-xs">{cat.name}</span>
                             </div>
-                            <div className="h-2 rounded-full bg-border overflow-hidden">
-                              <div className="h-full rounded-full" style={{ width: `${barW}%`, backgroundColor: color }} />
-                            </div>
+                            <span className="text-xs text-muted-foreground tabular-nums">{fmt(cat.selectedAmount)} · {pct}%</span>
                           </div>
                         )
                       })}
                     </div>
-
                   </>
                 )}
               </>
@@ -488,7 +557,7 @@ export default function Report() {
           {(() => {
             const { year: iy, month: im, key: iKey } = getOffsetMonth(incMonthOffset)
             const { sorted: iSorted, total: iTotal } = getCatBreakdown('income', iKey)
-            const maxAmount = iSorted.length > 0 ? iSorted[0].amount : 1
+            const { ranked: iRanked, chartData: iChartData, totalSelected: iTotalSel } = get2depthTop5LineData('income', iKey)
             return (
               <>
                 {/* 월 네비게이션 */}
@@ -510,32 +579,43 @@ export default function Report() {
                   </div>
                 )}
 
-                {iSorted.length === 0 ? (
+                {iRanked.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-6">내역이 없어요</p>
                 ) : (
                   <>
-                    <div className="space-y-3">
-                      {iSorted.map(({ name, amount }, i) => {
-                        const pct = iTotal > 0 ? Math.round((amount / iTotal) * 100) : 0
-                        const barW = (amount / maxAmount) * 100
-                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                    {/* 2depth TOP 5 연간 라인 차트 */}
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={iChartData} margin={{ left: 10, right: 10, top: 8, bottom: 0 }}>
+                        <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} interval={0} />
+                        <YAxis hide />
+                        <Tooltip
+                          cursor={false}
+                          labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
+                          formatter={(v, catId) => [fmt(Number(v)), get2depthCatName(String(catId))]}
+                          contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
+                          labelStyle={{ color: '#9ca3af' }}
+                        />
+                        {iRanked.map((cat, i) => (
+                          <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={CAT_COLORS[i % CAT_COLORS.length]} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
+                        ))}
+                      </LineChart>
+                    </ResponsiveContainer>
+
+                    {/* 범례 */}
+                    <div className="space-y-2 mt-3">
+                      {iRanked.map((cat, i) => {
+                        const pct = iTotalSel > 0 ? Math.round((cat.selectedAmount / iTotalSel) * 100) : 0
                         return (
-                          <div key={name}>
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: color }} />
-                                <span className="text-sm">{name}</span>
-                              </div>
-                              <span className="text-xs text-muted-foreground tabular-nums">{fmt(amount)} · {pct}%</span>
+                          <div key={cat.catId} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: CAT_COLORS[i % CAT_COLORS.length] }} />
+                              <span className="text-xs">{cat.name}</span>
                             </div>
-                            <div className="h-2 rounded-full bg-border overflow-hidden">
-                              <div className="h-full rounded-full" style={{ width: `${barW}%`, backgroundColor: color }} />
-                            </div>
+                            <span className="text-xs text-muted-foreground tabular-nums">{fmt(cat.selectedAmount)} · {pct}%</span>
                           </div>
                         )
                       })}
                     </div>
-
                   </>
                 )}
               </>
