@@ -270,7 +270,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       setType(t)
                       setCategoryPickerOpen(true)
                     }}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    className={`flex-1 py-2.5 rounded-xl text-[15px] font-medium transition-colors ${
                       type === t ? typeColors[t].active : typeColors[t].inactive
                     }`}
                   >
@@ -284,7 +284,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 <div className="w-14" />
                 <button
                   onClick={() => setCategoryPickerOpen(true)}
-                  className="flex-1 bg-surface rounded-xl px-3 py-2.5 text-sm text-left flex items-center justify-between"
+                  className="flex-1 bg-surface rounded-xl px-4 py-2.5 text-[15px] text-left flex items-center justify-between"
                 >
                   <span>{categoryLabel}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
@@ -315,7 +315,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onChange={(e) => setMemo(e.target.value)}
               onBlur={() => setKeypadActive(true)}
               onFocus={() => setKeypadActive(false)}
-              style={{ fontSize: '16px' }}
+              style={{ fontSize: '15px' }}
               className="flex-1 bg-surface rounded-xl px-4 py-2.5"
             />
           </div>
