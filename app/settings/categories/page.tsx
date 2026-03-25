@@ -196,7 +196,7 @@ export default function CategoriesSettings() {
                 ) : (
                   <button
                     onClick={() => setAddingSubCat(true)}
-                    className="inline-flex items-center bg-muted px-3 py-1.5 rounded-full text-sm text-muted-foreground"
+                    className="inline-flex items-center bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-sm font-semibold"
                   >
                     추가
                   </button>
@@ -286,14 +286,14 @@ export default function CategoriesSettings() {
                 style={{ fontSize: '16px' }}
                 className="flex-1 bg-card border border-border rounded-xl px-4 py-3"
               />
-              <button onClick={handleAddRoot} className="px-4 py-3 bg-accent-blue text-white rounded-xl text-sm font-medium">추가</button>
+              <button onClick={handleAddRoot} className="px-4 py-3 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">추가</button>
               <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="text-sm text-muted-foreground">취소</button>
             </div>
           ) : (
             <>
               <button
                 onClick={() => setAddingRoot(true)}
-                className="flex-1 py-3 rounded-xl bg-surface text-sm font-medium text-muted-foreground"
+                className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
               >
                 추가
               </button>
