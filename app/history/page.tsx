@@ -528,8 +528,13 @@ export default function History() {
             const mTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === month)
             const income = mTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
             const expense = mTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-            const savings = mTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
-            const balance = income - expense - savings
+            // 저축: 해당 월 말까지 누적
+            const mEnd = `${targetYear}-${String(month).padStart(2,'0')}-${String(new Date(targetYear, month, 0).getDate()).padStart(2,'0')}`
+            const savings = transactions.filter(t => t.type === 'savings' && t.date <= mEnd).reduce((s, t) => s + t.amount, 0)
+            // 잔액: 해당 월 말까지 누적
+            const cumInc = transactions.filter(t => t.type === 'income' && t.date <= mEnd).reduce((s, t) => s + t.amount, 0)
+            const cumExp = transactions.filter(t => t.type === 'expense' && t.date <= mEnd).reduce((s, t) => s + t.amount, 0)
+            const balance = cumInc - cumExp - savings
             return { month, income, expense, savings, balance, hasData: mTxs.length > 0 }
           })
 
