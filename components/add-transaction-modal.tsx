@@ -56,6 +56,12 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [editDate, setEditDate] = useState<string | null>(null)
   const [endDate, setEndDate] = useState('')
   const [endAmount, setEndAmount] = useState('')
+  const [recoverOpen, setRecoverOpen] = useState(false)
+  const [recoverDate, setRecoverDate] = useState(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  })
+  const [recoverAmount, setRecoverAmount] = useState('')
 
   // Populate fields when editing
   useEffect(() => {
@@ -67,6 +73,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setEditDate(editTransaction.date)
       setEndDate((editTransaction as any).end_date || '')
       setEndAmount((editTransaction as any).end_amount ? String((editTransaction as any).end_amount) : '')
+      setRecoverAmount(String(editTransaction.amount))
+      setRecoverOpen(false)
       // parent > child 라벨 구성
       const dbType = editTransaction.type
       getCategories(dbType).then(cats => {
@@ -314,45 +322,18 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
         {/* 저장/취소 버튼 */}
         {editTransaction ? (
-          <div className="flex flex-col gap-2 mb-2">
-            <div className="flex gap-3">
-              <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
-                {saving ? '저장 중...' : '수정하기'}
+          <div className="flex gap-2 mb-2">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-semibold">
+              {saving ? '저장 중...' : '수정하기'}
+            </button>
+            {editTransaction.type === 'savings' && (
+              <button
+                onClick={() => setRecoverOpen(true)}
+                className="flex-1 bg-accent-mint/10 text-accent-mint rounded-xl py-3.5 text-sm font-semibold"
+              >
+                회수하기
               </button>
-              {editTransaction.type === 'savings' && (
-                <button
-                onClick={async () => {
-                  // 회수: 기존 저축 금액을 수입으로 새 트랜잭션 생성 + 기존 저축 삭제
-                  const amount = parseInt(rawAmount, 10) || editTransaction.amount
-                  const { addTransaction, deleteTransaction } = await import('@/lib/api')
-                  setSaving(true)
-                  try {
-                    // 1. 수입 트랜잭션 생성 (카테고리 없이, 메모에 원래 카테고리 기록)
-                    const catName = (editTransaction.category as any)?.name || '저축'
-                    await addTransaction({
-                      type: 'income',
-                      amount,
-                      category_id: editTransaction.category_id,
-                      description: `${catName} 회수` + (memo ? ` (${memo})` : ''),
-                      date: new Date().toISOString().split('T')[0],
-                    })
-                    // 2. 기존 저축 삭제
-                    await deleteTransaction(editTransaction.id)
-                    setRawAmount(''); setMemo(''); setEditDate(null)
-                    onClose()
-                  } catch (e: unknown) {
-                    const msg = e instanceof Error ? e.message : JSON.stringify(e)
-                    alert(`회수 실패: ${msg}`)
-                  } finally {
-                    setSaving(false)
-                  }
-                }}
-                  className="flex-1 bg-accent-mint/10 text-accent-mint rounded-xl py-3.5 text-sm font-semibold"
-                >
-                  회수하기
-                </button>
-              )}
-            </div>
+            )}
             <button
               onClick={async () => {
                 const { deleteTransaction } = await import('@/lib/api')
@@ -360,7 +341,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 setRawAmount(''); setMemo(''); setEditDate(null)
                 onClose()
               }}
-              className="bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
+              className="flex-1 bg-accent-coral/10 text-accent-coral rounded-xl py-3.5 text-sm font-semibold"
             >
               삭제하기
             </button>
@@ -376,6 +357,84 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
         )}
       </div>
+      {/* 회수 바텀시트 */}
+      {recoverOpen && editTransaction && (
+        <>
+          <div className="fixed inset-0 bg-black/30 z-[60]" onClick={() => setRecoverOpen(false)} />
+          <div className="fixed bottom-0 left-0 right-0 z-[70] bg-background rounded-t-2xl shadow-xl animate-slide-up">
+            <div className="px-5 pt-5 pb-2">
+              <h3 className="text-base font-semibold mb-4">저축 회수</h3>
+
+              {/* 회수일 */}
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-muted-foreground">회수일</span>
+                <label className="text-sm cursor-pointer inline-flex items-center gap-1 relative">
+                  <span>{recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                  <input
+                    type="date"
+                    value={recoverDate}
+                    onChange={(e) => e.target.value && setRecoverDate(e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    style={{ fontSize: '16px' }}
+                  />
+                </label>
+              </div>
+
+              {/* 회수 금액 */}
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-muted-foreground">회수 금액</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-sm text-muted-foreground">₩</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={recoverAmount ? parseInt(recoverAmount).toLocaleString() : ''}
+                    onChange={(e) => setRecoverAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                    className="text-sm font-semibold tabular-nums bg-transparent border-none outline-none text-right w-32"
+                    style={{ fontSize: '16px' }}
+                  />
+                </div>
+              </div>
+
+              {/* 적용 버튼 */}
+              <button
+                onClick={async () => {
+                  const amount = parseInt(recoverAmount, 10)
+                  if (!amount) { alert('금액을 입력해주세요'); return }
+                  const { addTransaction, deleteTransaction } = await import('@/lib/api')
+                  setSaving(true)
+                  try {
+                    const catName = (editTransaction.category as any)?.name || '저축'
+                    await addTransaction({
+                      type: 'income',
+                      amount,
+                      category_id: editTransaction.category_id,
+                      description: `${catName} 회수`,
+                      date: recoverDate,
+                    })
+                    await deleteTransaction(editTransaction.id)
+                    setRawAmount(''); setMemo(''); setEditDate(null)
+                    setRecoverOpen(false)
+                    onClose()
+                  } catch (e: unknown) {
+                    const msg = e instanceof Error ? e.message : JSON.stringify(e)
+                    alert(`회수 실패: ${msg}`)
+                  } finally {
+                    setSaving(false)
+                  }
+                }}
+                className="w-full bg-accent-mint text-white rounded-xl py-3.5 text-sm font-semibold mb-2"
+                style={{ paddingBottom: 'calc(14px + env(safe-area-inset-bottom, 0px))' }}
+              >
+                {saving ? '처리 중...' : '적용하기'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
