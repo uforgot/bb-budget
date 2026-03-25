@@ -165,11 +165,12 @@ function MonthGrid({
 
 export interface MonthlyCalendarProps {
   onMonthChange?: (year: number, month: number, income: number, expense: number) => void
+  onDaySelect?: (year: number, month: number, day: number) => void
   onTransactionClick?: (transaction: Transaction) => void
   refreshKey?: number
 }
 
-export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey = 0 }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0 }: MonthlyCalendarProps) {
   const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(new Date()))
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
   const [headerLabel, setHeaderLabel] = useState(() => {
@@ -301,7 +302,8 @@ export function MonthlyCalendar({ onMonthChange, onTransactionClick, refreshKey 
       if (prev?.year === year && prev?.month === month && prev?.day === day) return null
       return { year, month, day }
     })
-  }, [])
+    onDaySelect?.(year, month + 1, day) // month is 0-indexed internally, 1-indexed for parent
+  }, [onDaySelect])
 
   // Selected day detail data
   const selectedDayData = useMemo(() => {

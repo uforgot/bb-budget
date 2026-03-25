@@ -83,7 +83,8 @@ export default function Home() {
         </div>
 
         <MonthlyCalendar
-          onMonthChange={(y, m, inc, exp) => { setCalYear(y); setCalMonth(m); setSelectedDay(1); setMonthIncome(inc); setMonthExpense(exp) }}
+          onMonthChange={(y, m, inc, exp) => { setCalYear(y); setCalMonth(m); setMonthIncome(inc); setMonthExpense(exp) }}
+          onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
           onTransactionClick={(tx) => {
             setEditTx(tx)
             setModalOpen(true)
