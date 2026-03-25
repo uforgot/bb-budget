@@ -485,10 +485,10 @@ export default function Report() {
             const top3 = eAll.slice(0, 3)
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold mb-2">지출 카테고리별 분석</p>
+              <p className="text-sm font-semibold mb-3">지출 카테고리별 분석</p>
               <div className="flex gap-2">
                 {top3.map((cat, i) => (
-                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-3 py-2.5">
+                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-2 py-2">
                     <p className="text-[10px] text-muted-foreground mb-1">연간 {i + 1}위</p>
                     <p className="text-xs font-medium truncate">{cat.name}</p>
                     <p className="text-xs font-semibold tabular-nums text-accent-coral mt-1">₩{cat.yearTotal.toLocaleString()}</p>
@@ -578,10 +578,10 @@ export default function Report() {
             const top3 = iAll.slice(0, 3)
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold mb-2">수입 카테고리별 분석</p>
+              <p className="text-sm font-semibold mb-3">수입 카테고리별 분석</p>
               <div className="flex gap-2">
                 {top3.map((cat, i) => (
-                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-3 py-2.5">
+                  <div key={cat.catId} className="flex-1 bg-muted rounded-[12px] px-2 py-2">
                     <p className="text-[10px] text-muted-foreground mb-1">연간 {i + 1}위</p>
                     <p className="text-xs font-medium truncate">{cat.name}</p>
                     <p className="text-xs font-semibold tabular-nums text-accent-blue mt-1">₩{cat.yearTotal.toLocaleString()}</p>
