@@ -262,7 +262,7 @@ export default function Report() {
             const netPct = janValue > 0 ? Math.round(Math.abs(netDiff / janValue) * 100) : 0
             return (
               <div className="flex-1 text-left pr-1">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 mb-1">
                   <p className="text-sm font-semibold">총자산</p>
                   <button
                     type="button"
@@ -348,7 +348,7 @@ export default function Report() {
             const hasLastYear = prevYearIncome > 0 || prevYearExpense > 0
             return (
               <div className="flex-1 text-left pr-1">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 mb-1">
                   <p className="text-sm font-semibold">실질 수입·지출 추이</p>
                   <button
                     type="button"
@@ -417,7 +417,7 @@ export default function Report() {
             const expDiff = curData.expense - prevData.expense
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">지출 상세</p>
+              <p className="text-sm font-semibold mb-1">지출 상세</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold tabular-nums text-accent-coral">{fmt(curData.expense)}</p>
                 <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
@@ -493,7 +493,7 @@ export default function Report() {
             const incDiff = curData.income - prevData.income
             return (
             <div className="flex-1 text-left pr-1">
-              <p className="text-sm font-semibold">수입 상세</p>
+              <p className="text-sm font-semibold mb-1">수입 상세</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold tabular-nums text-accent-blue">{fmt(curData.income)}</p>
                 <span className="text-[10px] text-muted-foreground">{curYear}년 {curMonth}월 기준</span>
