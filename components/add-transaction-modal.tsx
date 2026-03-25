@@ -357,18 +357,32 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
         )}
       </div>
-      {/* 회수 바텀시트 */}
+      {/* 회수 바텀시트 — 카테고리 피커 스타일 */}
       {recoverOpen && editTransaction && (
-        <>
-          <div className="fixed inset-0 bg-black/30 z-[60]" onClick={() => setRecoverOpen(false)} />
-          <div className="fixed bottom-0 left-0 right-0 z-[70] bg-background rounded-t-2xl shadow-xl animate-slide-up">
-            <div className="px-5 pt-5 pb-2">
-              <h3 className="text-base font-semibold mb-4">저축 회수</h3>
+        <div className="fixed inset-0 z-[60] flex items-end justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setRecoverOpen(false)} />
 
+          <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '75dvh' }}>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
+              <h3 className="text-base font-semibold">저축 회수</h3>
+              <button
+                onClick={() => setRecoverOpen(false)}
+                className="p-1 text-muted-foreground hover:text-foreground"
+                aria-label="닫기"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="px-5" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
               {/* 회수일 */}
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-muted-foreground">회수일</span>
-                <label className="text-sm cursor-pointer inline-flex items-center gap-1 relative">
+              <div className="flex items-center justify-between py-3 border-b border-border">
+                <span className="text-[15px] text-muted-foreground">회수일</span>
+                <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
                   <span>{recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                     <path d="m6 9 6 6 6-6" />
@@ -384,22 +398,22 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </div>
 
               {/* 회수 금액 */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-muted-foreground">회수 금액</span>
+              <div className="flex items-center justify-between py-3 border-b border-border">
+                <span className="text-[15px] text-muted-foreground">회수 금액</span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-sm text-muted-foreground">₩</span>
+                  <span className="text-[15px] text-muted-foreground">₩</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={recoverAmount ? parseInt(recoverAmount).toLocaleString() : ''}
                     onChange={(e) => setRecoverAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="text-sm font-semibold tabular-nums bg-transparent border-none outline-none text-right w-32"
+                    className="text-[15px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-32"
                     style={{ fontSize: '16px' }}
                   />
                 </div>
               </div>
 
-              {/* 적용 버튼 */}
+              {/* 적용하기 버튼 — 카테고리 관리 버튼 스타일 (화이트) */}
               <button
                 onClick={async () => {
                   const amount = parseInt(recoverAmount, 10)
@@ -426,14 +440,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setSaving(false)
                   }
                 }}
-                className="w-full bg-accent-mint text-white rounded-xl py-3.5 text-sm font-semibold mb-2"
-                style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}
+                className="w-full mt-4 mb-4 py-3 rounded-xl bg-white dark:bg-surface text-sm font-medium text-foreground"
               >
                 {saving ? '처리 중...' : '적용하기'}
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   )
