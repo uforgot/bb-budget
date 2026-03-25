@@ -74,6 +74,9 @@ export default function History() {
   const [yearOffset, setYearOffset] = useState(0)
   const [cameFromMonthly, setCameFromMonthly] = useState(false)
   const [cameFromYearly, setCameFromYearly] = useState(false)
+  const [searchMode, setSearchMode] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<Transaction[]>([])
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set())
   const [autoExpanded, setAutoExpanded] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -101,6 +104,24 @@ export default function History() {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  // 검색 필터
+  useEffect(() => {
+    if (!searchMode || !searchQuery.trim()) {
+      setSearchResults([])
+      return
+    }
+    const q = searchQuery.toLowerCase()
+    const results = transactions.filter(tx => {
+      const cat = tx.category as any
+      const catName = cat?.name?.toLowerCase() || ''
+      const parentName = cat?.parent_id ? categories.find((c: any) => c.id === cat.parent_id)?.name?.toLowerCase() || '' : ''
+      const desc = (tx.description || '').toLowerCase()
+      const amount = tx.amount.toString()
+      return catName.includes(q) || parentName.includes(q) || desc.includes(q) || amount.includes(q)
+    })
+    setSearchResults(results)
+  }, [searchMode, searchQuery, transactions, categories])
 
   // 주간 뷰: offset 기반 주 필터
   const getWeekRange = (offset: number) => {
@@ -189,14 +210,14 @@ export default function History() {
       <div className="px-5">
         <TopHeader title="상세 내역" />
 
-        {/* View mode tabs: 월간 / 연간 */}
-        <div className="flex border-b border-border">
+        {/* View mode tabs: 월간 / 연간 + 검색 */}
+        <div className="flex items-center border-b border-border">
           {(['monthly', 'yearly'] as ViewMode[]).map((mode) => {
             const label = mode === 'monthly' ? '월간' : '연간'
             return (
               <button
                 key={mode}
-                onClick={() => { setViewMode(mode); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
+                onClick={() => { setViewMode(mode); setSearchMode(false); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
                 className={`flex-1 pb-2.5 text-sm font-medium text-center transition-colors ${
                   viewMode === mode
                     ? 'text-foreground border-b-2 border-foreground'
@@ -207,9 +228,77 @@ export default function History() {
               </button>
             )
           })}
+          <button
+            onClick={() => { setSearchMode(!searchMode); setSearchQuery('') }}
+            className={`px-3 pb-2.5 flex-shrink-0 ${searchMode ? 'text-accent-blue' : 'text-muted-foreground'}`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+            </svg>
+          </button>
         </div>
 
+        {/* 검색 모드 */}
+        {searchMode && (
+          <div className="py-3">
+            <div className="flex items-center gap-2 bg-surface rounded-xl px-4 py-2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                placeholder="검색어 입력..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                className="flex-1 bg-transparent outline-none text-sm"
+                style={{ fontSize: '16px' }}
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="text-muted-foreground">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
 
+            {/* 검색 결과 */}
+            <div className="mt-3">
+              {searchQuery && searchResults.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">검색 결과가 없어요</p>
+              )}
+              {searchResults.map(tx => {
+                const cat = tx.category as any
+                const catName = cat?.name || ''
+                const parentCat = cat?.parent_id ? categories.find((c: any) => c.id === cat.parent_id) : null
+                const d = new Date(tx.date)
+                return (
+                  <div
+                    key={tx.id}
+                    onClick={() => { setEditTx(tx); setModalOpen(true) }}
+                    className="flex items-center justify-between px-2 py-2.5 cursor-pointer active:bg-muted/30 rounded-lg"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs bg-muted px-2.5 py-0.5 rounded-full">
+                          {parentCat ? <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName || '미분류'}</span>}
+                        </span>
+                        {tx.description && <span className="text-[10px] text-muted-foreground truncate">{tx.description}</span>}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 pl-0.5">{d.getFullYear()}년 {d.getMonth() + 1}월 {d.getDate()}일</p>
+                    </div>
+                    <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ml-3 ${
+                      tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+                    }`}>
+                      ₩{tx.amount.toLocaleString()}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* 뷰별 상단 버튼 */}
         {viewMode === 'weekly' && (
@@ -254,15 +343,16 @@ export default function History() {
             </div>
           </div>
         )}
-        {viewMode === 'monthly' && (
+        {!searchMode && viewMode === 'monthly' && (
           <div className="h-[10px]" />
         )}
         {viewMode === 'yearly' && (
           <div className="h-[10px]" />
         )}
 
-        {/* Grouped list */}
-        {viewMode === 'weekly' ? (() => {
+        {/* Grouped list — 검색 모드에서는 숨김 */}
+        {searchMode ? null :
+        (viewMode === 'weekly' ? (() => {
           const { start } = getWeekRange(weekOffset)
           const weekMonth = start.getMonth() + 1
           const weekNum = Math.ceil(start.getDate() / 7)
@@ -628,7 +718,7 @@ export default function History() {
               </div>
             </div>
           )
-        })() : null}
+        })() : null)}
       </div>
 
       <AddTransactionModal
