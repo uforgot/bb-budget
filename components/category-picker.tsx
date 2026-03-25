@@ -74,7 +74,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose }: Cate
         </div>
 
         {/* Category grid + inline accordion */}
-        <div className="overflow-y-auto px-5" style={{ paddingBottom: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}>
+        <div className="overflow-y-auto px-5" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
           {(() => {
             // Split parents into rows of 4
             const rows: typeof parents[] = []
