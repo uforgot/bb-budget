@@ -28,6 +28,19 @@ export default function Home() {
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
 
+  // 반복 지출 자동 확정 (1회)
+  useEffect(() => {
+    (async () => {
+      try {
+        const { confirmRecurringTransactions } = await import('@/lib/api')
+        const now = new Date()
+        await confirmRecurringTransactions(now.getFullYear(), now.getMonth() + 1)
+      } catch (e) {
+        console.error('반복 지출 확정 실패:', e)
+      }
+    })()
+  }, [])
+
   // 전체 기간 자산 총합 (1회 로드)
   const loadAllTime = useCallback(async () => {
     try {

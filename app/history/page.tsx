@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { getTransactions, deleteTransaction, getCategories, type Transaction, type Category } from '@/lib/api'
+import { getTransactions, deleteTransaction, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
 import { SwipeToDelete } from '@/components/swipe-to-delete'
 
 type TabType = '지출' | '수입' | '저축'
@@ -83,6 +83,7 @@ export default function History() {
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [recurringItems, setRecurringItems] = useState<{ day: number; type: string; amount: number; category_id: string; description: string; categoryName?: string }[]>([])
 
   const loadData = useCallback(async () => {
     try {
@@ -104,6 +105,18 @@ export default function History() {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  // 미래 달 반복 지출 예정 로드
+  useEffect(() => {
+    if (viewMode !== 'monthly') { setRecurringItems([]); return }
+    const now = new Date()
+    const targetMonth = now.getMonth() + 1 + monthOffset
+    const targetYear = now.getFullYear() + Math.floor((targetMonth - 1) / 12)
+    const actualMonth = ((targetMonth - 1) % 12 + 12) % 12 + 1
+    const isFuture = targetYear > now.getFullYear() || (targetYear === now.getFullYear() && actualMonth > now.getMonth() + 1)
+    if (!isFuture) { setRecurringItems([]); return }
+    getRecurringPreview(targetYear, actualMonth).then(setRecurringItems).catch(() => setRecurringItems([]))
+  }, [viewMode, monthOffset])
 
   // 검색 필터
   useEffect(() => {
@@ -430,13 +443,21 @@ export default function History() {
           const targetYear = now.getFullYear() + Math.floor((targetMonth - 1) / 12)
           const actualMonth = ((targetMonth - 1) % 12 + 12) % 12 + 1
 
+          const today = new Date()
+          const isFutureMonth = targetYear > today.getFullYear() || (targetYear === today.getFullYear() && actualMonth > today.getMonth() + 1)
+
           // 해당 월 트랜잭션
           const monthTxs = transactions.filter(t => {
             const d = new Date(t.date)
             return d.getFullYear() === targetYear && d.getMonth() + 1 === actualMonth
           })
-          const monthIncome = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-          const monthExpense = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+          let monthIncome = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+          let monthExpense = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+          // 미래 달이면 반복 지출 예정 합산
+          if (isFutureMonth) {
+            monthExpense += recurringItems.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0)
+            monthIncome += recurringItems.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0)
+          }
 
           // 주차별 요약 (최신 주차 먼저)
           const daysInMonth = new Date(targetYear, actualMonth, 0).getDate()
@@ -446,12 +467,11 @@ export default function History() {
           const savingsTxs = transactions.filter(t => t.type === 'savings')
           const monthSavings = savingsTxs.filter(t => t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
           const totalWeeks = Math.ceil(daysInMonth / 7)
-          const today = new Date()
           const currentWeekNum = (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1)
             ? Math.ceil(today.getDate() / 7)
-            : (targetYear < today.getFullYear() || (targetYear === today.getFullYear() && actualMonth < today.getMonth() + 1))
-              ? totalWeeks  // 과거 월은 전부 표시
-              : 0           // 미래 월은 표시 안 함
+            : isFutureMonth
+              ? totalWeeks  // 미래 월도 반복 지출 예정 표시를 위해 전체 주차 보여줌
+              : totalWeeks  // 과거 월은 전부 표시
 
           // 최신 주차 기본 펼침 (최초 1회만)
           if (!autoExpanded && expandedWeeks.size === 0 && currentWeekNum > 0) {
@@ -462,14 +482,20 @@ export default function History() {
           const weekSummaries = Array.from({ length: totalWeeks }, (_, i) => {
             const weekNum = i + 1
             const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
-            const weekTotal = weekTxs.reduce((sum, t) => {
+            let weekTotal = weekTxs.reduce((sum, t) => {
               if (t.type === 'expense') return sum + t.amount
               if (t.type === 'income') return sum + t.amount
               if (t.type === 'savings') return sum + t.amount
               return sum
             }, 0)
-            return { weekNum, weekTotal }
-          }).filter(w => w.weekNum <= currentWeekNum).reverse()
+            // 미래 달이면 반복 지출 예정 금액 합산
+            if (isFutureMonth) {
+              const weekRecurring = recurringItems.filter(r => Math.ceil(r.day / 7) === weekNum)
+              weekTotal += weekRecurring.reduce((s, r) => s + r.amount, 0)
+            }
+            const hasRecurring = isFutureMonth && recurringItems.some(r => Math.ceil(r.day / 7) === weekNum)
+            return { weekNum, weekTotal, hasRecurring }
+          }).filter(w => w.weekNum <= currentWeekNum && (w.weekTotal > 0 || w.hasRecurring)).reverse()
 
           return (
             <div className="flex flex-col mt-2">
@@ -517,8 +543,11 @@ export default function History() {
               })()}
 
               {/* 주차별 아코디언 */}
-              {weekSummaries.length === 0 && (
+              {weekSummaries.length === 0 && !isFutureMonth && (
                 <p className="text-sm text-muted-foreground text-center py-8">아직 내역이 없어요</p>
+              )}
+              {weekSummaries.length === 0 && isFutureMonth && recurringItems.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">예정된 반복 지출이 없어요</p>
               )}
               {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
@@ -552,8 +581,41 @@ export default function History() {
                   {/* 펼친 내역 */}
                   {isExpanded && (
                     <div className="pb-2">
+                      {/* 해당 주차의 반복 지출 예정 항목 */}
+                      {(() => {
+                        const weekRecurring = isFutureMonth ? recurringItems.filter(r => Math.ceil(r.day / 7) === weekNum) : []
+                        return weekRecurring.map((r, ri) => {
+                          const d = new Date(targetYear, actualMonth - 1, r.day)
+                          return (
+                            <div key={`recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border">
+                              <div className="px-5 py-2">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-14 flex-shrink-0">
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="text-sm font-medium">{DAY_NAMES[d.getDay()]}</span>
+                                      <span className="text-xs text-muted-foreground tabular-nums">{r.day}일</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex-1 min-w-0 flex items-center gap-2">
+                                    <span className="text-xs bg-muted px-3 py-1 rounded-full inline-block">
+                                      <span className="text-foreground">{r.categoryName || '미분류'}</span>
+                                    </span>
+                                    <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
+                                  </div>
+                                  <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
+                                    r.type === 'expense' ? 'text-accent-coral' : r.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+                                  }`}>
+                                    ₩{r.amount.toLocaleString()}
+                                  </span>
+                                </div>
+                                {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
+                              </div>
+                            </div>
+                          )
+                        })
+                      })()}
                       {/* 일별 내역 */}
-                      {weekNonSavingsTxs.length === 0 ? (
+                      {weekNonSavingsTxs.length === 0 && !(isFutureMonth && recurringItems.some(r => Math.ceil(r.day / 7) === weekNum)) ? (
                         <p className="text-sm text-muted-foreground text-center py-4">내역이 없어요</p>
                       ) : (() => {
                         let lastDate: string | null = null

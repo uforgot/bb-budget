@@ -141,6 +141,72 @@ export async function deleteRecurringTransaction(id: string) {
   if (error) throw error
 }
 
+// ─── 반복 지출: 자동 확정 + 예정 미리보기 ─────────────────
+
+/** 이번 달 반복 지출 중 아직 생성 안 된 것을 자동 확정 */
+export async function confirmRecurringTransactions(year: number, month: number) {
+  const today = new Date()
+  const recurring = await getRecurringTransactions()
+  const active = recurring.filter(r => r.active)
+  if (active.length === 0) return
+
+  const monthTxs = await getTransactions({ year, month })
+  const created: Transaction[] = []
+
+  for (const r of active) {
+    // day_of_month가 오늘 이전(포함)인 것만 확정
+    const targetDay = Math.min(r.day_of_month, new Date(year, month, 0).getDate())
+    const targetDate = new Date(year, month - 1, targetDay)
+    if (targetDate > today) continue
+
+    // 매칭: 같은 category_id + 같은 amount + 같은 월
+    const alreadyExists = monthTxs.some(
+      t => t.category_id === r.category_id && t.amount === r.amount
+    )
+    if (alreadyExists) continue
+
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(targetDay).padStart(2, '0')}`
+    const desc = r.description ? `${r.description} (반복)` : '(반복)'
+    const tx = await addTransaction({
+      type: r.type,
+      amount: r.amount,
+      category_id: r.category_id,
+      description: desc,
+      date: dateStr,
+    })
+    created.push(tx)
+  }
+
+  return created
+}
+
+/** 미래 달에 표시할 반복 지출 예정 목록 생성 */
+export async function getRecurringPreview(year: number, month: number): Promise<{
+  day: number
+  type: string
+  amount: number
+  category_id: string
+  description: string
+  categoryName?: string
+}[]> {
+  const recurring = await getRecurringTransactions()
+  const active = recurring.filter(r => r.active)
+  if (active.length === 0) return []
+
+  const daysInMonth = new Date(year, month, 0).getDate()
+  return active.map(r => {
+    const day = Math.min(r.day_of_month, daysInMonth)
+    return {
+      day,
+      type: r.type,
+      amount: r.amount,
+      category_id: r.category_id,
+      description: r.description ? `${r.description} (예정)` : '(예정)',
+      categoryName: r.category?.name || '',
+    }
+  })
+}
+
 // 월별 요약
 export async function getMonthlySummary(year: number, month: number) {
   const transactions = await getTransactions({ year, month })

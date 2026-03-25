@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { getMonthlySummary, type Transaction } from '@/lib/api'
+import { getMonthlySummary, getRecurringPreview, type Transaction } from '@/lib/api'
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -18,6 +18,7 @@ interface DayItem {
   parentCategory?: string
   description: string
   amount: number
+  isRecurring?: boolean
 }
 
 interface CachedMonth {
@@ -85,13 +86,14 @@ function MonthGrid({
   year,
   month,
   data,
-
+  isFutureMonth,
   selectedDay,
   onDayClick,
 }: {
   year: number
   month: number // 0-indexed
   data: Record<number, DayData>
+  isFutureMonth?: boolean
   selectedDay: SelectedDay | null
   onDayClick: (year: number, month: number, day: number) => void
 }) {
@@ -143,12 +145,12 @@ function MonthGrid({
               </span>
               <div className="flex flex-col items-center gap-0 mt-0.5">
                 {(dayData?.expense ?? 0) > 0 && (
-                  <span className="text-[8px] tabular-nums text-accent-coral leading-tight">
+                  <span className={`text-[8px] tabular-nums text-accent-coral leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
                     {formatAmount(dayData!.expense!)}
                   </span>
                 )}
                 {(dayData?.income ?? 0) > 0 && (
-                  <span className="text-[8px] tabular-nums text-accent-blue leading-tight">
+                  <span className={`text-[8px] tabular-nums text-accent-blue leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
                     {formatAmount(dayData!.income!)}
                   </span>
                 )}
@@ -255,13 +257,35 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
     loadingMonthsRef.current.add(key)
     try {
       const summary = await getMonthlySummary(year, month + 1)
+      const daily = { ...summary.daily }
+
+      // 미래 달이면 반복 지출 예정 데이터 합산
+      const now = new Date()
+      const isFuture = year > now.getFullYear() || (year === now.getFullYear() && month > now.getMonth())
+      if (isFuture) {
+        const preview = await getRecurringPreview(year, month + 1)
+        for (const p of preview) {
+          if (!daily[p.day]) daily[p.day] = { income: 0, expense: 0, savings: 0, items: [] }
+          if (p.type === 'expense') daily[p.day].expense = (daily[p.day].expense || 0) + p.amount
+          else if (p.type === 'income') daily[p.day].income = (daily[p.day].income || 0) + p.amount
+          daily[p.day].items = daily[p.day].items || []
+          daily[p.day].items!.push({
+            type: p.type as 'income' | 'expense' | 'savings',
+            category: p.categoryName || '',
+            description: p.description,
+            amount: p.amount,
+            isRecurring: true,
+          } as any)
+        }
+      }
+
       setDataCache(prev => {
         const next = new Map(prev)
         next.set(key, {
           income: summary.income,
           expense: summary.expense,
           savings: summary.savings,
-          daily: summary.daily,
+          daily,
           transactions: summary.transactions,
         })
         return next
@@ -378,6 +402,9 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
         const cachedPrev = prevEntry ? dataCache.get(monthKey(prevEntry.year, prevEntry.month)) : null
         const cachedNext = nextEntry ? dataCache.get(monthKey(nextEntry.year, nextEntry.month)) : null
 
+        const now = new Date()
+        const isFuture = (y: number, m: number) => y > now.getFullYear() || (y === now.getFullYear() && m > now.getMonth())
+
         return (
           <div
             ref={sliderRef}
@@ -401,7 +428,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
               )}
 
               {/* 현재 달 — 자연 높이 */}
-              <MonthGrid year={entry.year} month={entry.month} data={cachedCurr?.daily ?? {}} selectedDay={selectedDay} onDayClick={handleDayClick} />
+              <MonthGrid year={entry.year} month={entry.month} data={cachedCurr?.daily ?? {}} isFutureMonth={isFuture(entry.year, entry.month)} selectedDay={selectedDay} onDayClick={handleDayClick} />
 
               {/* 다음 달 — 자연 높이 */}
               {nextEntry && (
@@ -453,8 +480,8 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                   return (
                     <div
                       key={i}
-                      onClick={() => handleItemClick(selectedDay.day, i)}
-                      className="flex items-center justify-between py-2 px-5 cursor-pointer active:bg-surface"
+                      onClick={() => !item.isRecurring && handleItemClick(selectedDay.day, i)}
+                      className={`flex items-center justify-between py-2 px-5 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
@@ -464,6 +491,9 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                             <span className="text-foreground">{item.category}</span>
                           )}
                         </span>
+                        {item.isRecurring && (
+                          <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
+                        )}
                         {item.description && (
                           <span className="text-[10px] text-muted-foreground line-clamp-2">{item.description}</span>
                         )}
