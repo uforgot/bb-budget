@@ -307,7 +307,7 @@ export default function Report() {
                       cursor={false}
                       labelFormatter={(v) => `${v}월`}
                       formatter={(v, name) => [fmt(Number(v)), name === 'cash' ? '잔액' : '저축']}
-                      contentStyle={{ background: '#141c28', border: '1px solid #1f2937', borderRadius: 8, fontSize: 12 }}
+                      contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
                       labelStyle={{ color: '#9ca3af' }}
                     />
                     <Bar dataKey="cash" stackId="a" fill="#5865F2" radius={[0, 0, 0, 0]} />
@@ -359,7 +359,7 @@ export default function Report() {
               <YAxis hide />
               <Tooltip
                 formatter={(v) => [fmt(Number(v)), '지출']}
-                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
+                contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
                 labelStyle={{ color: '#9ca3af' }}
               />
               <Line type="monotone" dataKey="expense" stroke="#CF6679" strokeWidth={2} dot={{ r: 3, fill: '#CF6679' }} connectNulls />
@@ -450,7 +450,7 @@ export default function Report() {
               <YAxis hide />
               <Tooltip
                 formatter={(v) => [fmt(Number(v)), '수입']}
-                contentStyle={{ background: '#141c28', border: 'none', borderRadius: 8, fontSize: 12 }}
+                contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
                 labelStyle={{ color: '#9ca3af' }}
               />
               <Line type="monotone" dataKey="income" stroke="#5865F2" strokeWidth={2} dot={{ r: 3, fill: '#5865F2' }} connectNulls />
