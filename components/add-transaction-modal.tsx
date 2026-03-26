@@ -345,7 +345,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onChange={(e) => setMemo(e.target.value)}
               onBlur={() => setKeypadActive(true)}
               onFocus={() => setKeypadActive(false)}
-              style={{ fontSize: '15px' }}
+              style={{ fontSize: '16px' }}
               className="flex-1 bg-surface rounded-[18px] px-4 py-2.5"
             />
           </div>
