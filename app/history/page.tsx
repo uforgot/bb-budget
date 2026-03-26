@@ -95,7 +95,7 @@ export default function History() {
       setTransactions(results.flat().sort((a, b) => {
         const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime()
         if (dateDiff !== 0) return dateDiff
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       }))
     } catch (e) {
       console.error('내역 로드 실패:', e)
@@ -555,7 +555,7 @@ export default function History() {
                   .sort((a, b) => {
                     const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime()
                     if (dateDiff !== 0) return dateDiff
-                    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                   })
                 const weekNonSavingsTxs = weekTxs
 
