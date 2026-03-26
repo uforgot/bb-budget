@@ -9,21 +9,36 @@ interface SwipeToDeleteProps {
 
 export function SwipeToDelete({ children, onDelete }: SwipeToDeleteProps) {
   const startX = useRef<number | null>(null)
+  const startY = useRef<number | null>(null)
+  const isScrolling = useRef(false)
   const [offset, setOffset] = useState(0)
   const [swiping, setSwiping] = useState(false)
   const DELETE_THRESHOLD = 80
 
   const handleTouchStart = (e: React.TouchEvent) => {
     startX.current = e.touches[0].clientX
+    startY.current = e.touches[0].clientY
+    isScrolling.current = false
     setSwiping(false)
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (startX.current === null) return
-    const diff = startX.current - e.touches[0].clientX
-    if (diff > 10) {
+    if (startX.current === null || startY.current === null) return
+    if (isScrolling.current) return
+
+    const diffX = startX.current - e.touches[0].clientX
+    const diffY = Math.abs(e.touches[0].clientY - startY.current)
+
+    // Y축 이동이 X축보다 크면 스크롤로 판단
+    if (diffY > Math.abs(diffX) && diffY > 10) {
+      isScrolling.current = true
+      setOffset(0)
+      return
+    }
+
+    if (diffX > 10) {
       setSwiping(true)
-      setOffset(Math.min(diff, DELETE_THRESHOLD))
+      setOffset(Math.min(diffX, DELETE_THRESHOLD))
     } else {
       setOffset(0)
     }
