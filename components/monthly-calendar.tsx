@@ -448,7 +448,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
         const totalExpense = sd?.expense ?? 0
         const totalIncome = sd?.income ?? 0
         const totalSavings = sd?.savings ?? 0
-        const totalDay = totalExpense + totalIncome + totalSavings
+        const totalDay = totalIncome - totalExpense
 
         return (
           <div className="mt-4">
@@ -457,11 +457,11 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
               <span className="text-sm font-semibold">
                 {selectedDay.month + 1}월 {selectedDay.day}일 {dayOfWeek}
               </span>
-              {totalDay > 0 && (
+              {(totalIncome > 0 || totalExpense > 0) && (
                 <span className={`text-sm font-semibold tabular-nums ${
-                  totalExpense > 0 ? 'text-accent-coral' : totalIncome > 0 ? 'text-accent-blue' : 'text-accent-mint'
+                  totalDay >= 0 ? 'text-accent-blue' : 'text-accent-coral'
                 }`}>
-                  ₩{totalDay.toLocaleString()}
+                  {totalDay >= 0 ? '+' : '-'}₩{Math.abs(totalDay).toLocaleString()}
                 </span>
               )}
             </div>
