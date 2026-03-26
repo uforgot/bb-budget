@@ -36,7 +36,7 @@ function formatDateDisplay(dateStr: string) {
   const d = new Date(dateStr + 'T00:00:00')
   const days = ['일', '월', '화', '수', '목', '금', '토']
   const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 ${dayNames[d.getDay()]}`
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${dayNames[d.getDay()]}`
 }
 
 function formatAmount(raw: string) {
