@@ -11,7 +11,18 @@ import { TopHeader } from '@/components/top-header'
 import type { Transaction, Category } from '@/lib/api'
 
 // ─── constants ────────────────────────────────────────
-const CAT_COLORS = ['#E8734A', '#F5A0C0', '#8B8BDA', '#5CD6A2', '#4A9AB5', '#F2C94C', '#D35DB2', '#6BC5E8', '#C084FC', '#34D399']
+const CAT_COLORS = [
+  '#E85D75',  // 1. 로즈
+  '#E8934A',  // 2. 오렌지
+  '#F2C94C',  // 3. 옐로우
+  '#4ADE80',  // 4. 그린
+  '#2DD4BF',  // 5. 틸
+  '#38BDF8',  // 6. 스카이블루
+  '#818CF8',  // 7. 인디고
+  '#C084FC',  // 8. 퍼플
+  '#F472B6',  // 9. 핑크
+  '#A3A3A3',  // 10. 그레이
+]
 
 // ─── helpers ──────────────────────────────────────────
 
