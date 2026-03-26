@@ -461,7 +461,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                 <span className={`text-sm font-semibold tabular-nums ${
                   totalDay >= 0 ? 'text-accent-blue' : 'text-accent-coral'
                 }`}>
-                  {totalDay >= 0 ? '+' : '-'}₩{Math.abs(totalDay).toLocaleString()}
+                  ₩{Math.abs(totalDay).toLocaleString()}
                 </span>
               )}
             </div>
