@@ -407,7 +407,7 @@ export default function History() {
                           className="flex items-center justify-between px-5 py-2 cursor-pointer active:bg-muted/30"
                         >
                           <div className="flex items-center gap-2">
-                            <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
+                            <span className="text-xs font-semibold dark:font-normal bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
                             {tx.description && <span className="text-[10px] text-muted-foreground">{tx.description}</span>}
                           </div>
                           <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
@@ -522,20 +522,20 @@ export default function History() {
                 return (
                   <div className="mb-4">
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{actualMonth}월 수입</span>
+                      <span className="text-xs font-semibold dark:font-normal bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{actualMonth}월 수입</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{actualMonth}월 지출</span>
+                      <span className="text-xs font-semibold dark:font-normal bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{actualMonth}월 지출</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{actualMonth}월 저축</span>
+                      <span className="text-xs font-semibold dark:font-normal bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{actualMonth}월 저축</span>
                       <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{monthSavingsAmt.toLocaleString()}</span>
                     </div>
                     <div className="border-t border-border mx-5 my-1" />
                     <div className="flex items-center justify-between px-5 py-2">
-                      <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">잔액</span>
+                      <span className="text-xs font-semibold dark:font-normal bg-muted text-foreground px-3 py-1 rounded-full">잔액</span>
                       <span className={`text-sm font-bold tabular-nums ${monthBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{monthBalance.toLocaleString()}</span>
                     </div>
                   </div>
@@ -717,20 +717,20 @@ export default function History() {
               {/* 연간 수입/지출 */}
               <div className="mb-4">
                 <div className="flex items-center justify-between px-5 py-2">
-                  <span className="text-xs bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{targetYear}년 수입</span>
+                  <span className="text-xs font-semibold dark:font-normal bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{targetYear}년 수입</span>
                   <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between px-5 py-2">
-                  <span className="text-xs bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{targetYear}년 지출</span>
+                  <span className="text-xs font-semibold dark:font-normal bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{targetYear}년 지출</span>
                   <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between px-5 py-2">
-                  <span className="text-xs bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{targetYear}년 저축</span>
+                  <span className="text-xs font-semibold dark:font-normal bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{targetYear}년 저축</span>
                   <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{yearSavings.toLocaleString()}</span>
                 </div>
                 <div className="border-t border-border mx-5 my-1" />
                 <div className="flex items-center justify-between px-5 py-2">
-                  <span className="text-xs bg-muted text-foreground px-3 py-1 rounded-full">{targetYear}년 잔액</span>
+                  <span className="text-xs font-semibold dark:font-normal bg-muted text-foreground px-3 py-1 rounded-full">{targetYear}년 잔액</span>
                   <span className={`text-sm font-bold tabular-nums ${yearBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{yearBalance.toLocaleString()}</span>
                 </div>
               </div>

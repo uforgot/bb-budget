@@ -145,12 +145,12 @@ function MonthGrid({
               </span>
               <div className="flex flex-col items-center gap-0 mt-0.5">
                 {(dayData?.expense ?? 0) > 0 && (
-                  <span className={`text-[8px] tabular-nums text-accent-coral leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
+                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-coral leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
                     {formatAmount(dayData!.expense!)}
                   </span>
                 )}
                 {(dayData?.income ?? 0) > 0 && (
-                  <span className={`text-[8px] tabular-nums text-accent-blue leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
+                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-blue leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
                     {formatAmount(dayData!.income!)}
                   </span>
                 )}
