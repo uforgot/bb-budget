@@ -11,7 +11,7 @@ import { TopHeader } from '@/components/top-header'
 import type { Transaction, Category } from '@/lib/api'
 
 // ─── constants ────────────────────────────────────────
-const CAT_COLORS = ['#CF6679', '#5865F2', '#43B581', '#7289DA', '#9B59B6', '#1ABC9C', '#E67E22', '#2ECC71']
+const CAT_COLORS = ['#FF70FF', '#5865F2', '#43B581', '#7289DA', '#9B59B6', '#1ABC9C', '#E67E22', '#2ECC71']
 
 // ─── helpers ──────────────────────────────────────────
 
@@ -470,7 +470,7 @@ export default function Report() {
                 }}
               />
               {(trendMode === 'expense' || trendMode === 'all') && (
-                <Line type="monotone" dataKey="expense" stroke="#CF6679" strokeWidth={2} dot={{ r: 3, fill: '#CF6679' }} connectNulls />
+                <Line type="monotone" dataKey="expense" stroke="#FF70FF" strokeWidth={2} dot={{ r: 3, fill: '#FF70FF' }} connectNulls />
               )}
               {(trendMode === 'income' || trendMode === 'all') && (
                 <Line type="monotone" dataKey="income" stroke="#5865F2" strokeWidth={2} dot={{ r: 3, fill: '#5865F2' }} connectNulls />
