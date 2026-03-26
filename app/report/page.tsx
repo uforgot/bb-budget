@@ -11,7 +11,7 @@ import { TopHeader } from '@/components/top-header'
 import type { Transaction, Category } from '@/lib/api'
 
 // ─── constants ────────────────────────────────────────
-const CAT_COLORS = ['#FF70FF', '#5865F2', '#43B581', '#7289DA', '#9B59B6', '#1ABC9C', '#E67E22', '#2ECC71']
+const CAT_COLORS = ['#E8734A', '#F5A0C0', '#8B8BDA', '#5CD6A2', '#4A9AB5', '#F2C94C', '#D35DB2', '#6BC5E8', '#E88B5A', '#A78BFA']
 
 // ─── helpers ──────────────────────────────────────────
 
