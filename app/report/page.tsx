@@ -310,7 +310,7 @@ export default function Report() {
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); alert("총자산은 운용 중인 모든 투자금과 현금 잔액을 합친 나의 전체 자산입니다.") }}
-                    className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-600 text-muted-foreground text-[10px] flex items-center justify-center"
+                    className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center"
                   >?</button>
                 </div>
                 <div className="flex items-baseline gap-2">
@@ -397,7 +397,7 @@ export default function Report() {
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); alert("실질 수입은 연간 누적 수입에서 묶인 돈인 저축액을 제외한 수입입니다.") }}
-                    className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-600 text-muted-foreground text-[10px] flex items-center justify-center"
+                    className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center"
                   >?</button>
                 </div>
                 <div className="flex items-baseline gap-2">
@@ -488,7 +488,7 @@ export default function Report() {
             <div className="flex-1 text-left pr-1">
               <div className="flex items-center gap-1 mb-3">
                 <p className="text-sm font-semibold">지출 카테고리별 분석</p>
-                <button type="button" onClick={(e) => { e.stopPropagation(); alert("연간 누적 지출 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-600 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); alert("연간 누적 지출 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
               </div>
               <div className="space-y-2">
                 {top3.map((cat, i) => (
@@ -587,7 +587,7 @@ export default function Report() {
             <div className="flex-1 text-left pr-1">
               <div className="flex items-center gap-1 mb-3">
                 <p className="text-sm font-semibold">수입 카테고리별 분석</p>
-                <button type="button" onClick={(e) => { e.stopPropagation(); alert("연간 누적 수입 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-600 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); alert("연간 누적 수입 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
               </div>
               <div className="space-y-2">
                 {top3.map((cat, i) => (
