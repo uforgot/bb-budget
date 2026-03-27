@@ -1,6 +1,6 @@
 {
-  "name": "빵계부",
-  "short_name": "빵계부",
+  "name": "가계부",
+  "short_name": "가계부",
   "description": "가계부 PWA",
   "start_url": "/",
   "display": "standalone",
