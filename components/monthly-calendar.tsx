@@ -202,9 +202,17 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
       if (next < 0 || next >= months.length) return prev
       const entry = months[next]
       setHeaderLabel(`${entry.year}년 ${entry.month + 1}월`)
+      // 현재 달로 돌아오면 오늘 날짜 자동 선택
+      const now = new Date()
+      if (entry.year === now.getFullYear() && entry.month === now.getMonth()) {
+        setSelectedDay({ year: now.getFullYear(), month: now.getMonth(), day: now.getDate() })
+        onDaySelect?.(now.getFullYear(), now.getMonth() + 1, now.getDate())
+      } else {
+        setSelectedDay(null)
+      }
       return next
     })
-  }, [months])
+  }, [months, onDaySelect])
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     if (isAnimating) return
