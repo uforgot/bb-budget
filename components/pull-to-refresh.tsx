@@ -78,10 +78,10 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
       >
         <RefreshCw
           className={cn(
-            "h-5 w-5 text-muted-foreground transition-transform",
-            refreshing && "animate-spin"
+            "h-5 w-5 text-muted-foreground",
+            refreshing && "refresh-spin"
           )}
-          style={{
+          style={refreshing ? { opacity: 1 } : {
             transform: `rotate(${progress * 360}deg)`,
             opacity: progress,
           }}
