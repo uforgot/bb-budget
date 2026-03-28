@@ -281,7 +281,7 @@ export default function CategoriesSettings() {
         {/* 하단 버튼 */}
         <div className="flex gap-3 mt-8 pb-10">
           {addingRoot ? (
-            <div className="flex items-center gap-2 flex-1">
+            <div className="flex flex-col gap-2 flex-1">
               <input
                 type="text"
                 placeholder="카테고리명"
@@ -290,10 +290,12 @@ export default function CategoriesSettings() {
                 onKeyDown={(e) => e.key === 'Enter' && handleAddRoot()}
                 autoFocus
                 style={{ fontSize: '16px' }}
-                className="flex-1 bg-card border border-border rounded-[18px] px-4 py-3"
+                className="w-full bg-card border border-border rounded-[18px] px-4 py-3"
               />
-              <button onClick={handleAddRoot} className="px-4 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">카테고리 추가하기</button>
-              <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="text-sm text-muted-foreground">취소</button>
+              <div className="flex gap-2">
+                <button onClick={handleAddRoot} className="flex-1 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">추가하기</button>
+                <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="flex-1 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">취소하기</button>
+              </div>
             </div>
           ) : (
             <>
