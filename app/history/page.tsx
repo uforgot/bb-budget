@@ -573,7 +573,7 @@ export default function History() {
                   >
                     <span className="text-sm font-semibold">{actualMonth}월 {weekNum}주 차</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium tabular-nums">₩{weekTotal.toLocaleString()}</span>
+                      <span className="text-sm font-semibold tabular-nums">₩{weekTotal.toLocaleString()}</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>
                     </div>
                   </div>
