@@ -566,7 +566,7 @@ export default function Report() {
                               else next.add(cat.catId)
                               setExpSelectedCats(next)
                             }}
-                            className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${isSelected ? 'text-white' : 'bg-surface text-muted-foreground'}`}
+                            className={`text-[10px] font-semibold px-2.5 py-1 rounded-full transition-colors ${isSelected ? 'text-white' : 'bg-surface text-muted-foreground'}`}
                             style={isSelected ? { backgroundColor: color } : {}}
                           >
                             {cat.name}
@@ -664,7 +664,7 @@ export default function Report() {
                               else next.add(cat.catId)
                               setIncSelectedCats(next)
                             }}
-                            className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${isSelected ? 'text-white' : 'bg-surface text-muted-foreground'}`}
+                            className={`text-[10px] font-semibold px-2.5 py-1 rounded-full transition-colors ${isSelected ? 'text-white' : 'bg-surface text-muted-foreground'}`}
                             style={isSelected ? { backgroundColor: color } : {}}
                           >
                             {cat.name}
