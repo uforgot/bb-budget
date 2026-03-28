@@ -59,7 +59,7 @@ const ROW_H = 52
 const SEP_H = 8
 
 function getWeeksInMonth(year: number, month: number): number {
-  const firstDay = new Date(year, month, 1).getDay()
+  const firstDay = (new Date(year, month, 1).getDay() + 6) % 7 // 월=0, 일=6
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   return Math.ceil((firstDay + daysInMonth) / 7)
 }
