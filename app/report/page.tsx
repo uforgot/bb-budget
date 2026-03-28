@@ -322,7 +322,7 @@ export default function Report() {
   // ─── render ───────────────────────────────────────────
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={handleRefresh}>
-      <div className="sticky top-0 z-30 bg-background px-5 border-b border-border">
+      <div className="sticky top-0 z-30 bg-background px-5">
         <TopHeader title="리포트" />
       </div>
 

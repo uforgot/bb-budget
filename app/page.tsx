@@ -85,7 +85,7 @@ export default function Home() {
       }}
     >
 
-      <div className="sticky top-0 z-30 bg-background px-5 border-b border-border">
+      <div className="sticky top-0 z-30 bg-background px-5">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="잔액" />
       </div>
 
