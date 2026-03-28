@@ -184,3 +184,4 @@
 6. **반복 지출 일시정지/삭제** — active 토글 UI + 삭제 시 내역 유지/함께삭제 선택 모달
 7. **반복 지출 frequency DB 컬럼** — 매주/매년 구분 저장 (현재 day_of_month만)
 8. **Pull to refresh 스피너** — animate-spin이 Tailwind v4에서 미동작, 인라인 animation으로 우회 중
+9. **반복 지출 시작일/종료일** — DB에 start_date, end_date 컬럼 추가 필요 (SQL: ALTER TABLE public.recurring_transactions ADD COLUMN start_date DATE DEFAULT CURRENT_DATE, ADD COLUMN end_date DATE DEFAULT NULL;)
