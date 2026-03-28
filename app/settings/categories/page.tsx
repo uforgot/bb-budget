@@ -54,9 +54,10 @@ export default function CategoriesSettings() {
   const childrenOf = (parentId: string) =>
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
 
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; type: 'parent' | 'child' } | null>(null)
+
   const handleDeleteParent = async (id: string) => {
     const children = childrenOf(id)
-    // 자식 + 부모의 연관 transaction category_id null 처리
     for (const child of children) {
       await supabase.from('transactions').update({ category_id: null }).eq('category_id', child.id)
     }
@@ -67,10 +68,16 @@ export default function CategoriesSettings() {
   }
 
   const handleDeleteChild = async (id: string) => {
-    // 연관 transaction category_id를 null로
     await supabase.from('transactions').update({ category_id: null }).eq('category_id', id)
     await supabase.from('categories').delete().eq('id', id)
     loadCategories()
+  }
+
+  const confirmDelete = () => {
+    if (!deleteConfirm) return
+    if (deleteConfirm.type === 'parent') handleDeleteParent(deleteConfirm.id)
+    else handleDeleteChild(deleteConfirm.id)
+    setDeleteConfirm(null)
   }
 
   const handleRenameSave = async () => {
@@ -170,7 +177,7 @@ export default function CategoriesSettings() {
                 {children.map((child) => (
                   <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
                     {child.name}
-                    <button onClick={() => handleDeleteChild(child.id)} className="text-muted-foreground hover:text-foreground">
+                    <button onClick={() => setDeleteConfirm({ id: child.id, name: child.name, type: 'child' })} className="text-muted-foreground hover:text-foreground">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
                       </svg>
@@ -188,7 +195,7 @@ export default function CategoriesSettings() {
                       onKeyDown={(e) => e.key === 'Enter' && handleAddSubCat()}
                       autoFocus
                       placeholder="이름"
-                      style={{ fontSize: '14px' }}
+                      style={{ fontSize: "16px" }}
                       className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
                     />
                     <button onClick={handleAddSubCat} className="text-xs text-accent-blue">확인</button>
@@ -208,10 +215,7 @@ export default function CategoriesSettings() {
           {/* 삭제 */}
           <div className="mt-10">
             <button
-              onClick={async () => {
-                await handleDeleteParent(editingParent.id)
-                setEditingParent(null)
-              }}
+              onClick={() => setDeleteConfirm({ id: editingParent.id, name: editingParent.name, type: 'parent' })}
               className="w-full py-3 text-accent-coral text-sm font-medium rounded-[18px] bg-accent-coral/10"
             >
               카테고리 삭제
@@ -301,6 +305,33 @@ export default function CategoriesSettings() {
           )}
         </div>
       </div>
+
+      {/* 삭제 확인 모달 */}
+      {deleteConfirm && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
+          <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
+            <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+              <p className="text-sm font-semibold mb-2">{deleteConfirm.name} 카테고리를 정말 삭제하시겠습니까?</p>
+              <p className="text-xs text-muted-foreground mb-4">삭제하면 해당 카테고리의 내역이 미분류로 변경됩니다.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex-1 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
+                >
+                  취소하기
+                </button>
+                <button
+                  onClick={() => { confirmDelete(); setEditingParent(null) }}
+                  className="flex-1 py-3 rounded-[18px] bg-accent-coral/10 text-accent-coral text-sm font-semibold"
+                >
+                  삭제하기
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
