@@ -179,7 +179,7 @@ export default function RecurringPage() {
             {/* 주기 선택 — 세그먼트 컨트롤 */}
             <div className="flex items-center justify-between mb-3">
               <span className="text-[16px] text-muted-foreground">주기</span>
-              <div className="flex bg-surface rounded-full p-1">
+              <div className="flex bg-muted rounded-full p-1">
                 {(['weekly', 'monthly', 'yearly'] as const).map(f => (
                   <button
                     key={f}
