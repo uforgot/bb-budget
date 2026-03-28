@@ -593,7 +593,7 @@ export default function History() {
                                   <div className="w-14 flex-shrink-0">
                                     <div className="flex items-baseline gap-1.5">
                                       <span className="text-sm font-medium">{DAY_NAMES[d.getDay()]}</span>
-                                      <span className="text-xs text-muted-foreground tabular-nums">{r.day}일</span>
+                                      <span className="text-sm text-muted-foreground tabular-nums">{r.day}일</span>
                                     </div>
                                   </div>
                                   <div className="flex-1 min-w-0 flex items-center gap-2">
@@ -636,7 +636,7 @@ export default function History() {
                                       {showDate && (
                                         <div className="flex items-baseline gap-1.5">
                                           <span className="text-sm font-medium">{DAY_NAMES[d.getDay()]}</span>
-                                          <span className="text-xs text-muted-foreground tabular-nums">{d.getDate()}일</span>
+                                          <span className="text-sm text-muted-foreground tabular-nums">{d.getDate()}일</span>
                                         </div>
                                       )}
                                     </div>
