@@ -272,7 +272,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       setType(reverseMap[dbType] || null)
                     }
                   }}
-                  className={`text-[16px] px-3 py-1.5 rounded-full transition-colors ${
+                  className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
                     categoryId === rc.id
                       ? 'bg-accent-blue/20 text-accent-blue'
                       : 'bg-surface text-muted-foreground'
