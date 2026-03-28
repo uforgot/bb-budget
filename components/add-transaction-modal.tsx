@@ -357,13 +357,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       {/* 키패드 (하단 고정) */}
       {/* 키패드 + 버튼 (하단 고정) */}
       <div className={`w-full max-w-md mx-auto px-4 flex-shrink-0 ${keypadActive ? '' : 'hidden'}`} style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
-        <div className="grid grid-cols-3 gap-px mb-3">
+        <div className="grid grid-cols-3 gap-1 mb-3">
           {keypadKeys.map((row, ri) =>
             row.map((key) => (
               <button
                 key={`${ri}-${key}`}
                 onClick={() => handleKeypad(key)}
-                className="h-14 flex items-center justify-center text-xl font-medium rounded-lg active:bg-muted transition-colors"
+                className="h-16 flex items-center justify-center text-2xl font-medium rounded-lg active:bg-muted transition-colors"
               >
                 {key === 'backspace' ? (
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
