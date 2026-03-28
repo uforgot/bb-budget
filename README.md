@@ -178,3 +178,9 @@
 - 서비스 계정: bb-management-bot@bb-management-488517.iam.gserviceaccount.com
 - 금 시세 업데이트: 요약 탭 C34:E34 (KRX 기준)
 - 가이드: docs/bbang-budget-guide.md
+
+## 남은 이슈 (2026-03-29 추가)
+
+6. **반복 지출 일시정지/삭제** — active 토글 UI + 삭제 시 내역 유지/함께삭제 선택 모달
+7. **반복 지출 frequency DB 컬럼** — 매주/매년 구분 저장 (현재 day_of_month만)
+8. **Pull to refresh 스피너** — animate-spin이 Tailwind v4에서 미동작, 인라인 animation으로 우회 중
