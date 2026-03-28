@@ -550,7 +550,7 @@ export default function Report() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setExpSelectedCats(new Set(eTop5.map(c => c.catId))) }}
-                        className="text-[10px] px-2 py-1 rounded-full bg-border text-muted-foreground"
+                        className="text-[10px] px-2 py-1 rounded-full bg-white dark:bg-muted text-foreground"
                       >↻</button>
                       {eRanked.slice(0, 10).map((cat, i) => {
                         const isSelected = expSelectedCats.has(cat.catId)
@@ -648,7 +648,7 @@ export default function Report() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setIncSelectedCats(new Set(iTop5.map(c => c.catId))) }}
-                        className="text-[10px] px-2 py-1 rounded-full bg-border text-muted-foreground"
+                        className="text-[10px] px-2 py-1 rounded-full bg-white dark:bg-muted text-foreground"
                       >↻</button>
                       {iRanked.slice(0, 10).map((cat, i) => {
                         const isSelected = incSelectedCats.has(cat.catId)
