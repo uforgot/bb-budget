@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { RefreshCw } from 'lucide-react'
 
 interface PullToRefreshProps {
   onRefresh: () => Promise<void>
@@ -8,69 +9,71 @@ interface PullToRefreshProps {
   className?: string
 }
 
+const THRESHOLD = 80
+
 export function PullToRefresh({ onRefresh, children, className = '' }: PullToRefreshProps) {
-  const pullStartY = useRef(0)
   const [pullDistance, setPullDistance] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
-  const THRESHOLD = 80
+  const startYRef = useRef(0)
+  const pullingRef = useRef(false)
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (window.scrollY === 0) pullStartY.current = e.touches[0].clientY
-  }
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (pullStartY.current === 0 || refreshing) return
-    const diff = e.touches[0].clientY - pullStartY.current
-    if (diff > 0 && window.scrollY === 0) {
-      setPullDistance(Math.min(diff * 0.4, 120))
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      startYRef.current = e.touches[0].clientY
+      pullingRef.current = true
     }
-  }
+  }, [])
 
-  const onTouchEnd = async () => {
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!pullingRef.current || refreshing) return
+    const diff = e.touches[0].clientY - startYRef.current
+    if (diff > 0 && window.scrollY === 0) {
+      setPullDistance(Math.min(diff * 0.5, 120))
+    }
+  }, [refreshing])
+
+  const handleTouchEnd = useCallback(async () => {
+    if (!pullingRef.current) return
+    pullingRef.current = false
+
     if (pullDistance >= THRESHOLD && !refreshing) {
       setRefreshing(true)
       setPullDistance(THRESHOLD)
-      await onRefresh()
-      setTimeout(() => {
+      try {
+        await onRefresh()
+      } finally {
         setRefreshing(false)
         setPullDistance(0)
-      }, 500)
+      }
     } else {
       setPullDistance(0)
     }
-    pullStartY.current = 0
-  }
+  }, [pullDistance, refreshing, onRefresh])
 
-  const rotation = Math.min((pullDistance / THRESHOLD) * 360, 360)
+  const progress = Math.min(pullDistance / THRESHOLD, 1)
 
   return (
     <div
       className={className}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
-      {pullDistance > 0 && (
-        <div
-          className="flex items-center justify-center overflow-hidden transition-all"
-          style={{ height: pullDistance }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`text-muted-foreground ${refreshing ? 'animate-spin' : ''}`}
-            style={!refreshing ? { transform: `rotate(${rotation}deg)` } : {}}
-          >
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-          </svg>
-        </div>
-      )}
+      <div
+        className="flex items-center justify-center overflow-hidden transition-[height] duration-200"
+        style={{
+          height: pullDistance > 0 ? `${pullDistance}px` : 0,
+          transitionDuration: pullingRef.current ? '0ms' : '200ms',
+        }}
+      >
+        <RefreshCw
+          className={`h-5 w-5 text-muted-foreground transition-transform ${refreshing ? 'animate-spin' : ''}`}
+          style={{
+            transform: `rotate(${progress * 360}deg)`,
+            opacity: progress,
+          }}
+        />
+      </div>
       {children}
     </div>
   )
