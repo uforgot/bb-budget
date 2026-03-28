@@ -399,8 +399,8 @@ export default function Report() {
                         return (
                           <div className="bg-background rounded-lg px-3 py-2">
                             <p className="text-xs text-muted-foreground mb-1">{label}월</p>
-                            <p className="text-xs">잔액 <span style={{ color: '#5865F2' }}>{fmt(cash)}</span></p>
-                            <p className="text-xs">저축 <span style={{ color: '#43B581' }}>{fmt(savings)}</span></p>
+                            <p className="text-xs" style={{ color: '#5865F2' }}>잔액 {fmt(cash)}</p>
+                            <p className="text-xs" style={{ color: '#43B581' }}>저축 {fmt(savings)}</p>
                             <p className="text-xs font-semibold mt-1">총액 {fmt(total)}</p>
                             {monthNum > 1 && prevTotal > 0 && (
                               <p className={`text-[10px] ${diff >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
