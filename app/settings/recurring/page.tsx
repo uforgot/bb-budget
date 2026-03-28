@@ -161,7 +161,7 @@ export default function RecurringPage() {
         {adding ? (
           <div className="mt-4 bg-surface rounded-[18px] px-5 py-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[15px] text-muted-foreground">금액</span>
+              <span className="text-[16px] text-muted-foreground">금액</span>
               <div className="flex items-baseline gap-1">
                 <span className="text-[15px] text-muted-foreground">₩</span>
                 <input
@@ -170,15 +170,15 @@ export default function RecurringPage() {
                   placeholder="0"
                   value={amount ? parseInt(amount).toLocaleString() : ''}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                  className="text-[15px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
-                  style={{ fontSize: '15px' }}
+                  className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
             </div>
 
             {/* 주기 선택 */}
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[15px] text-muted-foreground">주기</span>
+              <span className="text-[16px] text-muted-foreground">주기</span>
               <div className="flex gap-1.5">
                 {(['weekly', 'monthly', 'yearly'] as const).map(f => (
                   <button
@@ -215,7 +215,7 @@ export default function RecurringPage() {
             )}
             {frequency === 'monthly' && (
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[15px] text-muted-foreground">매월</span>
+                <span className="text-[16px] text-muted-foreground">매월</span>
                 <div className="flex items-center gap-1">
                   <input
                     type="text"
@@ -226,8 +226,8 @@ export default function RecurringPage() {
                       const v = e.target.value.replace(/[^0-9]/g, '')
                       if (v === '' || (parseInt(v) >= 1 && parseInt(v) <= 31)) setDayOfMonth(v)
                     }}
-                    className="text-[15px] font-semibold bg-transparent border-none outline-none text-right w-10"
-                    style={{ fontSize: '15px' }}
+                    className="text-[16px] font-semibold bg-transparent border-none outline-none text-right w-10"
+                    style={{ fontSize: '16px' }}
                   />
                   <span className="text-[15px] text-muted-foreground">일</span>
                 </div>
@@ -256,24 +256,24 @@ export default function RecurringPage() {
             )}
 
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[15px] text-muted-foreground">카테고리</span>
+              <span className="text-[16px] text-muted-foreground">카테고리</span>
               <button
                 onClick={() => setCategoryPickerOpen(true)}
-                className="text-[15px] text-foreground"
+                className="text-[16px] text-foreground"
               >
                 {categoryLabel || '선택'}
               </button>
             </div>
 
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[15px] text-muted-foreground">메모</span>
+              <span className="text-[16px] text-muted-foreground">메모</span>
               <input
                 type="text"
                 placeholder="메모를 입력하세요"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="text-[15px] bg-transparent border-none outline-none text-right w-40"
-                style={{ fontSize: '15px' }}
+                className="text-[16px] bg-transparent border-none outline-none text-right w-40"
+                style={{ fontSize: '16px' }}
               />
             </div>
 
