@@ -247,7 +247,7 @@ export default function CategoriesSettings() {
               key={key}
               onClick={() => setType(key)}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-                type === key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+                type === key ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
               }`}
             >
               {label}
