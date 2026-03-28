@@ -103,7 +103,7 @@ export default function RecurringPage() {
         {!adding && (
           <button
             onClick={() => { setAdding(true); setEditingId(null); setAmount(''); setDayOfMonth('10'); setCategoryId(''); setCategoryLabel(''); setDescription('') }}
-            className="w-full mb-4 py-3 rounded-[18px] bg-surface text-[16px] font-medium text-muted-foreground"
+            className="w-full mb-4 py-3.5 rounded-[18px] bg-surface text-[16px] font-medium text-muted-foreground"
           >
             반복 지출 추가하기
           </button>
