@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   XAxis, YAxis, ResponsiveContainer,
   LineChart, Line, CartesianGrid, Tooltip,
@@ -69,6 +70,7 @@ function Card({
 // ─── component ────────────────────────────────────────
 
 export default function Report() {
+  const router = useRouter()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -301,7 +303,7 @@ export default function Report() {
           <TopHeader title="리포트" />
           <p className="text-sm text-center text-muted-foreground mt-20">불러오는 중…</p>
         </div>
-        <BottomNav />
+        <BottomNav onAdd={() => router.push("/")} />
       </div>
     )
   }
@@ -707,7 +709,7 @@ export default function Report() {
 
       </div>
 
-      <BottomNav />
+      <BottomNav onAdd={() => router.push("/")} />
 
       {/* 툴팁 모달 */}
       {tooltipModal && (
