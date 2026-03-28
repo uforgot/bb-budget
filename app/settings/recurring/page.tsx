@@ -160,22 +160,6 @@ export default function RecurringPage() {
         {/* 추가 폼 */}
         {adding ? (
           <div className="mt-4 bg-surface rounded-[18px] px-5 py-4">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[16px] text-muted-foreground">금액</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[15px] text-muted-foreground">₩</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="0"
-                  value={amount ? parseInt(amount).toLocaleString() : ''}
-                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                  className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
-                  style={{ fontSize: '16px' }}
-                />
-              </div>
-            </div>
-
             {/* 주기 선택 — 세그먼트 컨트롤 */}
             <div className="flex items-center justify-between mb-4">
               <span className="text-[16px] text-muted-foreground">주기</span>
@@ -254,6 +238,23 @@ export default function RecurringPage() {
                 </label>
               </div>
             )}
+
+            {/* 금액 */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[16px] text-muted-foreground">금액</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-[16px] text-muted-foreground">₩</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
+                  value={amount ? parseInt(amount).toLocaleString() : ''}
+                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                  className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
+                  style={{ fontSize: '16px' }}
+                />
+              </div>
+            </div>
 
             <div className="flex items-center justify-between mb-4">
               <span className="text-[16px] text-muted-foreground">카테고리</span>
