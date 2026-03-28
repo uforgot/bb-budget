@@ -95,11 +95,11 @@ export default function Home() {
         <div className="flex gap-3 mb-4 mt-3">
           <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
             <p className="text-xs text-muted-foreground mb-1">{calMonth}월 수입</p>
-            <p className="text-sm font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</p>
+            <p className="text-[16px] font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</p>
           </div>
           <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
             <p className="text-xs text-muted-foreground mb-1">{calMonth}월 지출</p>
-            <p className="text-sm font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</p>
+            <p className="text-[16px] font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</p>
           </div>
         </div>
 
