@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
+import { PullToRefresh } from '@/components/pull-to-refresh'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
@@ -75,56 +76,14 @@ export default function Home() {
   const totalAssets = allTimeIncome - allTimeExpense
   const cashBalance = totalAssets - allTimeSavings
 
-  // Pull to refresh
-  const pullStartY = useRef(0)
-  const [pullDistance, setPullDistance] = useState(0)
-  const [refreshing, setRefreshing] = useState(false)
-  const PULL_THRESHOLD = 80
-
-  const onPullStart = (e: React.TouchEvent) => {
-    if (window.scrollY === 0) pullStartY.current = e.touches[0].clientY
-  }
-  const onPullMove = (e: React.TouchEvent) => {
-    if (pullStartY.current === 0 || refreshing) return
-    const diff = e.touches[0].clientY - pullStartY.current
-    if (diff > 0 && window.scrollY === 0) {
-      setPullDistance(Math.min(diff * 0.4, 120))
-    }
-  }
-  const onPullEnd = async () => {
-    if (pullDistance >= PULL_THRESHOLD && !refreshing) {
-      setRefreshing(true)
-      setPullDistance(PULL_THRESHOLD)
-      setRefreshKey(k => k + 1)
-      await loadAllTime()
-      setTimeout(() => {
-        setRefreshing(false)
-        setPullDistance(0)
-      }, 500)
-    } else {
-      setPullDistance(0)
-    }
-    pullStartY.current = 0
-  }
-
   return (
-    <div
+    <PullToRefresh
       className="min-h-dvh bg-background pb-32"
-      onTouchStart={onPullStart}
-      onTouchMove={onPullMove}
-      onTouchEnd={onPullEnd}
+      onRefresh={async () => {
+        setRefreshKey(k => k + 1)
+        await loadAllTime()
+      }}
     >
-      {/* Pull to refresh indicator */}
-      {pullDistance > 0 && (
-        <div
-          className="flex items-center justify-center overflow-hidden transition-all"
-          style={{ height: pullDistance }}
-        >
-          <span className={`text-xs text-muted-foreground ${refreshing ? 'animate-pulse' : ''}`}>
-            {refreshing ? '새로고침 중...' : pullDistance >= PULL_THRESHOLD ? '놓으면 새로고침' : '↓ 당겨서 새로고침'}
-          </span>
-        </div>
-      )}
 
       <div className="sticky top-0 z-30 bg-background px-5 border-b border-border">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="잔액" />
@@ -169,6 +128,6 @@ export default function Home() {
       />
 
       {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
-    </div>
+    </PullToRefresh>
   )
 }

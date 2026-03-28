@@ -8,6 +8,7 @@ import {
 } from 'recharts'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
+import { PullToRefresh } from '@/components/pull-to-refresh'
 import type { Transaction, Category } from '@/lib/api'
 
 // ─── constants ────────────────────────────────────────
@@ -301,9 +302,20 @@ export default function Report() {
     )
   }
 
+  const handleRefresh = async () => {
+    setLoading(true)
+    try {
+      const { getTransactions, getCategories } = await import('@/lib/api')
+      const [txs, cats] = await Promise.all([getTransactions({}), getCategories()])
+      setTransactions(txs)
+      setCategories(cats)
+    } catch (e) { console.error(e) }
+    finally { setLoading(false) }
+  }
+
   // ─── render ───────────────────────────────────────────
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={handleRefresh}>
       <div className="sticky top-0 z-30 bg-background px-5 border-b border-border">
         <TopHeader title="리포트" />
       </div>
@@ -692,6 +704,6 @@ export default function Report() {
       </div>
 
       <BottomNav />
-    </div>
+    </PullToRefresh>
   )
 }

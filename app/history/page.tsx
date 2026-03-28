@@ -6,6 +6,7 @@ import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, deleteTransaction, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
 import { SwipeToDelete } from '@/components/swipe-to-delete'
+import { PullToRefresh } from '@/components/pull-to-refresh'
 
 type TabType = '지출' | '수입' | '저축'
 type ViewMode = 'weekly' | 'monthly' | 'yearly'
@@ -220,7 +221,7 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={async () => { await loadData() }}>
       <div className="px-5">
         <TopHeader title="내역" />
 
@@ -799,6 +800,6 @@ export default function History() {
       />
 
       {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
-    </div>
+    </PullToRefresh>
   )
 }
