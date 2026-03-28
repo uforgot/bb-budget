@@ -760,20 +760,20 @@ export default function History() {
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">수입</span>
-                        <span className="text-sm tabular-nums text-accent-blue">₩{income.toLocaleString()}</span>
+                        <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{income.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">지출</span>
-                        <span className="text-sm tabular-nums text-accent-coral">₩{expense.toLocaleString()}</span>
+                        <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{expense.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">저축</span>
-                        <span className="text-sm tabular-nums text-accent-mint">₩{savings.toLocaleString()}</span>
+                        <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{savings.toLocaleString()}</span>
                       </div>
                       <div className="border-t border-border my-1" />
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">잔액</span>
-                        <span className={`text-sm font-medium tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
+                        <span className={`text-sm font-semibold tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
