@@ -73,6 +73,7 @@ export default function Report() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [trendMode, setTrendMode] = useState<'expense' | 'income' | 'all'>('all')
+  const [tooltipModal, setTooltipModal] = useState<string | null>(null)
   const [expMonthOffset, setExpMonthOffset] = useState(0)
   const [expSelectedCats, setExpSelectedCats] = useState<Set<string>>(new Set())
   const [incMonthOffset, setIncMonthOffset] = useState(0)
@@ -332,7 +333,7 @@ export default function Report() {
                   <p className="text-sm font-semibold">총자산</p>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); alert("총자산은 운용 중인 모든 투자금과 현금 잔액을 합친 나의 전체 자산입니다.") }}
+                    onClick={(e) => { e.stopPropagation(); setTooltipModal("총자산은 운용 중인 모든 투자금과 현금 잔액을 합친 나의 전체 자산입니다.") }}
                     className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center"
                   >?</button>
                 </div>
@@ -419,7 +420,7 @@ export default function Report() {
                   <p className="text-sm font-semibold">연간 실질 수입 · 지출</p>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); alert("실질 수입은 연간 누적 수입에서 묶인 돈인 저축액을 제외한 수입입니다.") }}
+                    onClick={(e) => { e.stopPropagation(); setTooltipModal("실질 수입은 연간 누적 수입에서 묶인 돈인 저축액을 제외한 수입입니다.") }}
                     className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center"
                   >?</button>
                 </div>
@@ -511,7 +512,7 @@ export default function Report() {
             <div className="flex-1 text-left pr-1">
               <div className="flex items-center gap-1 mb-3">
                 <p className="text-sm font-semibold">지출 카테고리별 분석</p>
-                <button type="button" onClick={(e) => { e.stopPropagation(); alert("연간 누적 지출 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); setTooltipModal("연간 누적 지출 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
               </div>
               <div className="space-y-2">
                 {top3.map((cat, i) => (
@@ -610,7 +611,7 @@ export default function Report() {
             <div className="flex-1 text-left pr-1">
               <div className="flex items-center gap-1 mb-3">
                 <p className="text-sm font-semibold">수입 카테고리별 분석</p>
-                <button type="button" onClick={(e) => { e.stopPropagation(); alert("연간 누적 수입 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); setTooltipModal("연간 누적 수입 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
               </div>
               <div className="space-y-2">
                 {top3.map((cat, i) => (
@@ -704,6 +705,24 @@ export default function Report() {
       </div>
 
       <BottomNav />
+
+      {/* 툴팁 모달 */}
+      {tooltipModal && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setTooltipModal(null)} />
+          <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
+            <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+              <p className="text-sm leading-relaxed">{tooltipModal}</p>
+              <button
+                onClick={() => setTooltipModal(null)}
+                className="w-full mt-4 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </PullToRefresh>
   )
 }
