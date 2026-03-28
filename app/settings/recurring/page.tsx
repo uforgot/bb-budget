@@ -176,16 +176,16 @@ export default function RecurringPage() {
               </div>
             </div>
 
-            {/* 주기 선택 */}
+            {/* 주기 선택 — 세그먼트 컨트롤 */}
             <div className="flex items-center justify-between mb-3">
               <span className="text-[16px] text-muted-foreground">주기</span>
-              <div className="flex gap-1.5">
+              <div className="flex bg-surface rounded-[18px] p-1">
                 {(['weekly', 'monthly', 'yearly'] as const).map(f => (
                   <button
                     key={f}
                     onClick={() => setFrequency(f)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      frequency === f ? 'bg-accent-blue/20 text-accent-blue' : 'bg-surface text-muted-foreground'
+                    className={`px-4 py-1.5 rounded-lg text-[16px] font-medium transition-colors ${
+                      frequency === f ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
                     }`}
                   >
                     {f === 'weekly' ? '매주' : f === 'monthly' ? '매월' : '매년'}
