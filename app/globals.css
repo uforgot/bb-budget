@@ -124,6 +124,14 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* 라이트 모드에서 font-weight 한 단계 올림 (착시 보정) */
+@media (prefers-color-scheme: light) {
+  .font-medium { font-weight: 600 !important; }
+  .font-semibold { font-weight: 700 !important; }
+}
+:root:not(.dark) .font-medium { font-weight: 600 !important; }
+:root:not(.dark) .font-semibold { font-weight: 700 !important; }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
