@@ -222,6 +222,23 @@ export default function CategoriesSettings() {
             </button>
           </div>
         </div>
+
+        {/* 삭제 확인 모달 (편집 상세 내) */}
+        {deleteConfirm && (
+          <>
+            <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
+            <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
+              <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+                <p className="text-sm font-semibold mb-2">{deleteConfirm.name} 카테고리를 정말 삭제하시겠습니까?</p>
+                <p className="text-xs text-muted-foreground mb-4">삭제하면 해당 카테고리의 내역이 미분류로 변경됩니다.</p>
+                <div className="flex gap-3">
+                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground">취소하기</button>
+                  <button onClick={() => { const isParent = deleteConfirm.type === 'parent'; confirmDelete(); if (isParent) setEditingParent(null) }} className="flex-1 py-3 rounded-[18px] bg-accent-coral/10 text-accent-coral text-sm font-semibold">삭제하기</button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     )
   }
