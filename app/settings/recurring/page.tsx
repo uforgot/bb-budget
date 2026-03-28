@@ -23,6 +23,7 @@ export default function RecurringPage() {
   const [description, setDescription] = useState('')
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null)
 
   const loadData = async () => {
     try {
@@ -72,6 +73,14 @@ export default function RecurringPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleToggleActive = async (id: string, currentActive: boolean) => {
+    try {
+      const { updateRecurringTransaction } = await import('@/lib/api')
+      await updateRecurringTransaction(id, { active: !currentActive })
+      loadData()
+    } catch { alert('변경 실패') }
   }
 
   const handleDelete = async (id: string) => {
@@ -133,17 +142,23 @@ export default function RecurringPage() {
                   setFrequency('monthly')
                   setAdding(true)
                 }}
-                className="bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30"
+                className={`bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30 ${!item.active ? 'opacity-40' : ''}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold">{item.description || catName}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">매월 {item.day_of_month}일 · {catName}</p>
+                    <p className={`text-sm font-semibold ${!item.active ? 'line-through' : ''}`}>{item.description || catName}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">매월 {item.day_of_month}일 · {catName}{!item.active ? ' · 일시정지' : ''}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{item.amount.toLocaleString()}</span>
+                    <span className={`text-sm font-semibold tabular-nums text-accent-coral ${!item.active ? 'line-through' : ''}`}>₩{item.amount.toLocaleString()}</span>
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}
+                      onClick={(e) => { e.stopPropagation(); handleToggleActive(item.id, item.active) }}
+                      className={`text-xs px-2 py-1 rounded-full ${item.active ? 'bg-muted text-muted-foreground' : 'bg-accent-blue/20 text-accent-blue'}`}
+                    >
+                      {item.active ? '정지' : '재개'}
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setDeleteConfirm({ id: item.id, name: item.description || catName }) }}
                       className="text-muted-foreground"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -306,6 +321,23 @@ export default function RecurringPage() {
           </div>
         ) : null}
       </div>
+
+      {/* 삭제 확인 모달 */}
+      {deleteConfirm && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
+          <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
+            <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+              <p className="text-[16px] font-semibold mb-2">{deleteConfirm.name} 반복 지출을 삭제하시겠습니까?</p>
+              <p className="text-xs text-muted-foreground mb-4">기존에 확정된 내역은 유지됩니다.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-[18px] bg-background text-[16px] font-medium text-muted-foreground">취소하기</button>
+                <button onClick={() => { handleDelete(deleteConfirm.id); setDeleteConfirm(null) }} className="flex-1 py-3.5 rounded-[18px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold">삭제하기</button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
