@@ -466,7 +466,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                 {selectedDay.month + 1}월 {selectedDay.day}일 {dayOfWeek}
               </span>
               {(totalIncome > 0 || totalExpense > 0) && (
-                <span className={`text-[16px] font-semibold tabular-nums ${
+                <span className={`text-sm font-semibold tabular-nums ${
                   totalDay >= 0 ? 'text-accent-blue' : 'text-accent-coral'
                 }`}>
                   ₩{Math.abs(totalDay).toLocaleString()}
