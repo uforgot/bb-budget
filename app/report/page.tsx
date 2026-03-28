@@ -13,16 +13,16 @@ import type { Transaction, Category } from '@/lib/api'
 
 // ─── constants ────────────────────────────────────────
 const CAT_COLORS = [
-  '#E85D75',  // 1. 로즈
-  '#E8934A',  // 2. 오렌지
-  '#F2C94C',  // 3. 옐로우
-  '#4ADE80',  // 4. 그린
-  '#2DD4BF',  // 5. 틸
-  '#38BDF8',  // 6. 스카이블루
-  '#818CF8',  // 7. 인디고
-  '#C084FC',  // 8. 퍼플
-  '#F472B6',  // 9. 핑크
-  '#A3A3A3',  // 10. 그레이
+  '#C0392B',  // 1. 딥레드
+  '#D35400',  // 2. 딥오렌지
+  '#B7950B',  // 3. 다크골드
+  '#1E8449',  // 4. 딥그린
+  '#148F77',  // 5. 딥틸
+  '#2471A3',  // 6. 딥블루
+  '#6C3483',  // 7. 딥퍼플
+  '#A93282',  // 8. 딥마젠타
+  '#5B6670',  // 9. 슬레이트
+  '#7D6608',  // 10. 올리브
 ]
 
 // ─── helpers ──────────────────────────────────────────
@@ -168,7 +168,10 @@ export default function Report() {
       .filter(tx => tx.type === type && getMonthKey(tx.date) === selectedMonthKey)
       .reduce((s, tx) => s + tx.amount, 0)
 
-    return { ranked: allCats, top5, chartData, totalSelected }
+    // 색상 인덱스 고정 할당
+    const withColors = allCats.map((cat, i) => ({ ...cat, color: CAT_COLORS[i % CAT_COLORS.length] }))
+    const top5WithColors = withColors.slice(0, 5)
+    return { ranked: withColors, top5: top5WithColors, chartData, totalSelected }
   }
 
   const now = new Date()
@@ -554,7 +557,7 @@ export default function Report() {
                       >↻</button>
                       {eRanked.slice(0, 10).map((cat, i) => {
                         const isSelected = expSelectedCats.has(cat.catId)
-                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                        const color = cat.color
                         return (
                           <button
                             key={cat.catId}
@@ -589,7 +592,7 @@ export default function Report() {
                           labelStyle={{ color: '#9ca3af' }}
                         />
                         {eVisible.map((cat, i) => (
-                          <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={CAT_COLORS[i % CAT_COLORS.length]} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
+                          <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={cat.color} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
                         ))}
                       </LineChart>
                     </ResponsiveContainer>
@@ -652,7 +655,7 @@ export default function Report() {
                       >↻</button>
                       {iRanked.slice(0, 10).map((cat, i) => {
                         const isSelected = incSelectedCats.has(cat.catId)
-                        const color = CAT_COLORS[i % CAT_COLORS.length]
+                        const color = cat.color
                         return (
                           <button
                             key={cat.catId}
@@ -687,7 +690,7 @@ export default function Report() {
                           labelStyle={{ color: '#9ca3af' }}
                         />
                         {iVisible.map((cat, i) => (
-                          <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={CAT_COLORS[i % CAT_COLORS.length]} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
+                          <Line key={cat.catId} type="monotone" dataKey={cat.catId} stroke={cat.color} strokeWidth={2} dot={{ r: 2, fill: CAT_COLORS[i % CAT_COLORS.length] }} connectNulls />
                         ))}
                       </LineChart>
                     </ResponsiveContainer>
