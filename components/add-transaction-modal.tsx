@@ -367,8 +367,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               >
                 {key === 'backspace' ? (
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
                     <path d="M3 12l5-7h12a1 1 0 011 1v12a1 1 0 01-1 1H8l-5-7z" />
+                    <path d="M13 10l-4 4m0-4l4 4" />
                   </svg>
                 ) : (
                   key
