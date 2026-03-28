@@ -103,7 +103,7 @@ export default function RecurringPage() {
         {!adding && (
           <button
             onClick={() => { setAdding(true); setEditingId(null); setAmount(''); setDayOfMonth('10'); setCategoryId(''); setCategoryLabel(''); setDescription('') }}
-            className="w-full mb-4 py-3 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
+            className="w-full mb-4 py-3 rounded-[18px] bg-surface text-[16px] font-medium text-muted-foreground"
           >
             반복 지출 추가하기
           </button>
@@ -280,13 +280,13 @@ export default function RecurringPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleAdd}
-                className="flex-1 py-3.5 rounded-[18px] bg-primary text-primary-foreground text-sm font-semibold"
+                className="flex-1 py-3.5 rounded-[18px] bg-primary text-primary-foreground text-[16px] font-semibold"
               >
                 {saving ? '저장 중...' : editingId ? '수정하기' : '저장하기'}
               </button>
               <button
                 onClick={() => { setAdding(false); setEditingId(null) }}
-                className="flex-1 py-3.5 rounded-[18px] bg-muted text-sm font-medium text-muted-foreground"
+                className="flex-1 py-3.5 rounded-[18px] bg-muted text-[16px] font-medium text-muted-foreground"
               >
                 취소하기
               </button>

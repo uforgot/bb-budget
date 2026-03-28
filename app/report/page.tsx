@@ -715,7 +715,7 @@ export default function Report() {
               <p className="text-sm leading-relaxed">{tooltipModal}</p>
               <button
                 onClick={() => setTooltipModal(null)}
-                className="w-full mt-4 py-3 rounded-[18px] bg-background text-sm font-medium text-muted-foreground"
+                className="w-full mt-4 py-3 rounded-[18px] bg-background text-[16px] font-medium text-muted-foreground"
               >
                 확인
               </button>

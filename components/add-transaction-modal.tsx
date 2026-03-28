@@ -381,13 +381,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         {/* 저장/취소 버튼 */}
         {editTransaction ? (
           <div className="flex gap-2 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-sm font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '수정하기'}
             </button>
             {editTransaction.type === 'savings' && (
               <button
                 onClick={() => setRecoverOpen(true)}
-                className="flex-1 bg-accent-mint/10 text-accent-mint rounded-[18px] py-3.5 text-sm font-semibold"
+                className="flex-1 bg-accent-mint/10 text-accent-mint rounded-[18px] py-3.5 text-[16px] font-semibold"
               >
                 회수하기
               </button>
@@ -399,17 +399,17 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 setRawAmount(''); setMemo(''); setEditDate(null)
                 onClose()
               }}
-              className="flex-1 bg-accent-coral/10 text-accent-coral rounded-[18px] py-3.5 text-sm font-semibold"
+              className="flex-1 bg-accent-coral/10 text-accent-coral rounded-[18px] py-3.5 text-[16px] font-semibold"
             >
               삭제하기
             </button>
           </div>
         ) : (
           <div className="flex gap-3 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-sm font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '저장하기'}
             </button>
-            <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-[18px] py-3.5 text-sm font-semibold">
+            <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
               취소하기
             </button>
           </div>

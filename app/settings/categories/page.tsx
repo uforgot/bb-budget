@@ -216,7 +216,7 @@ export default function CategoriesSettings() {
           <div className="mt-10">
             <button
               onClick={() => setDeleteConfirm({ id: editingParent.id, name: editingParent.name, type: 'parent' })}
-              className="w-full py-3 text-accent-coral text-sm font-medium rounded-[18px] bg-accent-coral/10"
+              className="w-full py-3 text-accent-coral text-[16px] font-medium rounded-[18px] bg-accent-coral/10"
             >
               카테고리 삭제
             </button>
@@ -232,8 +232,8 @@ export default function CategoriesSettings() {
                 <p className="text-sm font-semibold mb-2">{deleteConfirm.name} 카테고리를 정말 삭제하시겠습니까?</p>
                 <p className="text-xs text-muted-foreground mb-4">삭제하면 해당 카테고리의 내역이 미분류로 변경됩니다.</p>
                 <div className="flex gap-3">
-                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3 rounded-[18px] bg-background text-sm font-medium text-muted-foreground">취소하기</button>
-                  <button onClick={() => { const isParent = deleteConfirm.type === 'parent'; confirmDelete(); if (isParent) setEditingParent(null) }} className="flex-1 py-3 rounded-[18px] bg-accent-coral/10 text-accent-coral text-sm font-semibold">삭제하기</button>
+                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3 rounded-[18px] bg-background text-[16px] font-medium text-muted-foreground">취소하기</button>
+                  <button onClick={() => { const isParent = deleteConfirm.type === 'parent'; confirmDelete(); if (isParent) setEditingParent(null) }} className="flex-1 py-3 rounded-[18px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold">삭제하기</button>
                 </div>
               </div>
             </div>
@@ -310,8 +310,8 @@ export default function CategoriesSettings() {
                 className="w-full bg-card border border-border rounded-[18px] px-4 py-3"
               />
               <div className="flex gap-2">
-                <button onClick={handleAddRoot} className="flex-1 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">추가하기</button>
-                <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="flex-1 py-3 bg-surface text-muted-foreground rounded-[18px] text-sm font-medium">취소하기</button>
+                <button onClick={handleAddRoot} className="flex-1 py-3 bg-surface text-muted-foreground rounded-[18px] text-[16px] font-medium">추가하기</button>
+                <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="flex-1 py-3 bg-accent-coral/10 text-accent-coral rounded-[18px] text-[16px] font-medium">취소하기</button>
               </div>
             </div>
           ) : (
@@ -348,7 +348,7 @@ export default function CategoriesSettings() {
                     confirmDelete()
                     if (isParent) setEditingParent(null)
                   }}
-                  className="flex-1 py-3 rounded-[18px] bg-accent-coral/10 text-accent-coral text-sm font-semibold"
+                  className="flex-1 py-3 rounded-[18px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold"
                 >
                   삭제하기
                 </button>
