@@ -484,9 +484,8 @@ export default function History() {
             const weekNum = i + 1
             const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
             let weekTotal = weekTxs.reduce((sum, t) => {
-              if (t.type === 'expense') return sum + t.amount
               if (t.type === 'income') return sum + t.amount
-              if (t.type === 'savings') return sum + t.amount
+              if (t.type === 'expense') return sum - t.amount
               return sum
             }, 0)
             // 미래 달이면 반복 지출 예정 금액 합산
@@ -496,7 +495,7 @@ export default function History() {
             }
             const hasRecurring = isFutureMonth && recurringItems.some(r => Math.ceil(r.day / 7) === weekNum)
             return { weekNum, weekTotal, hasRecurring }
-          }).filter(w => w.weekNum <= currentWeekNum && (w.weekTotal > 0 || w.hasRecurring)).reverse()
+          }).filter(w => w.weekNum <= currentWeekNum && (w.weekTotal !== 0 || w.hasRecurring)).reverse()
 
           return (
             <div className="flex flex-col mt-2">
@@ -574,7 +573,7 @@ export default function History() {
                   >
                     <span className="text-[16px] font-semibold">{actualMonth}월 {weekNum}주 차</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-[16px] font-semibold tabular-nums">₩{weekTotal.toLocaleString()}</span>
+                      <span className={`text-[16px] font-semibold tabular-nums ${weekTotal >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>₩{Math.abs(weekTotal).toLocaleString()}</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>
                     </div>
                   </div>
