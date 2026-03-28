@@ -126,13 +126,13 @@ export default function CategoriesSettings() {
     return (
       <div className="min-h-dvh bg-background">
         <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 border-b border-border">
-          <button onClick={() => { setEditingParent(null); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground">
+          <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubName(''); setEditName(''); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
           </button>
           <h1 className="text-[17px] font-semibold">카테고리 편집</h1>
-          <button onClick={() => { setEditingParent(null); loadCategories() }} className="text-sm text-accent-blue font-medium">완료</button>
+          <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubName(''); setEditName(''); loadCategories() }} className="text-sm text-accent-blue font-medium">완료</button>
         </header>
 
         <div className="max-w-lg mx-auto px-5 pt-8">
@@ -265,6 +265,8 @@ export default function CategoriesSettings() {
                 onClick={() => {
                   setEditingParent(parent)
                   setEditName(parent.name)
+                  setAddingSubCat(false)
+                  setNewSubName('')
                 }}
                 className="flex flex-col items-center gap-1.5"
               >
