@@ -237,7 +237,7 @@ export default function History() {
         <TopHeader title="내역" />
 
         {/* View mode tabs: 월간 / 연간 + 검색 */}
-        <div className="flex items-center border-b border-border">
+        <div className="flex items-center border-b border-border mt-3">
           {(['monthly', 'yearly'] as ViewMode[]).map((mode) => {
             const label = mode === 'monthly' ? '월간' : '연간'
             return (
