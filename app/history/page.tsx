@@ -14,13 +14,24 @@ type ViewMode = 'weekly' | 'monthly' | 'yearly'
 const TAB_DB_MAP: Record<TabType, string> = { '지출': 'expense', '수입': 'income', '저축': 'savings' }
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
+// 월요일 시작 기준 주차 계산
+function getWeekNum(year: number, month: number, day: number): number {
+  const firstDay = new Date(year, month - 1, 1)
+  const firstMonday = (firstDay.getDay() + 6) % 7 // 월=0
+  return Math.ceil((day + firstMonday) / 7)
+}
+function getWeekNumFromDate(dateStr: string): number {
+  const d = new Date(dateStr)
+  return getWeekNum(d.getFullYear(), d.getMonth() + 1, d.getDate())
+}
+
 function getWeekday(dateStr: string) {
   return DAY_NAMES[new Date(dateStr).getDay()]
 }
 
 function getWeekLabel(dateStr: string) {
   const d = new Date(dateStr)
-  const weekNum = Math.ceil(d.getDate() / 7)
+  const weekNum = getWeekNum(d.getFullYear(), d.getMonth() + 1, d.getDate())
   return `${d.getMonth() + 1}월 ${weekNum}주 차`
 }
 
@@ -370,7 +381,7 @@ export default function History() {
         (viewMode === 'weekly' ? (() => {
           const { start } = getWeekRange(weekOffset)
           const weekMonth = start.getMonth() + 1
-          const weekNum = Math.ceil(start.getDate() / 7)
+          const weekNum = getWeekNum(start.getFullYear(), start.getMonth() + 1, start.getDate())
           const weekLabel = `${weekMonth}월 ${weekNum}주 차`
           const weekTotal = filteredTransactions.reduce((sum, t) => t.type === 'expense' ? sum - t.amount : sum + t.amount, 0)
 
@@ -467,9 +478,9 @@ export default function History() {
           const monthEndDate = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`
           const savingsTxs = transactions.filter(t => t.type === 'savings')
           const monthSavings = savingsTxs.filter(t => t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-          const totalWeeks = Math.ceil(daysInMonth / 7)
+          const totalWeeks = getWeekNum(targetYear, actualMonth, daysInMonth)
           const currentWeekNum = (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1)
-            ? Math.ceil(today.getDate() / 7)
+            ? getWeekNum(today.getFullYear(), today.getMonth() + 1, today.getDate())
             : isFutureMonth
               ? totalWeeks  // 미래 월도 반복 지출 예정 표시를 위해 전체 주차 보여줌
               : totalWeeks  // 과거 월은 전부 표시
@@ -482,7 +493,7 @@ export default function History() {
 
           const weekSummaries = Array.from({ length: totalWeeks }, (_, i) => {
             const weekNum = i + 1
-            const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
+            const weekTxs = monthTxs.filter(t => getWeekNumFromDate(t.date) === weekNum)
             let weekTotal = weekTxs.reduce((sum, t) => {
               if (t.type === 'income') return sum + t.amount
               if (t.type === 'expense') return sum - t.amount
@@ -490,10 +501,10 @@ export default function History() {
             }, 0)
             // 미래 달이면 반복 지출 예정 금액 합산
             if (isFutureMonth) {
-              const weekRecurring = recurringItems.filter(r => Math.ceil(r.day / 7) === weekNum)
+              const weekRecurring = recurringItems.filter(r => getWeekNum(targetYear, actualMonth, r.day) === weekNum)
               weekTotal += weekRecurring.reduce((s, r) => s + r.amount, 0)
             }
-            const hasRecurring = isFutureMonth && recurringItems.some(r => Math.ceil(r.day / 7) === weekNum)
+            const hasRecurring = isFutureMonth && recurringItems.some(r => getWeekNum(targetYear, actualMonth, r.day) === weekNum)
             return { weekNum, weekTotal, hasRecurring }
           }).filter(w => w.weekNum <= currentWeekNum && (w.weekTotal !== 0 || w.hasRecurring)).reverse()
 
@@ -551,7 +562,7 @@ export default function History() {
               )}
               {weekSummaries.map(({ weekNum, weekTotal }) => {
                 const isExpanded = expandedWeeks.has(weekNum)
-                const weekTxs = monthTxs.filter(t => Math.ceil(new Date(t.date).getDate() / 7) === weekNum)
+                const weekTxs = monthTxs.filter(t => getWeekNumFromDate(t.date) === weekNum)
                   .sort((a, b) => {
                     const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime()
                     if (dateDiff !== 0) return dateDiff
@@ -583,7 +594,7 @@ export default function History() {
                     <div className="pb-2">
                       {/* 해당 주차의 반복 지출 예정 항목 */}
                       {(() => {
-                        const weekRecurring = isFutureMonth ? recurringItems.filter(r => Math.ceil(r.day / 7) === weekNum) : []
+                        const weekRecurring = isFutureMonth ? recurringItems.filter(r => getWeekNum(targetYear, actualMonth, r.day) === weekNum) : []
                         return weekRecurring.map((r, ri) => {
                           const d = new Date(targetYear, actualMonth - 1, r.day)
                           return (
@@ -615,7 +626,7 @@ export default function History() {
                         })
                       })()}
                       {/* 일별 내역 */}
-                      {weekNonSavingsTxs.length === 0 && !(isFutureMonth && recurringItems.some(r => Math.ceil(r.day / 7) === weekNum)) ? (
+                      {weekNonSavingsTxs.length === 0 && !(isFutureMonth && recurringItems.some(r => getWeekNum(targetYear, actualMonth, r.day) === weekNum)) ? (
                         <p className="text-sm text-muted-foreground text-center py-4">내역이 없어요</p>
                       ) : (() => {
                         let lastDate: string | null = null

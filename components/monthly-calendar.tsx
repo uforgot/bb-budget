@@ -41,7 +41,7 @@ interface SelectedDay {
 
 const INITIAL_RANGE = 12
 
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
+const WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일']
 
 
 function buildInitialMonths(anchor: Date): MonthEntry[] {
@@ -101,7 +101,7 @@ function MonthGrid({
   const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month
   const todayDate = today.getDate()
 
-  const firstDayWeekday = new Date(year, month, 1).getDay()
+  const firstDayWeekday = (new Date(year, month, 1).getDay() + 6) % 7 // 월=0, 일=6
   const daysInMonth = new Date(year, month + 1, 0).getDate()
 
   const cells: (number | null)[] = []
