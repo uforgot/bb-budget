@@ -326,7 +326,11 @@ export default function CategoriesSettings() {
                   취소하기
                 </button>
                 <button
-                  onClick={() => { confirmDelete(); setEditingParent(null) }}
+                  onClick={() => {
+                    const isParent = deleteConfirm?.type === 'parent'
+                    confirmDelete()
+                    if (isParent) setEditingParent(null)
+                  }}
                   className="flex-1 py-3 rounded-[18px] bg-accent-coral/10 text-accent-coral text-sm font-semibold"
                 >
                   삭제하기
