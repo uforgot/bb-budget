@@ -245,7 +245,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(true)}>
             <div className="flex items-baseline justify-center gap-1">
               <span className="text-5xl font-bold text-muted-foreground">₩</span>
-              <span className="text-5xl font-bold tabular-nums" style={{ letterSpacing: '-3px' }}>
+              <span className="text-5xl font-bold tabular-nums" style={{ letterSpacing: '-2px' }}>
                 {formatAmount(rawAmount)}
               </span>
             </div>
