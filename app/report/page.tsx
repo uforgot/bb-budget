@@ -387,10 +387,29 @@ export default function Report() {
                     <YAxis hide />
                     <Tooltip
                       cursor={false}
-                      labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
-                      formatter={(v, name) => [fmt(Number(v)), name === 'cash' ? '잔액' : '저축']}
-                      contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
-                      labelStyle={{ color: '#9ca3af' }}
+                      content={({ active, payload, label }) => {
+                        if (!active || !payload?.length) return null
+                        const cash = Number(payload.find((p: any) => p.dataKey === 'cash')?.value || 0)
+                        const savings = Number(payload.find((p: any) => p.dataKey === 'savings')?.value || 0)
+                        const total = cash + savings
+                        const monthNum = parseInt(String(label))
+                        const prevData = monthlyAssets.find(d => parseInt(d.label) === monthNum - 1)
+                        const prevTotal = prevData ? prevData.cash + prevData.savings : 0
+                        const diff = monthNum > 1 ? total - prevTotal : 0
+                        return (
+                          <div className="bg-background rounded-lg px-3 py-2">
+                            <p className="text-xs text-muted-foreground mb-1">{label}월</p>
+                            <p className="text-xs"><span style={{ color: '#5865F2' }}>잔액</span> {fmt(cash)}</p>
+                            <p className="text-xs"><span style={{ color: '#43B581' }}>저축</span> {fmt(savings)}</p>
+                            <p className="text-xs font-semibold mt-1">총액 {fmt(total)}</p>
+                            {monthNum > 1 && prevTotal > 0 && (
+                              <p className={`text-[10px] ${diff >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
+                                {diff >= 0 ? '↑' : '↓'} {fmt(Math.abs(diff))}
+                              </p>
+                            )}
+                          </div>
+                        )
+                      }}
                     />
                     <Bar dataKey="cash" stackId="a" fill="#5865F2" radius={[0, 0, 0, 0]} />
                     <Bar dataKey="savings" stackId="a" fill="#43B581" radius={[4, 4, 0, 0]} />
