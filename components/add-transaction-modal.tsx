@@ -78,7 +78,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           const parent = cat.parent_id ? cats.find(c => c.id === cat.parent_id) : null
           const label = parent ? `${parent.name} · ${cat.name}` : cat.name
           recent.push({ id: cat.id, label, type: tx.type })
-          if (recent.length >= 3) break
+          if (recent.length >= 4) break
         }
         setRecentCategories(recent)
       } catch {}
@@ -272,7 +272,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       setType(reverseMap[dbType] || null)
                     }
                   }}
-                  className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${
+                  className={`text-[16px] px-3 py-1.5 rounded-full transition-colors ${
                     categoryId === rc.id
                       ? 'bg-accent-blue/20 text-accent-blue'
                       : 'bg-surface text-muted-foreground'
