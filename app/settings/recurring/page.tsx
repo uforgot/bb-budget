@@ -160,7 +160,7 @@ export default function RecurringPage() {
         {/* 추가 폼 */}
         {adding ? (
           <div className="mt-4 bg-surface rounded-[18px] px-5 py-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <span className="text-[16px] text-muted-foreground">금액</span>
               <div className="flex items-baseline gap-1">
                 <span className="text-[15px] text-muted-foreground">₩</span>
@@ -177,7 +177,7 @@ export default function RecurringPage() {
             </div>
 
             {/* 주기 선택 — 세그먼트 컨트롤 */}
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <span className="text-[16px] text-muted-foreground">주기</span>
               <div className="flex bg-muted rounded-full p-1">
                 {(['weekly', 'monthly', 'yearly'] as const).map(f => (
@@ -196,7 +196,7 @@ export default function RecurringPage() {
 
             {/* 주기별 날짜 선택 */}
             {frequency === 'weekly' && (
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <span className="text-[15px] text-muted-foreground">요일</span>
                 <div className="flex gap-1">
                   {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
@@ -214,7 +214,7 @@ export default function RecurringPage() {
               </div>
             )}
             {frequency === 'monthly' && (
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <span className="text-[16px] text-muted-foreground">매월</span>
                 <div className="flex items-center gap-1">
                   <input
@@ -234,7 +234,7 @@ export default function RecurringPage() {
               </div>
             )}
             {frequency === 'yearly' && (
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <span className="text-[15px] text-muted-foreground">날짜</span>
                 <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
                   <span>{yearDate ? (() => {
@@ -255,7 +255,7 @@ export default function RecurringPage() {
               </div>
             )}
 
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <span className="text-[16px] text-muted-foreground">카테고리</span>
               <button
                 onClick={() => setCategoryPickerOpen(true)}
