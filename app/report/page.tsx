@@ -610,7 +610,7 @@ export default function Report() {
                           cursor={false}
                           labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
                           formatter={(v, catId) => [fmt(Number(v)), get2depthCatName(String(catId))]}
-                          contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
+                          contentStyle={{ background: '#121212', border: 'none', borderRadius: 8, fontSize: 12 }}
                           labelStyle={{ color: '#9ca3af' }}
                         />
                         {eVisible.map((cat, i) => (
@@ -708,7 +708,7 @@ export default function Report() {
                           cursor={false}
                           labelFormatter={(v) => String(v).includes('월') ? String(v) : `${v}월`}
                           formatter={(v, catId) => [fmt(Number(v)), get2depthCatName(String(catId))]}
-                          contentStyle={{ background: '#0a0f1a', border: 'none', borderRadius: 8, fontSize: 12 }}
+                          contentStyle={{ background: '#121212', border: 'none', borderRadius: 8, fontSize: 12 }}
                           labelStyle={{ color: '#9ca3af' }}
                         />
                         {iVisible.map((cat, i) => (
