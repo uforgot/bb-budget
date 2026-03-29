@@ -132,6 +132,12 @@
 :root:not(.dark) .font-medium { font-weight: 600 !important; }
 :root:not(.dark) .font-semibold { font-weight: 700 !important; }
 
+/* 꽃 스피너 애니메이션 */
+@keyframes flower-fade {
+  0%, 100% { opacity: 0.15; }
+  12.5% { opacity: 0.6; }
+}
+
 /* standalone(PWA)에서만 네이티브 pull-to-refresh 차단 → 커스텀 사용 */
 @media (display-mode: standalone) {
   html, body {

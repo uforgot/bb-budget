@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PullToRefreshProps {
@@ -11,6 +10,52 @@ interface PullToRefreshProps {
 }
 
 const THRESHOLD = 80;
+const PETAL_COUNT = 8;
+
+function FlowerSpinner({ progress, spinning }: { progress: number; spinning: boolean }) {
+  const size = 28;
+  const center = size / 2;
+  const petalLength = 4.5;
+  const petalWidth = 2;
+  const innerRadius = 4;
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {Array.from({ length: PETAL_COUNT }).map((_, i) => {
+        const angle = (i * 360) / PETAL_COUNT - 90;
+        const rad = (angle * Math.PI) / 180;
+        const x = center + Math.cos(rad) * innerRadius;
+        const y = center + Math.sin(rad) * innerRadius;
+
+        // 네이티브처럼 시계 방향으로 순차 페이드
+        const petalProgress = spinning
+          ? 1
+          : Math.max(0, Math.min(1, (progress * PETAL_COUNT - i) / 1));
+
+        const opacity = spinning ? undefined : petalProgress * 0.4 + 0.15;
+
+        return (
+          <rect
+            key={i}
+            x={x - petalWidth / 2}
+            y={y - petalLength / 2}
+            width={petalWidth}
+            height={petalLength}
+            rx={petalWidth / 2}
+            fill="currentColor"
+            opacity={opacity}
+            transform={`rotate(${angle + 90}, ${x}, ${y})`}
+            className="text-muted-foreground"
+            style={spinning ? {
+              animation: `flower-fade 0.8s linear infinite`,
+              animationDelay: `${(i / PETAL_COUNT) * -0.8}s`,
+            } : undefined}
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
 export function PullToRefresh({ onRefresh, children, className = '' }: PullToRefreshProps) {
   const [pullDistance, setPullDistance] = useState(0);
@@ -29,13 +74,9 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
       if (!pullingRef.current || refreshing) return;
-
-      const currentY = e.touches[0].clientY;
-      const diff = currentY - startYRef.current;
-
+      const diff = e.touches[0].clientY - startYRef.current;
       if (diff > 0 && window.scrollY === 0) {
-        const distance = Math.min(diff * 0.5, 120);
-        setPullDistance(distance);
+        setPullDistance(Math.min(diff * 0.5, 120));
       }
     },
     [refreshing]
@@ -44,13 +85,10 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
   const handleTouchEnd = useCallback(async () => {
     if (!pullingRef.current) return;
     pullingRef.current = false;
-
     if (pullDistance >= THRESHOLD && !refreshing) {
       setRefreshing(true);
       setPullDistance(THRESHOLD);
-      try {
-        await onRefresh();
-      } finally {
+      try { await onRefresh(); } finally {
         setRefreshing(false);
         setPullDistance(0);
       }
@@ -76,16 +114,7 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
           transitionDuration: pullingRef.current ? "0ms" : "200ms",
         }}
       >
-        <RefreshCw
-          className="h-5 w-5 text-muted-foreground"
-          style={refreshing ? {
-            opacity: 1,
-            animation: 'spin 1s linear infinite',
-          } : {
-            transform: `rotate(${progress * 360}deg)`,
-            opacity: progress,
-          }}
-        />
+        <FlowerSpinner progress={progress} spinning={refreshing} />
       </div>
       {children}
     </div>
