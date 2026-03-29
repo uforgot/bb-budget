@@ -264,12 +264,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
           )}
 
-          {/* 날짜 */}
-          <div className="relative mb-6 flex justify-center items-center gap-2">
-            <label className="text-sm text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
-              <span>{formatDateDisplay(date)}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                <path d="m6 9 6 6 6-6" />
+          {/* 날짜 — 카테고리/메모와 동일 폼 */}
+          <div className="mb-3 flex items-center gap-3">
+            <label className="text-xs text-muted-foreground flex-shrink-0 w-14">날짜</label>
+            <label className="flex-1 cursor-pointer inline-flex items-center justify-between relative">
+              <span className="text-[16px]">{formatDateDisplay(date)}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
+                <path d="m9 18 6-6-6-6" />
               </svg>
               <input
                 type="date"
