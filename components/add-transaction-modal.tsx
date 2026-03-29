@@ -222,7 +222,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-md mx-auto px-5 pt-4">
+        <div className="w-full max-w-md mx-auto px-5 pt-8">
           {/* 금액 표시 */}
           <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(true)}>
             <div className="flex items-baseline justify-center gap-1">
