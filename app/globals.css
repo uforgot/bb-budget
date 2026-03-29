@@ -132,6 +132,11 @@
 :root:not(.dark) .font-medium { font-weight: 600 !important; }
 :root:not(.dark) .font-semibold { font-weight: 700 !important; }
 
+/* Safari 네이티브 pull-to-refresh 차단 */
+html, body {
+  overscroll-behavior-y: none;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
