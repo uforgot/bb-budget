@@ -543,8 +543,8 @@ export default function Report() {
                 {top3.map((cat, i) => (
                   <div key={cat.catId} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">{cat.name}</span>
-                      <span className="text-sm text-muted-foreground">{i + 1}위</span>
+                      <span className="text-sm bg-muted px-2 py-0.5 rounded-full">{cat.name}</span>
+                      <span className="text-[12px] text-muted-foreground">{i + 1}위</span>
                     </div>
                     <span className="text-[16px] font-semibold tabular-nums text-accent-coral">₩{cat.yearTotal.toLocaleString()}</span>
                   </div>
@@ -642,8 +642,8 @@ export default function Report() {
                 {top3.map((cat, i) => (
                   <div key={cat.catId} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">{cat.name}</span>
-                      <span className="text-sm text-muted-foreground">{i + 1}위</span>
+                      <span className="text-sm bg-muted px-2 py-0.5 rounded-full">{cat.name}</span>
+                      <span className="text-[12px] text-muted-foreground">{i + 1}위</span>
                     </div>
                     <span className="text-[16px] font-semibold tabular-nums text-accent-blue">₩{cat.yearTotal.toLocaleString()}</span>
                   </div>
