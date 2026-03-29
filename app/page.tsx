@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 
@@ -77,7 +78,7 @@ export default function Home() {
   const cashBalance = totalAssets - allTimeSavings
 
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={async () => { setRefreshKey(k => k + 1); await loadAllTime() }}>
 
       <div className="sticky top-0 z-30 bg-background px-5">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="잔액" />
@@ -128,6 +129,6 @@ export default function Home() {
       />
 
       {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
-    </div>
+    </PullToRefresh>
   )
 }

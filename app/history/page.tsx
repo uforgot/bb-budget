@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
@@ -232,7 +233,7 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={async () => { await loadData() }}>
       <div className="px-5">
         <TopHeader title="내역" />
 
@@ -810,6 +811,6 @@ export default function History() {
       />
 
       {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
-    </div>
+    </PullToRefresh>
   )
 }

@@ -7,6 +7,7 @@ import {
   LineChart, Line, CartesianGrid, Tooltip,
   BarChart, Bar,
 } from 'recharts'
+import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
 
@@ -321,7 +322,7 @@ export default function Report() {
 
   // ─── render ───────────────────────────────────────────
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={handleRefresh}>
       <div className="sticky top-0 z-30 bg-background px-5">
         <TopHeader title="리포트" />
       </div>
@@ -747,6 +748,6 @@ export default function Report() {
           </div>
         </>
       )}
-    </div>
+    </PullToRefresh>
   )
 }
