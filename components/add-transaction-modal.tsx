@@ -78,7 +78,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           const parent = cat.parent_id ? cats.find(c => c.id === cat.parent_id) : null
           const label = parent ? `${parent.name} · ${cat.name}` : cat.name
           recent.push({ id: cat.id, label, type: tx.type })
-          if (recent.length >= 4) break
+          if (recent.length >= 5) break
         }
         setRecentCategories(recent)
       } catch {}
@@ -223,24 +223,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto px-5 pt-4">
-          {/* 날짜 */}
-          <div className="relative mb-6 flex justify-center items-center gap-2">
-            <label className="text-sm text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
-              <span>{formatDateDisplay(date)}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => e.target.value && setEditDate(e.target.value)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                style={{ fontSize: '16px' }}
-              />
-            </label>
-
-          </div>
-
           {/* 금액 표시 */}
           <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(true)}>
             <div className="flex items-baseline justify-center gap-1">
@@ -251,11 +233,9 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
           </div>
 
-
-
           {/* 최근 카테고리 chip */}
           {!editTransaction && recentCategories.length > 0 && (
-            <div className="mb-5 flex gap-1.5 flex-wrap justify-center">
+            <div className="mb-5 flex gap-1.5 overflow-x-auto scrollbar-hide">
               {recentCategories.map(rc => (
                 <button
                   key={rc.id}
@@ -272,7 +252,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       setType(reverseMap[dbType] || null)
                     }
                   }}
-                  className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+                  className={`text-xs px-3 py-1.5 rounded-full transition-colors whitespace-nowrap flex-shrink-0 ${
                     categoryId === rc.id
                       ? 'bg-accent-blue/20 text-accent-blue'
                       : 'bg-surface text-muted-foreground'
@@ -283,6 +263,23 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               ))}
             </div>
           )}
+
+          {/* 날짜 */}
+          <div className="relative mb-6 flex justify-center items-center gap-2">
+            <label className="text-sm text-muted-foreground cursor-pointer inline-flex items-center gap-1 relative">
+              <span>{formatDateDisplay(date)}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => e.target.value && setEditDate(e.target.value)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                style={{ fontSize: '16px' }}
+              />
+            </label>
+          </div>
 
           {/* 유형 + 카테고리 — 일렬 */}
           <div className="mb-3">
@@ -349,7 +346,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               className="flex-1 bg-surface rounded-[18px] px-4 py-2.5"
             />
           </div>
-
 
         </div>
       </div>
