@@ -92,13 +92,19 @@ export default function Home() {
       <div className="px-5">
 
         {/* N월 수입/지출 — 2열 박스 */}
-        <div className="flex gap-3 mb-4 mt-3">
-          <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
-            <p className="text-xs text-muted-foreground mb-1">{calMonth}월 수입</p>
+        <div className="flex gap-4 mb-5 mt-3">
+          <div className="flex-1 bg-surface rounded-[18px] px-5 py-4">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-accent-blue text-sm">↑</span>
+              <p className="text-xs text-muted-foreground">{calMonth}월 수입</p>
+            </div>
             <p className="text-[16px] font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</p>
           </div>
-          <div className="flex-1 bg-surface rounded-[18px] px-4 py-3">
-            <p className="text-xs text-muted-foreground mb-1">{calMonth}월 지출</p>
+          <div className="flex-1 bg-surface rounded-[18px] px-5 py-4">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-accent-coral text-sm">↓</span>
+              <p className="text-xs text-muted-foreground">{calMonth}월 지출</p>
+            </div>
             <p className="text-[16px] font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</p>
           </div>
         </div>

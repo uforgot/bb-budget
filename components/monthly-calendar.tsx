@@ -461,7 +461,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
         return (
           <div className="mt-4">
             {/* Date + total header */}
-            <div className="bg-surface rounded-[18px] flex items-center justify-between px-5 py-3 mb-3">
+            <div className="bg-surface rounded-[18px] flex items-center justify-between px-5 py-4 mb-4">
               <span className="text-sm font-semibold">
                 {selectedDay.month + 1}월 {selectedDay.day}일 {dayOfWeek}
               </span>
