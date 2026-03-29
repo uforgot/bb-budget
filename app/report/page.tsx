@@ -9,7 +9,7 @@ import {
 } from 'recharts'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopHeader } from '@/components/top-header'
-import { PullToRefresh } from '@/components/pull-to-refresh'
+
 import type { Transaction, Category } from '@/lib/api'
 
 // ─── constants ────────────────────────────────────────
@@ -321,7 +321,7 @@ export default function Report() {
 
   // ─── render ───────────────────────────────────────────
   return (
-    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={handleRefresh}>
+    <div className="min-h-dvh bg-background pb-32">
       <div className="sticky top-0 z-30 bg-background px-5">
         <TopHeader title="리포트" />
       </div>
@@ -747,6 +747,6 @@ export default function Report() {
           </div>
         </>
       )}
-    </PullToRefresh>
+    </div>
   )
 }

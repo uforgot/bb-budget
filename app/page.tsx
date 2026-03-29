@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
-import { PullToRefresh } from '@/components/pull-to-refresh'
+
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
@@ -77,13 +77,7 @@ export default function Home() {
   const cashBalance = totalAssets - allTimeSavings
 
   return (
-    <PullToRefresh
-      className="min-h-dvh bg-background pb-32"
-      onRefresh={async () => {
-        setRefreshKey(k => k + 1)
-        await loadAllTime()
-      }}
-    >
+    <div className="min-h-dvh bg-background pb-32">
 
       <div className="sticky top-0 z-30 bg-background px-5">
         <TopHeader title={`₩${cashBalance.toLocaleString()}`} subtitle="잔액" />
@@ -134,6 +128,6 @@ export default function Home() {
       />
 
       {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
-    </PullToRefresh>
+    </div>
   )
 }
