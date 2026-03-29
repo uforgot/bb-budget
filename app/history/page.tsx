@@ -747,7 +747,7 @@ export default function History() {
               </div>
 
               {/* 월별 카드 */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
                 {activeMonths.length === 0 && (
                   <p className="text-sm text-muted-foreground text-center py-8">아직 내역이 없어요</p>
                 )}
