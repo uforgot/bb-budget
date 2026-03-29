@@ -95,14 +95,14 @@ export default function Home() {
         <div className="flex gap-4 mb-5 mt-3">
           <div className="flex-1 bg-surface rounded-[18px] px-5 py-4">
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-accent-blue text-sm">↑</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-blue"><path d="M12 2v20M17 7l-5-5-5 5"/></svg>
               <p className="text-xs text-muted-foreground">{calMonth}월 수입</p>
             </div>
             <p className="text-[16px] font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</p>
           </div>
           <div className="flex-1 bg-surface rounded-[18px] px-5 py-4">
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-accent-coral text-sm">↓</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-coral"><path d="M12 22V2M7 17l5 5 5-5"/></svg>
               <p className="text-xs text-muted-foreground">{calMonth}월 지출</p>
             </div>
             <p className="text-[16px] font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</p>
