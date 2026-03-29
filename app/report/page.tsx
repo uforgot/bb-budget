@@ -335,7 +335,7 @@ export default function Report() {
             return (
               <div className="flex-1 text-left pr-1">
                 <div className="flex items-center gap-1 mb-1">
-                  <p className="text-sm font-semibold">🏦 총자산</p>
+                  <p className="text-sm font-semibold"><span className="inline-flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>총자산</span></p>
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setTooltipModal("총자산은 운용 중인 모든 투자금과 현금 잔액을 합친 나의 전체 자산입니다.") }}
@@ -441,7 +441,7 @@ export default function Report() {
             return (
               <div className="flex-1 text-left pr-1">
                 <div className="flex items-center gap-1 mb-1">
-                  <p className="text-sm font-semibold">📊 연간 실질 수입 · 지출</p>
+                  <p className="text-sm font-semibold"><span className="inline-flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>연간 실질 수입 · 지출</span></p>
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setTooltipModal("실질 수입은 연간 누적 수입에서 묶인 돈인 저축액을 제외한 수입입니다.") }}
@@ -535,7 +535,7 @@ export default function Report() {
             return (
             <div className="flex-1 text-left pr-1">
               <div className="flex items-center gap-1 mb-3">
-                <p className="text-sm font-semibold">🛒 지출 카테고리별 분석</p>
+                <p className="text-sm font-semibold"><span className="inline-flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>지출 카테고리별 분석</span></p>
                 <button type="button" onClick={(e) => { e.stopPropagation(); setTooltipModal("연간 누적 지출 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
               </div>
               <div className="space-y-2">
@@ -634,7 +634,7 @@ export default function Report() {
             return (
             <div className="flex-1 text-left pr-1">
               <div className="flex items-center gap-1 mb-3">
-                <p className="text-sm font-semibold">💰 수입 카테고리별 분석</p>
+                <p className="text-sm font-semibold"><span className="inline-flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>수입 카테고리별 분석</span></p>
                 <button type="button" onClick={(e) => { e.stopPropagation(); setTooltipModal("연간 누적 수입 상위 10개 카테고리의 연간 흐름을 확인하세요.") }} className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 text-muted-foreground text-[10px] flex items-center justify-center">?</button>
               </div>
               <div className="space-y-2">
