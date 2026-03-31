@@ -125,23 +125,41 @@ export default function Home() {
       </div>
 
       <div className="px-5">
-        {/* 날짜 헤더 (접힌 상태: 오늘 날짜 + 탭하면 펼침) */}
+        {/* 수입/지출/저축 + 잔액 */}
+        <div className="bg-surface rounded-2xl px-5 py-4 mb-3 mt-2">
+          {[
+            { label: '수입', value: monthIncome, color: '#5865F2' },
+            { label: '지출', value: monthExpense, color: '#FF6B9D' },
+            { label: '저축', value: monthSavings, color: '#43B581' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="flex items-center justify-between py-2">
+              <span className="text-[14px] text-foreground">{label}</span>
+              <span className="text-[14px] font-semibold tabular-nums" style={{ color }}>
+                ₩{value.toLocaleString()}
+              </span>
+            </div>
+          ))}
+          <div className="border-t border-border my-1" />
+          <div className="flex items-center justify-between py-2">
+            <span className="text-[14px] text-foreground font-semibold">잔액</span>
+            <span className="text-[14px] font-bold tabular-nums">
+              ₩{cashBalance.toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        {/* 달력 접기/펼치기 버튼 */}
         <button
           onClick={() => setCalendarOpen(prev => !prev)}
-          className="w-full flex items-center justify-between py-3"
+          className="w-full flex items-center justify-center gap-1.5 py-2 mb-3 text-muted-foreground"
         >
-          <div>
-            <p className="text-[22px] font-bold text-left">
-              {calYear}년 {calMonth}월 {selectedDay}일
-            </p>
-            <p className="text-[13px] text-muted-foreground text-left">
-              {DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일
-            </p>
-          </div>
+          <span className="text-[14px] font-medium">
+            {calMonth}월 {selectedDay}일 ({DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]})
+          </span>
           {calendarOpen ? (
-            <ChevronUp className="w-5 h-5 text-muted-foreground" />
+            <ChevronUp className="w-4 h-4" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            <ChevronDown className="w-4 h-4" />
           )}
         </button>
 
@@ -161,42 +179,9 @@ export default function Home() {
           />
         )}
 
-        {/* 요약 + 일별 내역 (접혔을 때 노출) */}
+        {/* 일별 거래 내역 (달력 닫혔을 때) */}
         {!calendarOpen && (
-          <div className="mt-4">
-            {/* 수입/지출/저축 + 잔액 */}
-            <div className="bg-surface rounded-2xl px-5 py-4 mb-3">
-              {[
-                { label: '수입', value: monthIncome, color: '#5865F2' },
-                { label: '지출', value: monthExpense, color: '#FF6B9D' },
-                { label: '저축', value: monthSavings, color: '#43B581' },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="flex items-center justify-between py-2">
-                  <span className="text-[14px] text-foreground">{label}</span>
-                  <span className="text-[14px] font-semibold tabular-nums" style={{ color }}>
-                    ₩{value.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-              <div className="border-t border-border my-1" />
-              <div className="flex items-center justify-between py-2">
-                <span className="text-[14px] text-foreground font-semibold">잔액</span>
-                <span className="text-[14px] font-bold tabular-nums">
-                  ₩{cashBalance.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {/* 선택된 날짜 카드 */}
-            <div className="bg-surface rounded-2xl px-5 py-3 mb-3">
-              <p className="text-[15px] font-semibold text-center">
-                {calMonth}월 {selectedDay}일 ({DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]})
-              </p>
-            </div>
-
-            {/* 일별 거래 내역 */}
-            <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
-          </div>
+          <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
         )}
       </div>
 
