@@ -98,31 +98,20 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
       <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
       <p className="text-[16px] font-bold mb-3">요약</p>
       <div className="flex flex-col gap-3">
-        {rows.map(({ label, value, color }, i) => (
-          <div key={label} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}25` }}>
-                {i === 0 && (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 19V5M5 12l7-7 7 7"/>
-                  </svg>
-                )}
-                {i === 1 && (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 5v14M5 12l7 7 7-7"/>
-                  </svg>
-                )}
-                {i === 2 && (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
-                  </svg>
-                )}
-              </span>
-              <span className="text-[13px] text-foreground">{label}</span>
+        {rows.map(({ label, value, color }) => {
+          const pct = max > 0 ? Math.max(Math.round((value / max) * 100), value > 0 ? 4 : 0) : 0
+          return (
+            <div key={label}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[14px] text-foreground">{label}</span>
+                <span className="text-[14px] font-semibold tabular-nums">₩{value.toLocaleString()}</span>
+              </div>
+              <div className="h-[3px] bg-muted rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+              </div>
             </div>
-            <span className="text-[13px] font-semibold tabular-nums">₩{fmt(value)}</span>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
