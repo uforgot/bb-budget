@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, List, BarChart2 } from 'lucide-react'
+import { Home, CalendarDays, List, BarChart2 } from 'lucide-react'
 
 const tabs = [
   { href: '/', label: '홈', icon: Home },
+  { href: '/calendar', label: '달력', icon: CalendarDays },
   { href: '/history', label: '내역', icon: List },
   { href: '/report', label: '리포트', icon: BarChart2 },
 ]
@@ -28,7 +29,7 @@ export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-full transition-colors whitespace-nowrap ${
+              className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-full transition-colors whitespace-nowrap ${
                 active ? 'bg-black/5 dark:bg-white/15' : ''
               }`}
             >
