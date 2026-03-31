@@ -83,6 +83,7 @@ export default function Home() {
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [calendarOpen, setCalendarOpen] = useState(false)
+  const [summaryOpen, setSummaryOpen] = useState(false)
   const [monthIncome, setMonthIncome] = useState(0)
   const [monthExpense, setMonthExpense] = useState(0)
   const [monthSavings, setMonthSavings] = useState(0)
@@ -146,25 +147,39 @@ export default function Home() {
       <div className="px-5">
         {/* 수입/지출/저축 + 잔액 */}
         <div className="bg-surface rounded-2xl px-5 py-4 mb-3 mt-2">
-          {[
-            { label: '수입', value: monthIncome, color: '#5865F2' },
-            { label: '지출', value: monthExpense, color: '#FF6B9D' },
-            { label: '저축', value: monthSavings, color: '#43B581' },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="flex items-center justify-between py-2">
-              <span className="text-[14px] text-foreground">{label}</span>
-              <span className="text-[14px] font-semibold tabular-nums" style={{ color }}>
-                ₩{value.toLocaleString()}
-              </span>
-            </div>
-          ))}
-          <div className="border-t border-border my-1" />
-          <div className="flex items-center justify-between py-2">
+          <button
+            onClick={() => setSummaryOpen(prev => !prev)}
+            className="w-full flex items-center justify-between py-2"
+          >
             <span className="text-[14px] text-foreground font-semibold">잔액</span>
-            <span className="text-[14px] font-bold tabular-nums">
-              ₩{cashBalance.toLocaleString()}
-            </span>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[14px] font-bold tabular-nums">
+                ₩{cashBalance.toLocaleString()}
+              </span>
+              {summaryOpen ? (
+                <ChevronUp className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              )}
+            </div>
+          </button>
+          {summaryOpen && (
+            <>
+              <div className="border-t border-border my-1" />
+              {[
+                { label: '수입', value: monthIncome, color: '#5865F2' },
+                { label: '지출', value: monthExpense, color: '#FF6B9D' },
+                { label: '저축', value: monthSavings, color: '#43B581' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="flex items-center justify-between py-2">
+                  <span className="text-[14px] text-foreground">{label}</span>
+                  <span className="text-[14px] font-semibold tabular-nums" style={{ color }}>
+                    ₩{value.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </>
+          )}
         </div>
 
         {/* 달력 카드 (접기/펼치기) */}
