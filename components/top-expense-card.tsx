@@ -4,11 +4,13 @@ import {
   Utensils, ShoppingCart, Car, Home, HeartPulse, Film, Shirt,
   Baby, Dog, Gift, Shield, Receipt, BanknoteArrowDown, Coins,
   PiggyBank, CreditCard, Laptop, Wallet, Coffee, Train, Plane,
-  Dumbbell, Building, Zap, type LucideIcon
+  Dumbbell, Building, Zap, Tag, HandCoins, Package, Banknote,
+  CircleDollarSign, BookOpen, UtensilsCrossed, type LucideIcon
 } from 'lucide-react'
 
 const CAT_ICON_MAP: Record<string, LucideIcon> = {
   '식비': Utensils,
+  '외식': UtensilsCrossed,
   '카페': Coffee,
   '마트': ShoppingCart,
   '생활': ShoppingCart,
@@ -27,19 +29,26 @@ const CAT_ICON_MAP: Record<string, LucideIcon> = {
   '반려동물': Dog,
   '경조사': Gift,
   '보험': Shield,
-  '세금': Receipt,
+  '세금': Building,
+  '재산': Building,
   '공과금': Zap,
   '월급': BanknoteArrowDown,
   '급여': BanknoteArrowDown,
   '수입': BanknoteArrowDown,
-  '부수입': Coins,
+  '부수입': HandCoins,
+  '수당': HandCoins,
+  '중고': Tag,
+  '판매': Tag,
+  '용돈': Coins,
   '저축': PiggyBank,
   '예적금': PiggyBank,
   '대출': CreditCard,
-  '금융': CreditCard,
+  '금융': CircleDollarSign,
   '가전': Laptop,
-  '기타': Wallet,
+  '교육': BookOpen,
+  '기타': Package,
   '관리비': Building,
+  '이체': Banknote,
 }
 
 function getCatIcon(name: string): LucideIcon {
