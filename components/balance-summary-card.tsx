@@ -22,7 +22,7 @@ export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month
       </p>
       {/* 1줄 분할 바 */}
       <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3">
-        <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#6B7280' }} />
+        <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#E0E3FF' }} />
         <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
       </div>
       {/* 라벨 좌우 */}
