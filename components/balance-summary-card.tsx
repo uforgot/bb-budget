@@ -84,7 +84,7 @@ function fmt(n: number) {
   return n.toLocaleString()
 }
 
-export function MonthlySummaryCard({ month, income, savings, prevSavings }: MonthlySummaryCardProps) {
+export function MonthlySummaryCard({ month, income, savings, prevSavings, year }: MonthlySummaryCardProps & { year: number }) {
   const max = Math.max(income, savings, prevSavings, 1)
   const rows = [
     { label: '수입', value: income, color: '#43B581' },
@@ -92,8 +92,8 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings }: Mont
     { label: '이월저축', value: prevSavings, color: '#9B59B6' },
   ]
   return (
-    <div className="bg-surface rounded-2xl px-4 pt-4 pb-4 mb-3">
-      <p className="text-[11px] text-muted-foreground">{month}월</p>
+    <div className="bg-surface rounded-2xl px-4 pt-4 pb-4 mb-3 flex flex-col h-full">
+      <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
       <p className="text-[16px] font-bold mb-4">요약</p>
       <div className="flex flex-col gap-3.5">
         {rows.map(({ label, value, color }) => (

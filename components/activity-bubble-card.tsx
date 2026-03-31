@@ -41,13 +41,13 @@ export function ActivityBubbleCard({ year, month, activities }: ActivityBubbleCa
   const DOW_LABELS = ['월', '화', '수', '목', '금', '토', '일']
 
   return (
-    <div className="bg-surface rounded-2xl px-3 py-4 mb-3">
-      <p className="text-[11px] text-muted-foreground">{month}월</p>
-      <p className="text-[16px] font-bold mb-3">활동</p>
+    <div className="bg-surface rounded-2xl px-3 py-4 mb-3 h-full">
+      <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
+      <p className="text-[16px] font-bold mb-2">활동</p>
 
       {/* 버블 그리드 */}
       {weeks.map((w, wi) => (
-        <div key={wi} className="grid grid-cols-7 mb-1">
+        <div key={wi} className="grid grid-cols-7" style={{ marginBottom: '2px' }}>
           {w.map((day, di) => {
             if (!day) return <div key={di} />
             const act = activities.find(a => a.day === day)

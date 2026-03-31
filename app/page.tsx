@@ -98,16 +98,17 @@ export default function Home() {
             totalBalance={cashBalance}
             month={calMonth}
           />
-          <div className="flex gap-3">
-            <div className="flex-1 min-w-0">
+          <div className="flex gap-3 items-stretch">
+            <div className="flex-1 min-w-0 flex flex-col">
               <MonthlySummaryCard
+                year={calYear}
                 month={calMonth}
                 income={monthIncome}
                 savings={monthExpense}
                 prevSavings={prevSavings}
               />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 flex flex-col">
               <ActivityBubbleCard
                 year={calYear}
                 month={calMonth}
