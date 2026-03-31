@@ -44,6 +44,19 @@ function formatAmount(raw: string) {
   return parseInt(raw).toLocaleString()
 }
 
+function formatKorean(raw: string) {
+  const n = parseInt(raw || '0')
+  if (!n) return '0원'
+  const eok = Math.floor(n / 100000000)
+  const man = Math.floor((n % 100000000) / 10000)
+  const rest = n % 10000
+  let result = ''
+  if (eok) result += `${eok}억 `
+  if (man) result += `${man}만 `
+  if (rest) result += `${rest.toLocaleString()}`
+  return result.trim() + '원'
+}
+
 export function AddTransactionModal({ open, initialDate, editTransaction, onClose, onSave }: AddTransactionModalProps) {
   const [type, setType] = useState<TransactionType | null>(null)
   const [rawAmount, setRawAmount] = useState('')
@@ -264,12 +277,20 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto px-5 pt-8 pb-4">
           {/* 금액 표시 */}
-          <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(true)}>
-            <div className="flex items-baseline justify-start gap-1">
-              <span className="text-5xl font-bold text-muted-foreground">₩</span>
-              <span className="text-5xl font-bold tabular-nums" style={{ letterSpacing: '-2px' }}>
-                {formatAmount(rawAmount)}
-              </span>
+          <div className="mb-3 bg-surface rounded-2xl cursor-pointer px-4 py-3.5" onClick={() => setKeypadActive(true)}>
+            <div className="flex items-center justify-between">
+              <span className="text-[16px]">금액</span>
+              <div className="flex flex-col items-end">
+                <div className="flex items-baseline gap-0.5">
+                  <span className="text-[22px] font-bold text-muted-foreground">₩</span>
+                  <span className="text-[22px] font-bold tabular-nums" style={{ letterSpacing: '-1px' }}>
+                    {formatAmount(rawAmount)}
+                  </span>
+                </div>
+                <span className="text-[13px] text-muted-foreground">
+                  {formatKorean(rawAmount)}
+                </span>
+              </div>
             </div>
           </div>
 
