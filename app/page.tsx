@@ -138,7 +138,7 @@ export default function Home() {
               const name = root || '기타'
               byCat[name] = (byCat[name] || 0) + tx.amount
             }
-            const sorted = Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 4)
+            const sorted = Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 3)
             setTopExpenses(sorted.map(([name, amount]) => ({ name, amount })))
             // 전월까지 누적 계산
             const all = await getTransactions({})
