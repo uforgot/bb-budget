@@ -109,6 +109,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setEndAmount((editTransaction as any).end_amount ? String((editTransaction as any).end_amount) : '')
       setRecoverAmount(String(editTransaction.amount))
       setRecoverOpen(false)
+      setCategoryPickerOpen(false)
       // parent > child 라벨 구성
       const dbType = editTransaction.type
       getCategories(dbType).then(cats => {
