@@ -261,7 +261,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-md mx-auto px-5 pt-8">
+        <div className="w-full max-w-md mx-auto px-5 pt-8 pb-4">
           {/* 금액 표시 */}
           <div className="mb-8 cursor-pointer" onClick={() => setKeypadActive(true)}>
             <div className="flex items-baseline justify-center gap-1">
@@ -471,7 +471,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       )}
 
       {/* 저장/취소 버튼 — 항상 표시 */}
-      <div className="w-full max-w-md mx-auto px-4 flex-shrink-0" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
+      <div className="w-full max-w-md mx-auto px-4 pt-2 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom, 16px))' }}>
         {editTransaction ? (
           <div className="flex gap-2 mb-2">
             <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
