@@ -330,7 +330,12 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               <>
                 <div className="border-t border-border mx-4" />
                 <button
-                  onClick={() => { setKeypadActive(false); setCategoryPickerOpen(true) }}
+                  onClick={() => {
+                    setKeypadActive(false)
+                    setCategoryId('')
+                    setCategoryLabel('카테고리 선택')
+                    setType(null)
+                  }}
                   className="w-full flex items-center justify-between px-4 py-3.5"
                 >
                   <span className="text-[16px]">{categoryLabel}</span>
@@ -388,7 +393,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
                     </span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m6 9 6 6 6-6" /><path d="m6 15 6-6 6 6" />
+                      <path d="m6 9 6 6 6-6" />
                     </svg>
                   </div>
                 </button>
