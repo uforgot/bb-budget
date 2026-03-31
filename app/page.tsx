@@ -174,7 +174,10 @@ export default function Home() {
             className="w-full flex items-center justify-between px-5 py-4"
           >
             <span className="text-[18px] font-bold">
-              {calMonth}월 {selectedDay}일 {DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일
+              {calendarOpen
+                ? `${calYear}년 ${calMonth}월`
+                : `${calMonth}월 ${selectedDay}일 ${DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일`
+              }
             </span>
             <div className="flex items-center gap-2">
               {!calendarOpen && dayNet !== 0 && (

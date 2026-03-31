@@ -360,31 +360,6 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
 
   return (
     <div>
-      {/* Header: current visible month + today button */}
-      <div className="flex items-center justify-between w-full py-3 px-2">
-        <h1 className="text-base font-semibold text-foreground">
-          {headerLabel}
-        </h1>
-        <button
-          onClick={() => {
-            const now = new Date()
-            const todayIdx = months.findIndex(m => m.year === now.getFullYear() && m.month === now.getMonth())
-            if (todayIdx >= 0) {
-              setFocusedMonthIndex(todayIdx)
-              setHeaderLabel(`${now.getFullYear()}년 ${now.getMonth() + 1}월`)
-              setSelectedDay({ year: now.getFullYear(), month: now.getMonth(), day: now.getDate() })
-              const cached = dataCache.get(monthKey(now.getFullYear(), now.getMonth()))
-              onMonthChange?.(now.getFullYear(), now.getMonth() + 1, cached?.income ?? 0, cached?.expense ?? 0)
-              onDaySelect?.(now.getFullYear(), now.getMonth() + 1, now.getDate())
-            }
-          }}
-          className="px-3 py-1 rounded-full text-xs font-semibold text-accent-blue bg-accent-blue/15"
-          aria-label="오늘"
-        >
-          오늘
-        </button>
-      </div>
-
       {/* Fixed weekday row */}
       <div className="grid grid-cols-7 pb-2 mb-1 border-b border-border px-2">
         {WEEKDAYS.map(day => (
