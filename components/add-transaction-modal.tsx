@@ -516,9 +516,18 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         </div>
       )}
 
-      {/* 저장/취소 버튼 — 항상 표시 */}
+      {/* 하단 버튼 영역 */}
       <div className="w-full max-w-md mx-auto px-4 pt-2 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom, 16px))' }}>
-        {editTransaction ? (
+        {keypadActive ? (
+          /* 키패드 열려 있을 때 → 닫기 버튼만 */
+          <button
+            onClick={() => setKeypadActive(false)}
+            className="w-full bg-surface text-foreground rounded-[18px] py-4 text-[16px] font-semibold"
+          >
+            닫기
+          </button>
+        ) : editTransaction ? (
+          /* 수정 모드 */
           <div className="flex gap-2 mb-2">
             <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '수정하기'}
@@ -544,6 +553,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </button>
           </div>
         ) : (
+          /* 기록 모드 */
           <div className="flex gap-3 mb-2">
             <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '저장하기'}
