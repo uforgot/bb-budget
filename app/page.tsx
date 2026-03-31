@@ -20,6 +20,7 @@ export default function Home() {
   const [monthIncome, setMonthIncome] = useState(0)
   const [monthExpense, setMonthExpense] = useState(0)
   const [topExpenses, setTopExpenses] = useState<{ name: string; amount: number }[]>([])
+  const [topIncomes, setTopIncomes] = useState<{ name: string; amount: number }[]>([])
   const [allTimeIncome, setAllTimeIncome] = useState(0)
   const [allTimeExpense, setAllTimeExpense] = useState(0)
   const [allTimeSavings, setAllTimeSavings] = useState(0)
@@ -52,6 +53,14 @@ export default function Home() {
         byCat[name] = (byCat[name] || 0) + tx.amount
       }
       setTopExpenses(Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, amount]) => ({ name, amount })))
+
+      // TOP 3 수입 카테고리
+      const byIncomeCat: Record<string, number> = {}
+      for (const tx of txs.filter(t => t.type === 'income')) {
+        const name = catMap[tx.category_id]?.name || '기타'
+        byIncomeCat[name] = (byIncomeCat[name] || 0) + tx.amount
+      }
+      setTopIncomes(Object.entries(byIncomeCat).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, amount]) => ({ name, amount })))
 
       // 전월 누적
       const prevEnd = new Date(calYear, calMonth - 1, 0)
@@ -99,20 +108,30 @@ export default function Home() {
       </div>
 
       <div className="px-5 mt-3">
+        {/* 현재 잔액 카드 */}
         <BalanceCard
           prevBalance={prevBalance}
           thisMonthBalance={monthIncome - monthExpense}
           totalBalance={cashBalance}
           month={calMonth}
         />
+        {/* 이번 달 요약 카드 */}
+        <MonthlySummaryCard
+          year={calYear}
+          month={calMonth}
+          income={monthIncome}
+          savings={monthExpense}
+          prevSavings={prevSavings}
+        />
+        {/* 수입 / 지출 2열 */}
         <div className="flex gap-3 items-stretch">
           <div className="flex-1 min-w-0 flex flex-col">
-            <MonthlySummaryCard
+            <TopExpenseCard
               year={calYear}
               month={calMonth}
-              income={monthIncome}
-              savings={monthExpense}
-              prevSavings={prevSavings}
+              items={topIncomes}
+              total={monthIncome}
+              type="income"
             />
           </div>
           <div className="flex-1 min-w-0 flex flex-col">
@@ -121,6 +140,7 @@ export default function Home() {
               month={calMonth}
               items={topExpenses}
               total={monthExpense}
+              type="expense"
             />
           </div>
         </div>

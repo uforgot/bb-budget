@@ -8,29 +8,13 @@ interface BalanceCardProps {
   month: number
 }
 
-function BarRow({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
-  const pct = max > 0 ? Math.max(Math.round((Math.abs(value) / max) * 100), 2) : 0
-  const isNeg = value < 0
-  return (
-    <div className="mb-3 last:mb-0">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-[13px] text-foreground">{label}</span>
-        <span className={`text-[13px] font-semibold tabular-nums ${isNeg ? 'text-accent-coral' : ''}`}>
-          {isNeg ? '-' : ''}₩{Math.abs(value).toLocaleString()}
-        </span>
-      </div>
-      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all"
-          style={{ width: `${pct}%`, backgroundColor: isNeg ? '#FF6B6B' : color }}
-        />
-      </div>
-    </div>
-  )
-}
-
 export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month }: BalanceCardProps) {
   const maxVal = Math.max(Math.abs(prevBalance), Math.abs(thisMonthBalance), 1)
+
+  const rows = [
+    { label: `${month > 1 ? month - 1 : 12}월 잔액`, value: prevBalance, color: '#5865F2' },
+    { label: `${month}월 잔액`, value: thisMonthBalance, color: '#43B581' },
+  ]
 
   return (
     <div className="bg-surface rounded-2xl px-5 py-5 mb-3">
@@ -38,8 +22,28 @@ export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month
       <p className="text-[30px] font-bold tabular-nums mb-5" style={{ letterSpacing: '-1px' }}>
         ₩{totalBalance.toLocaleString()}
       </p>
-      <BarRow label={`${month > 1 ? month - 1 : 12}월 잔액`} value={prevBalance} max={maxVal} color="#5865F2" />
-      <BarRow label={`${month}월 잔액`} value={thisMonthBalance} max={maxVal} color="#43B581" />
+      <div className="flex flex-col gap-4">
+        {rows.map(({ label, value, color }) => {
+          const pct = maxVal > 0 ? Math.max(Math.round((Math.abs(value) / maxVal) * 100), value !== 0 ? 3 : 0) : 0
+          const isNeg = value < 0
+          return (
+            <div key={label}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] text-foreground">{label}</span>
+                <span className={`text-[13px] font-semibold tabular-nums ${isNeg ? 'text-accent-coral' : ''}`}>
+                  {isNeg ? '-' : ''}₩{Math.abs(value).toLocaleString()}
+                </span>
+              </div>
+              <div className="h-[5px] bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${pct}%`, backgroundColor: isNeg ? '#FF6B6B' : color }}
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -98,7 +102,7 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
     { label: '저축', value: prevSavings, color: '#43B581' }, // 그린
   ]
   return (
-    <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3 flex flex-col h-full">
+    <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3">
       <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
       <p className="text-[16px] font-bold mb-3">요약</p>
       <div className="flex flex-col gap-3">

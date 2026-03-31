@@ -19,15 +19,16 @@ interface TopExpenseCardProps {
   month: number
   items: { name: string; amount: number }[]
   total: number
+  type?: 'expense' | 'income'
 }
 
-export function TopExpenseCard({ year, month, items, total }: TopExpenseCardProps) {
+export function TopExpenseCard({ year, month, items, total, type = 'expense' }: TopExpenseCardProps) {
   const maxAmount = Math.max(...items.map(i => i.amount), 1)
 
   return (
     <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3 h-full">
       <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
-      <p className="text-[16px] font-bold mb-2.5">지출</p>
+      <p className="text-[16px] font-bold mb-2.5">{type === 'income' ? '수입' : '지출'}</p>
       {items.length === 0 ? (
         <p className="text-[12px] text-muted-foreground text-center py-4">지출 내역이 없어요</p>
       ) : (
@@ -38,9 +39,15 @@ export function TopExpenseCard({ year, month, items, total }: TopExpenseCardProp
               <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}25` }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
-                    </svg>
+                    {type === 'income' ? (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 19V5M5 12l7-7 7 7"/>
+                      </svg>
+                    ) : (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                      </svg>
+                    )}
                   </span>
                   <span className="text-[13px] text-foreground">{item.name}</span>
                 </div>
