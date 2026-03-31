@@ -9,40 +9,32 @@ interface BalanceCardProps {
 }
 
 export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month }: BalanceCardProps) {
-  const maxVal = Math.max(Math.abs(prevBalance), Math.abs(thisMonthBalance), 1)
-
-  const rows = [
-    { label: `${month > 1 ? month - 1 : 12}월 잔액`, value: prevBalance, color: '#5865F2' },
-    { label: `${month}월 잔액`, value: thisMonthBalance, color: '#43B581' },
-  ]
+  const total = Math.abs(prevBalance) + Math.abs(thisMonthBalance) || 1
+  const prevPct = Math.round((Math.abs(prevBalance) / total) * 100)
+  const thisPct = 100 - prevPct
+  const prevMonth = month > 1 ? month - 1 : 12
 
   return (
     <div className="bg-surface rounded-2xl px-5 py-5 mb-3">
       <p className="text-[12px] text-muted-foreground mb-1">현재 잔액</p>
-      <p className="text-[30px] font-bold tabular-nums mb-5" style={{ letterSpacing: '-1px' }}>
+      <p className="text-[30px] font-bold tabular-nums mb-6" style={{ letterSpacing: '-1px' }}>
         ₩{totalBalance.toLocaleString()}
       </p>
-      <div className="flex flex-col gap-4">
-        {rows.map(({ label, value, color }) => {
-          const pct = maxVal > 0 ? Math.max(Math.round((Math.abs(value) / maxVal) * 100), value !== 0 ? 3 : 0) : 0
-          const isNeg = value < 0
-          return (
-            <div key={label}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[13px] text-foreground">{label}</span>
-                <span className={`text-[13px] font-semibold tabular-nums ${isNeg ? 'text-accent-coral' : ''}`}>
-                  {isNeg ? '-' : ''}₩{Math.abs(value).toLocaleString()}
-                </span>
-              </div>
-              <div className="h-[5px] bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{ width: `${pct}%`, backgroundColor: isNeg ? '#FF6B6B' : color }}
-                />
-              </div>
-            </div>
-          )
-        })}
+      {/* 1줄 분할 바 */}
+      <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3">
+        <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#5865F2' }} />
+        <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#43B581' }} />
+      </div>
+      {/* 라벨 좌우 */}
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[12px] text-muted-foreground mb-0.5">{prevMonth}월 잔액</p>
+          <p className="text-[14px] font-semibold tabular-nums">₩{prevBalance.toLocaleString()}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-[12px] text-muted-foreground mb-0.5">{month}월 잔액</p>
+          <p className="text-[14px] font-semibold tabular-nums">₩{thisMonthBalance.toLocaleString()}</p>
+        </div>
       </div>
     </div>
   )
