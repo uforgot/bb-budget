@@ -14,8 +14,8 @@ function BarRow({ label, value, max, color }: { label: string; value: number; ma
   return (
     <div className="mb-3 last:mb-0">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-[12px] text-muted-foreground">{label}</span>
-        <span className={`text-[12px] font-medium tabular-nums ${isNeg ? 'text-accent-coral' : ''}`}>
+        <span className="text-[13px] text-muted-foreground">{label}</span>
+        <span className={`text-[13px] font-semibold tabular-nums ${isNeg ? 'text-accent-coral' : ''}`}>
           {isNeg ? '-' : ''}₩{Math.abs(value).toLocaleString()}
         </span>
       </div>
@@ -93,9 +93,9 @@ function fmt(n: number) {
 export function MonthlySummaryCard({ month, income, savings, prevSavings, year }: MonthlySummaryCardProps & { year: number }) {
   const max = Math.max(income, savings, prevSavings, 1)
   const rows = [
-    { label: '수입', value: income, color: '#43B581' },
-    { label: '지출', value: savings, color: '#FF6B6B' },
-    { label: '이월저축', value: prevSavings, color: '#9B59B6' },
+    { label: '수입', value: income, color: '#5865F2' },    // 블러플
+    { label: '지출', value: savings, color: '#FF6B9D' },   // 핑크
+    { label: '이월저축', value: prevSavings, color: '#43B581' }, // 그린
   ]
   return (
     <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3 flex flex-col h-full">
