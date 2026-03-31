@@ -87,6 +87,7 @@ export default function Home() {
   const [monthExpense, setMonthExpense] = useState(0)
   const [monthSavings, setMonthSavings] = useState(0)
   const [cashBalance, setCashBalance] = useState(0)
+  const [dayNet, setDayNet] = useState(0)
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
 
@@ -104,8 +105,15 @@ export default function Home() {
       const totalExp = all.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
       const totalSav = all.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0)
       setCashBalance(totalInc - totalExp - totalSav)
+
+      // 선택 날짜 일일 합산
+      const dayStr = toDateStr(calYear, calMonth, selectedDay)
+      const dayTxs = txs.filter(t => t.date === dayStr)
+      const dInc = dayTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const dExp = dayTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      setDayNet(dInc - dExp)
     } catch {}
-  }, [calYear, calMonth])
+  }, [calYear, calMonth, selectedDay])
 
   useEffect(() => {
     loadSummary()
@@ -168,11 +176,18 @@ export default function Home() {
             <span className="text-[18px] font-bold">
               {calMonth}월 {selectedDay}일 {DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일
             </span>
-            {calendarOpen ? (
-              <ChevronUp className="w-5 h-5 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-muted-foreground" />
-            )}
+            <div className="flex items-center gap-2">
+              {!calendarOpen && dayNet !== 0 && (
+                <span className={`text-[15px] font-semibold tabular-nums ${dayNet >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
+                  ₩{Math.abs(dayNet).toLocaleString()}
+                </span>
+              )}
+              {calendarOpen ? (
+                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              )}
+            </div>
           </button>
 
           {calendarOpen && (

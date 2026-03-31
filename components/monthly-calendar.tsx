@@ -129,7 +129,7 @@ function MonthGrid({
             <div
               key={day}
               onClick={() => onDayClick(year, month, day)}
-              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[40px] rounded-lg transition-colors ${
                 selected ? 'bg-accent' : ''
               }`}
             >
@@ -143,18 +143,10 @@ function MonthGrid({
                   {day}
                 </span>
               </span>
-              <div className="flex flex-col items-center gap-0 mt-0.5">
-                {(dayData?.expense ?? 0) > 0 && (
-                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-coral leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
-                    {formatAmount(dayData!.expense!)}
-                  </span>
-                )}
-                {(dayData?.income ?? 0) > 0 && (
-                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-blue leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
-                    {formatAmount(dayData!.income!)}
-                  </span>
-                )}
-              </div>
+              {/* 거래 있으면 작은 dot 표시 */}
+              {((dayData?.expense ?? 0) > 0 || (dayData?.income ?? 0) > 0) && (
+                <span className="w-1 h-1 rounded-full bg-accent-blue mt-1" />
+              )}
             </div>
           )
         })}
@@ -362,7 +354,6 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
     <div>
       {/* Header: current visible month + today button */}
       <div className="flex items-center justify-between w-full py-3 px-2">
-        <div className="w-8" />
         <h1 className="text-base font-semibold text-foreground">
           {headerLabel}
         </h1>
