@@ -277,20 +277,18 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto px-5 pt-8 pb-4">
           {/* 금액 표시 */}
-          <div className="mb-3 bg-surface rounded-2xl cursor-pointer px-4 py-3.5" onClick={() => setKeypadActive(true)}>
-            <div className="flex items-center justify-between">
-              <span className="text-[16px]">금액</span>
-              <div className="flex flex-col items-end">
-                <div className="flex items-baseline gap-0.5">
-                  <span className="text-[22px] font-bold text-muted-foreground">₩</span>
-                  <span className="text-[22px] font-bold tabular-nums" style={{ letterSpacing: '-1px' }}>
-                    {formatAmount(rawAmount)}
-                  </span>
-                </div>
-                <span className="text-[13px] text-muted-foreground">
-                  {formatKorean(rawAmount)}
+          <div className="mb-3 bg-surface rounded-2xl cursor-pointer px-4 py-6" onClick={() => setKeypadActive(true)}>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[13px] text-muted-foreground">금액</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-[32px] font-bold text-muted-foreground">₩</span>
+                <span className="text-[40px] font-bold tabular-nums" style={{ letterSpacing: '-2px' }}>
+                  {formatAmount(rawAmount)}
                 </span>
               </div>
+              <span className="text-[14px] text-muted-foreground">
+                {formatKorean(rawAmount)}
+              </span>
             </div>
           </div>
 
