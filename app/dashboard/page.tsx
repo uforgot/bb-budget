@@ -1,14 +1,15 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { BalanceCard, MonthlySummaryCard } from '@/components/balance-summary-card'
-import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
 
 export default function Dashboard() {
+  const router = useRouter()
   const today = new Date()
   const calYear = today.getFullYear()
   const calMonth = today.getMonth() + 1
@@ -69,7 +70,18 @@ export default function Dashboard() {
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData}>
       <div className="sticky top-0 z-30 bg-background px-5">
-        <TopHeader title="대시보드" />
+        <div className="flex items-center justify-between h-14 pt-[env(safe-area-inset-top,0px)]">
+          <p className="text-[20px] font-semibold">대시보드</p>
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
+            aria-label="닫기"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="px-5 mt-3">
