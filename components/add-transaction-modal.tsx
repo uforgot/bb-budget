@@ -289,6 +289,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 <input
                   type="date"
                   value={date}
+                  onFocus={() => setKeypadActive(false)}
                   onChange={(e) => e.target.value && setEditDate(e.target.value)}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   style={{ fontSize: '16px' }}
@@ -307,6 +308,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   <button
                     key={t}
                     onClick={() => {
+                      setKeypadActive(false)
                       if (type !== t) {
                         setCategoryId('')
                         setCategoryLabel('카테고리 선택')
@@ -328,7 +330,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               <>
                 <div className="border-t border-border mx-4" />
                 <button
-                  onClick={() => setCategoryPickerOpen(true)}
+                  onClick={() => { setKeypadActive(false); setCategoryPickerOpen(true) }}
                   className="w-full flex items-center justify-between px-4 py-3.5"
                 >
                   <span className="text-[16px]">{categoryLabel}</span>
@@ -377,7 +379,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               {/* 반복 행 */}
               <div className="relative">
                 <button
-                  onClick={() => setRepeatDropdownOpen(prev => !prev)}
+                  onClick={() => { setKeypadActive(false); setRepeatDropdownOpen(prev => !prev) }}
                   className="w-full flex items-center justify-between px-4 py-3.5"
                 >
                   <span className="text-[16px]">반복</span>
