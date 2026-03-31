@@ -95,8 +95,7 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
   ]
   return (
     <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3">
-      <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
-      <p className="text-[16px] font-bold mb-3">요약</p>
+      <p className="text-[16px] font-bold mb-3">이번 달 요약</p>
       <div className="flex flex-col gap-3">
         {rows.map(({ label, value, color }) => {
           const pct = max > 0 ? Math.max(Math.round((value / max) * 100), value > 0 ? 4 : 0) : 0
