@@ -295,6 +295,81 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </label>
             </div>
           </div>
+
+          {/* 카테고리 — Apple 스타일 카드 */}
+          <div className="mb-3 bg-surface rounded-2xl">
+            {/* 타입 선택 행 */}
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-[16px]">카테고리</span>
+              <div className="flex gap-1.5">
+                {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => {
+                      if (type !== t) {
+                        setCategoryId('')
+                        setCategoryLabel('카테고리 선택')
+                      }
+                      setType(t)
+                      setCategoryPickerOpen(true)
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
+                      type === t ? typeColors[t].active : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* 선택된 카테고리 표시 (타입 선택 후, 그리드 닫혔을 때) */}
+            {type && categoryId && !categoryPickerOpen && (
+              <>
+                <div className="border-t border-border mx-4" />
+                <button
+                  onClick={() => setCategoryPickerOpen(true)}
+                  className="w-full flex items-center justify-between px-4 py-3.5"
+                >
+                  <span className="text-[16px]">{categoryLabel}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* 인라인 카테고리 그리드 */}
+          <CategoryPicker
+            open={categoryPickerOpen && type !== null}
+            inline
+            type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
+            selected={categoryId}
+            onSelect={(id, label) => {
+              setCategoryId(id)
+              setCategoryLabel(label)
+              setCategoryPickerOpen(false)
+            }}
+            onClose={() => setCategoryPickerOpen(false)}
+          />
+
+          {/* 메모 — Apple 스타일 카드 */}
+          <div className="mb-3 bg-surface rounded-2xl">
+            <div className="flex items-center justify-between px-4 py-3.5">
+              <span className="text-[16px]">메모</span>
+              <input
+                type="text"
+                placeholder="입력"
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+                onBlur={() => setKeypadActive(false)}
+                onFocus={() => setKeypadActive(false)}
+                style={{ fontSize: '16px', textAlign: 'right' }}
+                className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
+              />
+            </div>
+          </div>
+
           {/* 반복 설정 — Apple Calendar 스타일 */}
           {!editTransaction && (
             <div className="mb-3 bg-surface rounded-2xl overflow-visible" ref={repeatDropdownRef}>
@@ -365,80 +440,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               )}
             </div>
           )}
-
-          {/* 카테고리 — Apple 스타일 카드 */}
-          <div className="mb-3 bg-surface rounded-2xl">
-            {/* 타입 선택 행 */}
-            <div className="flex items-center justify-between px-4 py-3">
-              <span className="text-[16px]">카테고리</span>
-              <div className="flex gap-1.5">
-                {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => {
-                      if (type !== t) {
-                        setCategoryId('')
-                        setCategoryLabel('카테고리 선택')
-                      }
-                      setType(t)
-                      setCategoryPickerOpen(true)
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                      type === t ? typeColors[t].active : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* 선택된 카테고리 표시 (타입 선택 후, 그리드 닫혔을 때) */}
-            {type && categoryId && !categoryPickerOpen && (
-              <>
-                <div className="border-t border-border mx-4" />
-                <button
-                  onClick={() => setCategoryPickerOpen(true)}
-                  className="w-full flex items-center justify-between px-4 py-3.5"
-                >
-                  <span className="text-[16px]">{categoryLabel}</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="m9 18 6-6-6-6" />
-                  </svg>
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* 인라인 카테고리 그리드 */}
-          <CategoryPicker
-            open={categoryPickerOpen && type !== null}
-            inline
-            type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
-            selected={categoryId}
-            onSelect={(id, label) => {
-              setCategoryId(id)
-              setCategoryLabel(label)
-              setCategoryPickerOpen(false)
-            }}
-            onClose={() => setCategoryPickerOpen(false)}
-          />
-
-          {/* 메모 — Apple 스타일 카드 */}
-          <div className="mb-4 bg-surface rounded-2xl">
-            <div className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-[16px]">메모</span>
-              <input
-                type="text"
-                placeholder="입력"
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                onBlur={() => setKeypadActive(false)}
-                onFocus={() => setKeypadActive(false)}
-                style={{ fontSize: '16px', textAlign: 'right' }}
-                className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
-              />
-            </div>
-          </div>
 
         </div>
       </div>
