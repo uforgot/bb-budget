@@ -16,7 +16,7 @@ export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month
 
   return (
     <div className="bg-surface rounded-2xl px-5 py-5 mb-3">
-      <p className="text-[12px] text-muted-foreground mb-1">현재 잔액</p>
+      <p className="text-[16px] font-bold mb-3">현재 잔액</p>
       <p className="text-[30px] font-bold tabular-nums mb-6" style={{ letterSpacing: '-1px' }}>
         ₩{totalBalance.toLocaleString()}
       </p>

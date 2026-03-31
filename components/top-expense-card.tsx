@@ -74,7 +74,7 @@ export function TopExpenseCard({ year, month, items, total, type = 'expense' }: 
 
   return (
     <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3 h-full">
-      <p className="text-[16px] font-bold mb-2.5">{type === 'income' ? '이번 달 수입' : '이번 달 지출'}</p>
+      <p className="text-[16px] font-bold mb-3">{type === 'income' ? '이번 달 수입' : '이번 달 지출'}</p>
       {items.length === 0 ? (
         <p className="text-[12px] text-muted-foreground text-center py-4">지출 내역이 없어요</p>
       ) : (
