@@ -51,7 +51,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [categoryLabel, setCategoryLabel] = useState('카테고리 선택')
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [memo, setMemo] = useState('')
-  const [keypadActive, setKeypadActive] = useState(true)
+  const [keypadActive, setKeypadActive] = useState(false)
   const [saving, setSaving] = useState(false)
   const [editDate, setEditDate] = useState<string | null>(null)
   const [endDate, setEndDate] = useState('')
@@ -194,6 +194,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setEndDate('')
       setEndAmount('')
       setRepeatFrequency('none')
+      setKeypadActive(false)
       onClose()
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : JSON.stringify(e)
@@ -438,7 +439,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               placeholder="메모를 입력하세요"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              onBlur={() => setKeypadActive(true)}
+              onBlur={() => setKeypadActive(false)}
               onFocus={() => setKeypadActive(false)}
               style={{ fontSize: '16px' }}
               className="flex-1 bg-surface rounded-[18px] px-4 py-2.5"
@@ -448,31 +449,34 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         </div>
       </div>
 
-      {/* 키패드 (하단 고정) */}
-      {/* 키패드 + 버튼 (하단 고정) */}
-      <div className={`w-full max-w-md mx-auto px-4 flex-shrink-0 ${keypadActive ? '' : 'hidden'}`} style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
-        <div className="grid grid-cols-3 gap-1 mb-3">
-          {keypadKeys.map((row, ri) =>
-            row.map((key) => (
-              <button
-                key={`${ri}-${key}`}
-                onClick={() => handleKeypad(key)}
-                className="h-16 flex items-center justify-center text-2xl font-medium rounded-lg active:bg-muted transition-colors"
-              >
-                {key === 'backspace' ? (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 12l5-7h12a1 1 0 011 1v12a1 1 0 01-1 1H8l-5-7z" />
-                    <path d="M13 10l-4 4m0-4l4 4" />
-                  </svg>
-                ) : (
-                  key
-                )}
-              </button>
-            ))
-          )}
+      {/* 키패드 (하단 고정, 금액 탭 시에만) */}
+      {keypadActive && (
+        <div className="w-full max-w-md mx-auto px-4 flex-shrink-0">
+          <div className="grid grid-cols-3 gap-1 mb-3">
+            {keypadKeys.map((row, ri) =>
+              row.map((key) => (
+                <button
+                  key={`${ri}-${key}`}
+                  onClick={() => handleKeypad(key)}
+                  className="h-16 flex items-center justify-center text-2xl font-medium rounded-lg active:bg-muted transition-colors"
+                >
+                  {key === 'backspace' ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 12l5-7h12a1 1 0 011 1v12a1 1 0 01-1 1H8l-5-7z" />
+                      <path d="M13 10l-4 4m0-4l4 4" />
+                    </svg>
+                  ) : (
+                    key
+                  )}
+                </button>
+              ))
+            )}
+          </div>
         </div>
+      )}
 
-        {/* 저장/취소 버튼 */}
+      {/* 저장/취소 버튼 — 항상 표시 */}
+      <div className="w-full max-w-md mx-auto px-4 flex-shrink-0" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
         {editTransaction ? (
           <div className="flex gap-2 mb-2">
             <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
