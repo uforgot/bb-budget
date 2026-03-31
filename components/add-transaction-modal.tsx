@@ -273,78 +273,95 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
 
 
-          {/* 날짜 — 라운드 박스 */}
-          <div className="mb-3 flex items-center gap-3">
-            <label className="text-xs text-muted-foreground flex-shrink-0 w-14">날짜</label>
-            <label className="flex-1 cursor-pointer inline-flex items-center justify-between relative bg-surface rounded-[18px] px-4 py-2.5">
-              <span className="text-[16px]">{formatDateDisplay(date)}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => e.target.value && setEditDate(e.target.value)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                style={{ fontSize: '16px' }}
-              />
-            </label>
+          {/* 날짜 — Apple 스타일 카드 */}
+          <div className="mb-3 bg-surface rounded-2xl">
+            <div className="flex items-center justify-between px-4 py-3.5">
+              <span className="text-[16px]">날짜</span>
+              <label className="relative cursor-pointer">
+                <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+                  {(() => {
+                    const d = new Date(date + 'T00:00:00')
+                    const days = ['일', '월', '화', '수', '목', '금', '토']
+                    return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}. (${days[d.getDay()]})`
+                  })()}
+                </span>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => e.target.value && setEditDate(e.target.value)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  style={{ fontSize: '16px' }}
+                />
+              </label>
+            </div>
           </div>
-          {/* 반복 설정 */}
+          {/* 반복 설정 — Apple Calendar 스타일 */}
           {!editTransaction && (
-            <div className="mb-3">
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-muted-foreground flex-shrink-0 w-14">반복</label>
-                <div className="relative flex-1" ref={repeatDropdownRef}>
-                  <button
-                    onClick={() => setRepeatDropdownOpen(prev => !prev)}
-                    className="w-full flex items-center justify-between bg-surface rounded-[18px] px-4 py-2.5"
-                  >
+            <div className="mb-3 bg-surface rounded-2xl overflow-visible" ref={repeatDropdownRef}>
+              {/* 반복 행 */}
+              <div className="relative">
+                <button
+                  onClick={() => setRepeatDropdownOpen(prev => !prev)}
+                  className="w-full flex items-center justify-between px-4 py-3.5"
+                >
+                  <span className="text-[16px]">반복</span>
+                  <div className="flex items-center gap-1 text-muted-foreground">
                     <span className="text-[16px]">
                       {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
                     </span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                      <path d="m6 9 6 6 6-6" />
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m6 9 6 6 6-6" /><path d="m6 15 6-6 6 6" />
                     </svg>
-                  </button>
-                  {repeatDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-2xl overflow-hidden z-10 shadow-lg">
-                      {(['none', 'weekly', 'monthly', 'yearly'] as const).map(opt => (
-                        <button
-                          key={opt}
-                          onClick={() => {
-                            setRepeatFrequency(opt)
-                            setRepeatDropdownOpen(false)
-                          }}
-                          className={`w-full px-4 py-3 text-[16px] text-left transition-colors ${
-                            repeatFrequency === opt ? 'text-accent-blue font-medium' : 'text-foreground'
-                          } hover:bg-muted`}
-                        >
-                          {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  </div>
+                </button>
+                {repeatDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-2xl overflow-hidden z-20 shadow-lg">
+                    {(['none', 'weekly', 'monthly', 'yearly'] as const).map((opt, i) => (
+                      <button
+                        key={opt}
+                        onClick={() => {
+                          setRepeatFrequency(opt)
+                          setRepeatDropdownOpen(false)
+                        }}
+                        className={`w-full px-4 py-3.5 text-[16px] flex items-center justify-between transition-colors ${
+                          i > 0 ? 'border-t border-border' : ''
+                        } active:bg-muted`}
+                      >
+                        <span>{{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}</span>
+                        {repeatFrequency === opt && (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-blue">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-              {/* 종료일 (반복 선택 시 표시) */}
+
+              {/* 종료일 행 (반복 선택 시) */}
               {repeatFrequency !== 'none' && (
-                <div className="flex items-center gap-3 mt-2">
-                  <label className="text-xs text-muted-foreground flex-shrink-0 w-14">종료일</label>
-                  <label className="flex-1 cursor-pointer inline-flex items-center justify-between relative bg-surface rounded-[18px] px-4 py-2.5">
-                    <span className="text-[16px]">{formatDateDisplay(repeatEndDate)}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                    <input
-                      type="date"
-                      value={repeatEndDate}
-                      onChange={(e) => e.target.value && setRepeatEndDate(e.target.value)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      style={{ fontSize: '16px' }}
-                    />
-                  </label>
-                </div>
+                <>
+                  <div className="border-t border-border mx-4" />
+                  <div className="flex items-center justify-between px-4 py-3.5">
+                    <span className="text-[16px]">종료일</span>
+                    <label className="relative cursor-pointer">
+                      <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+                        {(() => {
+                          const d = new Date(repeatEndDate + 'T00:00:00')
+                          return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
+                        })()}
+                      </span>
+                      <input
+                        type="date"
+                        value={repeatEndDate}
+                        onChange={(e) => e.target.value && setRepeatEndDate(e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        style={{ fontSize: '16px' }}
+                      />
+                    </label>
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -431,19 +448,21 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             />
           </div>
 
-          {/* 메모 — 일렬 */}
-          <div className="mb-4 flex items-center gap-3">
-            <label className="text-xs text-muted-foreground flex-shrink-0 w-14">메모</label>
-            <input
-              type="text"
-              placeholder="메모를 입력하세요"
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              onBlur={() => setKeypadActive(false)}
-              onFocus={() => setKeypadActive(false)}
-              style={{ fontSize: '16px' }}
-              className="flex-1 bg-surface rounded-[18px] px-4 py-2.5"
-            />
+          {/* 메모 — Apple 스타일 카드 */}
+          <div className="mb-4 bg-surface rounded-2xl">
+            <div className="flex items-center justify-between px-4 py-3.5">
+              <span className="text-[16px]">메모</span>
+              <input
+                type="text"
+                placeholder="입력"
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+                onBlur={() => setKeypadActive(false)}
+                onFocus={() => setKeypadActive(false)}
+                style={{ fontSize: '16px', textAlign: 'right' }}
+                className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
+              />
+            </div>
           </div>
 
         </div>
