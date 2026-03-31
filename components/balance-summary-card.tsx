@@ -78,40 +78,42 @@ function SummaryRow({
   )
 }
 
+function fmt(n: number) {
+  if (n >= 100000000) return `${(n / 100000000).toFixed(1)}억`
+  if (n >= 10000) return `${Math.floor(n / 10000)}만`
+  return n.toLocaleString()
+}
+
 export function MonthlySummaryCard({ month, income, savings, prevSavings }: MonthlySummaryCardProps) {
+  const max = Math.max(income, savings, prevSavings, 1)
+  const rows = [
+    { label: '수입', value: income, color: '#43B581' },
+    { label: '지출', value: savings, color: '#FF6B6B' },
+    { label: '이월저축', value: prevSavings, color: '#9B59B6' },
+  ]
   return (
-    <div className="bg-surface rounded-2xl px-4 pt-4 pb-1 mb-3">
-      <p className="text-[12px] text-muted-foreground mb-2">{month}월 요약</p>
-      <SummaryRow
-        label={`${month}월 수입`}
-        value={income}
-        color="#43B581"
-        icon={
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#43B581" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 19V5M5 12l7-7 7 7" />
-          </svg>
-        }
-      />
-      <SummaryRow
-        label={`${month}월 지출`}
-        value={savings}
-        color="#FF6B6B"
-        icon={
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M5 12l7 7 7-7" />
-          </svg>
-        }
-      />
-      <SummaryRow
-        label="이월 저축"
-        value={prevSavings}
-        color="#9B59B6"
-        icon={
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9B59B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 12h18M3 6h18M3 18h18" />
-          </svg>
-        }
-      />
+    <div className="bg-surface rounded-2xl px-4 pt-4 pb-4 mb-3">
+      <p className="text-[11px] text-muted-foreground">{month}월</p>
+      <p className="text-[16px] font-bold mb-4">요약</p>
+      <div className="flex flex-col gap-3.5">
+        {rows.map(({ label, value, color }) => (
+          <div key={label}>
+            <div className="flex items-baseline justify-between mb-1">
+              <span className="text-[13px] text-foreground">{label}</span>
+              <span className="text-[13px] font-semibold tabular-nums">₩{fmt(value)}</span>
+            </div>
+            <div className="h-[3px] bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${Math.max(Math.round((value / max) * 100), value > 0 ? 4 : 0)}%`,
+                  backgroundColor: color,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

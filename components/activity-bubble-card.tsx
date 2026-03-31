@@ -42,14 +42,8 @@ export function ActivityBubbleCard({ year, month, activities }: ActivityBubbleCa
 
   return (
     <div className="bg-surface rounded-2xl px-3 py-4 mb-3">
-      <p className="text-xs text-muted-foreground mb-3">{month}월 활동</p>
-
-      {/* 요일 헤더 */}
-      <div className="grid grid-cols-7 mb-1">
-        {DOW_LABELS.map(d => (
-          <div key={d} className="text-center text-[10px] text-muted-foreground">{d}</div>
-        ))}
-      </div>
+      <p className="text-[11px] text-muted-foreground">{month}월</p>
+      <p className="text-[16px] font-bold mb-3">활동</p>
 
       {/* 버블 그리드 */}
       {weeks.map((w, wi) => (
@@ -60,29 +54,34 @@ export function ActivityBubbleCard({ year, month, activities }: ActivityBubbleCa
             const val = act ? (act.expense + act.income) : 0
             const hasActivity = val > 0
             const ratio = hasActivity ? val / maxVal : 0
-            // 버블 크기: 최소 20px, 최대 셀 크기
-            const size = hasActivity ? 14 + Math.round(ratio * 14) : 0
+            // 로그 스케일로 위계 강조
+            const logRatio = hasActivity ? Math.log1p(ratio * 9) / Math.log1p(9) : 0
+            const size = hasActivity ? Math.round(5 + logRatio * 22) : 0
+            const opacity = hasActivity ? 0.3 + logRatio * 0.7 : 1
             const isToday = isCurrentMonth && day === todayDay
-            const hasExpense = act && act.expense > 0
             const hasIncome = act && act.income > 0 && act.expense === 0
 
             return (
               <div key={di} className="flex items-center justify-center aspect-square">
                 {hasActivity ? (
                   <div
-                    className="rounded-full flex items-center justify-center transition-all"
+                    className="rounded-full transition-all"
                     style={{
                       width: size,
                       height: size,
                       backgroundColor: hasIncome
-                        ? 'rgba(67, 181, 129, 0.5)'
-                        : 'rgba(255, 99, 71, 0.45)',
+                        ? `rgba(67,181,129,${opacity})`
+                        : `rgba(88,101,242,${opacity})`,
                     }}
                   />
                 ) : (
                   <div
-                    className={`rounded-full ${isToday ? 'border border-accent-blue' : ''}`}
-                    style={{ width: 4, height: 4, backgroundColor: isToday ? 'transparent' : '#374151' }}
+                    className="rounded-full"
+                    style={{
+                      width: isToday ? 5 : 3,
+                      height: isToday ? 5 : 3,
+                      backgroundColor: isToday ? '#5865F2' : '#374151',
+                    }}
                   />
                 )}
               </div>
@@ -91,16 +90,11 @@ export function ActivityBubbleCard({ year, month, activities }: ActivityBubbleCa
         </div>
       ))}
 
-      {/* 범례 */}
-      <div className="flex gap-3 mt-2">
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'rgba(67,181,129,0.6)' }} />
-          <span className="text-[10px] text-muted-foreground">수입</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'rgba(255,99,71,0.6)' }} />
-          <span className="text-[10px] text-muted-foreground">지출</span>
-        </div>
+      {/* 요일 헤더 (하단) */}
+      <div className="grid grid-cols-7 mt-1">
+        {DOW_LABELS.map(d => (
+          <div key={d} className="text-center text-[9px] text-muted-foreground font-medium">{d}</div>
+        ))}
       </div>
     </div>
   )
