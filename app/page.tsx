@@ -30,6 +30,8 @@ export default function Home() {
   const [allTimeIncome, setAllTimeIncome] = useState(0)
   const [allTimeExpense, setAllTimeExpense] = useState(0)
   const [allTimeSavings, setAllTimeSavings] = useState(0)
+  const [prevSavings, setPrevSavings] = useState(0)  // 전월까지 누적 저축
+  const [prevBalance, setPrevBalance] = useState(0)  // 전월까지 잔고
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
 
@@ -91,16 +93,16 @@ export default function Home() {
 
         <div className="mt-3">
           <BalanceCard
-            cashBalance={cashBalance}
-            monthIncome={monthIncome}
-            monthExpense={monthExpense}
+            prevBalance={prevBalance}
+            thisMonthBalance={monthIncome - monthExpense}
+            totalBalance={cashBalance}
             month={calMonth}
           />
           <MonthlySummaryCard
             month={calMonth}
             income={monthIncome}
-            expense={monthExpense}
             savings={monthSavings}
+            prevSavings={prevSavings}
           />
           <ActivityBubbleCard
             year={calYear}
@@ -114,6 +116,7 @@ export default function Home() {
           setCalYear(y); setCalMonth(m); setMonthIncome(inc); setMonthExpense(exp)
           try {
             const { getTransactions } = await import('@/lib/api')
+            // 이번 달 데이터
             const txs = await getTransactions({ year: y, month: m })
             setMonthSavings(txs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0))
             const byDay: Record<number, { income: number; expense: number }> = {}
@@ -124,6 +127,16 @@ export default function Home() {
               else if (tx.type === 'expense') byDay[d].expense += tx.amount
             }
             setDailyActivity(Object.entries(byDay).map(([d, v]) => ({ day: Number(d), ...v })))
+            // 전월까지 누적 계산
+            const all = await getTransactions({})
+            const prevEnd = new Date(y, m - 1, 0) // 전달 마지막 날
+            const prevEndStr = `${prevEnd.getFullYear()}-${String(prevEnd.getMonth() + 1).padStart(2,'0')}-${String(prevEnd.getDate()).padStart(2,'0')}`
+            const prevTxs = all.filter(t => t.date <= prevEndStr)
+            const pInc = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+            const pExp = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+            const pSav = prevTxs.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0)
+            setPrevSavings(pSav)
+            setPrevBalance(pInc - pExp)
           } catch {}
         }}
           onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}

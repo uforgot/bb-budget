@@ -2,42 +2,44 @@
 
 // ─── Card 1: Balance ──────────────────────────────────
 interface BalanceCardProps {
-  cashBalance: number
-  monthIncome: number
-  monthExpense: number
+  prevBalance: number   // 전월까지 누적 잔고
+  thisMonthBalance: number  // 이번 달 잔고 (수입-지출)
+  totalBalance: number  // 전체 잔고
   month: number
 }
 
 function BarRow({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
-  const pct = max > 0 ? Math.round((value / max) * 100) : 0
+  const pct = max > 0 ? Math.max(Math.round((Math.abs(value) / max) * 100), 2) : 0
+  const isNeg = value < 0
   return (
     <div className="mb-3 last:mb-0">
       <div className="flex items-center justify-between mb-1">
         <span className="text-[12px] text-muted-foreground">{label}</span>
-        <span className="text-[12px] font-medium tabular-nums">₩{value.toLocaleString()}</span>
+        <span className={`text-[12px] font-medium tabular-nums ${isNeg ? 'text-accent-coral' : ''}`}>
+          {isNeg ? '-' : ''}₩{Math.abs(value).toLocaleString()}
+        </span>
       </div>
       <div className="h-1.5 bg-muted rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all"
-          style={{ width: `${pct}%`, backgroundColor: color }}
+          style={{ width: `${pct}%`, backgroundColor: isNeg ? '#FF6B6B' : color }}
         />
       </div>
     </div>
   )
 }
 
-export function BalanceCard({ cashBalance, monthIncome, monthExpense, month }: BalanceCardProps) {
-  const maxVal = Math.max(cashBalance, monthIncome, monthExpense, 1)
+export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month }: BalanceCardProps) {
+  const maxVal = Math.max(Math.abs(prevBalance), Math.abs(thisMonthBalance), 1)
 
   return (
     <div className="bg-surface rounded-2xl px-5 py-5 mb-3">
-      <p className="text-[12px] text-muted-foreground mb-1">현재 잔액</p>
+      <p className="text-[12px] text-muted-foreground mb-1">총 잔고</p>
       <p className="text-[30px] font-bold tabular-nums mb-5" style={{ letterSpacing: '-1px' }}>
-        ₩{cashBalance.toLocaleString()}
+        ₩{totalBalance.toLocaleString()}
       </p>
-      <BarRow label="잔고" value={cashBalance} max={maxVal} color="#5865F2" />
-      <BarRow label={`${month}월 수입`} value={monthIncome} max={maxVal} color="#43B581" />
-      <BarRow label={`${month}월 지출`} value={monthExpense} max={maxVal} color="#FF6B6B" />
+      <BarRow label="전월 잔고" value={prevBalance} max={maxVal} color="#5865F2" />
+      <BarRow label={`${month}월 잔고`} value={thisMonthBalance} max={maxVal} color="#43B581" />
     </div>
   )
 }
@@ -46,8 +48,8 @@ export function BalanceCard({ cashBalance, monthIncome, monthExpense, month }: B
 interface MonthlySummaryCardProps {
   month: number
   income: number
-  expense: number
-  savings: number
+  savings: number       // 금월 저축
+  prevSavings: number   // 이월 저축 (전월까지 누적)
 }
 
 function SummaryRow({
@@ -76,13 +78,12 @@ function SummaryRow({
   )
 }
 
-export function MonthlySummaryCard({ month, income, expense, savings }: MonthlySummaryCardProps) {
-  const net = income - expense - savings
+export function MonthlySummaryCard({ month, income, savings, prevSavings }: MonthlySummaryCardProps) {
   return (
     <div className="bg-surface rounded-2xl px-5 pt-4 pb-1 mb-3">
       <p className="text-[12px] text-muted-foreground mb-2">{month}월 요약</p>
       <SummaryRow
-        label="수입"
+        label={`${month}월 수입`}
         value={income}
         color="#43B581"
         icon={
@@ -92,17 +93,7 @@ export function MonthlySummaryCard({ month, income, expense, savings }: MonthlyS
         }
       />
       <SummaryRow
-        label="지출"
-        value={expense}
-        color="#FF6B6B"
-        icon={
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M5 12l7 7 7-7" />
-          </svg>
-        }
-      />
-      <SummaryRow
-        label="저축"
+        label={`${month}월 저축`}
         value={savings}
         color="#5865F2"
         icon={
@@ -111,12 +102,16 @@ export function MonthlySummaryCard({ month, income, expense, savings }: MonthlyS
           </svg>
         }
       />
-      <div className="flex items-center justify-between py-3">
-        <span className="text-[13px] text-muted-foreground">순 수지</span>
-        <span className={`text-[14px] font-bold tabular-nums ${net >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
-          {net >= 0 ? '+' : ''}₩{net.toLocaleString()}
-        </span>
-      </div>
+      <SummaryRow
+        label="이월 저축"
+        value={prevSavings}
+        color="#9B59B6"
+        icon={
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9B59B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          </svg>
+        }
+      />
     </div>
   )
 }
