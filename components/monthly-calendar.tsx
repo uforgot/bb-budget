@@ -129,7 +129,7 @@ function MonthGrid({
             <div
               key={day}
               onClick={() => onDayClick(year, month, day)}
-              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[40px] rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors ${
                 selected ? 'bg-accent' : ''
               }`}
             >
@@ -143,10 +143,18 @@ function MonthGrid({
                   {day}
                 </span>
               </span>
-              {/* 거래 있으면 작은 dot 표시 */}
-              {((dayData?.expense ?? 0) > 0 || (dayData?.income ?? 0) > 0) && (
-                <span className="w-1 h-1 rounded-full bg-accent-blue mt-1" />
-              )}
+              <div className="flex flex-col items-center gap-0 mt-0.5">
+                {(dayData?.expense ?? 0) > 0 && (
+                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-coral leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
+                    {formatAmount(dayData!.expense!)}
+                  </span>
+                )}
+                {(dayData?.income ?? 0) > 0 && (
+                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-blue leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
+                    {formatAmount(dayData!.income!)}
+                  </span>
+                )}
+              </div>
             </div>
           )
         })}
