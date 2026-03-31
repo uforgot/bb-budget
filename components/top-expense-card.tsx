@@ -19,7 +19,7 @@ export function TopExpenseCard({ year, month, items, total }: TopExpenseCardProp
   const maxAmount = Math.max(...items.map(i => i.amount), 1)
 
   return (
-    <div className="bg-surface rounded-2xl px-4 pt-3 pb-3 mb-3 h-full">
+    <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3 h-full">
       <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
       <p className="text-[16px] font-bold mb-2.5">지출</p>
       {items.length === 0 ? (

@@ -98,7 +98,7 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
     { label: '이월저축', value: prevSavings, color: '#9B59B6' },
   ]
   return (
-    <div className="bg-surface rounded-2xl px-4 pt-3 pb-3 mb-3 flex flex-col h-full">
+    <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3 flex flex-col h-full">
       <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
       <p className="text-[16px] font-bold mb-3">요약</p>
       <div className="flex flex-col gap-2.5">
