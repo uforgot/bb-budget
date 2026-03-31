@@ -151,9 +151,9 @@ export default function Home() {
             onClick={() => setSummaryOpen(prev => !prev)}
             className="w-full flex items-center justify-between py-2"
           >
-            <span className="text-[14px] text-foreground font-semibold">잔액</span>
+            <span className="text-[16px] text-foreground font-bold">잔액</span>
             <div className="flex items-center gap-2">
-              <span className="text-[14px] font-bold tabular-nums">
+              <span className="text-[16px] font-bold tabular-nums">
                 ₩{cashBalance.toLocaleString()}
               </span>
               {summaryOpen ? (
@@ -188,7 +188,7 @@ export default function Home() {
             onClick={() => setCalendarOpen(prev => !prev)}
             className="w-full flex items-center justify-between px-5 py-4"
           >
-            <span className="text-[18px] font-bold">
+            <span className="text-[16px] font-bold">
               {calendarOpen
                 ? `${calYear}년 ${calMonth}월`
                 : `${calMonth}월 ${selectedDay}일 ${DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일`
@@ -196,7 +196,7 @@ export default function Home() {
             </span>
             <div className="flex items-center gap-2">
               {!calendarOpen && dayNet !== 0 && (
-                <span className={`text-[15px] font-semibold tabular-nums ${dayNet >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
+                <span className={`text-[16px] font-bold tabular-nums ${dayNet >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
                   ₩{Math.abs(dayNet).toLocaleString()}
                 </span>
               )}
