@@ -2,10 +2,16 @@
 
 const CAT_COLORS = ['#7B61FF', '#3B9DFF', '#43B581', '#FF6B6B', '#FFD23F', '#FF9F43', '#00E5CC']
 
-const CAT_EMOJI: Record<string, string> = {
-  '식비': '🍽️', '생활': '🏠', '주거': '🏢', '교통': '🚗', '쇼핑': '🛍️',
-  '건강': '💊', '여가': '🎬', '자녀': '👶', '반려동물': '🐾', '경조사': '💐',
-  '보험': '🛡️', '세금': '📋', '기타': '📦',
+function fmt(n: number) {
+  if (n >= 100000000) {
+    const eok = Math.floor(n / 100000000)
+    const man = Math.floor((n % 100000000) / 10000)
+    return man > 0
+      ? `${eok.toLocaleString()}억 ${man.toLocaleString()}만`
+      : `${eok.toLocaleString()}억`
+  }
+  if (n >= 10000) return `${Math.floor(n / 10000).toLocaleString()}만`
+  return n.toLocaleString()
 }
 
 interface TopExpenseCardProps {
@@ -29,16 +35,12 @@ export function TopExpenseCard({ year, month, items, total }: TopExpenseCardProp
           {items.map((item, i) => {
             const barPct = Math.round((item.amount / maxAmount) * 100)
             const color = CAT_COLORS[i % CAT_COLORS.length]
-            const emoji = CAT_EMOJI[item.name] || '📁'
             return (
               <div key={item.name}>
                 <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[12px]">{emoji}</span>
-                    <span className="text-[12px] text-foreground">{item.name}</span>
-                  </div>
-                  <span className="text-[12px] font-medium tabular-nums">
-                    ₩{item.amount.toLocaleString()}
+                  <span className="text-[13px] text-foreground">{item.name}</span>
+                  <span className="text-[13px] font-semibold tabular-nums">
+                    ₩{fmt(item.amount)}
                   </span>
                 </div>
                 <div className="h-[3px] bg-muted rounded-full overflow-hidden">
