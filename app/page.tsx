@@ -5,7 +5,7 @@ import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { BalanceCard, MonthlySummaryCard } from '@/components/balance-summary-card'
-import { ActivityBubbleCard } from '@/components/activity-bubble-card'
+import { TopExpenseCard } from '@/components/top-expense-card'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
@@ -25,7 +25,7 @@ export default function Home() {
   const [monthIncome, setMonthIncome] = useState(0)
   const [monthExpense, setMonthExpense] = useState(0)
   const [monthSavings, setMonthSavings] = useState(0)
-  const [dailyActivity, setDailyActivity] = useState<{ day: number; income: number; expense: number }[]>([])
+  const [topExpenses, setTopExpenses] = useState<{ name: string; amount: number }[]>([])
 
   const [allTimeIncome, setAllTimeIncome] = useState(0)
   const [allTimeExpense, setAllTimeExpense] = useState(0)
@@ -109,10 +109,11 @@ export default function Home() {
               />
             </div>
             <div className="flex-1 min-w-0 flex flex-col">
-              <ActivityBubbleCard
+              <TopExpenseCard
                 year={calYear}
                 month={calMonth}
-                activities={dailyActivity}
+                items={topExpenses}
+                total={monthExpense}
               />
             </div>
           </div>
@@ -126,14 +127,19 @@ export default function Home() {
             // 이번 달 데이터
             const txs = await getTransactions({ year: y, month: m })
             setMonthSavings(txs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0))
-            const byDay: Record<number, { income: number; expense: number }> = {}
-            for (const tx of txs) {
-              const d = new Date(tx.date + 'T00:00:00').getDate()
-              if (!byDay[d]) byDay[d] = { income: 0, expense: 0 }
-              if (tx.type === 'income') byDay[d].income += tx.amount
-              else if (tx.type === 'expense') byDay[d].expense += tx.amount
+            // 카테고리별 지출 TOP 4
+            const { getCategories } = await import('@/lib/api')
+            const cats = await getCategories()
+            const catMap = Object.fromEntries(cats.map(c => [c.id, c]))
+            const byCat: Record<string, number> = {}
+            for (const tx of txs.filter(t => t.type === 'expense')) {
+              const cat = catMap[tx.category_id]
+              const root = cat?.parent_id ? catMap[cat.parent_id]?.name : cat?.name
+              const name = root || '기타'
+              byCat[name] = (byCat[name] || 0) + tx.amount
             }
-            setDailyActivity(Object.entries(byDay).map(([d, v]) => ({ day: Number(d), ...v })))
+            const sorted = Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 4)
+            setTopExpenses(sorted.map(([name, amount]) => ({ name, amount })))
             // 전월까지 누적 계산
             const all = await getTransactions({})
             const prevEnd = new Date(y, m - 1, 0) // 전달 마지막 날
