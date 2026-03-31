@@ -79,8 +79,14 @@ function SummaryRow({
 }
 
 function fmt(n: number) {
-  if (n >= 100000000) return `${(n / 100000000).toFixed(1)}억`
-  if (n >= 10000) return `${Math.floor(n / 10000)}만`
+  if (n >= 100000000) {
+    const eok = Math.floor(n / 100000000)
+    const man = Math.floor((n % 100000000) / 10000)
+    return man > 0
+      ? `${eok.toLocaleString()}억 ${man.toLocaleString()}만`
+      : `${eok.toLocaleString()}억`
+  }
+  if (n >= 10000) return `${Math.floor(n / 10000).toLocaleString()}만`
   return n.toLocaleString()
 }
 
