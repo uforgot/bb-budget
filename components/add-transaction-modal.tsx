@@ -277,9 +277,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto px-5 pt-8 pb-4">
           {/* 금액 표시 */}
-          <div className="mb-3 bg-surface rounded-2xl cursor-pointer px-4 py-6" onClick={() => setKeypadActive(true)}>
+          <div className="mb-6 cursor-pointer py-4" onClick={() => setKeypadActive(true)}>
             <div className="flex flex-col items-center gap-1">
-              <span className="text-[13px] text-muted-foreground">금액</span>
               <div className="flex items-baseline gap-1">
                 <span className="text-[32px] font-bold text-muted-foreground">₩</span>
                 <span className="text-[40px] font-bold tabular-nums" style={{ letterSpacing: '-2px' }}>
