@@ -1,17 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
-import { LayoutGrid } from 'lucide-react'
+import { LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react'
 
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
+
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
 export default function Home() {
   const router = useRouter()
@@ -22,22 +24,46 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+  const [monthIncome, setMonthIncome] = useState(0)
+  const [monthExpense, setMonthExpense] = useState(0)
+  const [monthSavings, setMonthSavings] = useState(0)
+  const [cashBalance, setCashBalance] = useState(0)
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
 
-  // 반복 지출 자동 확정 (1회)
+  const loadSummary = useCallback(async () => {
+    try {
+      const { getTransactions } = await import('@/lib/api')
+      const [all, txs] = await Promise.all([
+        getTransactions({}),
+        getTransactions({ year: calYear, month: calMonth }),
+      ])
+      setMonthIncome(txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0))
+      setMonthExpense(txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0))
+      setMonthSavings(txs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0))
+      const totalInc = all.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const totalExp = all.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      const totalSav = all.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0)
+      setCashBalance(totalInc - totalExp - totalSav)
+    } catch {}
+  }, [calYear, calMonth])
+
   useEffect(() => {
+    loadSummary()
     ;(async () => {
       try {
         const { confirmRecurringTransactions } = await import('@/lib/api')
         await confirmRecurringTransactions(today.getFullYear(), today.getMonth() + 1)
       } catch {}
     })()
-  }, [])
+  }, [loadSummary])
+
+  const todayStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${DAY_NAMES[today.getDay()]}요일`
 
   return (
-    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={async () => setRefreshKey(k => k + 1)}>
-      {/* 상단 바 — 좌측 대시보드 아이콘 */}
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={async () => { setRefreshKey(k => k + 1); loadSummary() }}>
+      {/* 상단 바 */}
       <div className="sticky top-0 z-30 bg-background px-5">
         <div className="flex items-center justify-between h-14 pt-[env(safe-area-inset-top,0px)]">
           <button
@@ -52,15 +78,62 @@ export default function Home() {
       </div>
 
       <div className="px-5">
-        <MonthlyCalendar
-          onMonthChange={(y, m, _inc, _exp) => { setCalYear(y); setCalMonth(m) }}
-          onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
-          onTransactionClick={(tx) => {
-            setEditTx(tx)
-            setModalOpen(true)
-          }}
-          refreshKey={refreshKey}
-        />
+        {/* 날짜 헤더 (접힌 상태: 오늘 날짜 + 탭하면 펼침) */}
+        <button
+          onClick={() => setCalendarOpen(prev => !prev)}
+          className="w-full flex items-center justify-between py-3"
+        >
+          <div>
+            <p className="text-[22px] font-bold text-left">
+              {calYear}년 {calMonth}월 {selectedDay}일
+            </p>
+            <p className="text-[13px] text-muted-foreground text-left">
+              {DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일
+            </p>
+          </div>
+          {calendarOpen ? (
+            <ChevronUp className="w-5 h-5 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+          )}
+        </button>
+
+        {/* 달력 (펼쳤을 때만) */}
+        {calendarOpen && (
+          <MonthlyCalendar
+            onMonthChange={(y, m, _inc, _exp) => { setCalYear(y); setCalMonth(m); loadSummary() }}
+            onDaySelect={(y, m, d) => {
+              setCalYear(y); setCalMonth(m); setSelectedDay(d)
+              setCalendarOpen(false)
+            }}
+            onTransactionClick={(tx) => {
+              setEditTx(tx)
+              setModalOpen(true)
+            }}
+            refreshKey={refreshKey}
+          />
+        )}
+
+        {/* 요약 (접혔을 때 노출) */}
+        {!calendarOpen && (
+          <div className="mt-4">
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { label: '수입', value: monthIncome, color: '#5865F2' },
+                { label: '지출', value: monthExpense, color: '#FF6B9D' },
+                { label: '저축', value: monthSavings, color: '#43B581' },
+                { label: '잔액', value: cashBalance, color: '#9B59B6' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="bg-surface rounded-2xl px-3 py-3 text-center">
+                  <p className="text-[11px] text-muted-foreground mb-1">{label}</p>
+                  <p className="text-[14px] font-bold tabular-nums" style={{ color }}>
+                    ₩{value >= 10000 ? `${Math.floor(value / 10000).toLocaleString()}만` : value.toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <AddTransactionModal
@@ -71,6 +144,7 @@ export default function Home() {
           setModalOpen(false)
           setEditTx(null)
           setRefreshKey(k => k + 1)
+          loadSummary()
         }}
         onSave={() => {}}
       />
