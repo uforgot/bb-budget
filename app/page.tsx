@@ -17,13 +17,18 @@ const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
 function DayTransactions({ date, refreshKey, onEdit }: { date: string; refreshKey: number; onEdit: (tx: Transaction) => void }) {
   const [txs, setTxs] = useState<Transaction[]>([])
+  const [catMap, setCatMap] = useState<Record<string, any>>({})
 
   useEffect(() => {
     ;(async () => {
       try {
-        const { getTransactions } = await import('@/lib/api')
+        const { getTransactions, getCategories } = await import('@/lib/api')
         const d = new Date(date)
-        const all = await getTransactions({ year: d.getFullYear(), month: d.getMonth() + 1 })
+        const [all, cats] = await Promise.all([
+          getTransactions({ year: d.getFullYear(), month: d.getMonth() + 1 }),
+          getCategories(),
+        ])
+        setCatMap(Object.fromEntries(cats.map(c => [c.id, c])))
         setTxs(all.filter(t => t.date === date).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
       } catch {}
     })()
@@ -36,25 +41,32 @@ function DayTransactions({ date, refreshKey, onEdit }: { date: string; refreshKe
   return (
     <div className="flex flex-col">
       {txs.map(tx => {
-        const catName = (tx.category as any)?.name || ''
-        const isIncome = tx.type === 'income'
-        const isSavings = tx.type === 'savings'
+        const cat = catMap[tx.category_id]
+        const catName = cat?.name || '기타'
+        const parentCat = cat?.parent_id ? catMap[cat.parent_id] : null
+        const colorClass = tx.type === 'savings' ? 'text-accent-mint' : tx.type === 'expense' ? 'text-accent-coral' : 'text-accent-blue'
         return (
-          <button
+          <div
             key={tx.id}
             onClick={() => onEdit(tx)}
-            className="flex items-center justify-between py-3.5 border-b border-border last:border-0 text-left"
+            className="flex items-center justify-between py-2 px-5 cursor-pointer active:bg-surface"
           >
-            <div>
-              <p className="text-[15px] font-semibold">{catName || '기타'}</p>
+            <div className="flex items-center gap-3">
+              <span className="text-xs bg-muted px-3 py-1.5 rounded-full">
+                {parentCat ? (
+                  <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></>
+                ) : (
+                  <span className="text-foreground">{catName}</span>
+                )}
+              </span>
               {tx.description && (
-                <p className="text-[13px] text-muted-foreground mt-0.5">{tx.description}</p>
+                <span className="text-[10px] text-muted-foreground line-clamp-2">{tx.description}</span>
               )}
             </div>
-            <span className={`text-[16px] font-semibold tabular-nums ${isIncome ? 'text-[#5865F2]' : isSavings ? 'text-[#43B581]' : 'text-[#FF6B9D]'}`}>
-              {isIncome ? '+' : '-'}₩{tx.amount.toLocaleString()}
+            <span className={`text-sm font-semibold tabular-nums ${colorClass}`}>
+              ₩{tx.amount.toLocaleString()}
             </span>
-          </button>
+          </div>
         )
       })}
     </div>
