@@ -458,21 +458,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
         const totalDay = totalIncome - totalExpense
 
         return (
-          <div className="mt-4">
-            {/* Date + total header */}
-            <div className="bg-surface rounded-[18px] flex items-center justify-between px-5 py-4 mb-4">
-              <span className="text-sm font-semibold">
-                {selectedDay.month + 1}월 {selectedDay.day}일 {dayOfWeek}
-              </span>
-              {(totalIncome > 0 || totalExpense > 0) && (
-                <span className={`text-sm font-semibold tabular-nums ${
-                  totalDay >= 0 ? 'text-accent-blue' : 'text-accent-coral'
-                }`}>
-                  ₩{Math.abs(totalDay).toLocaleString()}
-                </span>
-              )}
-            </div>
-
+          <div className="mt-2">
             {/* Items list */}
             {sd?.items && sd.items.length > 0 ? (
               <div className="flex flex-col">
