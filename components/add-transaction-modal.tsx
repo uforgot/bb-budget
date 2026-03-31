@@ -479,7 +479,20 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
       {/* 키패드 (하단 고정, 금액 탭 시에만) */}
       {keypadActive && (
-        <div className="w-full max-w-md mx-auto px-4 flex-shrink-0">
+        <div
+          className="w-full max-w-md mx-auto px-4 flex-shrink-0"
+          onTouchStart={(e) => {
+            const startY = e.touches[0].clientY
+            const onMove = (ev: TouchEvent) => {
+              if (ev.touches[0].clientY - startY > 60) {
+                setKeypadActive(false)
+                document.removeEventListener('touchmove', onMove)
+              }
+            }
+            document.addEventListener('touchmove', onMove, { passive: true })
+            document.addEventListener('touchend', () => document.removeEventListener('touchmove', onMove), { once: true })
+          }}
+        >
           <div className="grid grid-cols-3 gap-1 mb-3">
             {keypadKeys.map((row, ri) =>
               row.map((key) => (
