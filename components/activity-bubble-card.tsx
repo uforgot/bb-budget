@@ -41,7 +41,7 @@ export function ActivityBubbleCard({ year, month, activities }: ActivityBubbleCa
   const DOW_LABELS = ['월', '화', '수', '목', '금', '토', '일']
 
   return (
-    <div className="bg-surface rounded-2xl px-4 py-4 mb-4">
+    <div className="bg-surface rounded-2xl px-3 py-4 mb-3">
       <p className="text-xs text-muted-foreground mb-3">{month}월 활동</p>
 
       {/* 요일 헤더 */}

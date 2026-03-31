@@ -98,17 +98,23 @@ export default function Home() {
             totalBalance={cashBalance}
             month={calMonth}
           />
-          <MonthlySummaryCard
-            month={calMonth}
-            income={monthIncome}
-            savings={monthExpense}
-            prevSavings={prevSavings}
-          />
-          <ActivityBubbleCard
-            year={calYear}
-            month={calMonth}
-            activities={dailyActivity}
-          />
+          <div className="flex gap-3">
+            <div className="flex-1 min-w-0">
+              <MonthlySummaryCard
+                month={calMonth}
+                income={monthIncome}
+                savings={monthExpense}
+                prevSavings={prevSavings}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <ActivityBubbleCard
+                year={calYear}
+                month={calMonth}
+                activities={dailyActivity}
+              />
+            </div>
+          </div>
         </div>
 
         <MonthlyCalendar
@@ -136,7 +142,7 @@ export default function Home() {
             const pExp = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
             const pSav = prevTxs.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0)
             setPrevSavings(pSav)
-            setPrevBalance(pInc - pExp)
+            setPrevBalance(pInc - pExp - pSav) // 저축 제외한 순수 현금 잔고
           } catch {}
         }}
           onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}

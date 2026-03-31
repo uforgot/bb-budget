@@ -80,7 +80,7 @@ function SummaryRow({
 
 export function MonthlySummaryCard({ month, income, savings, prevSavings }: MonthlySummaryCardProps) {
   return (
-    <div className="bg-surface rounded-2xl px-5 pt-4 pb-1 mb-3">
+    <div className="bg-surface rounded-2xl px-4 pt-4 pb-1 mb-3">
       <p className="text-[12px] text-muted-foreground mb-2">{month}월 요약</p>
       <SummaryRow
         label={`${month}월 수입`}
