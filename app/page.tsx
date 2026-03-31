@@ -34,25 +34,24 @@ function DayTransactions({ date, refreshKey, onEdit }: { date: string; refreshKe
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {txs.map(tx => {
         const catName = (tx.category as any)?.name || ''
-        const parentName = (tx.category as any)?.parent_id ? '' : ''
         const isIncome = tx.type === 'income'
         const isSavings = tx.type === 'savings'
         return (
           <button
             key={tx.id}
             onClick={() => onEdit(tx)}
-            className="bg-surface rounded-2xl px-4 py-3 flex items-center justify-between text-left"
+            className="flex items-center justify-between py-3.5 border-b border-border last:border-0 text-left"
           >
             <div>
-              <p className="text-[14px] font-medium">{catName || tx.description || '기타'}</p>
-              {tx.description && catName && (
-                <p className="text-[12px] text-muted-foreground">{tx.description}</p>
+              <p className="text-[15px] font-semibold">{catName || '기타'}</p>
+              {tx.description && (
+                <p className="text-[13px] text-muted-foreground mt-0.5">{tx.description}</p>
               )}
             </div>
-            <span className={`text-[14px] font-semibold tabular-nums ${isIncome ? 'text-[#5865F2]' : isSavings ? 'text-[#43B581]' : 'text-[#FF6B9D]'}`}>
+            <span className={`text-[16px] font-semibold tabular-nums ${isIncome ? 'text-[#5865F2]' : isSavings ? 'text-[#43B581]' : 'text-[#FF6B9D]'}`}>
               {isIncome ? '+' : '-'}₩{tx.amount.toLocaleString()}
             </span>
           </button>
@@ -179,10 +178,8 @@ export default function Home() {
           />
         )}
 
-        {/* 일별 거래 내역 (달력 닫혔을 때) */}
-        {!calendarOpen && (
-          <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
-        )}
+        {/* 일별 거래 내역 (항상 표시) */}
+        <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
       </div>
 
       <AddTransactionModal
