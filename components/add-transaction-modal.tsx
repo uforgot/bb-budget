@@ -517,7 +517,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       )}
 
       {/* 하단 버튼 영역 */}
-      <div className="w-full max-w-md mx-auto px-4 pt-2 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom, 16px))' }}>
+      <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
         {keypadActive ? (
           /* 키패드 열려 있을 때 → 닫기 버튼만 */
           <button
