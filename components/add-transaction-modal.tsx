@@ -366,42 +366,12 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
           )}
 
-          {/* 최근 카테고리 chip */}
-          {!editTransaction && recentCategories.length > 0 && (
-            <div className="mb-3 flex gap-1.5 overflow-x-auto scrollbar-hide pl-[68px]">
-              {recentCategories.map(rc => (
-                <button
-                  key={rc.id}
-                  onClick={() => {
-                    if (categoryId === rc.id) {
-                      setCategoryId('')
-                      setCategoryLabel('카테고리 선택')
-                      setType(null)
-                    } else {
-                      setCategoryId(rc.id)
-                      setCategoryLabel(rc.label)
-                      const dbType = rc.type as 'income' | 'expense' | 'savings'
-                      const reverseMap: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
-                      setType(reverseMap[dbType] || null)
-                    }
-                  }}
-                  className={`text-xs px-3 py-1.5 rounded-full transition-colors whitespace-nowrap flex-shrink-0 ${
-                    categoryId === rc.id
-                      ? 'bg-accent-blue/20 text-accent-blue'
-                      : 'bg-surface text-muted-foreground'
-                  }`}
-                >
-                  {rc.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* 유형 + 카테고리 — 일렬 */}
-          <div className="mb-3">
-            <div className="flex items-center gap-3 mb-3">
-              <label className="text-xs text-muted-foreground flex-shrink-0 w-14">카테고리</label>
-              <div className="flex gap-2 flex-1">
+          {/* 카테고리 — Apple 스타일 카드 */}
+          <div className="mb-3 bg-surface rounded-2xl">
+            {/* 타입 선택 행 */}
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-[16px]">카테고리</span>
+              <div className="flex gap-1.5">
                 {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
                   <button
                     key={t}
@@ -413,8 +383,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       setType(t)
                       setCategoryPickerOpen(true)
                     }}
-                    className={`flex-1 py-2.5 rounded-[18px] text-[16px] font-medium transition-colors ${
-                      type === t ? typeColors[t].active : typeColors[t].inactive
+                    className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
+                      type === t ? typeColors[t].active : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {t}
@@ -422,31 +392,34 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 ))}
               </div>
             </div>
-            {categoryId && (
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-14" />
+            {/* 선택된 카테고리 행 */}
+            {type && (
+              <>
+                <div className="border-t border-border mx-4" />
                 <button
                   onClick={() => setCategoryPickerOpen(true)}
-                  className="flex-1 bg-surface rounded-[18px] px-4 py-2.5 text-[16px] text-left flex items-center justify-between"
+                  className="w-full flex items-center justify-between px-4 py-3.5"
                 >
-                  <span>{categoryLabel}</span>
+                  <span className={`text-[16px] ${categoryId ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {categoryId ? categoryLabel : '선택'}
+                  </span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="m6 9 6 6 6-6" />
+                    <path d="m9 18 6-6-6-6" />
                   </svg>
                 </button>
-              </div>
+              </>
             )}
-            <CategoryPicker
-              open={categoryPickerOpen && type !== null}
-              type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
-              selected={categoryId}
-              onSelect={(id, label) => {
-                setCategoryId(id)
-                setCategoryLabel(label)
-              }}
-              onClose={() => setCategoryPickerOpen(false)}
-            />
           </div>
+          <CategoryPicker
+            open={categoryPickerOpen && type !== null}
+            type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
+            selected={categoryId}
+            onSelect={(id, label) => {
+              setCategoryId(id)
+              setCategoryLabel(label)
+            }}
+            onClose={() => setCategoryPickerOpen(false)}
+          />
 
           {/* 메모 — Apple 스타일 카드 */}
           <div className="mb-4 bg-surface rounded-2xl">
