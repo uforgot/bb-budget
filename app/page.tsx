@@ -159,36 +159,39 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 달력 접기/펼치기 버튼 */}
-        <button
-          onClick={() => setCalendarOpen(prev => !prev)}
-          className="w-full flex items-center justify-center gap-1.5 py-2 mb-3 text-muted-foreground"
-        >
-          <span className="text-[14px] font-medium">
-            {calMonth}월 {selectedDay}일 ({DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]})
-          </span>
-          {calendarOpen ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
-          )}
-        </button>
+        {/* 달력 카드 (접기/펼치기) */}
+        <div className="bg-surface rounded-2xl mb-3 overflow-hidden">
+          <button
+            onClick={() => setCalendarOpen(prev => !prev)}
+            className="w-full flex items-center justify-between px-5 py-4"
+          >
+            <span className="text-[18px] font-bold">
+              {calMonth}월 {selectedDay}일 {DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일
+            </span>
+            {calendarOpen ? (
+              <ChevronUp className="w-5 h-5 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            )}
+          </button>
 
-        {/* 달력 (펼쳤을 때만) */}
-        {calendarOpen && (
-          <MonthlyCalendar
-            onMonthChange={(y, m, _inc, _exp) => { setCalYear(y); setCalMonth(m); loadSummary() }}
-            onDaySelect={(y, m, d) => {
-              setCalYear(y); setCalMonth(m); setSelectedDay(d)
-              setCalendarOpen(false)
-            }}
-            onTransactionClick={(tx) => {
-              setEditTx(tx)
-              setModalOpen(true)
-            }}
-            refreshKey={refreshKey}
-          />
-        )}
+          {calendarOpen && (
+            <div className="px-2 pb-3">
+              <MonthlyCalendar
+                onMonthChange={(y, m, _inc, _exp) => { setCalYear(y); setCalMonth(m); loadSummary() }}
+                onDaySelect={(y, m, d) => {
+                  setCalYear(y); setCalMonth(m); setSelectedDay(d)
+                  setCalendarOpen(false)
+                }}
+                onTransactionClick={(tx) => {
+                  setEditTx(tx)
+                  setModalOpen(true)
+                }}
+                refreshKey={refreshKey}
+              />
+            </div>
+          )}
+        </div>
 
         {/* 일별 거래 내역 (항상 표시) */}
         <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
