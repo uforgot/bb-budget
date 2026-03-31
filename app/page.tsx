@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
-import { BalanceSummaryCard } from '@/components/balance-summary-card'
+import { BalanceCard, MonthlySummaryCard } from '@/components/balance-summary-card'
 import { ActivityBubbleCard } from '@/components/activity-bubble-card'
 import { TopHeader } from '@/components/top-header'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
@@ -90,12 +90,17 @@ export default function Home() {
       <div className="px-5">
 
         <div className="mt-3">
-          <BalanceSummaryCard
+          <BalanceCard
             cashBalance={cashBalance}
             monthIncome={monthIncome}
             monthExpense={monthExpense}
-            monthSavings={monthSavings}
             month={calMonth}
+          />
+          <MonthlySummaryCard
+            month={calMonth}
+            income={monthIncome}
+            expense={monthExpense}
+            savings={monthSavings}
           />
           <ActivityBubbleCard
             year={calYear}
