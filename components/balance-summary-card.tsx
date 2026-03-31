@@ -38,7 +38,7 @@ export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month
       <p className="text-[30px] font-bold tabular-nums mb-5" style={{ letterSpacing: '-1px' }}>
         ₩{totalBalance.toLocaleString()}
       </p>
-      <BarRow label="PREV_PLACEHOLDER" value={prevBalance} max={maxVal} color="#5865F2" />
+      <BarRow label={`${month > 1 ? month - 1 : 12}월 잔액`} value={prevBalance} max={maxVal} color="#5865F2" />
       <BarRow label={`${month}월 잔액`} value={thisMonthBalance} max={maxVal} color="#43B581" />
     </div>
   )
@@ -95,17 +95,33 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
   const rows = [
     { label: '수입', value: income, color: '#5865F2' },    // 블러플
     { label: '지출', value: savings, color: '#FF6B9D' },   // 핑크
-    { label: '이월저축', value: prevSavings, color: '#43B581' }, // 그린
+    { label: '저축', value: prevSavings, color: '#43B581' }, // 그린
   ]
   return (
     <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3 flex flex-col h-full">
       <p className="text-[11px] text-muted-foreground">{year}년 {month}월</p>
       <p className="text-[16px] font-bold mb-3">요약</p>
       <div className="flex flex-col gap-3">
-        {rows.map(({ label, value, color }) => (
+        {rows.map(({ label, value, color }, i) => (
           <div key={label} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+              <span className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}25` }}>
+                {i === 0 && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 19V5M5 12l7-7 7 7"/>
+                  </svg>
+                )}
+                {i === 1 && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                  </svg>
+                )}
+                {i === 2 && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+                  </svg>
+                )}
+              </span>
               <span className="text-[13px] text-foreground">{label}</span>
             </div>
             <span className="text-[13px] font-semibold tabular-nums">₩{fmt(value)}</span>
