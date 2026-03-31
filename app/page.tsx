@@ -134,8 +134,8 @@ export default function Home() {
             const byCat: Record<string, number> = {}
             for (const tx of txs.filter(t => t.type === 'expense')) {
               const cat = catMap[tx.category_id]
-              const root = cat?.parent_id ? catMap[cat.parent_id]?.name : cat?.name
-              const name = root || '기타'
+              // 2depth: 자식이면 자식 이름, 1depth만 있으면 그 이름
+              const name = cat?.name || '기타'
               byCat[name] = (byCat[name] || 0) + tx.amount
             }
             const sorted = Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 3)
