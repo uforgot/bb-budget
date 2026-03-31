@@ -309,12 +309,18 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     key={t}
                     onClick={() => {
                       setKeypadActive(false)
-                      if (type !== t) {
+                      if (type === t) {
+                        // 재클릭 → 선택 해제
+                        setType(null)
                         setCategoryId('')
                         setCategoryLabel('카테고리 선택')
+                        setCategoryPickerOpen(false)
+                      } else {
+                        setCategoryId('')
+                        setCategoryLabel('카테고리 선택')
+                        setType(t)
+                        setCategoryPickerOpen(true)
                       }
-                      setType(t)
-                      setCategoryPickerOpen(true)
                     }}
                     className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
                       type === t ? typeColors[t].active : 'bg-muted text-muted-foreground'
