@@ -15,6 +15,53 @@ function toDateStr(year: number, month: number, day: number) {
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
+function DayTransactions({ date, refreshKey, onEdit }: { date: string; refreshKey: number; onEdit: (tx: Transaction) => void }) {
+  const [txs, setTxs] = useState<Transaction[]>([])
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { getTransactions } = await import('@/lib/api')
+        const d = new Date(date)
+        const all = await getTransactions({ year: d.getFullYear(), month: d.getMonth() + 1 })
+        setTxs(all.filter(t => t.date === date).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
+      } catch {}
+    })()
+  }, [date, refreshKey])
+
+  if (txs.length === 0) {
+    return <p className="text-[13px] text-muted-foreground text-center py-6">거래 내역이 없어요</p>
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {txs.map(tx => {
+        const catName = (tx.category as any)?.name || ''
+        const parentName = (tx.category as any)?.parent_id ? '' : ''
+        const isIncome = tx.type === 'income'
+        const isSavings = tx.type === 'savings'
+        return (
+          <button
+            key={tx.id}
+            onClick={() => onEdit(tx)}
+            className="bg-surface rounded-2xl px-4 py-3 flex items-center justify-between text-left"
+          >
+            <div>
+              <p className="text-[14px] font-medium">{catName || tx.description || '기타'}</p>
+              {tx.description && catName && (
+                <p className="text-[12px] text-muted-foreground">{tx.description}</p>
+              )}
+            </div>
+            <span className={`text-[14px] font-semibold tabular-nums ${isIncome ? 'text-[#5865F2]' : isSavings ? 'text-[#43B581]' : 'text-[#FF6B9D]'}`}>
+              {isIncome ? '+' : '-'}₩{tx.amount.toLocaleString()}
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function Home() {
   const router = useRouter()
   const today = new Date()
@@ -114,24 +161,41 @@ export default function Home() {
           />
         )}
 
-        {/* 요약 (접혔을 때 노출) */}
+        {/* 요약 + 일별 내역 (접혔을 때 노출) */}
         {!calendarOpen && (
           <div className="mt-4">
-            <div className="grid grid-cols-4 gap-2">
+            {/* 수입/지출/저축 + 잔액 */}
+            <div className="bg-surface rounded-2xl px-5 py-4 mb-3">
               {[
                 { label: '수입', value: monthIncome, color: '#5865F2' },
                 { label: '지출', value: monthExpense, color: '#FF6B9D' },
                 { label: '저축', value: monthSavings, color: '#43B581' },
-                { label: '잔액', value: cashBalance, color: '#9B59B6' },
               ].map(({ label, value, color }) => (
-                <div key={label} className="bg-surface rounded-2xl px-3 py-3 text-center">
-                  <p className="text-[11px] text-muted-foreground mb-1">{label}</p>
-                  <p className="text-[14px] font-bold tabular-nums" style={{ color }}>
-                    ₩{value >= 10000 ? `${Math.floor(value / 10000).toLocaleString()}만` : value.toLocaleString()}
-                  </p>
+                <div key={label} className="flex items-center justify-between py-2">
+                  <span className="text-[14px] text-foreground">{label}</span>
+                  <span className="text-[14px] font-semibold tabular-nums" style={{ color }}>
+                    ₩{value.toLocaleString()}
+                  </span>
                 </div>
               ))}
+              <div className="border-t border-border my-1" />
+              <div className="flex items-center justify-between py-2">
+                <span className="text-[14px] text-foreground font-semibold">잔액</span>
+                <span className="text-[14px] font-bold tabular-nums">
+                  ₩{cashBalance.toLocaleString()}
+                </span>
+              </div>
             </div>
+
+            {/* 선택된 날짜 카드 */}
+            <div className="bg-surface rounded-2xl px-5 py-3 mb-3">
+              <p className="text-[15px] font-semibold text-center">
+                {calMonth}월 {selectedDay}일 ({DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]})
+              </p>
+            </div>
+
+            {/* 일별 거래 내역 */}
+            <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
           </div>
         )}
       </div>
