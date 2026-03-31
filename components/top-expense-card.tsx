@@ -31,24 +31,18 @@ export function TopExpenseCard({ year, month, items, total }: TopExpenseCardProp
       {items.length === 0 ? (
         <p className="text-[12px] text-muted-foreground text-center py-4">지출 내역이 없어요</p>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3.5">
           {items.map((item, i) => {
-            const barPct = Math.round((item.amount / maxAmount) * 100)
             const color = CAT_COLORS[i % CAT_COLORS.length]
             return (
-              <div key={item.name}>
-                <div className="flex items-center justify-between mb-1">
+              <div key={item.name} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
                   <span className="text-[13px] text-foreground">{item.name}</span>
-                  <span className="text-[13px] font-semibold tabular-nums">
-                    ₩{fmt(item.amount)}
-                  </span>
                 </div>
-                <div className="h-[3px] bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${barPct}%`, backgroundColor: color }}
-                  />
-                </div>
+                <span className="text-[13px] font-semibold tabular-nums">
+                  ₩{fmt(item.amount)}
+                </span>
               </div>
             )
           })}
