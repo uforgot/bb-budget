@@ -52,15 +52,15 @@ export default function Home() {
         const name = catMap[tx.category_id]?.name || '기타'
         byCat[name] = (byCat[name] || 0) + tx.amount
       }
-      setTopExpenses(Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, amount]) => ({ name, amount })))
+      setTopExpenses(Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, amount]) => ({ name, amount })))
 
-      // TOP 3 수입 카테고리
+      // TOP 5 수입 카테고리
       const byIncomeCat: Record<string, number> = {}
       for (const tx of txs.filter(t => t.type === 'income')) {
         const name = catMap[tx.category_id]?.name || '기타'
         byIncomeCat[name] = (byIncomeCat[name] || 0) + tx.amount
       }
-      setTopIncomes(Object.entries(byIncomeCat).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, amount]) => ({ name, amount })))
+      setTopIncomes(Object.entries(byIncomeCat).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, amount]) => ({ name, amount })))
 
       // 전월 누적
       const prevEnd = new Date(calYear, calMonth - 1, 0)
