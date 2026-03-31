@@ -101,7 +101,7 @@ export default function Home() {
           <MonthlySummaryCard
             month={calMonth}
             income={monthIncome}
-            savings={monthSavings}
+            savings={monthExpense}
             prevSavings={prevSavings}
           />
           <ActivityBubbleCard
