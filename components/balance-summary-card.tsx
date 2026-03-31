@@ -22,8 +22,8 @@ export function BalanceCard({ prevBalance, thisMonthBalance, totalBalance, month
       </p>
       {/* 1줄 분할 바 */}
       <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3">
-        <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#5865F2' }} />
-        <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#43B581' }} />
+        <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#6B7280' }} />
+        <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
       </div>
       {/* 라벨 좌우 */}
       <div className="flex items-start justify-between">
@@ -106,7 +106,7 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
                 <span className="text-[14px] text-foreground">{label}</span>
                 <span className="text-[14px] font-semibold tabular-nums">₩{value.toLocaleString()}</span>
               </div>
-              <div className="h-[3px] bg-muted rounded-full overflow-hidden">
+              <div className="h-[6px] bg-muted rounded-full overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
               </div>
             </div>
