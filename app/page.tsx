@@ -159,36 +159,30 @@ export default function Home() {
       <div className="bg-background">
         {/* 상단 바 */}
         <div className="sticky top-0 z-30 bg-background px-5">
-          <div
-            className="flex items-center justify-between h-14"
-            style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
-          >
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="flex items-center justify-center w-8 h-8 rounded-lg"
-              aria-label="대시보드"
-            >
+          <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+            <button onClick={() => router.push('/dashboard')} className="flex items-center justify-center w-8 h-8 rounded-lg" aria-label="대시보드">
               <LayoutGrid className="w-5 h-5 text-foreground" />
             </button>
-            <button
-              onClick={() => router.push('/settings')}
-              className="flex items-center justify-center w-8 h-8 rounded-lg"
-              aria-label="설정"
-            >
-              <Settings className="w-5 h-5 text-foreground" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button onClick={() => router.push('/history?search=1')} className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground" aria-label="검색">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+              </button>
+              <button onClick={() => router.push('/settings')} className="flex items-center justify-center w-8 h-8 rounded-lg" aria-label="설정">
+                <Settings className="w-5 h-5 text-foreground" />
+              </button>
+            </div>
           </div>
         </div>
 
         <div className="px-5">
-          {/* 연월 타이틀 + 오늘 버튼 */}
+          {/* 연월 타이틀 센터 + 좌우 꺽쇠 */}
           <div className="flex items-center justify-between mt-1 mb-4">
+            <button onClick={() => { if (calMonth === 1) { setCalYear(y => y - 1); setCalMonth(12) } else { setCalMonth(m => m - 1) } }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+            </button>
             <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
-            <button
-              onClick={goToday}
-              className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold"
-            >
-              오늘
+            <button onClick={goToday} className="w-8 h-8 flex items-center justify-center text-accent-blue" aria-label="오늘">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
             </button>
           </div>
 
