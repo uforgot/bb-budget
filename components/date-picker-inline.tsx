@@ -25,6 +25,9 @@ function DrumCol({
   label: (v: number) => string
 }) {
   const listRef = useRef<HTMLDivElement>(null)
+  const isDragging = useRef(false)
+  const dragStartY = useRef(0)
+  const dragStartScroll = useRef(0)
 
   const scrollToIndex = (idx: number, smooth = true) => {
     const el = listRef.current
@@ -38,11 +41,45 @@ function DrumCol({
   }, [selected, items])
 
   const handleScroll = () => {
+    if (isDragging.current) return
     const el = listRef.current
     if (!el) return
     const idx = Math.round(el.scrollTop / ITEM_H)
     const clamped = Math.max(0, Math.min(idx, items.length - 1))
     if (items[clamped] !== selected) onSelect(items[clamped])
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true
+    dragStartY.current = e.clientY
+    dragStartScroll.current = listRef.current?.scrollTop ?? 0
+    e.preventDefault()
+  }
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !listRef.current) return
+    const dy = dragStartY.current - e.clientY
+    listRef.current.scrollTop = dragStartScroll.current + dy
+  }
+  const handleMouseUp = () => {
+    if (!isDragging.current) return
+    isDragging.current = false
+    const el = listRef.current
+    if (!el) return
+    const idx = Math.round(el.scrollTop / ITEM_H)
+    const clamped = Math.max(0, Math.min(idx, items.length - 1))
+    scrollToIndex(clamped)
+    onSelect(items[clamped])
+  }
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault()
+    const el = listRef.current
+    if (!el) return
+    const dir = e.deltaY > 0 ? 1 : -1
+    const cur = Math.round(el.scrollTop / ITEM_H)
+    const next = Math.max(0, Math.min(cur + dir, items.length - 1))
+    scrollToIndex(next)
+    onSelect(items[next])
   }
 
   const MID = Math.floor(VISIBLE / 2)
@@ -57,8 +94,13 @@ function DrumCol({
       <div
         ref={listRef}
         onScroll={handleScroll}
-        className="h-full overflow-y-scroll"
-        style={{ scrollSnapType: 'y mandatory', paddingTop: ITEM_H * MID, paddingBottom: ITEM_H * MID }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
+        className="h-full overflow-y-scroll cursor-grab active:cursor-grabbing"
+        style={{ scrollSnapType: 'y mandatory', paddingTop: ITEM_H * MID, paddingBottom: ITEM_H * MID, userSelect: 'none' }}
       >
         {items.map(v => (
           <div
