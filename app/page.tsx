@@ -194,9 +194,8 @@ export default function Home() {
             </div>
             <button onClick={goToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
           </div>
-          <div className="h-4" />
-
           {/* 달력 */}
+          <div className="pb-6">
           <MonthlyCalendar
             key={calKey}
             showHeader={false}
@@ -206,6 +205,7 @@ export default function Home() {
             onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
             refreshKey={refreshKey}
           />
+          </div>
         </div>
 
       {/* 하단 영역 */}
