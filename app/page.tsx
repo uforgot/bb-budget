@@ -146,6 +146,13 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const handleMonthChange = useCallback((y: number, m: number) => {
+    setCalYear(y); setCalMonth(m)
+  }, [])
+  const handleDaySelect = useCallback((y: number, m: number, d: number) => {
+    setCalYear(y); setCalMonth(m); setSelectedDay(d)
+  }, [])
+
   const goToday = useCallback(() => {
     setCalYear(today.getFullYear())
     setCalMonth(today.getMonth() + 1)
@@ -200,8 +207,10 @@ export default function Home() {
             key={calKey}
             showHeader={false}
             showDayDetail={false}
-            onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m) }}
-            onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
+            targetYear={calYear}
+            targetMonth={calMonth}
+            onMonthChange={handleMonthChange}
+            onDaySelect={handleDaySelect}
             onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
             refreshKey={refreshKey}
           />

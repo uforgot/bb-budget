@@ -172,8 +172,8 @@ export interface MonthlyCalendarProps {
   refreshKey?: number
   showHeader?: boolean
   showDayDetail?: boolean
-  targetYear?: number  // 외부에서 월 제어 (picker 연동)
-  targetMonth?: number // 1-indexed
+  targetYear?: number  // 마운트 시 초기 연월 (key 리마운트 연동, 이후 스와이프 방해 안 함)
+  targetMonth?: number // 1-indexed (key 변경 시만 적용)
 }
 
 export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true, targetYear, targetMonth }: MonthlyCalendarProps) {
