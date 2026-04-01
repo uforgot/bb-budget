@@ -90,6 +90,9 @@ export default function Dashboard() {
           thisMonthBalance={monthIncome - monthExpense}
           totalBalance={cashBalance}
           month={calMonth}
+          monthIncome={monthIncome}
+          monthExpense={monthExpense}
+          monthSavings={prevSavings}
         />
         <MonthlySummaryCard
           year={calYear}
