@@ -125,7 +125,7 @@ export function SummaryCardSlider({
             >
               <div className="rounded-2xl px-5 pt-5 pb-4 mx-0 flex flex-col" style={{ minHeight: '150px', backgroundColor: card.bg }}>
                 <p className="text-[13px] font-semibold text-white/80 mb-1">{card.label}</p>
-                <p className="text-[28px] font-bold tabular-nums text-white mt-1 mb-auto">
+                <p className="text-[28px] font-bold tabular-nums text-white mt-1">
                   ₩{card.amount.toLocaleString()}
                 </p>
                 {dt && <p className="text-[13px] font-semibold text-white/70 mt-3 leading-tight">{dt}</p>}
