@@ -359,7 +359,7 @@ export default function History() {
         )}
 
         {/* 뷰별 상단 버튼 */}
-        {!searchMode && <div className="h-[10px]" />}
+
 
         {/* 월간 내역 */}
         {searchMode ? null : (() => {
