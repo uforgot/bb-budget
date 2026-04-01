@@ -238,6 +238,7 @@ export default function History() {
 
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={async () => { await loadData() }}>
+      <div className="bg-background">
       {/* 상단 바 */}
       <div className="sticky top-0 z-30 bg-background px-5">
         <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
@@ -287,9 +288,9 @@ export default function History() {
             </>
           )
         })()}
+      </div>
 
-
-
+      <div className="px-5">
         {/* 검색 모드 */}
         {searchMode && (
           <div className="py-3">
@@ -684,6 +685,7 @@ export default function History() {
             </div>
           )
         })()}
+      </div>
       </div>
 
       <AddTransactionModal
