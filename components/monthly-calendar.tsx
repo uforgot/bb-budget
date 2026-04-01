@@ -360,6 +360,10 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
 
   return (
     <div>
+      {/* 연월 헤더 */}
+      <div className="px-4 pt-4 pb-2">
+        <span className="text-[18px] font-bold">{headerLabel}</span>
+      </div>
       {/* Fixed weekday row */}
       <div className="grid grid-cols-7 pb-2 mb-1 border-b border-border px-2">
         {WEEKDAYS.map(day => (
