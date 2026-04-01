@@ -87,6 +87,14 @@ export default function History() {
   const [activeFilters, setActiveFilters] = useState<Set<TabType>>(new Set(['지출', '수입', '저축']))
   const [weekOffset, setWeekOffset] = useState(0)
   const [monthOffset, setMonthOffset] = useState(0)
+  // 현재 마운트 대상 연/월 (IIFE 바깔로 무한루프 방지)
+  const currentMonthDate = (() => {
+    const now = new Date()
+    const tm = now.getMonth() + 1 + monthOffset
+    const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
+    const am = ((tm - 1) % 12 + 12) % 12 + 1
+    return { ty, am }
+  })()
   const [yearOffset, setYearOffset] = useState(0)
   const [cameFromMonthly, setCameFromMonthly] = useState(false)
   const [cameFromYearly, setCameFromYearly] = useState(false)
@@ -267,10 +275,10 @@ export default function History() {
             <>
               <div className="flex items-center justify-between mt-1 mb-4">
                 <div className="flex items-center gap-2">
-                  <select value={ty} onChange={e => { const y=Number(e.target.value); const diff=(y-new Date().getFullYear())*12+(am-(new Date().getMonth()+1)); setMonthOffset(diff); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                  <select value={currentMonthDate.ty} onChange={e => { const y=Number(e.target.value); const diff=(y-new Date().getFullYear())*12+(currentMonthDate.am-(new Date().getMonth()+1)); setMonthOffset(diff); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                     {Array.from({length:20},(_,i)=>new Date().getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
                   </select>
-                  <select value={am} onChange={e => { const m=Number(e.target.value); const diff=(ty-new Date().getFullYear())*12+(m-(new Date().getMonth()+1)); setMonthOffset(diff); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                  <select value={currentMonthDate.am} onChange={e => { const m=Number(e.target.value); const diff=(currentMonthDate.ty-new Date().getFullYear())*12+(m-(new Date().getMonth()+1)); setMonthOffset(diff); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                     {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
                   </select>
                 </div>
@@ -678,28 +686,7 @@ export default function History() {
         })()}
       </div>
 
-      {(() => {
-        const now = new Date()
-        const tm = now.getMonth() + 1 + monthOffset
-        const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
-        const am = ((tm - 1) % 12 + 12) % 12 + 1
-        return (
-          <DatePickerModal
-            open={pickerOpen}
-            mode="month"
-            year={ty}
-            month={am}
-            onClose={() => setPickerOpen(false)}
-            onSelect={(y, m) => {
-              const now2 = new Date()
-              const diff = (y - now2.getFullYear()) * 12 + (m - (now2.getMonth() + 1))
-              setMonthOffset(diff)
-              setExpandedWeeks(new Set())
-              setAutoExpanded(false)
-            }}
-          />
-        )
-      })()}
+
 
       <AddTransactionModal
         open={modalOpen}
