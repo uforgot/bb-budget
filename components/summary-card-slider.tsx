@@ -1,6 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { FreeMode } from 'swiper/modules'
+import 'swiper/css'
 
 interface SummaryCard {
   label: string       // "N월 번 수입"
@@ -82,27 +84,32 @@ export function SummaryCardSlider({
   ]
 
   return (
-    <div className="overflow-x-auto scrollbar-hide mb-4 -mx-5 px-5">
-      <div className="flex gap-3" style={{ width: 'max-content' }}>
+    <div className="mb-4 -mx-5">
+      <Swiper
+        modules={[FreeMode]}
+        freeMode
+        slidesPerView="auto"
+        spaceBetween={12}
+        slidesOffsetBefore={20}
+        slidesOffsetAfter={20}
+      >
         {cards.map(card => {
           const dt = diffText(card.diff, card.type, prevLabel)
           return (
-            <div
-              key={card.label}
-              className="bg-surface rounded-2xl px-5 py-4 flex flex-col justify-between"
-              style={{ width: '200px', minHeight: '110px' }}
-            >
-              <p className="text-[12px] text-muted-foreground mb-2">{card.label}</p>
-              <p className={`text-[22px] font-bold tabular-nums ${card.color}`}>
-                ₩{card.amount.toLocaleString()}
-              </p>
-              {dt && (
-                <p className="text-[11px] text-muted-foreground mt-2 leading-tight">{dt}</p>
-              )}
-            </div>
+            <SwiperSlide key={card.label} style={{ width: '200px' }}>
+              <div className="bg-surface rounded-2xl px-5 py-4 flex flex-col justify-between" style={{ minHeight: '110px' }}>
+                <p className="text-[12px] text-muted-foreground mb-2">{card.label}</p>
+                <p className={`text-[22px] font-bold tabular-nums ${card.color}`}>
+                  ₩{card.amount.toLocaleString()}
+                </p>
+                {dt && (
+                  <p className="text-[11px] text-muted-foreground mt-2 leading-tight">{dt}</p>
+                )}
+              </div>
+            </SwiperSlide>
           )
         })}
-      </div>
+      </Swiper>
     </div>
   )
 }
