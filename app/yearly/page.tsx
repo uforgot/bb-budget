@@ -83,17 +83,12 @@ export default function Yearly() {
 
       <div className="px-5">
         {/* 큰 타이틀 + 인라인 picker */}
-        <div className="flex items-center justify-between mt-1 mb-2">
-          <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
-            <h1 className="text-[28px] font-bold">{targetYear}년</h1>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mt-1"><path d="m9 18 6-6-6-6" /></svg>
-          </button>
-          <button
-            onClick={() => { setYearOffset(0); setPickerOpen(false) }}
-            className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold"
-          >금년</button>
+        <div className="flex items-center justify-between mt-1 mb-4">
+          <select value={targetYear} onChange={e => setYearOffset(Number(e.target.value)-today.getFullYear())} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+            {Array.from({length:20},(_,i)=>today.getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
+          </select>
+          <button onClick={() => setYearOffset(0)} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">금년</button>
         </div>
-        <div className="h-4" />
 
         {/* 검색 */}
         {searchMode && (

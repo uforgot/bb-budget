@@ -265,17 +265,17 @@ export default function History() {
           const am = ((tm - 1) % 12 + 12) % 12 + 1
           return (
             <>
-              <div className="flex items-center justify-between mt-1 mb-2">
-                <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
-                  <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mt-1"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-                <button
-                  onClick={() => { const n = new Date(); const diff = (n.getFullYear() - new Date().getFullYear()) * 12 + (n.getMonth() + 1 - (new Date().getMonth() + 1)); setMonthOffset(0); setExpandedWeeks(new Set()); setAutoExpanded(false); setPickerOpen(false) }}
-                  className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold"
-                >금월</button>
+              <div className="flex items-center justify-between mt-1 mb-4">
+                <div className="flex items-center gap-2">
+                  <select value={ty} onChange={e => { const y=Number(e.target.value); const diff=(y-new Date().getFullYear())*12+(am-(new Date().getMonth()+1)); setMonthOffset(diff); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                    {Array.from({length:20},(_,i)=>new Date().getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
+                  </select>
+                  <select value={am} onChange={e => { const m=Number(e.target.value); const diff=(ty-new Date().getFullYear())*12+(m-(new Date().getMonth()+1)); setMonthOffset(diff); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                    {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
+                  </select>
+                </div>
+                <button onClick={() => { setMonthOffset(0); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">금월</button>
               </div>
-              <div className="h-4" />
             </>
           )
         })()}

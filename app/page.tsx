@@ -176,11 +176,15 @@ export default function Home() {
 
         <div className="px-5">
           {/* 연월 타이틀 + 오늘 */}
-          <div className="flex items-center justify-between mt-1 mb-2">
-            <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
-              <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
-              <ChevronRight className="w-5 h-5 text-muted-foreground mt-1" />
-            </button>
+          <div className="flex items-center justify-between mt-1 mb-4">
+            <div className="flex items-center gap-2">
+              <select value={calYear} onChange={e => setCalYear(Number(e.target.value))} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                {Array.from({length:20},(_,i)=>new Date().getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
+              </select>
+              <select value={calMonth} onChange={e => setCalMonth(Number(e.target.value))} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
+              </select>
+            </div>
             <button onClick={goToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
           </div>
           <div className="h-4" />
