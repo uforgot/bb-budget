@@ -165,19 +165,30 @@ export default function Home() {
           </button>
           {summaryOpen && (
             <>
-              <div className="border-t border-border my-1" />
-              {[
-                { label: '수입', value: monthIncome, color: '#5865F2' },
-                { label: '지출', value: monthExpense, color: '#FF6B9D' },
-                { label: '저축', value: monthSavings, color: '#43B581' },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="flex items-center justify-between py-2">
-                  <span className="text-[14px] text-foreground">{label}</span>
-                  <span className="text-[14px] font-semibold tabular-nums" style={{ color }}>
-                    ₩{value.toLocaleString()}
-                  </span>
-                </div>
-              ))}
+              <div className="border-t border-border mt-1 mb-3" />
+              <div className="grid grid-cols-3 text-center">
+                {[
+                  { label: '수입', value: monthIncome, color: '#5865F2' },
+                  { label: '지출', value: monthExpense, color: '#FF6B9D' },
+                  { label: '저축', value: monthSavings, color: '#43B581' },
+                ].map(({ label, value, color }, i, arr) => (
+                  <div
+                    key={label}
+                    className={`py-1 ${
+                      i < arr.length - 1 ? 'border-r border-border' : ''
+                    }`}
+                  >
+                    <p className="text-[12px] text-muted-foreground mb-1">{label}</p>
+                    <p className="text-[15px] font-semibold tabular-nums" style={{ color }}>
+                      {value >= 100000000
+                        ? `${Math.floor(value / 100000000)}억`
+                        : value >= 10000
+                        ? `${Math.floor(value / 10000).toLocaleString()}만`
+                        : `₩${value.toLocaleString()}`}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </>
           )}
         </div>
