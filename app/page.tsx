@@ -7,8 +7,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
-import { LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react'
-// ChevronDown, ChevronUp: 달력 카드에서 사용
+import { LayoutGrid, ChevronDown, ChevronUp, Settings } from 'lucide-react'
 
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -84,12 +83,6 @@ export default function Home() {
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [calendarOpen, setCalendarOpen] = useState(false)
-  const [monthIncome, setMonthIncome] = useState(0)
-  const [monthExpense, setMonthExpense] = useState(0)
-  const [monthSavings, setMonthSavings] = useState(0)
-  const [cashBalance, setCashBalance] = useState(0)
-  const [prevMonthBalance, setPrevMonthBalance] = useState(0)
-  const [thisMonthBalance, setThisMonthBalance] = useState(0)
   const [dayNet, setDayNet] = useState(0)
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
@@ -97,34 +90,7 @@ export default function Home() {
   const loadSummary = useCallback(async () => {
     try {
       const { getTransactions } = await import('@/lib/api')
-      const [all, txs] = await Promise.all([
-        getTransactions({}),
-        getTransactions({ year: calYear, month: calMonth }),
-      ])
-      setMonthIncome(txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0))
-      setMonthExpense(txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0))
-      setMonthSavings(txs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0))
-      const totalInc = all.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-      const totalExp = all.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-      const totalSav = all.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0)
-      setCashBalance(totalInc - totalExp - totalSav)
-
-      // 전월 잔액: 이번 달 이전 데이터만
-      const prevTxs = all.filter(t => {
-        const d = new Date(t.date)
-        return d.getFullYear() < calYear || (d.getFullYear() === calYear && d.getMonth() + 1 < calMonth)
-      })
-      const prevInc = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-      const prevExp = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-      const prevSav = prevTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
-      setPrevMonthBalance(prevInc - prevExp - prevSav)
-
-      // 금월 잔액: 이번 달 수입-지출
-      const thisInc = txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-      const thisExp = txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-      setThisMonthBalance(thisInc - thisExp)
-
-      // 선택 날짜 일일 합산
+      const txs = await getTransactions({ year: calYear, month: calMonth })
       const dayStr = toDateStr(calYear, calMonth, selectedDay)
       const dayTxs = txs.filter(t => t.date === dayStr)
       const dInc = dayTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
@@ -157,113 +123,93 @@ export default function Home() {
           >
             <LayoutGrid className="w-5 h-5 text-foreground" />
           </button>
-          <div className="w-8" />
+          <button
+            onClick={() => router.push('/settings')}
+            className="flex items-center justify-center w-8 h-8 rounded-lg"
+            aria-label="설정"
+          >
+            <Settings className="w-5 h-5 text-foreground" />
+          </button>
         </div>
       </div>
 
       <div className="px-5">
-        {/* 잔액 + 요약 통합 카드 */}
+        {/* 이번 주 + 전체 달력 카드 */}
         {(() => {
-          const total = Math.abs(prevMonthBalance) + Math.abs(thisMonthBalance) || 1
-          const prevPct = Math.round((Math.abs(prevMonthBalance) / total) * 100)
-          const thisPct = 100 - prevPct
-          const prevMonth = calMonth > 1 ? calMonth - 1 : 12
-          const maxVal = Math.max(monthIncome, monthExpense, monthSavings, 1)
-          const summaryRows = [
-            { label: '수입', value: monthIncome, color: '#5865F2' },
-            { label: '지출', value: monthExpense, color: '#FF6B9D' },
-            { label: '저축', value: monthSavings, color: '#43B581' },
-          ]
+          const todayDate = new Date(calYear, calMonth - 1, today.getDate())
+          const dow = todayDate.getDay() // 0=일
+          // 이번 주 일요일부터 토요일
+          const weekDates = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date(todayDate)
+            d.setDate(todayDate.getDate() - dow + i)
+            return d
+          })
           return (
-            <div className="bg-surface rounded-2xl px-5 py-5 mb-3 mt-2">
-              {/* 잔액 타이틀 + 큰 폰트 */}
-              <p className="text-[16px] font-bold mb-2">현재 잔액</p>
-              <p className="text-[30px] font-bold tabular-nums mb-4" style={{ letterSpacing: '-1px' }}>
-                ₩{cashBalance.toLocaleString()}
-              </p>
-              {/* 전월/금월 분할 바 */}
-              <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3">
-                <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#E0E3FF' }} />
-                <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
+            <div className="bg-surface rounded-2xl mb-3 mt-2 overflow-hidden">
+              {/* 월 헤더 */}
+              <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                <span className="text-[18px] font-bold">{calMonth}월</span>
               </div>
-              {/* 전월/금월 잔액 좌우 */}
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-[12px] text-muted-foreground mb-0.5">{prevMonth}월 잔액</p>
-                  <p className="text-[14px] font-semibold tabular-nums">₩{prevMonthBalance.toLocaleString()}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[12px] text-muted-foreground mb-0.5">{calMonth}월 잔액</p>
-                  <p className={`text-[14px] font-semibold tabular-nums ${thisMonthBalance >= 0 ? '' : 'text-accent-coral'}`}>
-                    ₩{thisMonthBalance.toLocaleString()}
-                  </p>
-                </div>
+              {/* 요일 헤더 */}
+              <div className="grid grid-cols-7 px-3 mb-1">
+                {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
+                  <div key={d} className={`text-center text-[12px] font-medium py-1 ${
+                    i === 0 ? 'text-accent-coral' : i === 6 ? 'text-accent-blue' : 'text-muted-foreground'
+                  }`}>{d}</div>
+                ))}
               </div>
-              {/* 이번 달 요약 */}
-              <p className="text-[16px] font-bold mb-3">이번 달 요약</p>
-              <div className="flex flex-col gap-3">
-                {summaryRows.map(({ label, value, color }) => {
-                  const pct = Math.max(Math.round((value / maxVal) * 100), value > 0 ? 4 : 0)
+              {/* 이번 주 날짜 */}
+              <div className="grid grid-cols-7 px-3 pb-2">
+                {weekDates.map((d, i) => {
+                  const isToday = d.getDate() === today.getDate() &&
+                    d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()
+                  const isSelected = d.getDate() === selectedDay &&
+                    d.getMonth() + 1 === calMonth && d.getFullYear() === calYear
+                  const isOtherMonth = d.getMonth() + 1 !== calMonth
                   return (
-                    <div key={label}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[14px] text-foreground">{label}</span>
-                        <span className="text-[14px] font-semibold tabular-nums">₩{value.toLocaleString()}</span>
-                      </div>
-                      <div className="h-[6px] bg-muted rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
-                      </div>
-                    </div>
+                    <button
+                      key={i}
+                      onClick={() => { setCalYear(d.getFullYear()); setCalMonth(d.getMonth() + 1); setSelectedDay(d.getDate()) }}
+                      className="flex items-center justify-center h-10"
+                    >
+                      <span className={`w-8 h-8 flex items-center justify-center rounded-full text-[16px] font-medium ${
+                        isToday
+                          ? 'bg-accent-blue text-white'
+                          : isSelected
+                          ? 'bg-muted'
+                          : isOtherMonth
+                          ? 'text-muted-foreground/40'
+                          : i === 0 ? 'text-accent-coral' : i === 6 ? 'text-accent-blue' : 'text-foreground'
+                      }`}>
+                        {d.getDate()}
+                      </span>
+                    </button>
                   )
                 })}
               </div>
+              {/* 아래꺽쇠 — 전체 달력 토글 */}
+              <button
+                onClick={() => setCalendarOpen(prev => !prev)}
+                className="w-full flex items-center justify-center py-2 border-t border-border"
+              >
+                {calendarOpen
+                  ? <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                  : <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                }
+              </button>
+              {calendarOpen && (
+                <div className="px-2 pb-3">
+                  <MonthlyCalendar
+                    onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); loadSummary() }}
+                    onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
+                    onTransactionClick={(tx) => { setEditTx(tx); setModalOpen(true) }}
+                    refreshKey={refreshKey}
+                  />
+                </div>
+              )}
             </div>
           )
         })()}
-
-        {/* 달력 카드 (접기/펼치기) */}
-        <div className="bg-surface rounded-2xl mb-3 overflow-hidden">
-          <button
-            onClick={() => setCalendarOpen(prev => !prev)}
-            className="w-full flex items-center justify-between px-5 py-4"
-          >
-            <span className="text-[16px] font-bold">
-              {calendarOpen
-                ? `${calYear}년 ${calMonth}월`
-                : `${calMonth}월 ${selectedDay}일 ${DAY_NAMES[new Date(calYear, calMonth - 1, selectedDay).getDay()]}요일`
-              }
-            </span>
-            <div className="flex items-center gap-2">
-              {!calendarOpen && dayNet !== 0 && (
-                <span className={`text-[16px] font-bold tabular-nums ${dayNet >= 0 ? 'text-accent-blue' : 'text-accent-coral'}`}>
-                  ₩{Math.abs(dayNet).toLocaleString()}
-                </span>
-              )}
-              {calendarOpen ? (
-                <ChevronUp className="w-5 h-5 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-muted-foreground" />
-              )}
-            </div>
-          </button>
-
-          {calendarOpen && (
-            <div className="px-2 pb-3">
-              <MonthlyCalendar
-                onMonthChange={(y, m, _inc, _exp) => { setCalYear(y); setCalMonth(m); loadSummary() }}
-                onDaySelect={(y, m, d) => {
-                  setCalYear(y); setCalMonth(m); setSelectedDay(d)
-                  setCalendarOpen(false)
-                }}
-                onTransactionClick={(tx) => {
-                  setEditTx(tx)
-                  setModalOpen(true)
-                }}
-                refreshKey={refreshKey}
-              />
-            </div>
-          )}
-        </div>
 
         {/* 일별 거래 내역 (항상 표시) */}
         <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
