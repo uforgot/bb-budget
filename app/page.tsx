@@ -196,6 +196,8 @@ export default function Home() {
           <MonthlyCalendar
             showHeader={false}
             showDayDetail={false}
+            targetYear={calYear}
+            targetMonth={calMonth}
             onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m) }}
             onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
             onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}

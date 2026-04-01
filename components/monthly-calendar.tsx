@@ -170,11 +170,13 @@ export interface MonthlyCalendarProps {
   onDaySelect?: (year: number, month: number, day: number) => void
   onTransactionClick?: (transaction: Transaction) => void
   refreshKey?: number
-  showHeader?: boolean // false 이면 연월 헤더 숨김
-  showDayDetail?: boolean // false 이면 날짜 클릭 시 내역 표시 안 함
+  showHeader?: boolean
+  showDayDetail?: boolean
+  targetYear?: number  // 외부에서 월 제어 (picker 연동)
+  targetMonth?: number // 1-indexed
 }
 
-export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true, targetYear, targetMonth }: MonthlyCalendarProps) {
   const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(new Date()))
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
   const [headerLabel, setHeaderLabel] = useState(() => {
@@ -189,6 +191,13 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
 
 
   const loadingMonthsRef = useRef<Set<string>>(new Set())
+
+  // targetYear/targetMonth 연동
+  useEffect(() => {
+    if (targetYear == null || targetMonth == null) return
+    const idx = months.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
+    if (idx >= 0 && idx !== focusedMonthIndex) setFocusedMonthIndex(idx)
+  }, [targetYear, targetMonth])
 
   // Touch slider state
   const sliderRef = useRef<HTMLDivElement>(null)
