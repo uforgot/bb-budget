@@ -46,7 +46,13 @@ function DayTransactions({
     })()
   }, [date, refreshKey])
 
-  if (txs.length === 0) return null
+  if (txs.length === 0) {
+    return (
+      <p className="text-[13px] text-muted-foreground text-center py-6">
+        내역이 없어요
+      </p>
+    )
+  }
 
   return (
     <div className="flex flex-col">
@@ -208,11 +214,11 @@ export default function Home() {
           >
             <span className="text-[16px] font-semibold">{selectedDateLabel}</span>
             <div className="flex items-center gap-2">
-              {dayTotal !== 0 && (
-                <span className={`text-[16px] font-bold tabular-nums ${dayTotal > 0 ? 'text-accent-coral' : 'text-accent-blue'}`}>
-                  ₩{Math.abs(dayTotal).toLocaleString()}
-                </span>
-              )}
+              <span className={`text-[16px] font-bold tabular-nums ${
+                dayTotal > 0 ? 'text-accent-coral' : dayTotal < 0 ? 'text-accent-blue' : 'text-muted-foreground'
+              }`}>
+                ₩{Math.abs(dayTotal).toLocaleString()}
+              </span>
               {txOpen
                 ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
                 : <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -221,11 +227,14 @@ export default function Home() {
           </button>
 
           {txOpen && (
-            <DayTransactions
-              date={selectedDate}
-              refreshKey={refreshKey}
-              onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
-            />
+            <>
+              <div className="border-t border-border" />
+              <DayTransactions
+                date={selectedDate}
+                refreshKey={refreshKey}
+                onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
+              />
+            </>
           )}
         </div>
       </div>
