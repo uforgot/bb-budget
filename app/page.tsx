@@ -178,7 +178,7 @@ export default function Home() {
 
         <div className="px-5">
           {/* 연월 타이틀 + 오늘 */}
-          <div className="flex items-center justify-between mt-2 mb-2">
+          <div className="flex items-center justify-between mt-1 mb-2">
             <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
               <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
               <ChevronRight className={`w-5 h-5 text-muted-foreground mt-1 transition-transform ${pickerOpen ? 'rotate-90' : ''}`} />
