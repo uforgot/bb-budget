@@ -113,6 +113,7 @@ export default function Home() {
   const [txOpen, setTxOpen] = useState(true)
   const [dayTotal, setDayTotal] = useState(0)
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [calKey, setCalKey] = useState(0) // select로 정확히 이동할 때만 돌림
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
   const selectedDateLabel = (() => {
@@ -178,10 +179,10 @@ export default function Home() {
           {/* 연월 타이틀 + 오늘 */}
           <div className="flex items-center justify-between mt-1 mb-4">
             <div className="flex items-center gap-2">
-              <select value={calYear} onChange={e => setCalYear(Number(e.target.value))} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+              <select value={calYear} onChange={e => { setCalYear(Number(e.target.value)); setCalKey(k => k+1) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                 {Array.from({length:20},(_,i)=>new Date().getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
               </select>
-              <select value={calMonth} onChange={e => setCalMonth(Number(e.target.value))} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+              <select value={calMonth} onChange={e => { setCalMonth(Number(e.target.value)); setCalKey(k => k+1) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                 {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
               </select>
             </div>
@@ -191,7 +192,7 @@ export default function Home() {
 
           {/* 달력 */}
           <MonthlyCalendar
-            key={`${calYear}-${calMonth}`}
+            key={calKey}
             showHeader={false}
             showDayDetail={false}
             onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m) }}
