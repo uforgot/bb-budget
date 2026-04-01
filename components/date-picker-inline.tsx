@@ -52,10 +52,8 @@ function DrumCol({
       <div className="absolute left-1 right-1 rounded-xl bg-white/10 pointer-events-none z-10"
         style={{ top: ITEM_H * MID, height: ITEM_H }} />
       {/* 페이드 */}
-      <div className="absolute inset-x-0 top-0 pointer-events-none z-20"
-        style={{ height: ITEM_H * MID, background: 'linear-gradient(to bottom, #000 10%, transparent)' }} />
-      <div className="absolute inset-x-0 bottom-0 pointer-events-none z-20"
-        style={{ height: ITEM_H * MID, background: 'linear-gradient(to top, #000 10%, transparent)' }} />
+      <div className="absolute inset-x-0 top-0 pointer-events-none z-20 bg-gradient-to-b from-background to-transparent" style={{ height: ITEM_H * MID }} />
+      <div className="absolute inset-x-0 bottom-0 pointer-events-none z-20 bg-gradient-to-t from-background to-transparent" style={{ height: ITEM_H * MID }} />
       <div
         ref={listRef}
         onScroll={handleScroll}
@@ -71,8 +69,8 @@ function DrumCol({
           >
             <span className={`text-[17px] transition-all ${
               v === selected
-                ? 'text-white font-semibold'
-                : 'text-white/30 font-normal'
+                ? 'text-foreground font-semibold'
+                : 'text-foreground/30 font-normal'
             }`}>
               {label(v)}
             </span>
