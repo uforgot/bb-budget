@@ -192,19 +192,24 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
 
   const loadingMonthsRef = useRef<Set<string>>(new Set())
 
-  // targetYear/targetMonth 연동
+  // targetYear/targetMonth 연동 (루프 방지: prevTarget ref)
+  const prevTargetRef = useRef<{ year: number; month: number } | null>(null)
   useEffect(() => {
     if (targetYear == null || targetMonth == null) return
-    let idx = months.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
-    if (idx < 0) {
-      // 범위 밖이면 months 재생성
+    const prev = prevTargetRef.current
+    if (prev && prev.year === targetYear && prev.month === targetMonth) return
+    prevTargetRef.current = { year: targetYear, month: targetMonth }
+
+    const idx = months.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
+    if (idx >= 0) {
+      setFocusedMonthIndex(idx)
+    } else {
+      // 범위 밖이면 months 재생성 (1회만)
       const anchor = new Date(targetYear, targetMonth - 1, 1)
       const newMonths = buildInitialMonths(anchor)
+      const newIdx = newMonths.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
       setMonths(newMonths)
-      idx = newMonths.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
-      setFocusedMonthIndex(idx >= 0 ? idx : INITIAL_RANGE)
-    } else if (idx !== focusedMonthIndex) {
-      setFocusedMonthIndex(idx)
+      setFocusedMonthIndex(newIdx >= 0 ? newIdx : INITIAL_RANGE)
     }
   }, [targetYear, targetMonth])
 
