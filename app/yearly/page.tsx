@@ -142,24 +142,24 @@ export default function Yearly() {
 
         {!searchMode && (
           <>
-            {/* 연간 요약 */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between px-1 py-2">
-                <span className="text-xs font-semibold bg-accent-blue/20 text-accent-blue px-3 py-1 rounded-full">{targetYear}년 수입</span>
-                <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</span>
+            {/* 연간 요약 카드 */}
+            <div className="bg-surface rounded-2xl px-5 py-4 mb-4">
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-[13px] text-muted-foreground">수입</span>
+                <span className="text-[14px] font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between px-1 py-2">
-                <span className="text-xs font-semibold bg-accent-coral/20 text-accent-coral px-3 py-1 rounded-full">{targetYear}년 지출</span>
-                <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</span>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-[13px] text-muted-foreground">지출</span>
+                <span className="text-[14px] font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between px-1 py-2">
-                <span className="text-xs font-semibold bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{targetYear}년 저축</span>
-                <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{yearSavings.toLocaleString()}</span>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-[13px] text-muted-foreground">저축</span>
+                <span className="text-[14px] font-semibold tabular-nums text-accent-mint">₩{yearSavings.toLocaleString()}</span>
               </div>
-              <div className="border-t border-border my-1" />
-              <div className="flex items-center justify-between px-1 py-2">
-                <span className="text-xs font-semibold bg-muted text-foreground px-3 py-1 rounded-full">잔액</span>
-                <span className={`text-sm font-bold tabular-nums ${yearBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{yearBalance.toLocaleString()}</span>
+              <div className="border-t border-border mt-2 mb-1" />
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-[13px] text-muted-foreground">잔액</span>
+                <span className={`text-[14px] font-bold tabular-nums ${yearBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{yearBalance.toLocaleString()}</span>
               </div>
             </div>
 
