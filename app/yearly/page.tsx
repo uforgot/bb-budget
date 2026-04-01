@@ -85,7 +85,7 @@ export default function Yearly() {
         {/* 큰 타이틀 */}
         <div className="flex items-center justify-between mt-1 mb-4">
           <label className="flex items-center gap-1 cursor-pointer">
-            <select value={targetYear} onChange={e => setYearOffset(Number(e.target.value)-today.getFullYear())} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+            <select value={targetYear} onChange={e => setYearOffset(Number(e.target.value)-today.getFullYear())} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer" style={{ letterSpacing: '-2px' }}>
               {Array.from({length:20},(_,i)=>today.getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
             </select>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
