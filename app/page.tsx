@@ -187,6 +187,53 @@ export default function Home() {
                   )
                 })}
               </div>
+              {/* 나머지 주 인라인 (calendarOpen) */}
+              {calendarOpen && (() => {
+                const firstDay = new Date(calYear, calMonth - 1, 1).getDay()
+                const daysInMonth = new Date(calYear, calMonth, 0).getDate()
+                // 전체 달력 그리드용 셨 배열 (첫 주요일을 일요일로)
+                const cells: (number | null)[] = [
+                  ...Array(firstDay).fill(null),
+                  ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+                ]
+                // 이번 주에 속한 달 첫째 날 구하기
+                const todayDow = new Date(calYear, calMonth - 1, today.getDate()).getDay()
+                const weekStart = today.getDate() - todayDow
+                // 첫째 주만 오늘부터 그리는지 확인
+                const currentWeekRow = Math.floor((firstDay + today.getDate() - 1) / 7)
+                const rowsToRender = Array.from({ length: Math.ceil(cells.length / 7) }, (_, row) => row)
+                  .filter(row => row !== currentWeekRow) // 이번 주 제외
+                return (
+                  <div className="px-3 pb-3">
+                    {rowsToRender.map(row => (
+                      <div key={row} className="grid grid-cols-7">
+                        {cells.slice(row * 7, row * 7 + 7).map((day, i) => (
+                          <button
+                            key={i}
+                            disabled={!day}
+                            onClick={() => day && setSelectedDay(day)}
+                            className="flex items-center justify-center h-10"
+                          >
+                            {day && (
+                              <span className={`w-8 h-8 flex items-center justify-center rounded-full text-[16px] font-medium ${
+                                day === today.getDate() && calMonth === today.getMonth() + 1 && calYear === today.getFullYear()
+                                  ? 'bg-accent-blue text-white'
+                                  : day === selectedDay
+                                  ? 'bg-muted'
+                                  : (row * 7 + i) % 7 === 0 ? 'text-accent-coral'
+                                  : (row * 7 + i) % 7 === 6 ? 'text-accent-blue'
+                                  : 'text-foreground'
+                              }`}>
+                                {day}
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
               {/* 아래꺽쇠 — 전체 달력 토글 */}
               <button
                 onClick={() => setCalendarOpen(prev => !prev)}
@@ -197,16 +244,6 @@ export default function Home() {
                   : <ChevronDown className="w-5 h-5 text-muted-foreground" />
                 }
               </button>
-              {calendarOpen && (
-                <div className="px-2 pb-3">
-                  <MonthlyCalendar
-                    onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); loadSummary() }}
-                    onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
-                    onTransactionClick={(tx) => { setEditTx(tx); setModalOpen(true) }}
-                    refreshKey={refreshKey}
-                  />
-                </div>
-              )}
             </div>
           )
         })()}
