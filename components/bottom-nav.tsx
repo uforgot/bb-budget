@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, List, BarChart2 } from 'lucide-react'
+import { Home, CalendarDays, CalendarRange } from 'lucide-react'
 
 const tabs = [
-  { href: '/', label: '홈', icon: Home },
-  { href: '/history', label: '내역', icon: List },
-  { href: '/report', label: '리포트', icon: BarChart2 },
+  { href: '/', label: '일간', icon: Home },
+  { href: '/history', label: '월간', icon: CalendarDays },
+  { href: '/yearly', label: '연간', icon: CalendarRange },
 ]
 
 interface BottomNavProps {

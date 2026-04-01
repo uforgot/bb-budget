@@ -245,56 +245,31 @@ export default function History() {
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
             </svg>
           </button>
-          <div className="flex items-center bg-muted rounded-full p-1">
-            {([['monthly', '주간'], ['yearly', '월간']] as [ViewMode, string][]).map(([mode, label]) => (
-              <button
-                key={mode}
-                onClick={() => { setViewMode(mode); setSearchMode(false); setSearchQuery(''); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
-                className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
-                  !searchMode && viewMode === mode ? 'bg-accent-blue text-white' : 'text-muted-foreground'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <div className="w-8" />
         </div>
       </div>
 
       <div className="px-5">
-        {/* 컨 타이틀 + 좌우 꺽쇠 */}
+        {/* 큰 타이틀 + 좌우 꺽쇠 (월간 고정) */}
         {(() => {
           const now = new Date()
-          if (viewMode === 'monthly') {
-            const tm = now.getMonth() + 1 + monthOffset
-            const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
-            const am = ((tm - 1) % 12 + 12) % 12 + 1
-            return (
-              <div className="flex items-center justify-between mt-1 mb-4">
-                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-                <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
-                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-              </div>
-            )
-          } else {
-            const ty = now.getFullYear() + yearOffset
-            return (
-              <div className="flex items-center justify-between mt-1 mb-4">
-                <button onClick={() => setYearOffset(y => y - 1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-                <h1 className="text-[28px] font-bold">{ty}년</h1>
-                <button onClick={() => setYearOffset(y => y + 1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-              </div>
-            )
-          }
+          const tm = now.getMonth() + 1 + monthOffset
+          const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
+          const am = ((tm - 1) % 12 + 12) % 12 + 1
+          return (
+            <div className="flex items-center justify-between mt-1 mb-4">
+              <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+              </button>
+              <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
+              <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
+            </div>
+          )
         })()}
+
+
 
         {/* 검색 모드 */}
         {searchMode && (
@@ -359,128 +334,10 @@ export default function History() {
         )}
 
         {/* 뷰별 상단 버튼 */}
-        {viewMode === 'weekly' && (
-          <div className="flex items-center justify-between py-3">
-            <button
-              onClick={() => {
-                // 현재 주간에서 보고 있는 주의 월로 이동
-                const { start } = getWeekRange(weekOffset)
-                const now2 = new Date()
-                const diff = (start.getFullYear() - now2.getFullYear()) * 12 + (start.getMonth() - now2.getMonth())
-                setMonthOffset(diff)
-                setViewMode('monthly')
-                setCameFromMonthly(false)
-              }}
-              className="text-xs text-accent-blue flex items-center gap-1"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-              월간 전체 보기
-            </button>
-            <div className="flex items-center gap-2">
-              {(['수입', '지출', '저축'] as TabType[]).map((tab) => {
-                const isActive = activeFilters.has(tab)
-                const chipColors: Record<TabType, string> = {
-                  '지출': isActive ? 'bg-accent-coral/20 text-accent-coral border-accent-coral/40' : 'bg-muted text-muted-foreground border-transparent',
-                  '수입': isActive ? 'bg-accent-blue/20 text-accent-blue border-accent-blue/40' : 'bg-muted text-muted-foreground border-transparent',
-                  '저축': isActive ? 'bg-accent-mint/20 text-accent-mint border-accent-mint/40' : 'bg-muted text-muted-foreground border-transparent',
-                }
-                return (
-                  <button
-                    key={tab}
-                    onClick={() => {
-                      const next = new Set(activeFilters)
-                      if (next.has(tab)) { if (next.size > 1) next.delete(tab) } else { next.add(tab) }
-                      setActiveFilters(next)
-                    }}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${chipColors[tab]}`}
-                  >
-                    {tab}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        )}
-        {!searchMode && viewMode === 'monthly' && (
-          <div className="h-[10px]" />
-        )}
-        {viewMode === 'yearly' && (
-          <div className="h-[10px]" />
-        )}
+        {!searchMode && <div className="h-[10px]" />}
 
-        {/* Grouped list — 검색 모드에서는 숨김 */}
-        {searchMode ? null :
-        (viewMode === 'weekly' ? (() => {
-          const { start } = getWeekRange(weekOffset)
-          const weekMonth = start.getMonth() + 1
-          const weekNum = getWeekNum(start.getFullYear(), start.getMonth() + 1, start.getDate())
-          const weekLabel = `${weekMonth}월 ${weekNum}주 차`
-          const weekTotal = filteredTransactions.reduce((sum, t) => t.type === 'expense' ? sum - t.amount : sum + t.amount, 0)
-
-          return (
-            <div className="flex flex-col gap-3 mt-2">
-              <div className="flex items-center px-2 py-4 bg-surface rounded-[18px]">
-                <button onClick={() => setWeekOffset(w => w - 1)} className="text-muted-foreground p-1 flex-shrink-0">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-                <div className="flex-1 flex items-center justify-between px-2">
-                  <span className="text-sm font-semibold text-foreground">{weekLabel}</span>
-                  <span className="text-sm font-medium tabular-nums text-foreground">
-                    {weekTotal < 0 ? "-" : ""}₩{Math.abs(weekTotal).toLocaleString()}
-                  </span>
-                </div>
-                <button onClick={() => setWeekOffset(w => w + 1)} className="text-muted-foreground p-1 flex-shrink-0">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-              </div>
-
-              {/* 활성 저축 표시 */}
-              {(() => {
-                const savingsTxs = transactions.filter(t => t.type === 'savings')
-                if (savingsTxs.length === 0) return null
-                return (
-                  <div className="mt-2">
-                    <p className="text-xs text-muted-foreground px-5 mb-2">활성 저축</p>
-                    {savingsTxs.map(tx => {
-                      const cat = tx.category as any
-                      const catName = cat?.name || '미분류'
-                      return (
-                        <div
-                          key={tx.id}
-                          onClick={() => { setEditTx(tx); setModalOpen(true) }}
-                          className="flex items-center justify-between px-5 py-2 cursor-pointer active:bg-muted/30"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-semibold dark:font-normal bg-accent-mint/20 text-accent-mint px-3 py-1 rounded-full">{catName}</span>
-                            {tx.description && <span className="text-[10px] text-muted-foreground">{tx.description}</span>}
-                          </div>
-                          <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{tx.amount.toLocaleString()}</span>
-                        </div>
-                      )
-                    })}
-                    <div className="border-t border-border mx-5 my-2" />
-                  </div>
-                )
-              })()}
-
-              {filteredTransactions.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
-              ) : (
-                filteredTransactions.map((tx, i) => {
-                  if (i === 0) lastRenderedDate.current = null
-                  const prevDate = lastRenderedDate.current
-                  const showDivider = i > 0 && prevDate !== tx.date
-                  return (
-                    <div key={tx.id}>
-                      {showDivider && <div className="border-t border-border mx-5 my-1" />}
-                      {renderRow(tx)}
-                    </div>
-                  )
-                })
-              )}
-            </div>
-          )
-        })() : viewMode === 'monthly' ? (() => {
+        {/* 월간 내역 */}
+        {searchMode ? null : (() => {
           // 월간 뷰: offset 기반
           const now = new Date()
           const targetMonth = now.getMonth() + 1 + monthOffset
@@ -702,7 +559,8 @@ export default function History() {
               })}
             </div>
           )
-        })() : viewMode === 'yearly' ? (() => {
+        })()}
+        {false && (() => {
           // 연간 뷰: 월별 카드 그리드
           const now = new Date()
           const targetYear = now.getFullYear() + yearOffset
@@ -806,7 +664,7 @@ export default function History() {
               </div>
             </div>
           )
-        })() : null)}
+        })()}
       </div>
 
       <AddTransactionModal
