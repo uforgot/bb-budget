@@ -177,11 +177,11 @@ export interface MonthlyCalendarProps {
 }
 
 export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true, targetYear, targetMonth }: MonthlyCalendarProps) {
-  const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(new Date()))
+  const anchor = targetYear && targetMonth ? new Date(targetYear, targetMonth - 1, 1) : new Date()
+  const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(anchor))
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
   const [headerLabel, setHeaderLabel] = useState(() => {
-    const now = new Date()
-    return `${now.getFullYear()}년 ${now.getMonth() + 1}월`
+    return `${anchor.getFullYear()}년 ${anchor.getMonth() + 1}월`
   })
   const [selectedDay, setSelectedDay] = useState<SelectedDay | null>(() => {
     const now = new Date()
@@ -192,26 +192,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
 
   const loadingMonthsRef = useRef<Set<string>>(new Set())
 
-  // targetYear/targetMonth 연동 (루프 방지: prevTarget ref)
-  const prevTargetRef = useRef<{ year: number; month: number } | null>(null)
-  useEffect(() => {
-    if (targetYear == null || targetMonth == null) return
-    const prev = prevTargetRef.current
-    if (prev && prev.year === targetYear && prev.month === targetMonth) return
-    prevTargetRef.current = { year: targetYear, month: targetMonth }
-
-    const idx = months.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
-    if (idx >= 0) {
-      setFocusedMonthIndex(idx)
-    } else {
-      // 범위 밖이면 months 재생성 (1회만)
-      const anchor = new Date(targetYear, targetMonth - 1, 1)
-      const newMonths = buildInitialMonths(anchor)
-      const newIdx = newMonths.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
-      setMonths(newMonths)
-      setFocusedMonthIndex(newIdx >= 0 ? newIdx : INITIAL_RANGE)
-    }
-  }, [targetYear, targetMonth])
+  // targetYear/targetMonth: key prop 리마운트 방식 사용 (이 effect는 비움)
 
   // Touch slider state
   const sliderRef = useRef<HTMLDivElement>(null)
