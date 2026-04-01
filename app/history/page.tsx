@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { DatePickerSheet } from '@/components/date-picker-sheet'
+import { DatePickerInline } from '@/components/date-picker-inline'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 
@@ -256,19 +256,34 @@ export default function History() {
       </div>
 
       <div className="px-5">
-        {/* 큰 타이틀 좌정렬 + > */}
+        {/* 큰 타이틀 좌정렬 + > + 인라인 picker */}
         {(() => {
           const now = new Date()
           const tm = now.getMonth() + 1 + monthOffset
           const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
           const am = ((tm - 1) % 12 + 12) % 12 + 1
           return (
-            <div className="flex items-center mt-1 mb-4">
-              <button onClick={() => setPickerOpen(true)} className="flex items-center gap-1">
-                <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mt-1"><path d="m9 18 6-6-6-6" /></svg>
-              </button>
-            </div>
+            <>
+              <div className="flex items-center mt-1 mb-2">
+                <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
+                  <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground mt-1 transition-transform ${pickerOpen ? 'rotate-90' : ''}`}><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+              </div>
+              <DatePickerInline
+                open={pickerOpen}
+                mode="month"
+                year={ty}
+                month={am}
+                onSelect={(y, m) => {
+                  const now2 = new Date()
+                  const diff = (y - now2.getFullYear()) * 12 + (m - (now2.getMonth() + 1))
+                  setMonthOffset(diff)
+                  setExpandedWeeks(new Set())
+                  setAutoExpanded(false)
+                }}
+              />
+            </>
           )
         })()}
 
@@ -669,30 +684,6 @@ export default function History() {
           )
         })()}
       </div>
-
-      {(() => {
-        const now = new Date()
-        const tm = now.getMonth() + 1 + monthOffset
-        const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
-        const am = ((tm - 1) % 12 + 12) % 12 + 1
-        return (
-          <DatePickerSheet
-            open={pickerOpen}
-            mode="month"
-            year={ty}
-            month={am}
-            onClose={() => setPickerOpen(false)}
-            onSelect={(y, m) => {
-              const now2 = new Date()
-              const diff = (y - now2.getFullYear()) * 12 + (m - (now2.getMonth() + 1))
-              setMonthOffset(diff)
-              setExpandedWeeks(new Set())
-              setAutoExpanded(false)
-              setPickerOpen(false)
-            }}
-          />
-        )
-      })()}
 
       <AddTransactionModal
         open={modalOpen}

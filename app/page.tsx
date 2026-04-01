@@ -8,7 +8,7 @@ import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
 import { LayoutGrid, Settings, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
-import { DatePickerSheet } from '@/components/date-picker-sheet'
+import { DatePickerInline } from '@/components/date-picker-inline'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -177,14 +177,21 @@ export default function Home() {
         </div>
 
         <div className="px-5">
-          {/* 연월 타이틀 좌정렬 + > + 오늘 */}
-          <div className="flex items-center justify-between mt-1 mb-4">
-            <button onClick={() => setPickerOpen(true)} className="flex items-center gap-1">
+          {/* 연월 타이틀 + 오늘 */}
+          <div className="flex items-center justify-between mt-1 mb-2">
+            <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
               <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
-              <ChevronRight className="w-6 h-6 text-muted-foreground mt-1" />
+              <ChevronRight className={`w-6 h-6 text-muted-foreground mt-1 transition-transform ${pickerOpen ? 'rotate-90' : ''}`} />
             </button>
             <button onClick={goToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
           </div>
+          <DatePickerInline
+            open={pickerOpen}
+            mode="month"
+            year={calYear}
+            month={calMonth}
+            onSelect={(y, m) => { setCalYear(y); setCalMonth(m) }}
+          />
 
           {/* 달력 */}
           <MonthlyCalendar
@@ -232,15 +239,6 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      <DatePickerSheet
-        open={pickerOpen}
-        mode="month"
-        year={calYear}
-        month={calMonth}
-        onClose={() => setPickerOpen(false)}
-        onSelect={(y, m) => { setCalYear(y); setCalMonth(m); setPickerOpen(false) }}
-      />
 
       <AddTransactionModal
         open={modalOpen}
