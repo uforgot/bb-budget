@@ -195,8 +195,17 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
   // targetYear/targetMonth 연동
   useEffect(() => {
     if (targetYear == null || targetMonth == null) return
-    const idx = months.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
-    if (idx >= 0 && idx !== focusedMonthIndex) setFocusedMonthIndex(idx)
+    let idx = months.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
+    if (idx < 0) {
+      // 범위 밖이면 months 재생성
+      const anchor = new Date(targetYear, targetMonth - 1, 1)
+      const newMonths = buildInitialMonths(anchor)
+      setMonths(newMonths)
+      idx = newMonths.findIndex(m => m.year === targetYear && m.month === targetMonth - 1)
+      setFocusedMonthIndex(idx >= 0 ? idx : INITIAL_RANGE)
+    } else if (idx !== focusedMonthIndex) {
+      setFocusedMonthIndex(idx)
+    }
   }, [targetYear, targetMonth])
 
   // Touch slider state
