@@ -1,8 +1,9 @@
 'use client'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { FreeMode } from 'swiper/modules'
+import { Pagination } from 'swiper/modules'
 import 'swiper/css'
+import 'swiper/css/pagination'
 
 interface SummaryCard {
   label: string       // "N월 번 수입"
@@ -84,19 +85,18 @@ export function SummaryCardSlider({
   ]
 
   return (
-    <div className="mb-4 -mx-5">
+    <div className="mb-4">
       <Swiper
-        modules={[FreeMode]}
-        freeMode
-        slidesPerView="auto"
+        modules={[Pagination]}
+        slidesPerView={1}
         spaceBetween={12}
-        slidesOffsetBefore={20}
-        slidesOffsetAfter={20}
+        pagination={{ clickable: true }}
+        style={{ paddingBottom: '28px' }}
       >
         {cards.map(card => {
           const dt = diffText(card.diff, card.type, prevLabel)
           return (
-            <SwiperSlide key={card.label} style={{ width: '200px' }}>
+            <SwiperSlide key={card.label}>
               <div className="bg-surface rounded-2xl px-5 py-4 flex flex-col justify-between" style={{ minHeight: '110px' }}>
                 <p className="text-[12px] text-muted-foreground mb-2">{card.label}</p>
                 <p className={`text-[22px] font-bold tabular-nums ${card.color}`}>
