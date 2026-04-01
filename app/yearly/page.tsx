@@ -140,7 +140,7 @@ export default function Yearly() {
         {!searchMode && (
           <>
             {/* 연간 요약 카드 */}
-            <div className="bg-surface rounded-2xl px-5 py-4 mb-4">
+            <div className="bg-surface rounded-2xl px-5 py-4 mb-4 mt-4">
               <div className="flex items-center justify-between py-1.5">
                 <span className="text-[13px] text-muted-foreground">수입</span>
                 <span className="text-[14px] font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</span>
