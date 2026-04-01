@@ -91,6 +91,10 @@ export function SummaryCardSlider({
         slidesPerView={1}
         spaceBetween={12}
         pagination={{ clickable: true }}
+        threshold={10}
+        touchAngle={30}
+        touchMoveStopPropagation={false}
+        preventInteractionOnTransition
         style={{ paddingBottom: '28px' }}
       >
         {cards.map(card => {
