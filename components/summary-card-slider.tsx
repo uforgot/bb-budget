@@ -1,17 +1,6 @@
 'use client'
 
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/pagination'
-
-interface SummaryCard {
-  label: string       // "N월 번 수입"
-  amount: number
-  diff: number | null // 전월 대비 (null이면 비교 없음)
-  diffLabel: string   // "N-1월보다"
-  color: string       // tailwind text class
-}
+import { useRef, useState, useEffect } from 'react'
 
 function fmt(n: number) {
   const abs = Math.abs(n)
@@ -21,15 +10,13 @@ function fmt(n: number) {
 }
 
 function diffText(diff: number | null, type: 'income' | 'expense' | 'savings' | 'balance', prevLabel: string): string {
-  if (diff === null) return ''
+  if (diff === null || diff === undefined) return ''
   if (diff === 0) return '변동이 없어요.'
-  const fmted = fmt(diff)
-  const sign = diff > 0 ? '더 ' : ''
-  const less = diff < 0 ? '덜 ' : ''
-  if (type === 'income') return diff > 0 ? `${prevLabel}보다 ${fmted}원 더 벌었어요.` : `${prevLabel}보다 ${fmt(-diff)}원 덜 벌었어요.`
-  if (type === 'expense') return diff > 0 ? `${prevLabel}보다 ${fmted}원 더 썼어요.` : `${prevLabel}보다 ${fmt(-diff)}원 덜 썼어요.`
-  if (type === 'savings') return diff > 0 ? `${prevLabel}보다 ${fmted}원 더 저축했어요.` : `${prevLabel}보다 ${fmt(-diff)}원 줄었어요.`
-  return diff > 0 ? `${prevLabel}보다 ${fmted}원 늘었어요.` : `${prevLabel}보다 ${fmt(-diff)}원 줄었어요.`
+  const f = fmt(Math.abs(diff))
+  if (type === 'income') return diff > 0 ? `${prevLabel}보다 ${f}원 더 벌었어요.` : `${prevLabel}보다 ${f}원 덜 벌었어요.`
+  if (type === 'expense') return diff > 0 ? `${prevLabel}보다 ${f}원 더 썼어요.` : `${prevLabel}보다 ${f}원 덜 썼어요.`
+  if (type === 'savings') return diff > 0 ? `${prevLabel}보다 ${f}원 더 저축했어요.` : `${prevLabel}보다 ${f}원 줄었어요.`
+  return diff > 0 ? `${prevLabel}보다 ${f}원 늘었어요.` : `${prevLabel}보다 ${f}원 줄었어요.`
 }
 
 interface SummaryCardSliderProps {
@@ -48,72 +35,116 @@ interface SummaryCardSliderProps {
 
 export function SummaryCardSlider({
   month, income, expense, savings, balance,
-  prevMonth, prevIncome, prevExpense, prevSavings, prevBalance,
-  hasPrev,
+  prevMonth, prevIncome, prevExpense, prevSavings, prevBalance, hasPrev,
 }: SummaryCardSliderProps) {
   const prevLabel = `${prevMonth}월`
+  const [current, setCurrent] = useState(0)
+  const [dragX, setDragX] = useState(0)
+  const isDragging = useRef(false)
+  const startX = useRef(0)
+  const startY = useRef(0)
+  const dragDirection = useRef<'h' | 'v' | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const cards = [
-    {
-      label: `${month}월 번 수입`,
-      amount: income,
-      diff: hasPrev ? income - prevIncome : null,
-      type: 'income' as const,
-      color: 'text-accent-blue',
-    },
-    {
-      label: `${month}월 쓴 지출`,
-      amount: expense,
-      diff: hasPrev ? expense - prevExpense : null,
-      type: 'expense' as const,
-      color: 'text-accent-coral',
-    },
-    {
-      label: `${month}월 한 저축`,
-      amount: savings,
-      diff: hasPrev ? savings - prevSavings : null,
-      type: 'savings' as const,
-      color: 'text-accent-mint',
-    },
-    {
-      label: `${month}월 남은 잔액`,
-      amount: balance,
-      diff: hasPrev ? balance - prevBalance : null,
-      type: 'balance' as const,
-      color: balance >= 0 ? 'text-foreground' : 'text-accent-coral',
-    },
+    { label: `${month}월 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, color: 'text-accent-blue' },
+    { label: `${month}월 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, color: 'text-accent-coral' },
+    { label: `${month}월 한 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, color: 'text-accent-mint' },
+    { label: `${month}월 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, color: balance >= 0 ? 'text-foreground' : 'text-accent-coral' },
   ]
+  const total = cards.length
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    isDragging.current = true
+    dragDirection.current = null
+    startX.current = e.touches[0].clientX
+    startY.current = e.touches[0].clientY
+    setDragX(0)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging.current) return
+    const dx = e.touches[0].clientX - startX.current
+    const dy = e.touches[0].clientY - startY.current
+
+    // 방향 결정 (10px threshold)
+    if (!dragDirection.current) {
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+        dragDirection.current = 'h'
+      } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) {
+        dragDirection.current = 'v'
+        isDragging.current = false
+        setDragX(0)
+        return
+      } else {
+        return
+      }
+    }
+
+    if (dragDirection.current === 'h') {
+      e.preventDefault()
+      e.stopPropagation()
+      const w = containerRef.current?.offsetWidth ?? 0
+      const clamped = Math.max(-w * 0.6, Math.min(w * 0.6, dx))
+      setDragX(clamped)
+    }
+  }
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!isDragging.current) return
+    isDragging.current = false
+    const w = containerRef.current?.offsetWidth ?? 1
+    if (dragX < -w * 0.25 && current < total - 1) setCurrent(c => c + 1)
+    else if (dragX > w * 0.25 && current > 0) setCurrent(c => c - 1)
+    setDragX(0)
+    dragDirection.current = null
+  }
+
+  const translateX = -(current * 100) + (dragX / (containerRef.current?.offsetWidth || 1)) * 100
 
   return (
-    <div className="mb-4">
-      <Swiper
-        modules={[Pagination]}
-        slidesPerView={1}
-        spaceBetween={12}
-        pagination={{ clickable: true }}
-        threshold={10}
-        touchAngle={45}
-        touchStartPreventDefault={false}
-        preventInteractionOnTransition
-        style={{ paddingBottom: '28px', touchAction: 'pan-y' }}
+    <div className="mb-4 overflow-hidden" ref={containerRef}>
+      {/* 슬라이드 트랙 */}
+      <div
+        className="flex"
+        style={{
+          transform: `translateX(${translateX}%)`,
+          transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
+          willChange: 'transform',
+        }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         {cards.map(card => {
           const dt = diffText(card.diff, card.type, prevLabel)
           return (
-            <SwiperSlide key={card.label}>
-              <div className="bg-surface rounded-2xl px-5 py-4 flex flex-col justify-between" style={{ minHeight: '110px' }}>
+            <div
+              key={card.label}
+              className="flex-shrink-0 w-full"
+            >
+              <div className="bg-surface rounded-2xl px-5 py-4 mx-0" style={{ minHeight: '110px' }}>
                 <p className="text-[12px] text-muted-foreground mb-2">{card.label}</p>
                 <p className={`text-[22px] font-bold tabular-nums ${card.color}`}>
                   ₩{card.amount.toLocaleString()}
                 </p>
-                {dt && (
-                  <p className="text-[11px] text-muted-foreground mt-2 leading-tight">{dt}</p>
-                )}
+                {dt && <p className="text-[11px] text-muted-foreground mt-2 leading-tight">{dt}</p>}
               </div>
-            </SwiperSlide>
+            </div>
           )
         })}
-      </Swiper>
+      </div>
+
+      {/* 도트 인디케이터 */}
+      <div className="flex justify-center gap-1.5 mt-3">
+        {cards.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`rounded-full transition-all ${i === current ? 'w-4 h-1.5 bg-foreground' : 'w-1.5 h-1.5 bg-foreground/20'}`}
+          />
+        ))}
+      </div>
     </div>
   )
 }
