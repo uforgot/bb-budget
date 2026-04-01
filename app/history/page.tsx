@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { DatePickerModal } from '@/components/date-picker-modal'
+import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 
@@ -428,33 +429,41 @@ export default function History() {
 
               {/* 이번 달 수입/지출/저축/잔액 */}
               {(() => {
-                // 저축: 해당 월 말까지 누적 (1월에 넣은 것도 2,3월에 표시)
                 const monthSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
-                // 잔액 = 누적수입 - 누적지출 - 누적저축 (해당 월 말까지)
                 const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
                 const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
                 const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
                 const monthBalance = cumIncome - cumExpense - cumSavings
+
+                // 전월 데이터
+                const prevM = actualMonth === 1 ? 12 : actualMonth - 1
+                const prevY = actualMonth === 1 ? targetYear - 1 : targetYear
+                const prevDays = new Date(prevY, prevM, 0).getDate()
+                const prevEnd = `${prevY}-${String(prevM).padStart(2,'0')}-${String(prevDays).padStart(2,'0')}`
+                const prevStart = `${prevY}-${String(prevM).padStart(2,'0')}-01`
+                const prevTxs = transactions.filter(t => t.date >= prevStart && t.date <= prevEnd)
+                const prevIncome = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+                const prevExpense = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+                const prevSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= prevEnd && (!t.end_date || t.end_date > prevEnd)).reduce((s, t) => s + t.amount, 0)
+                const prevCumInc = transactions.filter(t => t.type === 'income' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
+                const prevCumExp = transactions.filter(t => t.type === 'expense' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
+                const prevBalance = prevCumInc - prevCumExp - prevSavingsAmt
+                const hasPrev = prevTxs.length > 0
+
                 return (
-                  <div className="bg-surface rounded-2xl px-5 py-4 mb-4">
-                    <div className="flex items-center justify-between py-1.5">
-                      <span className="text-[13px] text-muted-foreground">수입</span>
-                      <span className="text-[14px] font-semibold tabular-nums text-accent-blue">₩{monthIncome.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1.5">
-                      <span className="text-[13px] text-muted-foreground">지출</span>
-                      <span className="text-[14px] font-semibold tabular-nums text-accent-coral">₩{monthExpense.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1.5">
-                      <span className="text-[13px] text-muted-foreground">저축</span>
-                      <span className="text-[14px] font-semibold tabular-nums text-accent-mint">₩{monthSavingsAmt.toLocaleString()}</span>
-                    </div>
-                    <div className="border-t border-border mt-2 mb-1" />
-                    <div className="flex items-center justify-between py-1.5">
-                      <span className="text-[13px] text-muted-foreground">잔액</span>
-                      <span className={`text-[14px] font-bold tabular-nums ${monthBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{monthBalance.toLocaleString()}</span>
-                    </div>
-                  </div>
+                  <SummaryCardSlider
+                    month={actualMonth}
+                    income={monthIncome}
+                    expense={monthExpense}
+                    savings={monthSavingsAmt}
+                    balance={monthBalance}
+                    prevMonth={prevM}
+                    prevIncome={prevIncome}
+                    prevExpense={prevExpense}
+                    prevSavings={prevSavingsAmt}
+                    prevBalance={prevBalance}
+                    hasPrev={hasPrev}
+                  />
                 )
               })()}
 
