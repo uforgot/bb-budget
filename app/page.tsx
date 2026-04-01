@@ -185,7 +185,7 @@ export default function Home() {
                 </select>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
               </label>
-              <label className="flex items-center gap-1 cursor-pointer">
+              <label className="flex items-center gap-0 cursor-pointer">
                 <select value={calMonth} onChange={e => { setCalMonth(Number(e.target.value)); setCalKey(k => k+1) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                   {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
                 </select>
@@ -209,7 +209,7 @@ export default function Home() {
         </div>
 
       {/* 하단 영역 */}
-      <div className="min-h-[50vh] pb-32" style={{ backgroundColor: '#000000' }}>
+      <div className="bg-surface min-h-[50vh] pb-32">
         <div className="px-5 pt-4">
           {/* 날짜 헤더 + 거래 내역 */}
           <button
