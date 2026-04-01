@@ -7,7 +7,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
-import { LayoutGrid, ChevronDown, ChevronUp, Settings } from 'lucide-react'
+import { LayoutGrid, Settings } from 'lucide-react'
 
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -82,7 +82,6 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
-  const [calendarOpen, setCalendarOpen] = useState(false)
   const [dayNet, setDayNet] = useState(0)
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
@@ -134,119 +133,15 @@ export default function Home() {
       </div>
 
       <div className="px-5">
-        {/* 이번 주 + 전체 달력 카드 */}
-        {(() => {
-          const todayDate = new Date(calYear, calMonth - 1, today.getDate())
-          const dow = todayDate.getDay() // 0=일
-          // 이번 주 일요일부터 토요일
-          const weekDates = Array.from({ length: 7 }, (_, i) => {
-            const d = new Date(todayDate)
-            d.setDate(todayDate.getDate() - dow + i)
-            return d
-          })
-          return (
-            <div className="bg-surface rounded-2xl mb-3 mt-2 overflow-hidden">
-              {/* 월 헤더 */}
-              <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                <span className="text-[18px] font-bold">{calMonth}월</span>
-              </div>
-              {/* 요일 헤더 */}
-              <div className="grid grid-cols-7 px-3 mb-1">
-                {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
-                  <div key={d} className={`text-center text-[12px] font-medium py-1 ${
-                    i === 0 ? 'text-accent-coral' : i === 6 ? 'text-accent-blue' : 'text-muted-foreground'
-                  }`}>{d}</div>
-                ))}
-              </div>
-              {/* 이번 주 날짜 */}
-              <div className="grid grid-cols-7 px-3 pb-2">
-                {weekDates.map((d, i) => {
-                  const isToday = d.getDate() === today.getDate() &&
-                    d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()
-                  const isSelected = d.getDate() === selectedDay &&
-                    d.getMonth() + 1 === calMonth && d.getFullYear() === calYear
-                  const isOtherMonth = d.getMonth() + 1 !== calMonth
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => { setCalYear(d.getFullYear()); setCalMonth(d.getMonth() + 1); setSelectedDay(d.getDate()) }}
-                      className="flex items-center justify-center h-10"
-                    >
-                      <span className={`w-8 h-8 flex items-center justify-center rounded-full text-[16px] font-medium ${
-                        isToday
-                          ? 'bg-accent-blue text-white'
-                          : isSelected
-                          ? 'bg-muted'
-                          : isOtherMonth
-                          ? 'text-muted-foreground/40'
-                          : i === 0 ? 'text-accent-coral' : i === 6 ? 'text-accent-blue' : 'text-foreground'
-                      }`}>
-                        {d.getDate()}
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-              {/* 나머지 주 인라인 (calendarOpen) */}
-              {calendarOpen && (() => {
-                const firstDay = new Date(calYear, calMonth - 1, 1).getDay()
-                const daysInMonth = new Date(calYear, calMonth, 0).getDate()
-                // 전체 달력 그리드용 셨 배열 (첫 주요일을 일요일로)
-                const cells: (number | null)[] = [
-                  ...Array(firstDay).fill(null),
-                  ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-                ]
-                // 이번 주에 속한 달 첫째 날 구하기
-                const todayDow = new Date(calYear, calMonth - 1, today.getDate()).getDay()
-                const weekStart = today.getDate() - todayDow
-                // 첫째 주만 오늘부터 그리는지 확인
-                const currentWeekRow = Math.floor((firstDay + today.getDate() - 1) / 7)
-                const rowsToRender = Array.from({ length: Math.ceil(cells.length / 7) }, (_, row) => row)
-                  .filter(row => row !== currentWeekRow) // 이번 주 제외
-                return (
-                  <div className="px-3 pb-3">
-                    {rowsToRender.map(row => (
-                      <div key={row} className="grid grid-cols-7">
-                        {cells.slice(row * 7, row * 7 + 7).map((day, i) => (
-                          <button
-                            key={i}
-                            disabled={!day}
-                            onClick={() => day && setSelectedDay(day)}
-                            className="flex items-center justify-center h-10"
-                          >
-                            {day && (
-                              <span className={`w-8 h-8 flex items-center justify-center rounded-full text-[16px] font-medium ${
-                                day === today.getDate() && calMonth === today.getMonth() + 1 && calYear === today.getFullYear()
-                                  ? 'bg-accent-blue text-white'
-                                  : day === selectedDay
-                                  ? 'bg-muted'
-                                  : (row * 7 + i) % 7 === 0 ? 'text-accent-coral'
-                                  : (row * 7 + i) % 7 === 6 ? 'text-accent-blue'
-                                  : 'text-foreground'
-                              }`}>
-                                {day}
-                              </span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )
-              })()}
-              {/* 아래꺽쇠 — 전체 달력 토글 */}
-              <button
-                onClick={() => setCalendarOpen(prev => !prev)}
-                className="w-full flex items-center justify-center py-2 border-t border-border"
-              >
-                {calendarOpen
-                  ? <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                  : <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                }
-              </button>
-            </div>
-          )
-        })()}
+        {/* 달력 카드 */}
+        <div className="bg-surface rounded-2xl mb-3 mt-2 overflow-hidden">
+          <MonthlyCalendar
+            onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m); loadSummary() }}
+            onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
+            onTransactionClick={(tx) => { setEditTx(tx); setModalOpen(true) }}
+            refreshKey={refreshKey}
+          />
+        </div>
 
         {/* 일별 거래 내역 (항상 표시) */}
         <DayTransactions date={selectedDate} refreshKey={refreshKey} onEdit={(tx) => { setEditTx(tx); setModalOpen(true) }} />
