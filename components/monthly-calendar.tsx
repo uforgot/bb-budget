@@ -171,9 +171,10 @@ export interface MonthlyCalendarProps {
   onTransactionClick?: (transaction: Transaction) => void
   refreshKey?: number
   showHeader?: boolean // false 이면 연월 헤더 숨김
+  showDayDetail?: boolean // false 이면 날짜 클릭 시 내역 표시 안 함
 }
 
-export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true }: MonthlyCalendarProps) {
   const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(new Date()))
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
   const [headerLabel, setHeaderLabel] = useState(() => {
@@ -429,7 +430,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
       })()}
 
       {/* Selected day detail */}
-      {selectedDay && (() => {
+      {showDayDetail && selectedDay && (() => {
         const dayOfWeek = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'][
           new Date(selectedDay.year, selectedDay.month, selectedDay.day).getDay()
         ]

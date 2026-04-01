@@ -188,6 +188,7 @@ export default function Home() {
         <div className="bg-surface rounded-2xl overflow-hidden mb-4">
           <MonthlyCalendar
             showHeader={false}
+            showDayDetail={false}
             onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m) }}
             onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
             onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
