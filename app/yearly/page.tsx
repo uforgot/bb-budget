@@ -94,7 +94,7 @@ export default function Yearly() {
           year={targetYear}
           onSelect={(y) => { setYearOffset(y - today.getFullYear()); setPickerOpen(false) }}
         />
-        <div className="h-4" />
+        <div className="h-8" />
 
         {/* 검색 */}
         {searchMode && (
