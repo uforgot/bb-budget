@@ -123,12 +123,12 @@ export function SummaryCardSlider({
               key={card.label}
               className="flex-shrink-0 w-full"
             >
-              <div className="rounded-2xl px-5 py-5 mx-0 flex flex-col justify-between" style={{ minHeight: '150px', backgroundColor: card.bg }}>
-                <p className="text-[13px] text-white/70 mb-3">{card.label}</p>
-                <p className="text-[26px] font-bold tabular-nums text-white">
+              <div className="rounded-2xl px-5 pt-5 pb-4 mx-0 flex flex-col" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+                <p className="text-[13px] font-semibold text-white/80 mb-1">{card.label}</p>
+                <p className="text-[28px] font-bold tabular-nums text-white mt-1 mb-auto">
                   ₩{card.amount.toLocaleString()}
                 </p>
-                {dt && <p className="text-[11px] text-white/60 mt-3 leading-tight">{dt}</p>}
+                {dt && <p className="text-[13px] font-semibold text-white/70 mt-3 leading-tight">{dt}</p>}
               </div>
             </div>
           )
