@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface DatePickerInlineProps {
   open: boolean
@@ -28,6 +28,8 @@ function DrumCol({
   const isDragging = useRef(false)
   const dragStartY = useRef(0)
   const dragStartScroll = useRef(0)
+  const isScrollingRef = useRef(false)
+  const [localSelected, setLocalSelected] = useState(selected)
 
   const scrollToIndex = (idx: number, smooth = true) => {
     const el = listRef.current
@@ -35,18 +37,43 @@ function DrumCol({
     el.scrollTo({ top: idx * ITEM_H, behavior: smooth ? 'smooth' : 'instant' })
   }
 
+  // 외부 selected 변경 시만 스크롤 동기
+  useEffect(() => {
+    if (selected !== localSelected && !isScrollingRef.current) {
+      setLocalSelected(selected)
+      const idx = items.indexOf(selected)
+      if (idx >= 0) scrollToIndex(idx, false)
+    }
+  }, [selected])
+
+  // 최초 마운트
   useEffect(() => {
     const idx = items.indexOf(selected)
     if (idx >= 0) scrollToIndex(idx, false)
-  }, [selected, items])
+  }, [])
 
-  const handleScroll = () => {
-    if (isDragging.current) return
+  const commitScroll = () => {
     const el = listRef.current
     if (!el) return
     const idx = Math.round(el.scrollTop / ITEM_H)
     const clamped = Math.max(0, Math.min(idx, items.length - 1))
-    if (items[clamped] !== selected) onSelect(items[clamped])
+    scrollToIndex(clamped)
+    setLocalSelected(items[clamped])
+    onSelect(items[clamped])
+    setTimeout(() => { isScrollingRef.current = false }, 50)
+  }
+
+  const handleScroll = () => {
+    if (isDragging.current) return
+    isScrollingRef.current = true
+    const el = listRef.current
+    if (!el) return
+    const idx = Math.round(el.scrollTop / ITEM_H)
+    const clamped = Math.max(0, Math.min(idx, items.length - 1))
+    if (items[clamped] !== localSelected) {
+      setLocalSelected(items[clamped])
+      onSelect(items[clamped])
+    }
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -63,12 +90,7 @@ function DrumCol({
   const handleMouseUp = () => {
     if (!isDragging.current) return
     isDragging.current = false
-    const el = listRef.current
-    if (!el) return
-    const idx = Math.round(el.scrollTop / ITEM_H)
-    const clamped = Math.max(0, Math.min(idx, items.length - 1))
-    scrollToIndex(clamped)
-    onSelect(items[clamped])
+    commitScroll()
   }
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -79,6 +101,7 @@ function DrumCol({
     const cur = Math.round(el.scrollTop / ITEM_H)
     const next = Math.max(0, Math.min(cur + dir, items.length - 1))
     scrollToIndex(next)
+    setLocalSelected(items[next])
     onSelect(items[next])
   }
 
@@ -110,7 +133,7 @@ function DrumCol({
             style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
           >
             <span className={`text-[17px] transition-all ${
-              v === selected
+              v === localSelected
                 ? 'text-foreground font-semibold'
                 : 'text-foreground/30 font-normal'
             }`}>
