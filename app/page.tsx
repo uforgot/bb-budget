@@ -184,8 +184,8 @@ export default function Home() {
           </button>
         </div>
 
-        {/* 달력 카드 */}
-        <div className="bg-surface rounded-2xl overflow-hidden mb-4">
+        {/* 달력 (박스 없이) */}
+        <div className="mb-4">
           <MonthlyCalendar
             showHeader={false}
             showDayDetail={false}
