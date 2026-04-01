@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
-import { TopHeader } from '@/components/top-header'
+
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, deleteTransaction, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
 import { SwipeToDelete } from '@/components/swipe-to-delete'
@@ -234,43 +234,67 @@ export default function History() {
 
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={async () => { await loadData() }}>
-      <div className="px-5">
-        {/* 상단: 컨 타이틀 + 우측 토글 */}
-        <div className="flex items-end justify-between mt-1 mb-2">
-          <h1 className="text-[28px] font-bold">
-            {viewMode === 'monthly'
-              ? (() => { const now = new Date(); const tm = now.getMonth() + 1 + monthOffset; const ty = now.getFullYear() + Math.floor((tm - 1) / 12); const am = ((tm - 1) % 12 + 12) % 12 + 1; return `${ty}년 ${am}월` })()
-              : (() => { const now = new Date(); return `${now.getFullYear() + yearOffset}년` })()
-            }
-          </h1>
-          <div className="flex items-center gap-2 mb-1">
-            {/* 검색 */}
-            <button
-              onClick={() => { setSearchMode(!searchMode); setSearchQuery('') }}
-              className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${searchMode ? 'text-foreground' : 'text-muted-foreground'}`}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-              </svg>
-            </button>
-            {/* 주간/월간 pill 토글 */}
-            <div className="flex items-center bg-muted rounded-full p-1">
-              {([['monthly', '주간'], ['yearly', '월간']] as [ViewMode, string][]).map(([mode, label]) => (
-                <button
-                  key={mode}
-                  onClick={() => { setViewMode(mode); setSearchMode(false); setSearchQuery(''); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
-                  className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
-                    !searchMode && viewMode === mode
-                      ? 'bg-accent-blue text-white shadow-sm'
-                      : 'text-muted-foreground'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+      {/* 상단 바 */}
+      <div className="sticky top-0 z-30 bg-background px-5">
+        <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+          <button
+            onClick={() => { setSearchMode(!searchMode); setSearchQuery('') }}
+            className={`flex items-center justify-center w-8 h-8 rounded-lg ${searchMode ? 'text-foreground' : 'text-muted-foreground'}`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+            </svg>
+          </button>
+          <div className="flex items-center bg-muted rounded-full p-1">
+            {([['monthly', '주간'], ['yearly', '월간']] as [ViewMode, string][]).map(([mode, label]) => (
+              <button
+                key={mode}
+                onClick={() => { setViewMode(mode); setSearchMode(false); setSearchQuery(''); setWeekOffset(0); setMonthOffset(0); setYearOffset(0); setCameFromMonthly(false); setCameFromYearly(false) }}
+                className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
+                  !searchMode && viewMode === mode ? 'bg-accent-blue text-white' : 'text-muted-foreground'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
+      </div>
+
+      <div className="px-5">
+        {/* 컨 타이틀 + 좌우 꺽쇠 */}
+        {(() => {
+          const now = new Date()
+          if (viewMode === 'monthly') {
+            const tm = now.getMonth() + 1 + monthOffset
+            const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
+            const am = ((tm - 1) % 12 + 12) % 12 + 1
+            return (
+              <div className="flex items-center justify-between mt-1 mb-4">
+                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
+                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+              </div>
+            )
+          } else {
+            const ty = now.getFullYear() + yearOffset
+            return (
+              <div className="flex items-center justify-between mt-1 mb-4">
+                <button onClick={() => setYearOffset(y => y - 1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <h1 className="text-[28px] font-bold">{ty}년</h1>
+                <button onClick={() => setYearOffset(y => y + 1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+              </div>
+            )
+          }
+        })()}
 
         {/* 검색 모드 */}
         {searchMode && (
@@ -518,16 +542,7 @@ export default function History() {
 
           return (
             <div className="flex flex-col mt-2">
-              {/* 월 헤더 + 좌우 화살표 */}
-              <div className="flex items-center justify-between px-5 py-3">
-                <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="text-muted-foreground p-1">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-                <span className="text-[16px] font-bold">{targetYear}년 {actualMonth}월</span>
-                <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="text-muted-foreground p-1">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-              </div>
+
 
               {/* 이번 달 수입/지출/저축/잔액 */}
               {(() => {
@@ -722,16 +737,7 @@ export default function History() {
 
           return (
             <div className="flex flex-col mt-2">
-              {/* 헤더 */}
-              <div className="flex items-center justify-between px-5 py-3">
-                <button onClick={() => setYearOffset(y => y - 1)} className="text-muted-foreground p-1">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-                <span className="text-[16px] font-bold">{yearLabel}</span>
-                <button onClick={() => setYearOffset(y => y + 1)} className="text-muted-foreground p-1">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-              </div>
+
 
               {/* 연간 수입/지출 */}
               <div className="mb-4">
