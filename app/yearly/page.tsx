@@ -82,7 +82,7 @@ export default function Yearly() {
       </div>
 
       <div className="px-5">
-        {/* 큰 타이틀 + 인라인 picker */}
+        {/* 큰 타이틀 */}
         <div className="flex items-center justify-between mt-1 mb-4">
           <label className="flex items-center gap-1 cursor-pointer">
             <select value={targetYear} onChange={e => setYearOffset(Number(e.target.value)-today.getFullYear())} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
@@ -92,7 +92,9 @@ export default function Yearly() {
           </label>
           <button onClick={() => setYearOffset(0)} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">금년</button>
         </div>
+      </div>
 
+      <div className="px-5">
         {/* 검색 */}
         {searchMode && (
           <div className="mb-4">
