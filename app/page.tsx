@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
@@ -113,7 +113,8 @@ export default function Home() {
   const [txOpen, setTxOpen] = useState(true)
   const [dayTotal, setDayTotal] = useState(0)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [calKey, setCalKey] = useState(0) // select로 정확히 이동할 때만 돌림
+  const [calKey, setCalKey] = useState(0)
+  const selectChangingRef = useRef(false) // select 변경 중 플래그
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
   const selectedDateLabel = (() => {
@@ -147,6 +148,8 @@ export default function Home() {
   }, [])
 
   const handleMonthChange = useCallback((y: number, m: number) => {
+    // select 변경 중이면 캘린더의 onMonthChange 무시
+    if (selectChangingRef.current) return
     setCalYear(y); setCalMonth(m)
   }, [])
   const handleDaySelect = useCallback((y: number, m: number, d: number) => {
@@ -187,13 +190,13 @@ export default function Home() {
           <div className="flex items-center justify-between mt-1 mb-4">
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-1 cursor-pointer">
-                <select value={calYear} onChange={e => { setCalYear(Number(e.target.value)); setCalKey(k => k+1) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                <select value={calYear} onChange={e => { selectChangingRef.current = true; setCalYear(Number(e.target.value)); setCalKey(k => k+1); setTimeout(() => { selectChangingRef.current = false }, 500) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                   {Array.from({length:20},(_,i)=>new Date().getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
                 </select>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
               </label>
               <label className="flex items-center cursor-pointer">
-                <select value={calMonth} onChange={e => { setCalMonth(Number(e.target.value)); setCalKey(k => k+1) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                <select value={calMonth} onChange={e => { selectChangingRef.current = true; setCalMonth(Number(e.target.value)); setCalKey(k => k+1); setTimeout(() => { selectChangingRef.current = false }, 500) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                   {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
                 </select>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0 -ml-1.5"><path d="m6 9 6 6 6-6"/></svg>
