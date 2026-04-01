@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { DatePickerSheet } from '@/components/date-picker-sheet'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 
@@ -90,6 +91,7 @@ export default function History() {
   const [cameFromMonthly, setCameFromMonthly] = useState(false)
   const [cameFromYearly, setCameFromYearly] = useState(false)
   const [searchMode, setSearchMode] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Transaction[]>([])
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set())
@@ -254,20 +256,17 @@ export default function History() {
       </div>
 
       <div className="px-5">
-        {/* 큰 타이틀 + 좌우 꺽쇠 (월간 고정) */}
+        {/* 큰 타이틀 좌정렬 + > */}
         {(() => {
           const now = new Date()
           const tm = now.getMonth() + 1 + monthOffset
           const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
           const am = ((tm - 1) % 12 + 12) % 12 + 1
           return (
-            <div className="flex items-center justify-between mt-1 mb-4">
-              <button onClick={() => { setMonthOffset(m => m - 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-              </button>
-              <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
-              <button onClick={() => { setMonthOffset(m => m + 1); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+            <div className="flex items-center mt-1 mb-4">
+              <button onClick={() => setPickerOpen(true)} className="flex items-center gap-1">
+                <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mt-1"><path d="m9 18 6-6-6-6" /></svg>
               </button>
             </div>
           )
@@ -670,6 +669,30 @@ export default function History() {
           )
         })()}
       </div>
+
+      {(() => {
+        const now = new Date()
+        const tm = now.getMonth() + 1 + monthOffset
+        const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
+        const am = ((tm - 1) % 12 + 12) % 12 + 1
+        return (
+          <DatePickerSheet
+            open={pickerOpen}
+            mode="month"
+            year={ty}
+            month={am}
+            onClose={() => setPickerOpen(false)}
+            onSelect={(y, m) => {
+              const now2 = new Date()
+              const diff = (y - now2.getFullYear()) * 12 + (m - (now2.getMonth() + 1))
+              setMonthOffset(diff)
+              setExpandedWeeks(new Set())
+              setAutoExpanded(false)
+              setPickerOpen(false)
+            }}
+          />
+        )
+      })()}
 
       <AddTransactionModal
         open={modalOpen}

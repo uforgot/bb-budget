@@ -7,11 +7,13 @@ import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, getCategories, type Transaction } from '@/lib/api'
+import { DatePickerSheet } from '@/components/date-picker-sheet'
 
 export default function Yearly() {
   const router = useRouter()
   const today = new Date()
   const [yearOffset, setYearOffset] = useState(0)
+  const [pickerOpen, setPickerOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -79,14 +81,11 @@ export default function Yearly() {
       </div>
 
       <div className="px-5">
-        {/* 큰 타이틀 + 꺽쇠 */}
-        <div className="flex items-center justify-between mt-1 mb-4">
-          <button onClick={() => setYearOffset(y => y - 1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-          </button>
-          <h1 className="text-[28px] font-bold">{targetYear}년</h1>
-          <button onClick={() => setYearOffset(y => y + 1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+        {/* 큰 타이틀 좌정렬 + > */}
+        <div className="flex items-center mt-1 mb-4">
+          <button onClick={() => setPickerOpen(true)} className="flex items-center gap-1">
+            <h1 className="text-[28px] font-bold">{targetYear}년</h1>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mt-1"><path d="m9 18 6-6-6-6" /></svg>
           </button>
         </div>
 
@@ -194,6 +193,14 @@ export default function Yearly() {
           </>
         )}
       </div>
+
+      <DatePickerSheet
+        open={pickerOpen}
+        mode="year"
+        year={targetYear}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(y) => { setYearOffset(y - today.getFullYear()); setPickerOpen(false) }}
+      />
 
       <AddTransactionModal
         open={modalOpen}
