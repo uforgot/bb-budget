@@ -8,7 +8,7 @@ import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
 import { LayoutGrid, Settings, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
-import { DatePickerInline } from '@/components/date-picker-inline'
+import { DatePickerModal } from '@/components/date-picker-modal'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -179,18 +179,11 @@ export default function Home() {
           <div className="flex items-center justify-between mt-1 mb-2">
             <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
               <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
-              <ChevronRight className={`w-5 h-5 text-muted-foreground mt-1 transition-transform ${pickerOpen ? 'rotate-90' : ''}`} />
+              <ChevronRight className="w-5 h-5 text-muted-foreground mt-1" />
             </button>
             <button onClick={goToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
           </div>
-          <DatePickerInline
-            open={pickerOpen}
-            mode="month"
-            year={calYear}
-            month={calMonth}
-            onSelect={(y, m) => { setCalYear(y); setCalMonth(m) }}
-          />
-          <div className="h-5" />
+          <div className="h-4" />
 
           {/* 달력 */}
           <MonthlyCalendar
@@ -239,6 +232,15 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      <DatePickerModal
+        open={pickerOpen}
+        mode="month"
+        year={calYear}
+        month={calMonth}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(y, m) => { setCalYear(y); setCalMonth(m) }}
+      />
 
       <AddTransactionModal
         open={modalOpen}

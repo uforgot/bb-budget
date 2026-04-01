@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { DatePickerInline } from '@/components/date-picker-inline'
+import { DatePickerModal } from '@/components/date-picker-modal'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 
@@ -268,27 +268,14 @@ export default function History() {
               <div className="flex items-center justify-between mt-1 mb-2">
                 <button onClick={() => setPickerOpen(v => !v)} className="flex items-center gap-1">
                   <h1 className="text-[28px] font-bold">{ty}년 {am}월</h1>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground mt-1 transition-transform ${pickerOpen ? 'rotate-90' : ''}`}><path d="m9 18 6-6-6-6" /></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mt-1"><path d="m9 18 6-6-6-6" /></svg>
                 </button>
                 <button
                   onClick={() => { const n = new Date(); const diff = (n.getFullYear() - new Date().getFullYear()) * 12 + (n.getMonth() + 1 - (new Date().getMonth() + 1)); setMonthOffset(0); setExpandedWeeks(new Set()); setAutoExpanded(false); setPickerOpen(false) }}
                   className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold"
                 >금월</button>
               </div>
-              <DatePickerInline
-                open={pickerOpen}
-                mode="month"
-                year={ty}
-                month={am}
-                onSelect={(y, m) => {
-                  const now2 = new Date()
-                  const diff = (y - now2.getFullYear()) * 12 + (m - (now2.getMonth() + 1))
-                  setMonthOffset(diff)
-                  setExpandedWeeks(new Set())
-                  setAutoExpanded(false)
-                }}
-              />
-              <div className="h-5" />
+              <div className="h-4" />
             </>
           )
         })()}
@@ -690,6 +677,29 @@ export default function History() {
           )
         })()}
       </div>
+
+      {(() => {
+        const now = new Date()
+        const tm = now.getMonth() + 1 + monthOffset
+        const ty = now.getFullYear() + Math.floor((tm - 1) / 12)
+        const am = ((tm - 1) % 12 + 12) % 12 + 1
+        return (
+          <DatePickerModal
+            open={pickerOpen}
+            mode="month"
+            year={ty}
+            month={am}
+            onClose={() => setPickerOpen(false)}
+            onSelect={(y, m) => {
+              const now2 = new Date()
+              const diff = (y - now2.getFullYear()) * 12 + (m - (now2.getMonth() + 1))
+              setMonthOffset(diff)
+              setExpandedWeeks(new Set())
+              setAutoExpanded(false)
+            }}
+          />
+        )
+      })()}
 
       <AddTransactionModal
         open={modalOpen}
