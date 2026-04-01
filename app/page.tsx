@@ -154,7 +154,7 @@ export default function Home() {
 
   return (
     <PullToRefresh
-      className="min-h-dvh bg-background"
+      className="min-h-dvh bg-background pb-32"
       onRefresh={async () => setRefreshKey(k => k + 1)}
     >
       {/* 상단 바 */}
