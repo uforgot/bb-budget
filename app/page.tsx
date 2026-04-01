@@ -146,46 +146,47 @@ export default function Home() {
 
   return (
     <PullToRefresh
-      className="min-h-dvh bg-background pb-32"
+      className="min-h-dvh bg-background"
       onRefresh={async () => setRefreshKey(k => k + 1)}
     >
-      {/* 상단 바 */}
-      <div className="sticky top-0 z-30 bg-background px-5">
-        <div
-          className="flex items-center justify-between h-14"
-          style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
-        >
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center justify-center w-8 h-8 rounded-lg"
-            aria-label="대시보드"
+      {/* 상단 영역 (bg-background) */}
+      <div className="bg-background">
+        {/* 상단 바 */}
+        <div className="sticky top-0 z-30 bg-background px-5">
+          <div
+            className="flex items-center justify-between h-14"
+            style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
           >
-            <LayoutGrid className="w-5 h-5 text-foreground" />
-          </button>
-          <button
-            onClick={() => router.push('/settings')}
-            className="flex items-center justify-center w-8 h-8 rounded-lg"
-            aria-label="설정"
-          >
-            <Settings className="w-5 h-5 text-foreground" />
-          </button>
-        </div>
-      </div>
-
-      <div className="px-5">
-        {/* 연월 타이틀 + 오늘 버튼 */}
-        <div className="flex items-center justify-between mt-1 mb-4">
-          <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
-          <button
-            onClick={goToday}
-            className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold"
-          >
-            오늘
-          </button>
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="flex items-center justify-center w-8 h-8 rounded-lg"
+              aria-label="대시보드"
+            >
+              <LayoutGrid className="w-5 h-5 text-foreground" />
+            </button>
+            <button
+              onClick={() => router.push('/settings')}
+              className="flex items-center justify-center w-8 h-8 rounded-lg"
+              aria-label="설정"
+            >
+              <Settings className="w-5 h-5 text-foreground" />
+            </button>
+          </div>
         </div>
 
-        {/* 달력 (박스 없이) */}
-        <div className="mb-4">
+        <div className="px-5">
+          {/* 연월 타이틀 + 오늘 버튼 */}
+          <div className="flex items-center justify-between mt-1 mb-4">
+            <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
+            <button
+              onClick={goToday}
+              className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold"
+            >
+              오늘
+            </button>
+          </div>
+
+          {/* 달력 */}
           <MonthlyCalendar
             showHeader={false}
             showDayDetail={false}
@@ -195,13 +196,15 @@ export default function Home() {
             refreshKey={refreshKey}
           />
         </div>
+      </div>
 
-        {/* 날짜 헤더 + 거래 내역 */}
-        <div className="bg-surface rounded-2xl overflow-hidden mb-4">
-          {/* 날짜 행 */}
+      {/* 하단 영역 (bg-surface) */}
+      <div className="bg-surface min-h-[50vh] pb-32">
+        <div className="px-5 pt-4">
+          {/* 날짜 헤더 + 거래 내역 */}
           <button
             onClick={() => setTxOpen(v => !v)}
-            className="w-full flex items-center justify-between px-5 py-4"
+            className="w-full flex items-center justify-between py-3"
           >
             <span className="text-[16px] font-semibold">{selectedDateLabel}</span>
             <div className="flex items-center gap-2">
@@ -217,7 +220,6 @@ export default function Home() {
             </div>
           </button>
 
-          {/* 거래 내역 */}
           {txOpen && (
             <DayTransactions
               date={selectedDate}
