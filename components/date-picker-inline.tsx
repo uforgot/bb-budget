@@ -92,7 +92,12 @@ export function DatePickerInline({ open, mode, year, month = 1, onSelect }: Date
 
   return (
     <div className="overflow-hidden transition-all">
-      <div className="flex px-4 pt-1 pb-3 gap-1 border-b border-border">
+      <div
+        className="flex px-4 pt-1 pb-3 gap-1 border-b border-border"
+        onTouchStart={e => e.stopPropagation()}
+        onTouchMove={e => e.stopPropagation()}
+        onTouchEnd={e => e.stopPropagation()}
+      >
         <DrumCol
           items={years}
           selected={year}
