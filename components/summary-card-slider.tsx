@@ -92,10 +92,10 @@ export function SummaryCardSlider({
         spaceBetween={12}
         pagination={{ clickable: true }}
         threshold={10}
-        touchAngle={30}
-        touchMoveStopPropagation={false}
+        touchAngle={45}
+        touchStartPreventDefault={false}
         preventInteractionOnTransition
-        style={{ paddingBottom: '28px' }}
+        style={{ paddingBottom: '28px', touchAction: 'pan-y' }}
       >
         {cards.map(card => {
           const dt = diffText(card.diff, card.type, prevLabel)
