@@ -8,6 +8,7 @@ import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
 import { LayoutGrid, ChevronDown, ChevronUp } from 'lucide-react'
+// ChevronDown, ChevronUp: 달력 카드에서 사용
 
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -83,7 +84,6 @@ export default function Home() {
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [calendarOpen, setCalendarOpen] = useState(false)
-  const [summaryOpen, setSummaryOpen] = useState(false)
   const [monthIncome, setMonthIncome] = useState(0)
   const [monthExpense, setMonthExpense] = useState(0)
   const [monthSavings, setMonthSavings] = useState(0)
@@ -162,88 +162,64 @@ export default function Home() {
       </div>
 
       <div className="px-5">
-        {/* 수입/지출/저축 + 잔액 */}
-        <div className="bg-surface rounded-2xl px-5 py-4 mb-3 mt-2">
-          <button
-            onClick={() => setSummaryOpen(prev => !prev)}
-            className="w-full flex items-center justify-between py-2"
-          >
-            <span className="text-[16px] text-foreground font-bold">잔액</span>
-            <div className="flex items-center gap-2">
-              <span className="text-[16px] font-bold tabular-nums">
+        {/* 잔액 + 요약 통합 카드 */}
+        {(() => {
+          const total = Math.abs(prevMonthBalance) + Math.abs(thisMonthBalance) || 1
+          const prevPct = Math.round((Math.abs(prevMonthBalance) / total) * 100)
+          const thisPct = 100 - prevPct
+          const prevMonth = calMonth > 1 ? calMonth - 1 : 12
+          const maxVal = Math.max(monthIncome, monthExpense, monthSavings, 1)
+          const summaryRows = [
+            { label: '수입', value: monthIncome, color: '#5865F2' },
+            { label: '지출', value: monthExpense, color: '#FF6B9D' },
+            { label: '저축', value: monthSavings, color: '#43B581' },
+          ]
+          return (
+            <div className="bg-surface rounded-2xl px-5 py-5 mb-3 mt-2">
+              {/* 잔액 타이틀 + 큰 폰트 */}
+              <p className="text-[16px] font-bold mb-2">현재 잔액</p>
+              <p className="text-[30px] font-bold tabular-nums mb-4" style={{ letterSpacing: '-1px' }}>
                 ₩{cashBalance.toLocaleString()}
-              </span>
-              {summaryOpen ? (
-                <ChevronUp className="w-4 h-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
-              )}
-            </div>
-          </button>
-          {summaryOpen && (
-            <>
+              </p>
               {/* 전월/금월 분할 바 */}
-              {(() => {
-                const total = Math.abs(prevMonthBalance) + Math.abs(thisMonthBalance) || 1
-                const prevPct = Math.round((Math.abs(prevMonthBalance) / total) * 100)
-                const thisPct = 100 - prevPct
-                return (
-                  <>
-                    <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mt-2 mb-3">
-                      <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#E0E3FF' }} />
-                      <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
+              <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3">
+                <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#E0E3FF' }} />
+                <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
+              </div>
+              {/* 전월/금월 잔액 좌우 */}
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-[12px] text-muted-foreground mb-0.5">{prevMonth}월 잔액</p>
+                  <p className="text-[14px] font-semibold tabular-nums">₩{prevMonthBalance.toLocaleString()}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[12px] text-muted-foreground mb-0.5">{calMonth}월 잔액</p>
+                  <p className={`text-[14px] font-semibold tabular-nums ${thisMonthBalance >= 0 ? '' : 'text-accent-coral'}`}>
+                    ₩{thisMonthBalance.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              {/* 이번 달 요약 */}
+              <p className="text-[16px] font-bold mb-3">이번 달 요약</p>
+              <div className="flex flex-col gap-3">
+                {summaryRows.map(({ label, value, color }) => {
+                  const pct = Math.max(Math.round((value / maxVal) * 100), value > 0 ? 4 : 0)
+                  return (
+                    <div key={label}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[14px] text-foreground">{label}</span>
+                        <span className="text-[14px] font-semibold tabular-nums">₩{value.toLocaleString()}</span>
+                      </div>
+                      <div className="h-[6px] bg-muted rounded-full overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+                      </div>
                     </div>
-                  </>
-                )
-              })()}
-              <div className="border-t border-border mb-3" />
-              <div className="grid grid-cols-3 text-center">
-                {[
-                  { label: '수입', value: monthIncome, color: '#5865F2' },
-                  { label: '지출', value: monthExpense, color: '#FF6B9D' },
-                  { label: '저축', value: monthSavings, color: '#43B581' },
-                ].map(({ label, value, color }, i, arr) => (
-                  <div
-                    key={label}
-                    className={`py-1 ${
-                      i < arr.length - 1 ? 'border-r border-border' : ''
-                    }`}
-                  >
-                    <p className="text-[12px] text-muted-foreground mb-1">{label}</p>
-                    <p className="text-[15px] font-semibold tabular-nums" style={{ color }}>
-                      {value >= 100000000
-                        ? `${Math.floor(value / 100000000)}억`
-                        : value >= 10000
-                        ? `${Math.floor(value / 10000).toLocaleString()}만`
-                        : `₩${value.toLocaleString()}`}
-                    </p>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
-              <div className="border-t border-border mt-3 mb-2" />
-              <div className="grid grid-cols-2 text-center">
-                {[
-                  { label: `${calMonth > 1 ? calMonth - 1 : 12}월 잔액`, value: prevMonthBalance },
-                  { label: `${calMonth}월 잔액`, value: thisMonthBalance },
-                ].map(({ label, value }, i) => (
-                  <div key={label} className={`py-1 ${i === 0 ? 'border-r border-border' : ''}`}>
-                    <p className="text-[12px] text-muted-foreground mb-1">{label}</p>
-                    <p className={`text-[15px] font-semibold tabular-nums ${
-                      value >= 0 ? 'text-foreground' : 'text-accent-coral'
-                    }`}>
-                      {value >= 100000000
-                        ? `${Math.floor(value / 100000000)}억`
-                        : value >= 10000
-                        ? `${Math.floor(value / 10000).toLocaleString()}만`
-                        : `₩${value.toLocaleString()}`}
-                    </p>
-
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+            </div>
+          )
+        })()}
 
         {/* 달력 카드 (접기/펼치기) */}
         <div className="bg-surface rounded-2xl mb-3 overflow-hidden">
