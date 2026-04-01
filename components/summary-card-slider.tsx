@@ -47,10 +47,10 @@ export function SummaryCardSlider({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const cards = [
-    { label: `${month}월 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, color: 'text-accent-blue' },
-    { label: `${month}월 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, color: 'text-accent-coral' },
-    { label: `${month}월 한 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, color: 'text-accent-mint' },
-    { label: `${month}월 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, color: balance >= 0 ? 'text-foreground' : 'text-accent-coral' },
+    { label: `${month}월 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#5865F2' },
+    { label: `${month}월 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#FF6B9D' },
+    { label: `${month}월 한 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#43B581' },
+    { label: `${month}월 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : '#FF6B9D' },
   ]
   const total = cards.length
 
@@ -123,12 +123,12 @@ export function SummaryCardSlider({
               key={card.label}
               className="flex-shrink-0 w-full"
             >
-              <div className="bg-surface rounded-2xl px-5 py-4 mx-0" style={{ minHeight: '110px' }}>
-                <p className="text-[12px] text-muted-foreground mb-2">{card.label}</p>
-                <p className={`text-[22px] font-bold tabular-nums ${card.color}`}>
+              <div className="rounded-2xl px-5 py-5 mx-0 flex flex-col justify-between" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+                <p className="text-[13px] text-white/70 mb-3">{card.label}</p>
+                <p className="text-[26px] font-bold tabular-nums text-white">
                   ₩{card.amount.toLocaleString()}
                 </p>
-                {dt && <p className="text-[11px] text-muted-foreground mt-2 leading-tight">{dt}</p>}
+                {dt && <p className="text-[11px] text-white/60 mt-3 leading-tight">{dt}</p>}
               </div>
             </div>
           )
