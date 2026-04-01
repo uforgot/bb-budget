@@ -22,41 +22,33 @@ export function BalanceCard({
   monthIncome = 0, monthExpense = 0, monthSavings = 0,
 }: BalanceCardProps) {
   const prevMonth = month > 1 ? month - 1 : 12
+  const total = Math.abs(prevBalance) + Math.abs(thisMonthBalance) || 1
+  const prevPct = Math.round((Math.abs(prevBalance) / total) * 100)
+  const thisPct = 100 - prevPct
 
   return (
     <div className="bg-surface rounded-2xl px-5 py-5 mb-3">
-      <p className="text-[16px] font-bold mb-2">현재 잔액</p>
-      <p className="text-[30px] font-bold tabular-nums mb-4" style={{ letterSpacing: '-1px' }}>
+      <p className="text-[16px] font-bold mb-3">현재 잔액</p>
+      <p className="text-[30px] font-bold tabular-nums mb-6" style={{ letterSpacing: '-1px' }}>
         ₩{totalBalance.toLocaleString()}
       </p>
-      <div className="border-t border-border mb-3" />
-      {/* 수입/지출/저축 3열 */}
-      <div className="grid grid-cols-3 text-center mb-3">
-        {[
-          { label: '수입', value: monthIncome, color: '#5865F2' },
-          { label: '지출', value: monthExpense, color: '#FF6B9D' },
-          { label: '저축', value: monthSavings, color: '#43B581' },
-        ].map(({ label, value, color }, i, arr) => (
-          <div key={label} className={`py-1 ${i < arr.length - 1 ? 'border-r border-border' : ''}`}>
-            <p className="text-[12px] text-muted-foreground mb-1">{label}</p>
-            <p className="text-[15px] font-semibold tabular-nums" style={{ color }}>{fmtAmt(value)}</p>
-          </div>
-        ))}
+      {/* 분할 바 */}
+      <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3">
+        <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#E0E3FF' }} />
+        <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
       </div>
-      <div className="border-t border-border mb-2" />
-      {/* 전월/금월 잔액 2열 */}
-      <div className="grid grid-cols-2 text-center">
-        {[
-          { label: `${prevMonth}월 잔액`, value: prevBalance },
-          { label: `${month}월 잔액`, value: thisMonthBalance },
-        ].map(({ label, value }, i) => (
-          <div key={label} className={`py-1 ${i === 0 ? 'border-r border-border' : ''}`}>
-            <p className="text-[12px] text-muted-foreground mb-1">{label}</p>
-            <p className={`text-[15px] font-semibold tabular-nums ${value >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>
-              {fmtAmt(Math.abs(value))}{value < 0 ? ' -' : ''}
-            </p>
-          </div>
-        ))}
+      {/* 전월/금월 잔액 좌우 */}
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[12px] text-muted-foreground mb-0.5">{prevMonth}월 잔액</p>
+          <p className="text-[14px] font-semibold tabular-nums">₩{prevBalance.toLocaleString()}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-[12px] text-muted-foreground mb-0.5">{month}월 잔액</p>
+          <p className={`text-[14px] font-semibold tabular-nums ${thisMonthBalance >= 0 ? '' : 'text-accent-coral'}`}>
+            ₩{thisMonthBalance.toLocaleString()}
+          </p>
+        </div>
       </div>
     </div>
   )
@@ -109,26 +101,30 @@ function fmt(n: number) {
 }
 
 export function MonthlySummaryCard({ month, income, savings, prevSavings, year }: MonthlySummaryCardProps & { year: number }) {
+  const max = Math.max(income, savings, prevSavings, 1)
+  const rows = [
+    { label: '수입', value: income, color: '#5865F2' },
+    { label: '지출', value: savings, color: '#FF6B9D' },
+    { label: '저축', value: prevSavings, color: '#43B581' },
+  ]
   return (
     <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3">
       <p className="text-[16px] font-bold mb-3">{year}년 {month}월 요약</p>
-      <div className="grid grid-cols-3 text-center">
-        {[
-          { label: '수입', value: income, color: '#5865F2' },
-          { label: '지출', value: savings, color: '#FF6B9D' },
-          { label: '저축', value: prevSavings, color: '#43B581' },
-        ].map(({ label, value, color }, i, arr) => (
-          <div key={label} className={`py-1 ${i < arr.length - 1 ? 'border-r border-border' : ''}`}>
-            <p className="text-[12px] text-muted-foreground mb-1">{label}</p>
-            <p className="text-[15px] font-semibold tabular-nums" style={{ color }}>
-              {value >= 100000000
-                ? `${Math.floor(value / 100000000)}억`
-                : value >= 10000
-                ? `${Math.floor(value / 10000).toLocaleString()}만`
-                : `₩${value.toLocaleString()}`}
-            </p>
-          </div>
-        ))}
+      <div className="flex flex-col gap-3">
+        {rows.map(({ label, value, color }) => {
+          const pct = max > 0 ? Math.max(Math.round((value / max) * 100), value > 0 ? 4 : 0) : 0
+          return (
+            <div key={label}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[14px] text-foreground">{label}</span>
+                <span className="text-[14px] font-semibold tabular-nums">₩{value.toLocaleString()}</span>
+              </div>
+              <div className="h-[6px] bg-muted rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
