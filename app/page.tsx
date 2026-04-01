@@ -178,13 +178,19 @@ export default function Home() {
         <div className="px-5">
           {/* 연월 타이틀 + 오늘 */}
           <div className="flex items-center justify-between mt-1 mb-4">
-            <div className="flex items-center gap-2">
-              <select value={calYear} onChange={e => { setCalYear(Number(e.target.value)); setCalKey(k => k+1) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
-                {Array.from({length:20},(_,i)=>new Date().getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
-              </select>
-              <select value={calMonth} onChange={e => { setCalMonth(Number(e.target.value)); setCalKey(k => k+1) }} className="bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
-                {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
-              </select>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-1 cursor-pointer">
+                <select value={calYear} onChange={e => { setCalYear(Number(e.target.value)); setCalKey(k => k+1) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                  {Array.from({length:20},(_,i)=>new Date().getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
+                </select>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+              </label>
+              <label className="flex items-center gap-1 cursor-pointer">
+                <select value={calMonth} onChange={e => { setCalMonth(Number(e.target.value)); setCalKey(k => k+1) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
+                  {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
+                </select>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+              </label>
             </div>
             <button onClick={goToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
           </div>
@@ -202,8 +208,8 @@ export default function Home() {
           />
         </div>
 
-      {/* 하단 영역 (bg-surface) */}
-      <div className="bg-surface min-h-[50vh] pb-32">
+      {/* 하단 영역 */}
+      <div className="bg-background min-h-[50vh] pb-32">
         <div className="px-5 pt-4">
           {/* 날짜 헤더 + 거래 내역 */}
           <button
