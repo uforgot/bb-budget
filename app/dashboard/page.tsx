@@ -70,21 +70,22 @@ export default function Dashboard() {
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData}>
       <div className="sticky top-0 z-30 bg-background px-5">
-        <div className="flex items-center justify-between h-14 pt-[env(safe-area-inset-top,0px)]">
-          <p className="text-[20px] font-semibold">대시보드</p>
+        <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           <button
             onClick={() => router.push('/')}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
+            className="flex items-center justify-center w-8 h-8 rounded-lg"
             aria-label="닫기"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
             </svg>
           </button>
+          <div className="w-8" />
         </div>
       </div>
 
-      <div className="px-5 mt-3">
+      <div className="px-5">
+        <h1 className="text-[28px] font-bold mt-1 mb-4">요약</h1>
         <BalanceCard
           prevBalance={prevBalance}
           thisMonthBalance={monthIncome - monthExpense}
