@@ -88,6 +88,8 @@ export default function Home() {
   const [monthExpense, setMonthExpense] = useState(0)
   const [monthSavings, setMonthSavings] = useState(0)
   const [cashBalance, setCashBalance] = useState(0)
+  const [prevMonthBalance, setPrevMonthBalance] = useState(0)
+  const [thisMonthBalance, setThisMonthBalance] = useState(0)
   const [dayNet, setDayNet] = useState(0)
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
@@ -106,6 +108,21 @@ export default function Home() {
       const totalExp = all.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
       const totalSav = all.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0)
       setCashBalance(totalInc - totalExp - totalSav)
+
+      // 전월 잔액: 이번 달 이전 데이터만
+      const prevTxs = all.filter(t => {
+        const d = new Date(t.date)
+        return d.getFullYear() < calYear || (d.getFullYear() === calYear && d.getMonth() + 1 < calMonth)
+      })
+      const prevInc = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const prevExp = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      const prevSav = prevTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+      setPrevMonthBalance(prevInc - prevExp - prevSav)
+
+      // 금월 잔액: 이번 달 수입-지출
+      const thisInc = txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const thisExp = txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      setThisMonthBalance(thisInc - thisExp)
 
       // 선택 날짜 일일 합산
       const dayStr = toDateStr(calYear, calMonth, selectedDay)
@@ -186,6 +203,27 @@ export default function Home() {
                         ? `${Math.floor(value / 10000).toLocaleString()}만`
                         : `₩${value.toLocaleString()}`}
                     </p>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border mt-3 mb-2" />
+              <div className="grid grid-cols-2 text-center">
+                {[
+                  { label: `${calMonth > 1 ? calMonth - 1 : 12}월 잔액`, value: prevMonthBalance },
+                  { label: `${calMonth}월 잔액`, value: thisMonthBalance },
+                ].map(({ label, value }, i) => (
+                  <div key={label} className={`py-1 ${i === 0 ? 'border-r border-border' : ''}`}>
+                    <p className="text-[12px] text-muted-foreground mb-1">{label}</p>
+                    <p className={`text-[15px] font-semibold tabular-nums ${
+                      value >= 0 ? 'text-foreground' : 'text-accent-coral'
+                    }`}>
+                      {value >= 100000000
+                        ? `${Math.floor(value / 100000000)}억`
+                        : value >= 10000
+                        ? `${Math.floor(value / 10000).toLocaleString()}만`
+                        : `₩${value.toLocaleString()}`}
+                    </p>
+
                   </div>
                 ))}
               </div>
