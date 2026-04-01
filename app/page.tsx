@@ -209,7 +209,7 @@ export default function Home() {
         </div>
 
       {/* 하단 영역 */}
-      <div className="bg-background min-h-[50vh] pb-32">
+      <div className="min-h-[50vh] pb-32" style={{ backgroundColor: '#000000' }}>
         <div className="px-5 pt-4">
           {/* 날짜 헤더 + 거래 내역 */}
           <button
