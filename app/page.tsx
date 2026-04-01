@@ -7,7 +7,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
-import { LayoutGrid, Settings } from 'lucide-react'
+import { LayoutGrid, Settings, ChevronDown, ChevronUp } from 'lucide-react'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -46,16 +46,10 @@ function DayTransactions({
     })()
   }, [date, refreshKey])
 
-  if (txs.length === 0) {
-    return (
-      <p className="text-[13px] text-muted-foreground text-center py-6">
-        거래 내역이 없어요
-      </p>
-    )
-  }
+  if (txs.length === 0) return null
 
   return (
-    <div className="flex flex-col divide-y divide-border">
+    <div className="flex flex-col">
       {txs.map(tx => {
         const cat = catMap[tx.category_id]
         const catName = cat?.name || '기타'
@@ -70,7 +64,7 @@ function DayTransactions({
           <div
             key={tx.id}
             onClick={() => onEdit(tx)}
-            className="flex items-center justify-between py-3 px-5 cursor-pointer active:bg-muted/50"
+            className="flex items-center justify-between py-3 px-5 cursor-pointer active:bg-muted/50 border-t border-border"
           >
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-xs bg-muted px-3 py-1.5 rounded-full shrink-0">
@@ -109,12 +103,28 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [txOpen, setTxOpen] = useState(true)
+  const [dayTotal, setDayTotal] = useState(0)
 
   const selectedDate = toDateStr(calYear, calMonth, selectedDay)
   const selectedDateLabel = (() => {
     const d = new Date(calYear, calMonth - 1, selectedDay)
     return `${calMonth}월 ${selectedDay}일 ${DAY_NAMES[d.getDay()]}요일`
   })()
+
+  // 선택 날짜 합계 로드
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { getTransactions } = await import('@/lib/api')
+        const txs = await getTransactions({ year: calYear, month: calMonth })
+        const dayTxs = txs.filter(t => t.date === selectedDate)
+        const inc = dayTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+        const exp = dayTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+        setDayTotal(exp - inc) // 지출 기준 (+면 지출)
+      } catch {}
+    })()
+  }, [selectedDate, calYear, calMonth, refreshKey])
 
   // 반복 거래 자동 등록 (최초 1회)
   useEffect(() => {
@@ -127,14 +137,17 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleRefresh = useCallback(async () => {
+  const goToday = useCallback(() => {
+    setCalYear(today.getFullYear())
+    setCalMonth(today.getMonth() + 1)
+    setSelectedDay(today.getDate())
     setRefreshKey(k => k + 1)
-  }, [])
+  }, [today])
 
   return (
     <PullToRefresh
       className="min-h-dvh bg-background pb-32"
-      onRefresh={handleRefresh}
+      onRefresh={async () => setRefreshKey(k => k + 1)}
     >
       {/* 상단 바 */}
       <div className="sticky top-0 z-30 bg-background px-5">
@@ -159,10 +172,22 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="px-5 flex flex-col gap-3 mt-2">
+      <div className="px-5">
+        {/* 연월 타이틀 + 오늘 버튼 */}
+        <div className="flex items-center justify-between mt-1 mb-4">
+          <h1 className="text-[28px] font-bold">{calYear}년 {calMonth}월</h1>
+          <button
+            onClick={goToday}
+            className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold"
+          >
+            오늘
+          </button>
+        </div>
+
         {/* 달력 카드 */}
-        <div className="bg-surface rounded-2xl overflow-hidden">
+        <div className="bg-surface rounded-2xl overflow-hidden mb-4">
           <MonthlyCalendar
+            showHeader={false}
             onMonthChange={(y, m) => { setCalYear(y); setCalMonth(m) }}
             onDaySelect={(y, m, d) => { setCalYear(y); setCalMonth(m); setSelectedDay(d) }}
             onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
@@ -170,16 +195,35 @@ export default function Home() {
           />
         </div>
 
-        {/* 일별 거래 내역 카드 */}
-        <div className="bg-surface rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-border">
-            <p className="text-[15px] font-semibold">{selectedDateLabel}</p>
-          </div>
-          <DayTransactions
-            date={selectedDate}
-            refreshKey={refreshKey}
-            onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
-          />
+        {/* 날짜 헤더 + 거래 내역 */}
+        <div className="bg-surface rounded-2xl overflow-hidden mb-4">
+          {/* 날짜 행 */}
+          <button
+            onClick={() => setTxOpen(v => !v)}
+            className="w-full flex items-center justify-between px-5 py-4"
+          >
+            <span className="text-[16px] font-semibold">{selectedDateLabel}</span>
+            <div className="flex items-center gap-2">
+              {dayTotal !== 0 && (
+                <span className={`text-[16px] font-bold tabular-nums ${dayTotal > 0 ? 'text-accent-coral' : 'text-accent-blue'}`}>
+                  ₩{Math.abs(dayTotal).toLocaleString()}
+                </span>
+              )}
+              {txOpen
+                ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                : <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              }
+            </div>
+          </button>
+
+          {/* 거래 내역 */}
+          {txOpen && (
+            <DayTransactions
+              date={selectedDate}
+              refreshKey={refreshKey}
+              onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
+            />
+          )}
         </div>
       </div>
 

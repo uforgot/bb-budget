@@ -170,9 +170,10 @@ export interface MonthlyCalendarProps {
   onDaySelect?: (year: number, month: number, day: number) => void
   onTransactionClick?: (transaction: Transaction) => void
   refreshKey?: number
+  showHeader?: boolean // false 이면 연월 헤더 숨김
 }
 
-export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0 }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true }: MonthlyCalendarProps) {
   const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(new Date()))
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
   const [headerLabel, setHeaderLabel] = useState(() => {
@@ -361,9 +362,11 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
   return (
     <div>
       {/* 연월 헤더 */}
-      <div className="px-4 pt-4 pb-2">
-        <span className="text-[18px] font-bold">{headerLabel}</span>
-      </div>
+      {showHeader && (
+        <div className="px-4 pt-4 pb-2">
+          <span className="text-[18px] font-bold">{headerLabel}</span>
+        </div>
+      )}
       {/* Fixed weekday row */}
       <div className="grid grid-cols-7 pb-2 mb-1 border-b border-border px-2">
         {WEEKDAYS.map(day => (
