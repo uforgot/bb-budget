@@ -283,7 +283,7 @@ export default function History() {
                   setAutoExpanded(false)
                 }}
               />
-              <div className="h-4" />
+              <div className="h-5" />
             </>
           )
         })()}

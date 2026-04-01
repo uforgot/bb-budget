@@ -192,7 +192,7 @@ export default function Home() {
             month={calMonth}
             onSelect={(y, m) => { setCalYear(y); setCalMonth(m) }}
           />
-          <div className="h-8" />
+          <div className="h-5" />
 
           {/* 달력 */}
           <MonthlyCalendar
