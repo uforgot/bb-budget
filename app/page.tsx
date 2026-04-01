@@ -182,7 +182,21 @@ export default function Home() {
           </button>
           {summaryOpen && (
             <>
-              <div className="border-t border-border mt-1 mb-3" />
+              {/* 전월/금월 분할 바 */}
+              {(() => {
+                const total = Math.abs(prevMonthBalance) + Math.abs(thisMonthBalance) || 1
+                const prevPct = Math.round((Math.abs(prevMonthBalance) / total) * 100)
+                const thisPct = 100 - prevPct
+                return (
+                  <>
+                    <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mt-2 mb-3">
+                      <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#E0E3FF' }} />
+                      <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
+                    </div>
+                  </>
+                )
+              })()}
+              <div className="border-t border-border mb-3" />
               <div className="grid grid-cols-3 text-center">
                 {[
                   { label: '수입', value: monthIncome, color: '#5865F2' },
