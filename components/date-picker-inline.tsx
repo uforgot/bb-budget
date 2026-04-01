@@ -45,19 +45,22 @@ function DrumCol({
     if (items[clamped] !== selected) onSelect(items[clamped])
   }
 
+  const MID = Math.floor(VISIBLE / 2)
   return (
     <div className="relative flex-1 overflow-hidden" style={{ height: ITEM_H * VISIBLE }}>
-      <div className="absolute left-0 right-0 rounded-xl bg-muted pointer-events-none z-10"
-        style={{ top: ITEM_H * 2, height: ITEM_H }} />
+      {/* 선택 하이라이트 */}
+      <div className="absolute left-1 right-1 rounded-xl bg-white/10 pointer-events-none z-10"
+        style={{ top: ITEM_H * MID, height: ITEM_H }} />
+      {/* 페이드 */}
       <div className="absolute inset-x-0 top-0 pointer-events-none z-20"
-        style={{ height: ITEM_H * 2, background: 'linear-gradient(to bottom, var(--color-background,#fff), transparent)' }} />
+        style={{ height: ITEM_H * MID, background: 'linear-gradient(to bottom, #000 10%, transparent)' }} />
       <div className="absolute inset-x-0 bottom-0 pointer-events-none z-20"
-        style={{ height: ITEM_H * 2, background: 'linear-gradient(to top, var(--color-background,#fff), transparent)' }} />
+        style={{ height: ITEM_H * MID, background: 'linear-gradient(to top, #000 10%, transparent)' }} />
       <div
         ref={listRef}
         onScroll={handleScroll}
         className="h-full overflow-y-scroll"
-        style={{ scrollSnapType: 'y mandatory', paddingTop: ITEM_H * 2, paddingBottom: ITEM_H * 2 }}
+        style={{ scrollSnapType: 'y mandatory', paddingTop: ITEM_H * MID, paddingBottom: ITEM_H * MID }}
       >
         {items.map(v => (
           <div
@@ -66,7 +69,11 @@ function DrumCol({
             className="flex items-center justify-center cursor-pointer select-none"
             style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
           >
-            <span className={`text-[18px] font-medium transition-opacity ${v === selected ? 'text-foreground opacity-100' : 'text-muted-foreground opacity-30'}`}>
+            <span className={`text-[17px] transition-all ${
+              v === selected
+                ? 'text-white font-semibold'
+                : 'text-white/30 font-normal'
+            }`}>
               {label(v)}
             </span>
           </div>
@@ -85,7 +92,7 @@ export function DatePickerInline({ open, mode, year, month = 1, onSelect }: Date
 
   return (
     <div className="overflow-hidden transition-all">
-      <div className="flex px-2 pt-2 pb-3 border-b border-border">
+      <div className="flex px-4 pt-1 pb-3 gap-1 border-b border-border">
         <DrumCol
           items={years}
           selected={year}
