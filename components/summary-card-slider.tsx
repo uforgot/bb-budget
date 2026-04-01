@@ -49,7 +49,7 @@ export function SummaryCardSlider({
   const cards = [
     { label: `${month}월 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#5865F2' },
     { label: `${month}월 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#FF70FF' },
-    { label: `${month}월 한 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#2dd4bf' },
+    { label: `${month}월 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#2dd4bf' },
     { label: `${month}월 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : '#FF6B9D' },
   ]
   const total = cards.length
@@ -123,12 +123,14 @@ export function SummaryCardSlider({
               key={card.label}
               className="flex-shrink-0 w-full"
             >
-              <div className="rounded-2xl px-5 pt-5 pb-4 mx-0 flex flex-col" style={{ minHeight: '150px', backgroundColor: card.bg }}>
-                <p className="text-[13px] font-semibold text-white/80 mb-1">{card.label}</p>
-                <p className="text-[28px] font-bold tabular-nums text-white mt-1">
-                  ₩{card.amount.toLocaleString()}
-                </p>
-                {dt && <p className="text-[13px] font-semibold text-white/70 mt-3 leading-tight">{dt}</p>}
+              <div className="rounded-2xl px-5 pt-5 pb-4 mx-0 flex flex-col justify-between" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+                <div>
+                  <p className="text-[13px] font-semibold text-white/80 mb-0.5">{card.label}</p>
+                  <p className="text-[28px] font-bold tabular-nums text-white leading-tight">
+                    ₩{card.amount.toLocaleString()}
+                  </p>
+                </div>
+                {dt && <p className="text-[13px] font-semibold text-white/70 leading-tight">{dt}</p>}
               </div>
             </div>
           )
