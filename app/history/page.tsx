@@ -281,11 +281,11 @@ export default function History() {
                     </select>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
                   </label>
-                  <label className="flex items-center gap-0 cursor-pointer">
+                  <label className="flex items-center cursor-pointer">
                     <select value={currentMonthDate.am} onChange={e => { const m=Number(e.target.value); const diff=(currentMonthDate.ty-new Date().getFullYear())*12+(m-(new Date().getMonth()+1)); setMonthOffset(diff); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer">
                       {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={m}>{m}월</option>)}
                     </select>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0 -ml-1.5"><path d="m6 9 6 6 6-6"/></svg>
                   </label>
                 </div>
                 <button onClick={() => { setMonthOffset(0); setExpandedWeeks(new Set()); setAutoExpanded(false) }} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">금월</button>
