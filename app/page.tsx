@@ -63,7 +63,6 @@ function DayTransactions({
           tx={tx}
           categories={categories}
           showDate={false}
-          dateLabel="상세"
           onEdit={onEdit}
           onDeleted={onDeleted}
         />
