@@ -59,7 +59,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
           </span>
         </div>
         {showDescription && tx.description && (
-          <p className={`text-[10px] text-muted-foreground truncate mt-1 pl-[68px] ${tx.end_date ? 'line-through' : ''}`}>
+          <p className={`text-[10px] text-muted-foreground line-clamp-1 mt-1 pl-[68px] ${tx.end_date ? 'line-through' : ''}`}>
             {tx.description}
           </p>
         )}
