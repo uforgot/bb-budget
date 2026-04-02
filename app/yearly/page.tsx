@@ -151,22 +151,27 @@ export default function Yearly() {
 
         {!searchMode && (
           <>
-            {/* 연간 요약 카드 슬라이더 */}
-            <SummaryCardSlider
-              month={targetYear}
-              income={yearIncome}
-              expense={yearExpense}
-              savings={yearSavings}
-              balance={yearBalance}
-              prevMonth={targetYear - 1}
-              prevIncome={0}
-              prevExpense={0}
-              prevSavings={0}
-              prevBalance={0}
-              hasPrev={false}
-              yearMode
-            />
-
+            {/* 연간 요약 카드 슬라이더 — 자체 px-5 시작점 맞추기 위해 wrapper 밖으로 */}
+          </>
+        )}
+      </div>
+      {!searchMode && (
+        <>
+          <SummaryCardSlider
+            month={targetYear}
+            income={yearIncome}
+            expense={yearExpense}
+            savings={yearSavings}
+            balance={yearBalance}
+            prevMonth={targetYear - 1}
+            prevIncome={0}
+            prevExpense={0}
+            prevSavings={0}
+            prevBalance={0}
+            hasPrev={false}
+            yearMode
+          />
+          <div className="px-5">
             {/* 월별 카드 */}
             <div className="flex flex-col gap-3">
               {activeMonths.length === 0 && (
@@ -203,9 +208,9 @@ export default function Yearly() {
                 </div>
               ))}
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
 
       <AddTransactionModal
         open={modalOpen}

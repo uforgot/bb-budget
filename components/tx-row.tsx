@@ -9,11 +9,12 @@ interface TxRowProps {
   tx: Transaction
   categories: Category[]
   showDate: boolean
+  dateLabel?: string
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }
 
-export function TxRow({ tx, categories, showDate, onEdit, onDeleted }: TxRowProps) {
+export function TxRow({ tx, categories, showDate, dateLabel, onEdit, onDeleted }: TxRowProps) {
   const cat = tx.category as any
   const catName = cat?.name || ''
   const d = new Date(tx.date)
@@ -26,12 +27,14 @@ export function TxRow({ tx, categories, showDate, onEdit, onDeleted }: TxRowProp
       >
         <div className="flex items-center gap-3">
           <div className="w-14 flex-shrink-0">
-            {showDate && (
+            {showDate ? (
               <div className="flex items-baseline gap-1.5">
                 <span className="text-sm font-medium">{DAY_NAMES[d.getDay()]}</span>
                 <span className="text-sm text-muted-foreground tabular-nums">{d.getDate()}일</span>
               </div>
-            )}
+            ) : dateLabel ? (
+              <span className="text-[10px] text-muted-foreground font-medium">{dateLabel}</span>
+            ) : null}
           </div>
           <div className="flex-1 min-w-0">
             <span className={`text-xs bg-muted px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`}>
