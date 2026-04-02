@@ -91,6 +91,12 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                       key={parent.id}
                       onClick={() => {
                         if (hasChildren) {
+                          // 수정 모드에서 이미 해당 부모가 펜츼 상태일 때: 사용자가 다른 부모를 변경하려는 게 아니면 철원다 닫지 말고 유지
+                          const selectedInThisParent = selected === parent.id || children.some(c => c.id === selected)
+                          if (isExpanded && selectedInThisParent) {
+                            // 이미 선택된 부모 클릭 시 그냥 유지
+                            return
+                          }
                           setExpandedParent(isExpanded ? null : parent.id)
                         } else {
                           onSelect(parent.id, parent.name)
