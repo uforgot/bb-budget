@@ -2,18 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-// router already imported
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { getTransactions, getCategories, type Transaction } from '@/lib/api'
-import { DatePickerModal } from '@/components/date-picker-modal'
+import { getTransactions, type Transaction } from '@/lib/api'
 
 export default function Yearly() {
   const router = useRouter()
   const today = new Date()
   const [yearOffset, setYearOffset] = useState(0)
-  const [pickerOpen, setPickerOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -53,6 +50,7 @@ export default function Yearly() {
 
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cat = t.category as any
         const q = searchQuery.toLowerCase()
         return (cat?.name || '').toLowerCase().includes(q) ||
@@ -81,12 +79,19 @@ export default function Yearly() {
         </div>
       </div>
 
+      {/* 타이틀 */}
       <div className="px-5">
-        {/* 큰 타이틀 */}
         <div className="flex items-center justify-between mt-1 mb-4">
           <label className="flex items-center gap-1 cursor-pointer">
-            <select value={targetYear} onChange={e => setYearOffset(Number(e.target.value)-today.getFullYear())} className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer" style={{ letterSpacing: '-1px' }}>
-              {Array.from({length:20},(_,i)=>today.getFullYear()-5+i).map(y=><option key={y} value={y}>{y}년</option>)}
+            <select
+              value={targetYear}
+              onChange={e => setYearOffset(Number(e.target.value) - today.getFullYear())}
+              className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
+              style={{ letterSpacing: '-1px' }}
+            >
+              {Array.from({ length: 20 }, (_, i) => today.getFullYear() - 5 + i).map(y => (
+                <option key={y} value={y}>{y}년</option>
+              ))}
             </select>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
           </label>
@@ -94,6 +99,7 @@ export default function Yearly() {
         </div>
       </div>
 
+      {/* 콘텐츠 */}
       <div className="px-5">
         {/* 검색 */}
         {searchMode && (
@@ -103,8 +109,8 @@ export default function Yearly() {
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
               </svg>
               <input
-                type="text" placeholder="검색어 입력..." value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)} autoFocus
+                type="text" placeholder="검색어 입력..." value={searchQuery} autoFocus
+                onChange={e => setSearchQuery(e.target.value)}
                 className="flex-1 bg-transparent outline-none text-sm" style={{ fontSize: '16px' }}
               />
               {searchQuery && (
@@ -114,8 +120,11 @@ export default function Yearly() {
               )}
             </div>
             <div className="mt-3">
-              {searchQuery && searchResults.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">검색 결과가 없어요</p>}
+              {searchQuery && searchResults.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">검색 결과가 없어요</p>
+              )}
               {searchResults.map(tx => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const cat = tx.category as any
                 const catName = cat?.name || ''
                 const d = new Date(tx.date)
@@ -143,28 +152,30 @@ export default function Yearly() {
           <>
             {/* 연간 요약 카드 */}
             <div className="bg-surface rounded-2xl px-5 py-4 mb-4">
-              <div className="flex items-center justify-between py-1.5">
-                <span className="text-[13px] text-muted-foreground">수입</span>
-                <span className="text-[14px] font-semibold tabular-nums text-accent-blue">₩{yearIncome.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center justify-between py-1.5">
-                <span className="text-[13px] text-muted-foreground">지출</span>
-                <span className="text-[14px] font-semibold tabular-nums text-accent-coral">₩{yearExpense.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center justify-between py-1.5">
-                <span className="text-[13px] text-muted-foreground">저축</span>
-                <span className="text-[14px] font-semibold tabular-nums text-accent-mint">₩{yearSavings.toLocaleString()}</span>
-              </div>
+              {[
+                { label: '수입', value: yearIncome, color: 'text-accent-blue' },
+                { label: '지출', value: yearExpense, color: 'text-accent-coral' },
+                { label: '저축', value: yearSavings, color: 'text-accent-mint' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="flex items-center justify-between py-1.5">
+                  <span className="text-[13px] text-muted-foreground">{label}</span>
+                  <span className={`text-[14px] font-semibold tabular-nums ${color}`}>₩{value.toLocaleString()}</span>
+                </div>
+              ))}
               <div className="border-t border-border mt-2 mb-1" />
               <div className="flex items-center justify-between py-1.5">
                 <span className="text-[13px] text-muted-foreground">잔액</span>
-                <span className={`text-[14px] font-bold tabular-nums ${yearBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{yearBalance.toLocaleString()}</span>
+                <span className={`text-[14px] font-bold tabular-nums ${yearBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>
+                  ₩{yearBalance.toLocaleString()}
+                </span>
               </div>
             </div>
 
             {/* 월별 카드 */}
             <div className="flex flex-col gap-3">
-              {activeMonths.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">아직 내역이 없어요</p>}
+              {activeMonths.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-8">아직 내역이 없어요</p>
+              )}
               {activeMonths.map(({ month, income, expense, savings, balance }) => (
                 <div key={month}
                   onClick={() => router.push(`/history?month=${month}&year=${targetYear}`)}
@@ -175,22 +186,22 @@ export default function Yearly() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">수입</span>
-                      <span className="text-sm font-semibold tabular-nums text-accent-blue">₩{income.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">지출</span>
-                      <span className="text-sm font-semibold tabular-nums text-accent-coral">₩{expense.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">저축</span>
-                      <span className="text-sm font-semibold tabular-nums text-accent-mint">₩{savings.toLocaleString()}</span>
-                    </div>
+                    {[
+                      { label: '수입', value: income, color: 'text-accent-blue' },
+                      { label: '지출', value: expense, color: 'text-accent-coral' },
+                      { label: '저축', value: savings, color: 'text-accent-mint' },
+                    ].map(({ label, value, color }) => (
+                      <div key={label} className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">{label}</span>
+                        <span className={`text-sm font-semibold tabular-nums ${color}`}>₩{value.toLocaleString()}</span>
+                      </div>
+                    ))}
                     <div className="border-t border-border my-1" />
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">잔액</span>
-                      <span className={`text-sm font-semibold tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>₩{balance.toLocaleString()}</span>
+                      <span className={`text-sm font-semibold tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>
+                        ₩{balance.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -199,14 +210,6 @@ export default function Yearly() {
           </>
         )}
       </div>
-
-      <DatePickerModal
-        open={pickerOpen}
-        mode="year"
-        year={targetYear}
-        onClose={() => setPickerOpen(false)}
-        onSelect={(y) => { setYearOffset(y - today.getFullYear()) }}
-      />
 
       <AddTransactionModal
         open={modalOpen}
