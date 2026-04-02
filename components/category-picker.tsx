@@ -40,10 +40,22 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
 
   useEffect(() => {
     if (open) {
-      getCategories(type).then(setCategories).catch(() => {})
-      setExpandedParent(null)
+      getCategories(type).then(cats => {
+        setCategories(cats)
+        // 수정 모드: 선택된 카테고리의 부모를 자동 펼침
+        if (selected) {
+          const selectedCat = cats.find(c => c.id === selected)
+          if (selectedCat?.parent_id) {
+            setExpandedParent(selectedCat.parent_id)
+          } else {
+            setExpandedParent(null)
+          }
+        } else {
+          setExpandedParent(null)
+        }
+      }).catch(() => {})
     }
-  }, [open, type])
+  }, [open, type, selected])
 
   if (!open) return null
 
