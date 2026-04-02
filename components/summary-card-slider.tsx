@@ -143,7 +143,7 @@ export function SummaryCardSlider({
                   alt=""
                   aria-hidden
                   className="absolute right-0 top-1/2 w-32 h-32 object-contain pointer-events-none select-none"
-                  style={{ transform: 'translateY(-50%) translateX(8%)' }}
+                  style={{ transform: 'translateY(-50%) translateX(-15%)' }}
                 />
                 <div>
                   <p className="text-[13px] font-semibold text-white/80 mb-0.5">{card.label}</p>
