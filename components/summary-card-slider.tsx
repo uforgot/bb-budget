@@ -100,7 +100,8 @@ export function SummaryCardSlider({
     dragDirection.current = null
   }
 
-  const translateX = -(current * 100) + (dragX / (containerRef.current?.offsetWidth || 1)) * 100
+  const w = containerRef.current?.offsetWidth || 1
+  const translateX = -(current * 100) + (dragX / w) * 100
 
   return (
     <div className="mb-4 overflow-hidden" ref={containerRef}>
@@ -116,7 +117,7 @@ export function SummaryCardSlider({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {cards.map(card => {
+        {cards.map((card, idx) => {
           const dt = diffText(card.diff, card.type, prevLabel)
           return (
             <div
