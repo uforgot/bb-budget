@@ -205,7 +205,7 @@ export default function Yearly() {
             {/* 월별 지출 현황 바 차트 */}
             <MonthlyBarChart
               label="쓴 지출"
-              color="#CF6679"
+              color="#FF70FF"
               avgValue={avgExpense}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
