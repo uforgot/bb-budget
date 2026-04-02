@@ -55,7 +55,7 @@ function buildInitialMonths(anchor: Date): MonthEntry[] {
   return months
 }
 
-const ROW_H = 52
+const ROW_H = 46
 const SEP_H = 8
 
 function getWeeksInMonth(year: number, month: number): number {
@@ -119,7 +119,7 @@ function MonthGrid({
       {/* Day grid */}
       <div className="grid grid-cols-7">
         {cells.map((day, i) => {
-          if (!day) return <div key={`e-${i}`} className="h-[52px]" />
+          if (!day) return <div key={`e-${i}`} className="h-[46px]" />
 
           const dayData = data[day]
           const isToday = isCurrentMonth && day === todayDate
@@ -129,7 +129,7 @@ function MonthGrid({
             <div
               key={day}
               onClick={() => onDayClick(year, month, day)}
-              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[46px] px-1 rounded-lg transition-colors ${
                 selected ? 'bg-accent' : ''
               }`}
             >
