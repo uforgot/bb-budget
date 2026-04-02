@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 
 interface MonthData {
   month: number
@@ -9,53 +9,48 @@ interface MonthData {
 }
 
 interface MonthlyBarChartProps {
-  data: MonthData[]
-  label: string      // "N월에 쓴 지출" 형태의 prefix
-  color?: string     // 선택된 바 색상 (기본: accent-coral)
-}
-
-function fmt(n: number) {
-  if (n === 0) return '₩0'
-  if (n >= 100000000) return `₩${(n / 100000000).toFixed(1)}억`
-  if (n >= 10000) return `₩${Math.floor(n / 10000).toLocaleString()}만`
-  return `₩${n.toLocaleString()}`
+  data: MonthData[]       // 반드시 12개 (1~12월)
+  label: string           // "쓴 지출" 등
+  color?: string
 }
 
 export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarChartProps) {
   const today = new Date()
   const currentMonth = today.getMonth() + 1
 
-  // 기본 선택: 현재 월 (미래면 마지막 데이터 있는 월)
-  const defaultMonth = data.find(d => d.month === currentMonth && !d.isFuture)?.month
-    ?? [...data].reverse().find(d => !d.isFuture && d.value > 0)?.month
-    ?? 1
-  const [selectedMonth, setSelectedMonth] = useState(defaultMonth)
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth)
+  const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
 
-  const containerRef = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
   const startX = useRef(0)
   const startY = useRef(0)
   const direction = useRef<'h' | 'v' | null>(null)
-  const [dragOffset, setDragOffset] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  // 최대값 (미래 제외)
+  // 치수
+  const BAR_W = 28
+  const BAR_GAP = 16
+  const ITEM_W = BAR_W + BAR_GAP
+  const MAX_H = 120
+  const LABEL_H = 24
+
   const maxValue = Math.max(...data.filter(d => !d.isFuture).map(d => d.value), 1)
-
   const selectedData = data.find(d => d.month === selectedMonth)
 
-  const BAR_W = 24
-  const BAR_GAP = 12
-  const ITEM_W = BAR_W + BAR_GAP
-  const TOTAL_W = ITEM_W * 12
-  const MAX_H = 100
+  // 선택 월이 항상 컨테이너 중앙에 오도록
+  const containerW = containerRef.current?.offsetWidth ?? 320
+  const centerX = containerW / 2 - BAR_W / 2
+  // index 0-based
+  const baseTranslate = centerX - (selectedMonth - 1) * ITEM_W
+  const translateX = baseTranslate + dragX
 
-  // 스와이프로 선택
   const onTouchStart = (e: React.TouchEvent) => {
     isDragging.current = true
+    setDragging(true)
     startX.current = e.touches[0].clientX
     startY.current = e.touches[0].clientY
     direction.current = null
-    setDragOffset(0)
   }
 
   const onTouchMove = (e: React.TouchEvent) => {
@@ -65,52 +60,51 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
 
     if (!direction.current) {
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) direction.current = 'h'
-      else if (Math.abs(dy) > 6) { direction.current = 'v'; return }
+      else if (Math.abs(dy) > 6) { direction.current = 'v'; isDragging.current = false; setDragging(false); return }
       else return
     }
     if (direction.current === 'h') {
       e.preventDefault()
       e.stopPropagation()
-      setDragOffset(dx)
+      setDragX(dx)
     }
   }
 
   const onTouchEnd = () => {
-    if (!isDragging.current) return
+    if (!isDragging.current && !dragging) return
     isDragging.current = false
+    setDragging(false)
     if (direction.current === 'h') {
-      const steps = Math.round(-dragOffset / ITEM_W)
-      const next = Math.max(1, Math.min(12, selectedMonth + steps))
-      setSelectedMonth(next)
+      // 0.4 ITEM_W 넘으면 한 칸 이동
+      if (dragX < -ITEM_W * 0.4 && selectedMonth < 12) setSelectedMonth(m => m + 1)
+      else if (dragX > ITEM_W * 0.4 && selectedMonth > 1) setSelectedMonth(m => m - 1)
     }
-    setDragOffset(0)
+    setDragX(0)
     direction.current = null
   }
 
-  // 선택 월이 보이도록 트랜슬레이트 계산
-  const containerW = containerRef.current?.offsetWidth ?? 300
-  // 선택 바 중앙이 컨테이너 중앙에 오도록
-  const centerOffset = containerW / 2 - BAR_W / 2
-  const baseTranslate = centerOffset - (selectedMonth - 1) * ITEM_W
-  const translateX = baseTranslate + dragOffset
-
   return (
-    <div className="bg-surface rounded-2xl px-5 py-5 mb-4">
-      {/* 헤더: N월에 쓴 지출 + 금액 */}
+    <div className="bg-surface rounded-2xl px-5 pt-5 pb-6 mb-4">
+      {/* 헤더 */}
       <div className="mb-5">
-        <p className="text-[13px] text-muted-foreground mb-0.5">
+        <p className="text-[13px] font-semibold text-white/80 mb-0.5">
           {selectedData ? `${selectedData.month}월에 ${label}` : label}
         </p>
-        <p className="text-[28px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
-          {selectedData && !selectedData.isFuture ? fmt(selectedData.value) : '—'}
+        <p
+          className="text-[24px] font-bold tabular-nums leading-tight"
+          style={{ letterSpacing: '-1px', color }}
+        >
+          {selectedData && !selectedData.isFuture && selectedData.value > 0
+            ? `₩${selectedData.value.toLocaleString()}`
+            : '—'}
         </p>
       </div>
 
-      {/* 막대 그래프 */}
+      {/* 그래프 영역 */}
       <div
         ref={containerRef}
         className="overflow-hidden"
-        style={{ touchAction: 'none' }}
+        style={{ touchAction: 'none', height: MAX_H + LABEL_H }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -118,30 +112,30 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
         <div
           className="flex items-end"
           style={{
-            width: TOTAL_W,
+            height: MAX_H + LABEL_H,
             transform: `translateX(${translateX}px)`,
-            transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
+            transition: dragging ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
             willChange: 'transform',
-            height: MAX_H + 28, // 바 높이 + 월 레이블 공간
-            alignItems: 'flex-end',
           }}
         >
           {data.map(d => {
             const isSelected = d.month === selectedMonth
-            const barH = d.isFuture || d.value === 0 ? 4 : Math.max(4, Math.round((d.value / maxValue) * MAX_H))
+            const barH = d.isFuture || d.value === 0
+              ? 6
+              : Math.max(6, Math.round((d.value / maxValue) * MAX_H))
             const barColor = d.isFuture
               ? 'rgba(255,255,255,0.08)'
               : isSelected
                 ? color
-                : 'rgba(255,255,255,0.18)'
+                : 'rgba(255,255,255,0.2)'
 
             return (
               <div
                 key={d.month}
-                style={{ width: ITEM_W, paddingRight: BAR_GAP }}
-                className="flex flex-col items-center"
+                style={{ width: ITEM_W, flexShrink: 0 }}
+                className="flex flex-col items-center justify-end"
+                onClick={() => !d.isFuture && setSelectedMonth(d.month)}
               >
-                {/* 바 */}
                 <div
                   style={{
                     width: BAR_W,
@@ -149,13 +143,20 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
                     backgroundColor: barColor,
                     borderRadius: 6,
                     marginBottom: 8,
-                    transition: 'height 0.3s ease',
+                    transition: 'height 0.35s ease, background-color 0.2s ease',
+                    flexShrink: 0,
                   }}
                 />
-                {/* 월 레이블 */}
                 <span
-                  className="text-[11px] tabular-nums font-medium"
-                  style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.35)' }}
+                  style={{
+                    fontSize: 11,
+                    fontWeight: isSelected ? 600 : 400,
+                    color: isSelected ? '#fff' : 'rgba(255,255,255,0.35)',
+                    height: LABEL_H,
+                    display: 'flex',
+                    alignItems: 'center',
+                    lineHeight: 1,
+                  }}
                 >
                   {d.month}월
                 </span>
