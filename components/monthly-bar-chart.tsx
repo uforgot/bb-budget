@@ -55,7 +55,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: 
 
       {/* 바 그래프 */}
       <div className="overflow-x-auto scrollbar-hide -mx-5 px-5">
-        <div className="flex items-end" style={{ height: MAX_H + LABEL_H, width: ITEM_W * 12 }}>
+        <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8, width: ITEM_W * 12 }}>
           {data.map(d => {
             const isSelected = d.month === selectedMonth
             const barH = d.isFuture || d.value === 0
