@@ -57,12 +57,13 @@ function DayTransactions({
 
   return (
     <div className="flex flex-col">
-      {txs.map((tx) => (
+      {txs.map((tx, i) => (
         <TxRow
           key={tx.id}
           tx={tx}
           categories={categories}
           showDate={false}
+          dateLabel={i === 0 ? '상세' : undefined}
           showDescription
           onEdit={onEdit}
           onDeleted={onDeleted}
