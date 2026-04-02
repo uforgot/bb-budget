@@ -6,6 +6,7 @@ import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, type Transaction } from '@/lib/api'
+import { SummaryCardSlider } from '@/components/summary-card-slider'
 
 export default function Yearly() {
   const router = useRouter()
@@ -150,26 +151,21 @@ export default function Yearly() {
 
         {!searchMode && (
           <>
-            {/* 연간 요약 카드 */}
-            <div className="bg-surface rounded-2xl px-5 py-4 mb-4">
-              {[
-                { label: '수입', value: yearIncome, color: 'text-accent-blue' },
-                { label: '지출', value: yearExpense, color: 'text-accent-coral' },
-                { label: '저축', value: yearSavings, color: 'text-accent-mint' },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="flex items-center justify-between py-1.5">
-                  <span className="text-[13px] text-muted-foreground">{label}</span>
-                  <span className={`text-[14px] font-semibold tabular-nums ${color}`}>₩{value.toLocaleString()}</span>
-                </div>
-              ))}
-              <div className="border-t border-border mt-2 mb-1" />
-              <div className="flex items-center justify-between py-1.5">
-                <span className="text-[13px] text-muted-foreground">잔액</span>
-                <span className={`text-[14px] font-bold tabular-nums ${yearBalance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>
-                  ₩{yearBalance.toLocaleString()}
-                </span>
-              </div>
-            </div>
+            {/* 연간 요약 카드 슬라이더 */}
+            <SummaryCardSlider
+              month={targetYear}
+              income={yearIncome}
+              expense={yearExpense}
+              savings={yearSavings}
+              balance={yearBalance}
+              prevMonth={targetYear - 1}
+              prevIncome={0}
+              prevExpense={0}
+              prevSavings={0}
+              prevBalance={0}
+              hasPrev={false}
+              yearMode
+            />
 
             {/* 월별 카드 */}
             <div className="flex flex-col gap-3">
