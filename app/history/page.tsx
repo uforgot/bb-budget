@@ -423,51 +423,43 @@ export default function History() {
             return { weekNum, weekTotal, hasRecurring }
           }).filter(w => w.weekNum <= currentWeekNum && (w.weekTotal !== 0 || w.hasRecurring)).reverse()
 
+          // 요약 데이터 계산
+          const monthSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
+          const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+          const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
+          const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
+          const monthBalance = cumIncome - cumExpense - cumSavings
+          const prevM = actualMonth === 1 ? 12 : actualMonth - 1
+          const prevY = actualMonth === 1 ? targetYear - 1 : targetYear
+          const prevDays = new Date(prevY, prevM, 0).getDate()
+          const prevEnd = `${prevY}-${String(prevM).padStart(2,'0')}-${String(prevDays).padStart(2,'0')}`
+          const prevStart = `${prevY}-${String(prevM).padStart(2,'0')}-01`
+          const prevTxs = transactions.filter(t => t.date >= prevStart && t.date <= prevEnd)
+          const prevIncome = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+          const prevExpense = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+          const prevSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= prevEnd && (!t.end_date || t.end_date > prevEnd)).reduce((s, t) => s + t.amount, 0)
+          const prevCumInc = transactions.filter(t => t.type === 'income' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
+          const prevCumExp = transactions.filter(t => t.type === 'expense' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
+          const prevBalance = prevCumInc - prevCumExp - prevSavingsAmt
+          const hasPrev = prevTxs.length > 0
+
           return (
+            <>
+            <SummaryCardSlider
+              month={actualMonth}
+              income={monthIncome}
+              expense={monthExpense}
+              savings={monthSavingsAmt}
+              balance={monthBalance}
+              prevMonth={prevM}
+              prevIncome={prevIncome}
+              prevExpense={prevExpense}
+              prevSavings={prevSavingsAmt}
+              prevBalance={prevBalance}
+              hasPrev={hasPrev}
+            />
+            <div className="px-5">
             <div className="flex flex-col mt-2">
-
-
-              {/* 이번 달 수입/지출/저축/잔액 */}
-              {(() => {
-                const monthSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
-                const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
-                const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
-                const monthBalance = cumIncome - cumExpense - cumSavings
-
-                // 전월 데이터
-                const prevM = actualMonth === 1 ? 12 : actualMonth - 1
-                const prevY = actualMonth === 1 ? targetYear - 1 : targetYear
-                const prevDays = new Date(prevY, prevM, 0).getDate()
-                const prevEnd = `${prevY}-${String(prevM).padStart(2,'0')}-${String(prevDays).padStart(2,'0')}`
-                const prevStart = `${prevY}-${String(prevM).padStart(2,'0')}-01`
-                const prevTxs = transactions.filter(t => t.date >= prevStart && t.date <= prevEnd)
-                const prevIncome = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-                const prevExpense = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-                const prevSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= prevEnd && (!t.end_date || t.end_date > prevEnd)).reduce((s, t) => s + t.amount, 0)
-                const prevCumInc = transactions.filter(t => t.type === 'income' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
-                const prevCumExp = transactions.filter(t => t.type === 'expense' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
-                const prevBalance = prevCumInc - prevCumExp - prevSavingsAmt
-                const hasPrev = prevTxs.length > 0
-
-                return (
-                  <div className="-mx-5">
-                  <SummaryCardSlider
-                    month={actualMonth}
-                    income={monthIncome}
-                    expense={monthExpense}
-                    savings={monthSavingsAmt}
-                    balance={monthBalance}
-                    prevMonth={prevM}
-                    prevIncome={prevIncome}
-                    prevExpense={prevExpense}
-                    prevSavings={prevSavingsAmt}
-                    prevBalance={prevBalance}
-                    hasPrev={hasPrev}
-                  />
-                  </div>
-                )
-              })()}
 
               {/* 주차별 아코디언 */}
               {weekSummaries.length === 0 && !isFutureMonth && (
@@ -594,6 +586,8 @@ export default function History() {
                 )
               })}
             </div>
+            </div>
+            </>
           )
         })()}
         {false && (() => {
