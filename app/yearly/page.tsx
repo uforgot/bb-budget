@@ -50,6 +50,20 @@ export default function Yearly() {
   const yearBalance = yearIncome - yearExpense - yearSavings
   const activeMonths = monthSummaries.filter(m => m.hasData).reverse()
 
+  // 평균 지출: 말일이 지난 월까지만 계산
+  const avgExpense = (() => {
+    const now = new Date()
+    const completedMonths = monthSummaries.filter(m => {
+      if (targetYear < now.getFullYear()) return true
+      if (targetYear > now.getFullYear()) return false
+      // 같은 해: 말일이 지난 월만 (현재 월 미포함)
+      return m.month < now.getMonth() + 1
+    })
+    if (completedMonths.length === 0) return 0
+    const total = completedMonths.reduce((s, m) => s + m.expense, 0)
+    return Math.round(total / completedMonths.length)
+  })()
+
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -177,6 +191,7 @@ export default function Yearly() {
             <MonthlyBarChart
               label="쓴 지출"
               color="#CF6679"
+              avgExpense={avgExpense}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
                 const ms = monthSummaries[i]

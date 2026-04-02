@@ -12,9 +12,10 @@ interface MonthlyBarChartProps {
   data: MonthData[]
   label: string
   color?: string
+  avgExpense?: number
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: MonthlyBarChartProps) {
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
@@ -39,6 +40,18 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
             ? `₩${selectedData.value.toLocaleString()}`
             : '—'}
         </p>
+        {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgExpense != null && avgExpense > 0 && (() => {
+          const diff = selectedData.value - avgExpense
+          if (diff === 0) return null
+          const sign = diff > 0 ? '+' : ''
+          const diffText = `${sign}${diff > 0 ? '' : '-'}₩${Math.abs(diff).toLocaleString()}`
+          const isOver = diff > 0
+          return (
+            <p className="text-[12px] mt-0.5" style={{ color: isOver ? color : 'rgba(255,255,255,0.5)' }}>
+              월 평균보다 {isOver ? '' : '-'}₩{Math.abs(diff).toLocaleString()}원 {isOver ? '더' : '덜'} 썼어요
+            </p>
+          )
+        })()}
       </div>
 
       {/* 바 그래프 */}
