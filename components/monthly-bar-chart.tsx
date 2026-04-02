@@ -43,12 +43,10 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: 
         {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgExpense != null && avgExpense > 0 && (() => {
           const diff = selectedData.value - avgExpense
           if (diff === 0) return null
-          const sign = diff > 0 ? '+' : ''
-          const diffText = `${sign}${diff > 0 ? '' : '-'}₩${Math.abs(diff).toLocaleString()}`
           const isOver = diff > 0
           return (
-            <p className="text-[12px] mt-0.5" style={{ color: isOver ? color : 'rgba(255,255,255,0.5)' }}>
-              월 평균보다 {isOver ? '' : '-'}₩{Math.abs(diff).toLocaleString()}원 {isOver ? '더' : '덜'} 썼어요
+            <p className="text-[12px] mt-0.5 text-white/50">
+              월 평균보다 ₩{Math.abs(diff).toLocaleString()}원 {isOver ? '더' : '덜'} 썼어요
             </p>
           )
         })()}
