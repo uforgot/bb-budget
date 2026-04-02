@@ -374,9 +374,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 <button
                   onClick={() => {
                     setKeypadActive(false)
-                    setCategoryId('')
-                    setCategoryLabel('카테고리 선택')
-                    setType(null)
+                    setCategoryPickerOpen(true)
                   }}
                   className="w-full flex items-center justify-between px-4 py-3.5"
                 >
