@@ -58,10 +58,10 @@ export function SummaryCardSlider({
   }, [])
 
   const cards = [
-    { label: `${month}월 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#5865F2' },
-    { label: `${month}월 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#FF70FF' },
-    { label: `${month}월 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#2dd4bf' },
-    { label: `${month}월 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : '#FF6B9D' },
+    { label: `${month}월 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#5865F2', img: '/card-income.png' },
+    { label: `${month}월 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#FF70FF', img: '/card-expense.png' },
+    { label: `${month}월 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#2dd4bf', img: '/card-saving.png' },
+    { label: `${month}월 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : '#FF6B9D', img: '/card-balance.png' },
   ]
   const total = cards.length
 
@@ -136,7 +136,15 @@ export function SummaryCardSlider({
               className="flex-shrink-0 w-full"
               style={{ padding: '0 20px' }}
             >
-              <div className="rounded-2xl px-5 pt-5 pb-4 flex flex-col justify-between" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+              <div className="rounded-2xl px-5 pt-5 pb-4 flex flex-col justify-between overflow-hidden relative" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+                {/* 데코 이미지 */}
+                <img
+                  src={card.img}
+                  alt=""
+                  aria-hidden
+                  className="absolute right-0 bottom-0 w-28 h-28 object-contain pointer-events-none select-none"
+                  style={{ transform: 'translate(10%, 10%)' }}
+                />
                 <div>
                   <p className="text-[13px] font-semibold text-white/80 mb-0.5">{card.label}</p>
                   <p className="text-[28px] font-bold tabular-nums text-white leading-tight" style={{ letterSpacing: '-1px' }}>
