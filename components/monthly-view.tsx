@@ -149,7 +149,7 @@ export function MonthlyView({
             <button
               key={week}
               onClick={() => setSelectedWeek(week)}
-              className={`px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${
+              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${
                 week === selectedWeek
                   ? 'bg-accent-blue text-white'
                   : 'bg-surface text-muted-foreground'
