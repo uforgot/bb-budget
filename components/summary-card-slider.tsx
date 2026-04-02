@@ -147,7 +147,7 @@ export function SummaryCardSlider({
                 />
                 <div>
                   <p className="text-[13px] font-semibold text-white/80 mb-0.5">{card.label}</p>
-                  <p className="text-[28px] font-bold tabular-nums text-white leading-tight" style={{ letterSpacing: '-1px' }}>
+                  <p className="text-[24px] font-bold tabular-nums text-white leading-tight" style={{ letterSpacing: '-1px' }}>
                     ₩{card.amount.toLocaleString()}
                   </p>
                 </div>
