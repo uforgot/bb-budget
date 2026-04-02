@@ -451,6 +451,7 @@ export default function History() {
                 const hasPrev = prevTxs.length > 0
 
                 return (
+                  <div className="-mx-5">
                   <SummaryCardSlider
                     month={actualMonth}
                     income={monthIncome}
@@ -464,6 +465,7 @@ export default function History() {
                     prevBalance={prevBalance}
                     hasPrev={hasPrev}
                   />
+                  </div>
                 )
               })()}
 
