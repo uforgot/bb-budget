@@ -123,8 +123,9 @@ export function SummaryCardSlider({
             <div
               key={card.label}
               className="flex-shrink-0 w-full"
+              style={{ padding: '0 20px' }}
             >
-              <div className="rounded-2xl px-5 pt-5 pb-4 mx-0 flex flex-col justify-between" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+              <div className="rounded-2xl px-5 pt-5 pb-4 flex flex-col justify-between" style={{ minHeight: '150px', backgroundColor: card.bg }}>
                 <div>
                   <p className="text-[13px] font-semibold text-white/80 mb-0.5">{card.label}</p>
                   <p className="text-[28px] font-bold tabular-nums text-white leading-tight" style={{ letterSpacing: '-1px' }}>
