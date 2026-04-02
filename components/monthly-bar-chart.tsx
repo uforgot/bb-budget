@@ -35,11 +35,18 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: 
         <p className="text-[13px] font-semibold text-white/80 mb-0.5">
           {selectedData ? `${selectedData.month}월에 ${label}` : label}
         </p>
-        <p className="text-[24px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
-          {selectedData && !selectedData.isFuture && selectedData.value > 0
-            ? `₩${selectedData.value.toLocaleString()}`
-            : '—'}
-        </p>
+        <div className="flex items-baseline gap-2">
+          <p className="text-[24px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
+            {selectedData && !selectedData.isFuture && selectedData.value > 0
+              ? `₩${selectedData.value.toLocaleString()}`
+              : '—'}
+          </p>
+          {avgExpense != null && avgExpense > 0 && selectedData && !selectedData.isFuture && selectedData.value > 0 && (
+            <p className="text-[12px] text-white/40 tabular-nums">
+              평균 ₩{avgExpense.toLocaleString()}
+            </p>
+          )}
+        </div>
         {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgExpense != null && avgExpense > 0 && (() => {
           const diff = selectedData.value - avgExpense
           if (diff === 0) return null
