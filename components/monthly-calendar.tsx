@@ -310,10 +310,13 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
   }, [])
 
   // Refresh data when refreshKey changes
+  const prevRefreshKey = useRef(refreshKey)
   useEffect(() => {
-    if (refreshKey === 0) return
-    setDataCache(new Map())
-    loadingMonthsRef.current.clear()
+    if (refreshKey !== prevRefreshKey.current) {
+      setDataCache(new Map())
+      loadingMonthsRef.current.clear()
+      prevRefreshKey.current = refreshKey
+    }
   }, [refreshKey])
 
   // Load focused month + adjacent months data, notify parent
