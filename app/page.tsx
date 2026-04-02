@@ -143,7 +143,7 @@ export default function Home() {
     setCalYear(today.getFullYear())
     setCalMonth(today.getMonth() + 1)
     setSelectedDay(today.getDate())
-    setRefreshKey(k => k + 1)
+    setCalKey(k => k + 1)
   }, [today])
 
   return (
