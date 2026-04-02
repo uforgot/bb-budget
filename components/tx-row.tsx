@@ -37,7 +37,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, onEdit, onDeleted }
             ) : null}
           </div>
           <div className="flex-1 min-w-0">
-            <span className={`text-xs bg-muted px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`}>
+            <span className={`text-xs px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: 'rgba(207,102,121,0.15)', color: '#CF6679' }}>
               {!cat
                 ? <span className="text-muted-foreground">미분류</span>
                 : cat.parent_id
