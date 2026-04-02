@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, type Transaction } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
+import { MonthlyBarChart } from '@/components/monthly-bar-chart'
 
 export default function Yearly() {
   const router = useRouter()
@@ -172,42 +173,18 @@ export default function Yearly() {
             yearMode
           />
           <div className="px-5">
-            {/* 월별 카드 */}
-            <div className="flex flex-col gap-3">
-              {activeMonths.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">아직 내역이 없어요</p>
-              )}
-              {activeMonths.map(({ month, income, expense, savings, balance }) => (
-                <div key={month}
-                  onClick={() => router.push(`/history?month=${month}&year=${targetYear}`)}
-                  className="bg-surface rounded-2xl px-5 py-4 cursor-pointer active:bg-muted/30"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[16px] font-semibold">{targetYear}년 {month}월</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m9 18 6-6-6-6" /></svg>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    {[
-                      { label: '수입', value: income, color: 'text-accent-blue' },
-                      { label: '지출', value: expense, color: 'text-accent-coral' },
-                      { label: '저축', value: savings, color: 'text-accent-mint' },
-                    ].map(({ label, value, color }) => (
-                      <div key={label} className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">{label}</span>
-                        <span className={`text-sm font-semibold tabular-nums ${color}`}>₩{value.toLocaleString()}</span>
-                      </div>
-                    ))}
-                    <div className="border-t border-border my-1" />
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">잔액</span>
-                      <span className={`text-sm font-semibold tabular-nums ${balance >= 0 ? 'text-foreground' : 'text-accent-coral'}`}>
-                        ₩{balance.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* 월별 지출 현황 바 차트 */}
+            <MonthlyBarChart
+              label="쓴 지출"
+              color="#CF6679"
+              data={Array.from({ length: 12 }, (_, i) => {
+                const m = i + 1
+                const ms = monthSummaries[i]
+                const isFuture = targetYear > today.getFullYear() ||
+                  (targetYear === today.getFullYear() && m > today.getMonth() + 1)
+                return { month: m, value: ms.expense, isFuture }
+              })}
+            />
           </div>
         </>
       )}
