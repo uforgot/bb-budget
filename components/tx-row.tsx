@@ -33,7 +33,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, onEdit, onDeleted }
                 <span className="text-sm text-muted-foreground tabular-nums">{d.getDate()}일</span>
               </div>
             ) : dateLabel ? (
-              <span className="text-[10px] text-muted-foreground font-medium">{dateLabel}</span>
+              <span className="text-sm font-medium">{dateLabel}</span>
             ) : null}
           </div>
           <div className="flex-1 min-w-0">
