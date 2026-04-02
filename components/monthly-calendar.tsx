@@ -129,7 +129,7 @@ function MonthGrid({
             <div
               key={day}
               onClick={() => onDayClick(year, month, day)}
-              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[46px] px-1 rounded-lg transition-colors ${
+              className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[46px] px-3 rounded-lg transition-colors ${
                 selected ? 'bg-accent' : ''
               }`}
             >
