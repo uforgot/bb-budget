@@ -473,8 +473,8 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                         {item.isRecurring && (
                           <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
                         )}
-                        {item.description && (
-                          <span className="text-[10px] text-muted-foreground line-clamp-2">{item.description}</span>
+                        {i === 0 && item.description && (
+                          <span className="text-[10px] text-muted-foreground line-clamp-1">{item.description}</span>
                         )}
                       </div>
                       <span className={`text-sm font-semibold tabular-nums ${colorClass}`}>
