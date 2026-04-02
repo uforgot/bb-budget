@@ -185,7 +185,7 @@ export function MonthlyView({
             </div>
 
             {/* 구분선 */}
-            <div className="border-t border-border mb-3 mx-5" />
+            <div className="border-t border-border mb-1 mx-5" />
 
             {/* 내역 */}
             {weekTxs.length === 0 ? (

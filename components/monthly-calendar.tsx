@@ -446,7 +446,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
         const totalDay = totalIncome - totalExpense
 
         return (
-          <div className="mt-2">
+          <div className="mt-1">
             {/* Items list */}
             {sd?.items && sd.items.length > 0 ? (
               <div className="flex flex-col">
