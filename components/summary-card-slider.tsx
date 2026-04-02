@@ -40,11 +40,22 @@ export function SummaryCardSlider({
   const prevLabel = `${prevMonth}월`
   const [current, setCurrent] = useState(0)
   const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
   const isDragging = useRef(false)
   const startX = useRef(0)
   const startY = useRef(0)
   const dragDirection = useRef<'h' | 'v' | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = useState(0)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    setContainerWidth(el.offsetWidth)
+    const ro = new ResizeObserver(() => setContainerWidth(el.offsetWidth))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const cards = [
     { label: `${month}월 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#5865F2' },
@@ -56,6 +67,7 @@ export function SummaryCardSlider({
 
   const onTouchStart = (e: React.TouchEvent) => {
     isDragging.current = true
+    setDragging(true)
     dragDirection.current = null
     startX.current = e.touches[0].clientX
     startY.current = e.touches[0].clientY
@@ -84,23 +96,22 @@ export function SummaryCardSlider({
     if (dragDirection.current === 'h') {
       e.preventDefault()
       e.stopPropagation()
-      const w = containerRef.current?.offsetWidth ?? 0
-      const clamped = Math.max(-w * 0.6, Math.min(w * 0.6, dx))
+      const clamped = Math.max(-containerWidth * 0.6, Math.min(containerWidth * 0.6, dx))
       setDragX(clamped)
     }
   }
 
-  const onTouchEnd = (e: React.TouchEvent) => {
+  const onTouchEnd = (_e: React.TouchEvent) => {
     if (!isDragging.current) return
     isDragging.current = false
-    const w = containerRef.current?.offsetWidth ?? 1
+    setDragging(false)
     if (dragX < -w * 0.25 && current < total - 1) setCurrent(c => c + 1)
     else if (dragX > w * 0.25 && current > 0) setCurrent(c => c - 1)
     setDragX(0)
     dragDirection.current = null
   }
 
-  const w = containerRef.current?.offsetWidth || 1
+  const w = containerWidth || 1
   const translateX = -(current * 100) + (dragX / w) * 100
 
   return (
@@ -110,7 +121,7 @@ export function SummaryCardSlider({
         className="flex"
         style={{
           transform: `translateX(${translateX}%)`,
-          transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
+          transition: dragging ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
           willChange: 'transform',
         }}
         onTouchStart={onTouchStart}
