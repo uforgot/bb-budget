@@ -13,10 +13,10 @@ function diffText(diff: number | null, type: 'income' | 'expense' | 'savings' | 
   if (diff === null || diff === undefined) return ''
   if (diff === 0) return '변동이 없어요.'
   const f = fmt(Math.abs(diff))
-  if (type === 'income') return diff > 0 ? `${prevLabel}보다 ${f}원 더 벌었어요.` : `${prevLabel}보다 ${f}원 덜 벌었어요.`
-  if (type === 'expense') return diff > 0 ? `${prevLabel}보다 ${f}원 더 썼어요.` : `${prevLabel}보다 ${f}원 덜 썼어요.`
-  if (type === 'savings') return diff > 0 ? `${prevLabel}보다 ${f}원 더 저축했어요.` : `${prevLabel}보다 ${f}원 줄었어요.`
-  return diff > 0 ? `${prevLabel}보다 ${f}원 늘었어요.` : `${prevLabel}보다 ${f}원 줄었어요.`
+  if (type === 'income') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 벌었어요.` : `${prevLabel}보다 ${f} 원 덜 벌었어요.`
+  if (type === 'expense') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 썼어요.` : `${prevLabel}보다 ${f} 원 덜 썼어요.`
+  if (type === 'savings') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 저축했어요.` : `${prevLabel}보다 ${f} 원 줄었어요.`
+  return diff > 0 ? `${prevLabel}보다 ${f} 원 늘었어요.` : `${prevLabel}보다 ${f} 원 줄었어요.`
 }
 
 interface SummaryCardSliderProps {
@@ -137,13 +137,13 @@ export function SummaryCardSlider({
               style={{ padding: '0 20px' }}
             >
               <div className="rounded-2xl px-5 pt-5 pb-4 flex flex-col justify-between overflow-hidden relative" style={{ minHeight: '150px', backgroundColor: card.bg }}>
-                {/* 데코 이미지 */}
+                {/* 데코 이미지 — 우측, 텍스트 3줄 센터 높이 */}
                 <img
                   src={card.img}
                   alt=""
                   aria-hidden
-                  className="absolute right-0 bottom-0 w-28 h-28 object-contain pointer-events-none select-none"
-                  style={{ transform: 'translate(10%, 10%)' }}
+                  className="absolute right-0 top-1/2 w-32 h-32 object-contain pointer-events-none select-none"
+                  style={{ transform: 'translateY(-50%) translateX(8%)' }}
                 />
                 <div>
                   <p className="text-[13px] font-semibold text-white/80 mb-0.5">{card.label}</p>
