@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 interface MonthData {
   month: number
@@ -9,8 +9,8 @@ interface MonthData {
 }
 
 interface MonthlyBarChartProps {
-  data: MonthData[]       // 반드시 12개 (1~12월)
-  label: string           // "쓴 지출" 등
+  data: MonthData[]
+  label: string
   color?: string
 }
 
@@ -19,16 +19,9 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
   const currentMonth = today.getMonth() + 1
 
   const [selectedMonth, setSelectedMonth] = useState(currentMonth)
-  const [dragX, setDragX] = useState(0)
-  const [dragging, setDragging] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const isScrolling = useRef(false)
 
-  const isDragging = useRef(false)
-  const startX = useRef(0)
-  const startY = useRef(0)
-  const direction = useRef<'h' | 'v' | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  // 치수
   const BAR_W = 28
   const BAR_GAP = 16
   const ITEM_W = BAR_W + BAR_GAP
@@ -38,55 +31,35 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
   const maxValue = Math.max(...data.filter(d => !d.isFuture).map(d => d.value), 1)
   const selectedData = data.find(d => d.month === selectedMonth)
 
-  // 선택 월이 항상 컨테이너 중앙에 오도록
-  const containerW = containerRef.current?.offsetWidth ?? 320
-  const centerX = containerW / 2 - BAR_W / 2
-  // index 0-based
-  const baseTranslate = centerX - (selectedMonth - 1) * ITEM_W
-  const translateX = baseTranslate + dragX
+  // 초기 스크롤: 현재 월 센터 정렬
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const containerW = el.offsetWidth
+    const centerOffset = containerW / 2 - BAR_W / 2
+    // index = selectedMonth - 1
+    const scrollTo = (selectedMonth - 1) * ITEM_W - centerOffset
+    el.scrollLeft = Math.max(0, scrollTo)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    isDragging.current = true
-    setDragging(true)
-    startX.current = e.touches[0].clientX
-    startY.current = e.touches[0].clientY
-    direction.current = null
-  }
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current) return
-    const dx = e.touches[0].clientX - startX.current
-    const dy = e.touches[0].clientY - startY.current
-
-    if (!direction.current) {
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) direction.current = 'h'
-      else if (Math.abs(dy) > 6) { direction.current = 'v'; isDragging.current = false; setDragging(false); return }
-      else return
-    }
-    if (direction.current === 'h') {
-      e.preventDefault()
-      e.stopPropagation()
-      setDragX(dx)
-    }
-  }
-
-  const onTouchEnd = () => {
-    if (!isDragging.current && !dragging) return
-    isDragging.current = false
-    setDragging(false)
-    if (direction.current === 'h') {
-      // 0.4 ITEM_W 넘으면 한 칸 이동
-      if (dragX < -ITEM_W * 0.4 && selectedMonth < 12) setSelectedMonth(m => m + 1)
-      else if (dragX > ITEM_W * 0.4 && selectedMonth > 1) setSelectedMonth(m => m - 1)
-    }
-    setDragX(0)
-    direction.current = null
+  // 스크롤 위치 → 선택 월 동기화
+  const onScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    const containerW = el.offsetWidth
+    const centerOffset = containerW / 2 - BAR_W / 2
+    const scrollLeft = el.scrollLeft
+    // 스크롤 중앙에 가장 가까운 바 인덱스
+    const idx = Math.round((scrollLeft + centerOffset) / ITEM_W)
+    const month = Math.max(1, Math.min(12, idx + 1))
+    setSelectedMonth(month)
   }
 
   return (
     <div className="bg-surface rounded-2xl px-5 pt-5 pb-6 mb-4">
       {/* 헤더 */}
-      <div className="mb-5">
+      <div className="mb-5 px-0">
         <p className="text-[13px] font-semibold text-white/80 mb-0.5">
           {selectedData ? `${selectedData.month}월에 ${label}` : label}
         </p>
@@ -100,23 +73,17 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
         </p>
       </div>
 
-      {/* 그래프 영역 */}
+      {/* 스크롤 그래프 */}
       <div
-        ref={containerRef}
-        className="overflow-hidden"
-        style={{ touchAction: 'none', height: MAX_H + LABEL_H }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
+        ref={scrollRef}
+        className="overflow-x-auto scrollbar-hide"
+        style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+        onScroll={onScroll}
       >
+        {/* 좌우 패딩: 첫/마지막 바도 센터에 올 수 있게 */}
         <div
           className="flex items-end"
-          style={{
-            height: MAX_H + LABEL_H,
-            transform: `translateX(${translateX}px)`,
-            transition: dragging ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
-            willChange: 'transform',
-          }}
+          style={{ height: MAX_H + LABEL_H, paddingLeft: 'calc(50% - 14px)', paddingRight: 'calc(50% - 14px)' }}
         >
           {data.map(d => {
             const isSelected = d.month === selectedMonth
@@ -132,9 +99,18 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
             return (
               <div
                 key={d.month}
-                style={{ width: ITEM_W, flexShrink: 0 }}
+                style={{ width: ITEM_W, flexShrink: 0, cursor: d.isFuture ? 'default' : 'pointer' }}
                 className="flex flex-col items-center justify-end"
-                onClick={() => !d.isFuture && setSelectedMonth(d.month)}
+                onClick={() => {
+                  if (d.isFuture) return
+                  setSelectedMonth(d.month)
+                  // 탭 시 해당 바 센터로 스크롤
+                  const el = scrollRef.current
+                  if (!el) return
+                  const containerW = el.offsetWidth
+                  const centerOffset = containerW / 2 - BAR_W / 2
+                  el.scrollTo({ left: (d.month - 1) * ITEM_W - centerOffset, behavior: 'smooth' })
+                }}
               >
                 <div
                   style={{
@@ -143,8 +119,8 @@ export function MonthlyBarChart({ data, label, color = '#CF6679' }: MonthlyBarCh
                     backgroundColor: barColor,
                     borderRadius: 6,
                     marginBottom: 8,
-                    transition: 'height 0.35s ease, background-color 0.2s ease',
                     flexShrink: 0,
+                    transition: 'background-color 0.2s ease',
                   }}
                 />
                 <span
