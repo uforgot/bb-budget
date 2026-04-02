@@ -228,7 +228,7 @@ export function MonthlyView({
                           </div>
                         </div>
                         <div className="flex-1 min-w-0 flex items-center gap-2">
-                          <span className="text-xs bg-accent text-foreground px-3 py-1 rounded-full inline-block">
+                          <span className="text-xs text-foreground px-3 py-1 rounded-full inline-block" style={{ backgroundColor: '#1C1C1E' }}>
                             <span className="text-foreground">{r.categoryName || '미분류'}</span>
                           </span>
                           <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>

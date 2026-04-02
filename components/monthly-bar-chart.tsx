@@ -65,7 +65,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               : Math.max(6, Math.round((d.value / maxValue) * MAX_H))
             const barColor = d.isFuture
               ? 'rgba(255,255,255,0.08)'
-              : isSelected ? color : 'rgba(255,255,255,0.2)'
+              : isSelected ? color : '#1C1C1E'
 
             return (
               <div
