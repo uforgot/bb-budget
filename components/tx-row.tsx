@@ -10,11 +10,12 @@ interface TxRowProps {
   categories: Category[]
   showDate: boolean
   dateLabel?: string
+  showDescription?: boolean
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }
 
-export function TxRow({ tx, categories, showDate, dateLabel, onEdit, onDeleted }: TxRowProps) {
+export function TxRow({ tx, categories, showDate, dateLabel, showDescription = true, onEdit, onDeleted }: TxRowProps) {
   const cat = tx.category as any
   const catName = cat?.name || ''
   const d = new Date(tx.date)
@@ -57,7 +58,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, onEdit, onDeleted }
             ₩{tx.amount.toLocaleString()}
           </span>
         </div>
-        {tx.description && (
+        {showDescription && tx.description && (
           <p className={`text-[10px] text-muted-foreground truncate mt-1 pl-[68px] ${tx.end_date ? 'line-through' : ''}`}>
             {tx.description}
           </p>
