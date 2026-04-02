@@ -6,8 +6,9 @@ import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { type Transaction } from '@/lib/api'
-import { LayoutGrid, Settings, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
+import { TxRow } from '@/components/tx-row'
+import { type Transaction, type Category } from '@/lib/api'
+import { LayoutGrid, Settings } from 'lucide-react'
 import { DatePickerModal } from '@/components/date-picker-modal'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
@@ -19,25 +20,24 @@ function toDateStr(year: number, month: number, day: number) {
 function DayTransactions({
   date,
   refreshKey,
+  categories,
   onEdit,
+  onDeleted,
 }: {
   date: string
   refreshKey: number
+  categories: Category[]
   onEdit: (tx: Transaction) => void
+  onDeleted: () => void
 }) {
   const [txs, setTxs] = useState<Transaction[]>([])
-  const [catMap, setCatMap] = useState<Record<string, any>>({})
 
   useEffect(() => {
     ;(async () => {
       try {
-        const { getTransactions, getCategories } = await import('@/lib/api')
+        const { getTransactions } = await import('@/lib/api')
         const d = new Date(date)
-        const [all, cats] = await Promise.all([
-          getTransactions({ year: d.getFullYear(), month: d.getMonth() + 1 }),
-          getCategories(),
-        ])
-        setCatMap(Object.fromEntries(cats.map(c => [c.id, c])))
+        const all = await getTransactions({ year: d.getFullYear(), month: d.getMonth() + 1 })
         setTxs(
           all
             .filter(t => t.date === date)
@@ -57,45 +57,16 @@ function DayTransactions({
 
   return (
     <div className="flex flex-col">
-      {txs.map(tx => {
-        const cat = catMap[tx.category_id]
-        const catName = cat?.name || '기타'
-        const parentCat = cat?.parent_id ? catMap[cat.parent_id] : null
-        const colorClass =
-          tx.type === 'savings'
-            ? 'text-accent-mint'
-            : tx.type === 'expense'
-            ? 'text-accent-coral'
-            : 'text-accent-blue'
-        return (
-          <div
-            key={tx.id}
-            onClick={() => onEdit(tx)}
-            className="flex items-center justify-between py-3 px-5 cursor-pointer active:bg-muted/50 border-t border-border"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="text-xs bg-muted px-3 py-1.5 rounded-full shrink-0">
-                {parentCat ? (
-                  <>
-                    <span className="text-foreground">{parentCat.name}</span>
-                    <span className="text-muted-foreground"> · {catName}</span>
-                  </>
-                ) : (
-                  <span className="text-foreground">{catName}</span>
-                )}
-              </span>
-              {tx.description && (
-                <span className="text-[11px] text-muted-foreground truncate">
-                  {tx.description}
-                </span>
-              )}
-            </div>
-            <span className={`text-sm font-semibold tabular-nums shrink-0 ml-2 ${colorClass}`}>
-              ₩{tx.amount.toLocaleString()}
-            </span>
-          </div>
-        )
-      })}
+      {txs.map(tx => (
+        <TxRow
+          key={tx.id}
+          tx={tx}
+          categories={categories}
+          showDate={false}
+          onEdit={onEdit}
+          onDeleted={onDeleted}
+        />
+      ))}
     </div>
   )
 }
@@ -110,8 +81,9 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
-  const [txOpen, setTxOpen] = useState(true)
-  const [dayTotal, setDayTotal] = useState(0)
+  const [dayIncome, setDayIncome] = useState(0)
+  const [dayExpense, setDayExpense] = useState(0)
+  const [categories, setCategories] = useState<Category[]>([])
   const [pickerOpen, setPickerOpen] = useState(false)
   const [calKey, setCalKey] = useState(0)
   const selectChangingRef = useRef(false) // select 변경 중 플래그
@@ -122,6 +94,16 @@ export default function Home() {
     return `${calMonth}월 ${selectedDay}일 ${DAY_NAMES[d.getDay()]}요일`
   })()
 
+  // 카테고리 로드 (1회)
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { getCategories } = await import('@/lib/api')
+        setCategories(await getCategories())
+      } catch {}
+    })()
+  }, [])
+
   // 선택 날짜 합계 로드
   useEffect(() => {
     ;(async () => {
@@ -129,9 +111,8 @@ export default function Home() {
         const { getTransactions } = await import('@/lib/api')
         const txs = await getTransactions({ year: calYear, month: calMonth })
         const dayTxs = txs.filter(t => t.date === selectedDate)
-        const inc = dayTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-        const exp = dayTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-        setDayTotal(exp - inc) // 지출 기준 (+면 지출)
+        setDayIncome(dayTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0))
+        setDayExpense(dayTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0))
       } catch {}
     })()
   }, [selectedDate, calYear, calMonth, refreshKey])
@@ -204,55 +185,54 @@ export default function Home() {
             </div>
             <button onClick={goToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
           </div>
-          {/* 달력 */}
+          {/* 달력 카드 */}
           <div className="pb-6">
-          <MonthlyCalendar
-            key={calKey}
-            showHeader={false}
-            showDayDetail={false}
-            targetYear={calYear}
-            targetMonth={calMonth}
-            onMonthChange={handleMonthChange}
-            onDaySelect={handleDaySelect}
-            onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
-            refreshKey={refreshKey}
-          />
+            <div className="bg-surface rounded-2xl px-3 pt-4 pb-3">
+              <MonthlyCalendar
+                key={calKey}
+                showHeader={false}
+                showDayDetail={false}
+                targetYear={calYear}
+                targetMonth={calMonth}
+                onMonthChange={handleMonthChange}
+                onDaySelect={handleDaySelect}
+                onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
+                refreshKey={refreshKey}
+              />
+            </div>
           </div>
         </div>
 
       {/* 하단 영역 */}
-      <div className="bg-surface min-h-[50vh] pb-32">
-        <div className="px-5 pt-4">
-          {/* 날짜 헤더 + 거래 내역 */}
-          <button
-            onClick={() => setTxOpen(v => !v)}
-            className="w-full flex items-center justify-between py-3"
-          >
-            <span className="text-[16px] font-semibold">{selectedDateLabel}</span>
-            <div className="flex items-center gap-2">
-              <span className={`text-[16px] font-bold tabular-nums ${
-                dayTotal > 0 ? 'text-accent-coral' : dayTotal < 0 ? 'text-accent-blue' : 'text-muted-foreground'
-              }`}>
-                ₩{Math.abs(dayTotal).toLocaleString()}
-              </span>
-              {txOpen
-                ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                : <ChevronDown className="w-4 h-4 text-muted-foreground" />
-              }
+      <div className="bg-background min-h-[50vh] pb-32">
+        {/* 날짜 헤더 */}
+        <div className="mb-4 px-5 pt-4">
+          <div className="flex items-start justify-between">
+            <span className="text-[14px] font-semibold">{selectedDateLabel}</span>
+            <div className="text-right">
+              <div className="flex items-center justify-end gap-3 mb-1">
+                <span className="text-[13px] text-muted-foreground">수입</span>
+                <span className="text-[14px] font-semibold tabular-nums text-accent-blue">₩{dayIncome.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center justify-end gap-3">
+                <span className="text-[13px] text-muted-foreground">지출</span>
+                <span className="text-[14px] font-semibold tabular-nums text-accent-coral">₩{dayExpense.toLocaleString()}</span>
+              </div>
             </div>
-          </button>
-
-          {txOpen && (
-            <>
-              <div className="border-t border-border" />
-              <DayTransactions
-                date={selectedDate}
-                refreshKey={refreshKey}
-                onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
-              />
-            </>
-          )}
+          </div>
         </div>
+
+        {/* 구분선 */}
+        <div className="border-t border-border mb-3 mx-5" />
+
+        {/* 내역 */}
+        <DayTransactions
+          date={selectedDate}
+          refreshKey={refreshKey}
+          categories={categories}
+          onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
+          onDeleted={() => setRefreshKey(k => k + 1)}
+        />
       </div>
 
       <DatePickerModal
