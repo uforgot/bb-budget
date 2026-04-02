@@ -270,7 +270,25 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </svg>
         </button>
         <h1 className="text-[17px] font-semibold">{editTransaction ? '수정하기' : '기록하기'}</h1>
-        <div className="w-8" />
+        {editTransaction ? (
+          <button
+            onClick={async () => {
+              if (!confirm('삭제할까요?')) return
+              const { deleteTransaction } = await import('@/lib/api')
+              await deleteTransaction(editTransaction.id)
+              setRawAmount(''); setMemo(''); setEditDate(null)
+              onClose()
+            }}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-coral/10 text-accent-coral"
+            aria-label="삭제"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
+            </svg>
+          </button>
+        ) : (
+          <div className="w-8" />
+        )}
       </header>
 
       {/* Scrollable content */}
@@ -540,15 +558,10 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </button>
             )}
             <button
-              onClick={async () => {
-                const { deleteTransaction } = await import('@/lib/api')
-                await deleteTransaction(editTransaction.id)
-                setRawAmount(''); setMemo(''); setEditDate(null)
-                onClose()
-              }}
-              className="flex-1 bg-accent-coral/10 text-accent-coral rounded-[18px] py-3.5 text-[16px] font-semibold"
+              onClick={handleClose}
+              className="flex-1 bg-surface text-muted-foreground rounded-[18px] py-3.5 text-[16px] font-semibold"
             >
-              삭제하기
+              취소하기
             </button>
           </div>
         ) : (
