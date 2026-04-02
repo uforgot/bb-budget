@@ -168,7 +168,7 @@ export function MonthlyView({
         ) : (
           <>
             {/* 날짜 범위 + 수입/지출 */}
-            <div className="mb-4">
+            <div className="mb-4 px-5">
               <div className="flex items-start justify-between">
                 <span className="text-[14px] font-semibold">{dateRangeLabel}</span>
                 <div className="text-right">
@@ -185,7 +185,7 @@ export function MonthlyView({
             </div>
 
             {/* 구분선 */}
-            <div className="border-t border-border mb-3" />
+            <div className="border-t border-border mb-3 mx-5" />
 
             {/* 내역 */}
             {weekTxs.length === 0 ? (
