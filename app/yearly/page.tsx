@@ -50,19 +50,21 @@ export default function Yearly() {
   const yearBalance = yearIncome - yearExpense - yearSavings
   const activeMonths = monthSummaries.filter(m => m.hasData).reverse()
 
-  // 평균 지출: 말일이 지난 월까지만 계산
-  const avgExpense = (() => {
+  // 평균 계산: 말일이 지난 월까지만 (= 현재월 미포함)
+  const completedMonths = (() => {
     const now = new Date()
-    const completedMonths = monthSummaries.filter(m => {
+    return monthSummaries.filter(m => {
       if (targetYear < now.getFullYear()) return true
       if (targetYear > now.getFullYear()) return false
-      // 같은 해: 말일이 지난 월만 (현재 월 미포함)
       return m.month < now.getMonth() + 1
     })
-    if (completedMonths.length === 0) return 0
-    const total = completedMonths.reduce((s, m) => s + m.expense, 0)
-    return Math.round(total / completedMonths.length)
   })()
+  const avgExpense = completedMonths.length > 0
+    ? Math.round(completedMonths.reduce((s, m) => s + m.expense, 0) / completedMonths.length)
+    : 0
+  const avgIncome = completedMonths.length > 0
+    ? Math.round(completedMonths.reduce((s, m) => s + m.income, 0) / completedMonths.length)
+    : 0
 
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
@@ -191,13 +193,26 @@ export default function Yearly() {
             <MonthlyBarChart
               label="쓴 지출"
               color="#CF6679"
-              avgExpense={avgExpense}
+              avgValue={avgExpense}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
                 const ms = monthSummaries[i]
                 const isFuture = targetYear > today.getFullYear() ||
                   (targetYear === today.getFullYear() && m > today.getMonth() + 1)
                 return { month: m, value: ms.expense, isFuture }
+              })}
+            />
+            {/* 월별 수입 현황 바 차트 */}
+            <MonthlyBarChart
+              label="수입"
+              color="#5865F2"
+              avgValue={avgIncome}
+              data={Array.from({ length: 12 }, (_, i) => {
+                const m = i + 1
+                const ms = monthSummaries[i]
+                const isFuture = targetYear > today.getFullYear() ||
+                  (targetYear === today.getFullYear() && m > today.getMonth() + 1)
+                return { month: m, value: ms.income, isFuture }
               })}
             />
           </div>

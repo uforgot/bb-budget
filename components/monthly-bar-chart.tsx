@@ -12,10 +12,11 @@ interface MonthlyBarChartProps {
   data: MonthData[]
   label: string
   color?: string
-  avgExpense?: number
+  avgValue?: number
+  avgLabel?: string
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '웘 평균' }: MonthlyBarChartProps) {
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
@@ -24,6 +25,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: 
   const ITEM_W = BAR_W + BAR_GAP
   const MAX_H = 120
   const LABEL_H = 24
+  const TOP_PAD = 8 // border-radius 잘림 방지용 상단 여백
 
   const maxValue = Math.max(...data.filter(d => !d.isFuture).map(d => d.value), 1)
   const selectedData = data.find(d => d.month === selectedMonth)
@@ -40,14 +42,14 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: 
             ? `₩${selectedData.value.toLocaleString()}`
             : '—'}
         </p>
-        {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgExpense != null && avgExpense > 0 && (() => {
-          const diff = selectedData.value - avgExpense
+        {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgValue != null && avgValue > 0 && (() => {
+          const diff = selectedData.value - avgValue
           if (diff === 0) return null
           const isOver = diff > 0
           const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만`
           return (
             <p className="text-[12px] mt-0.5 text-white/50">
-              월 평균 {toMan(avgExpense)}원보다 {toMan(Math.abs(diff))}원 {isOver ? '더' : '덜'} 썼어요
+              {avgLabel} {toMan(avgValue)}원보다 {toMan(Math.abs(diff))}원 {isOver ? '더' : '덜'} {label === '수입' ? '생겼어요' : '썼어요'}
             </p>
           )
         })()}
@@ -55,7 +57,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgExpense }: 
 
       {/* 바 그래프 */}
       <div className="overflow-x-auto scrollbar-hide -mx-5 px-5">
-        <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8, width: ITEM_W * 12 }}>
+        <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: ITEM_W * 12 }}>
           {data.map(d => {
             const isSelected = d.month === selectedMonth
             const barH = d.isFuture || d.value === 0
