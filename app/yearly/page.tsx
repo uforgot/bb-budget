@@ -189,6 +189,19 @@ export default function Yearly() {
             yearMode
           />
           <div className="px-5">
+            {/* 월별 수입 현황 바 차트 */}
+            <MonthlyBarChart
+              label="번 수입"
+              color="#5865F2"
+              avgValue={avgIncome}
+              data={Array.from({ length: 12 }, (_, i) => {
+                const m = i + 1
+                const ms = monthSummaries[i]
+                const isFuture = targetYear > today.getFullYear() ||
+                  (targetYear === today.getFullYear() && m > today.getMonth() + 1)
+                return { month: m, value: ms.income, isFuture }
+              })}
+            />
             {/* 월별 지출 현황 바 차트 */}
             <MonthlyBarChart
               label="쓴 지출"
@@ -200,19 +213,6 @@ export default function Yearly() {
                 const isFuture = targetYear > today.getFullYear() ||
                   (targetYear === today.getFullYear() && m > today.getMonth() + 1)
                 return { month: m, value: ms.expense, isFuture }
-              })}
-            />
-            {/* 월별 수입 현황 바 차트 */}
-            <MonthlyBarChart
-              label="수입"
-              color="#5865F2"
-              avgValue={avgIncome}
-              data={Array.from({ length: 12 }, (_, i) => {
-                const m = i + 1
-                const ms = monthSummaries[i]
-                const isFuture = targetYear > today.getFullYear() ||
-                  (targetYear === today.getFullYear() && m > today.getMonth() + 1)
-                return { month: m, value: ms.income, isFuture }
               })}
             />
           </div>
