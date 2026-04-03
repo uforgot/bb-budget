@@ -104,7 +104,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[18px] transition-colors ${
-                        isExpanded || isSelected ? 'bg-accent-blue/20' : 'bg-muted'
+                        isExpanded || isSelected ? 'bg-accent-blue' : 'bg-muted'
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
