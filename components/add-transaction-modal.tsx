@@ -242,7 +242,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
   const typeColors: Record<TransactionType, { active: string; inactive: string }> = {
     '지출': { active: 'bg-accent-coral text-white', inactive: 'bg-surface text-muted-foreground' },
-    '수입': { active: 'bg-accent-blue text-white', inactive: 'bg-surface text-muted-foreground' },
+    '수입': { active: 'bg-[#14b8a6] text-white', inactive: 'bg-surface text-muted-foreground' },
     '저축': { active: 'bg-accent-purple text-white', inactive: 'bg-surface text-muted-foreground' },
   }
 
@@ -461,7 +461,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       >
                         <span>{{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}</span>
                         {repeatFrequency === opt && (
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-blue">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{color:"#14b8a6"}}>
                             <path d="M20 6 9 17l-5-5" />
                           </svg>
                         )}
