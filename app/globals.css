@@ -6,8 +6,8 @@
 
 @theme inline {
   --color-accent-blue: var(--accent-blue);
-  --color-accent-coral: #CFC9FF;
-  --color-accent-purple: #4BBEA0;
+  --color-accent-coral: #AAA3D9;
+  --color-accent-purple: #6BBAA2;
   --color-surface: var(--surface);
   --color-background: var(--background);
   --color-foreground: var(--foreground);

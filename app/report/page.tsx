@@ -519,7 +519,7 @@ export default function Report() {
                 }}
               />
               {(trendMode === 'expense' || trendMode === 'all') && (
-                <Line type="monotone" dataKey="expense" stroke="#CFC9FF" strokeWidth={2} dot={{ r: 3, fill: '#CFC9FF' }} connectNulls />
+                <Line type="monotone" dataKey="expense" stroke="#AAA3D9" strokeWidth={2} dot={{ r: 3, fill: '#AAA3D9' }} connectNulls />
               )}
               {(trendMode === 'income' || trendMode === 'all') && (
                 <Line type="monotone" dataKey="income" stroke="#5865F2" strokeWidth={2} dot={{ r: 3, fill: '#5865F2' }} connectNulls />

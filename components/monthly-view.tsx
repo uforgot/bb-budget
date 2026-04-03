@@ -185,7 +185,7 @@ export function MonthlyView({
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-[13px] text-muted-foreground">지출</span>
-                    <span className="text-[13px] font-semibold tabular-nums text-[#CFC9FF]">₩{weekExpense.toLocaleString()}</span>
+                    <span className="text-[13px] font-semibold tabular-nums text-[#AAA3D9]">₩{weekExpense.toLocaleString()}</span>
                   </div>
                 </div>
               )
