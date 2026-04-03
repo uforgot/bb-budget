@@ -136,7 +136,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         }
       })
     } else if (!editTransaction && open) {
-      setTimeout(() => amountInputRef.current?.focus(), 100)
       setRepeatFrequency('none')
       setRepeatDropdownOpen(false)
       const d = new Date(); d.setMonth(d.getMonth() + 1)
@@ -303,6 +302,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 <span className="text-[32px] font-bold text-foreground">₩</span>
                 <input
                   ref={amountInputRef}
+                  autoFocus={!editTransaction}
                   inputMode="numeric"
                   pattern="[0-9]*"
                   value={rawAmount}
