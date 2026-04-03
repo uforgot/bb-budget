@@ -460,7 +460,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                       className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? '#AAA3D9' : item.type === 'income' ? '#5865F2' : '#6BBAA2',  }}>
+                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? '#218C91' : item.type === 'income' ? '#5865F2' : '#6BBAA2',  }}>
                           {item.parentCategory ? (
                             <><span className="text-white">{item.parentCategory}</span><span className="text-white/70"> · {item.category}</span></>
                           ) : (

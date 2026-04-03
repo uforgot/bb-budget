@@ -61,7 +61,7 @@ export function SummaryCardSlider({
 
   const cards = [
     { label: `${month}${unit} 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#5865F2', img: '/card-income.png' },
-    { label: `${month}${unit} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#AAA3D9', img: '/card-expense.png' },
+    { label: `${month}${unit} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#218C91', img: '/card-expense.png' },
     { label: `${month}${unit} 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#6BBAA2', img: '/card-saving.png' },
     { label: `${month}${unit} 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : '#FF6B9D', img: '/card-balance.png' },
   ]
