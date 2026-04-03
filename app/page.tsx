@@ -226,7 +226,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-[13px] text-muted-foreground">수입</span>
-                  <span className="text-[13px] font-semibold tabular-nums text-accent-blue">₩{dayIncome.toLocaleString()}</span>
+                  <span className="text-[13px] font-semibold tabular-nums" style={{color:"#9A9AFF"}}>₩{dayIncome.toLocaleString()}</span>
                 </div>
               </div>
             )
