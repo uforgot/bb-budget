@@ -130,7 +130,7 @@ function MonthGrid({
               key={day}
               onClick={() => onDayClick(year, month, day)}
               className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors`}
-              style={selected ? { backgroundColor: '#1C1C1E' } : {}}
+              style={selected ? { backgroundColor: '#3A3A3C' } : {}}
             >
               <span className="relative flex items-center justify-center size-6 flex-shrink-0">
                 {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
