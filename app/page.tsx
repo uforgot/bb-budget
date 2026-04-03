@@ -213,7 +213,7 @@ export default function Home() {
             const net = dayIncome - dayExpense
             const netColor = net >= 0 ? 'text-accent-blue' : 'text-[#FF70FF]'
             return (
-              <div className="mx-5 mb-3 mt-4 bg-surface rounded-2xl px-5 py-4">
+              <div className="mx-5 mb-3 mt-2 bg-surface rounded-2xl px-5 py-4">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[14px] font-semibold">{selectedDateLabel}</span>
                   <span className={`text-[15px] font-bold tabular-nums ${netColor}`}>

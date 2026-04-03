@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Calendar, Tag, PenLine, Repeat2 } from 'lucide-react'
 import { CategoryPicker } from './category-picker'
 import { getCategories, addTransaction, updateTransaction, type Category, type Transaction } from '@/lib/api'
 
@@ -314,7 +313,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           {/* 전체 폼 통합 박스 */}
           <div className="mb-3 bg-surface rounded-2xl overflow-visible">
             <div className="flex items-center justify-between px-4 py-3.5">
-              <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" /><span className="text-[16px]">날짜</span></div>
+              <span className="text-[16px]">날짜</span>
               <label className="relative cursor-pointer">
                 <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
                   {(() => {
@@ -337,7 +336,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             {/* 카테고리 */}
             {/* 타입 선택 행 */}
             <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-2"><Tag className="w-4 h-4 text-muted-foreground flex-shrink-0" /><span className="text-[16px]">카테고리</span></div>
+              <span className="text-[16px]">카테고리</span>
               <div className="flex gap-1.5">
                 {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
                   <button
@@ -404,7 +403,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             )}
             <div className="border-t border-border mx-4" />
             <div className="flex items-center justify-between px-4 py-3.5">
-              <div className="flex items-center gap-2"><PenLine className="w-4 h-4 text-muted-foreground flex-shrink-0" /><span className="text-[16px]">메모</span></div>
+              <span className="text-[16px]">메모</span>
               <input
                 type="text"
                 placeholder="입력"
@@ -426,7 +425,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   onClick={() => { setKeypadActive(false); setRepeatDropdownOpen(prev => !prev) }}
                   className="w-full flex items-center justify-between px-4 py-3.5"
                 >
-                  <div className="flex items-center gap-2"><Repeat2 className="w-4 h-4 text-muted-foreground flex-shrink-0" /><span className="text-[16px]">반복</span></div>
+                  <span className="text-[16px]">반복</span>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <span className="text-[16px]">
                       {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
