@@ -304,13 +304,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   ref={amountInputRef}
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  value={rawAmount}
+                  value={rawAmount ? parseInt(rawAmount).toLocaleString() : ''}
                   onChange={e => {
                     const v = e.target.value.replace(/[^0-9]/g, '')
                     if (v.length <= 10) setRawAmount(v)
                   }}
                   className="text-[40px] font-bold tabular-nums bg-transparent outline-none caret-foreground text-foreground placeholder:text-foreground"
-                  style={{ letterSpacing: '-2px', width: `${Math.max(1, rawAmount.length || 1)}ch` }}
+                  style={{ letterSpacing: '-2px', width: `${Math.max(1, (rawAmount ? parseInt(rawAmount).toLocaleString().length : 1))}ch` }}
                   placeholder="0"
                 />
               </div>
