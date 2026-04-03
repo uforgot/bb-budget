@@ -167,26 +167,29 @@ export function MonthlyView({
           <p className="text-sm text-muted-foreground text-center py-8">내역이 없습니다.</p>
         ) : (
           <>
-            {/* 날짜 범위 + 수입/지출 */}
-            <div className="mb-4 px-5 pt-4">
-              <div className="flex items-start justify-between">
-                <span className="text-[14px] font-semibold">{dateRangeLabel}</span>
-                <div className="text-right">
-                  <div className="flex items-center justify-end gap-3 mb-1">
-                    <span className="text-[13px] text-muted-foreground">수입</span>
-                    <span className="text-[14px] font-semibold tabular-nums text-accent-blue">₩{weekIncome.toLocaleString()}</span>
+            {/* 주차 요약 카드 */}
+            {(() => {
+              const net = weekIncome - weekExpense
+              const netColor = net >= 0 ? 'text-accent-blue' : 'text-[#FF70FF]'
+              return (
+                <div className="mx-5 mb-3 mt-4 bg-surface rounded-2xl px-5 py-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[14px] font-semibold">{dateRangeLabel}</span>
+                    <span className={`text-[15px] font-bold tabular-nums ${netColor}`}>
+                      {net >= 0 ? '+' : '-'}₩{Math.abs(net).toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-end gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[13px] text-muted-foreground">수입</span>
+                    <span className="text-[13px] font-semibold tabular-nums text-accent-blue">₩{weekIncome.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center justify-between mt-1">
                     <span className="text-[13px] text-muted-foreground">지출</span>
-                    <span className="text-[14px] font-semibold tabular-nums text-accent-coral">₩{weekExpense.toLocaleString()}</span>
+                    <span className="text-[13px] font-semibold tabular-nums text-[#FF70FF]">₩{weekExpense.toLocaleString()}</span>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* 구분선 */}
-            <div className="border-t border-border mb-1 mx-5" />
-
+              )
+            })()}
             {/* 내역 */}
             {weekTxs.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
