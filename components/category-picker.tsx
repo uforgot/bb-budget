@@ -140,7 +140,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }}
                         className={`py-2 rounded-lg text-[11px] transition-colors ${
                           selected === child.id
-                            ? 'bg-accent-blue text-white font-medium'
+                            ? TYPE_CHILD_COLOR[type] + ' font-medium'
                             : 'bg-card text-foreground'
                         }`}
                       >
