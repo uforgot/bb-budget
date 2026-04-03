@@ -35,7 +35,7 @@ export function BalanceCard({
       {/* 분할 바 */}
       <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3">
         <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#E0E3FF' }} />
-        <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#6366F1' }} />
+        <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
       </div>
       {/* 전월/금월 잔액 좌우 */}
       <div className="flex items-start justify-between">
@@ -103,7 +103,7 @@ function fmt(n: number) {
 export function MonthlySummaryCard({ month, income, savings, prevSavings, year }: MonthlySummaryCardProps & { year: number }) {
   const max = Math.max(income, savings, prevSavings, 1)
   const rows = [
-    { label: '수입', value: income, color: '#6366F1' },
+    { label: '수입', value: income, color: '#5865F2' },
     { label: '지출', value: savings, color: '#FF6B9D' },
     { label: '저축', value: prevSavings, color: '#43B581' },
   ]

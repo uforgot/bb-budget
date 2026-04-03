@@ -400,7 +400,7 @@ export default function Report() {
                         return (
                           <div className="bg-background rounded-lg px-3 py-2">
                             <p className="text-xs text-muted-foreground mb-1">{label}월</p>
-                            <p className="text-xs" style={{ color: '#6366F1' }}>잔액 {fmt(cash)}</p>
+                            <p className="text-xs" style={{ color: '#5865F2' }}>잔액 {fmt(cash)}</p>
                             <p className="text-xs" style={{ color: '#43B581' }}>저축 {fmt(savings)}</p>
                             <p className="text-xs font-semibold mt-1">총액 {fmt(total)}</p>
                             {monthNum > 1 && prevTotal > 0 && (
@@ -412,14 +412,14 @@ export default function Report() {
                         )
                       }}
                     />
-                    <Bar dataKey="cash" stackId="a" fill="#6366F1" radius={[0, 0, 0, 0]} />
+                    <Bar dataKey="cash" stackId="a" fill="#5865F2" radius={[0, 0, 0, 0]} />
                     <Bar dataKey="savings" stackId="a" fill="#43B581" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
                 {/* 범례 */}
                 <div className="flex gap-4 mt-3">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#6366F1' }} />
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#5865F2' }} />
                     <span className="text-xs text-muted-foreground">잔액</span>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -519,10 +519,10 @@ export default function Report() {
                 }}
               />
               {(trendMode === 'expense' || trendMode === 'all') && (
-                <Line type="monotone" dataKey="expense" stroke="#EC4899" strokeWidth={2} dot={{ r: 3, fill: '#EC4899' }} connectNulls />
+                <Line type="monotone" dataKey="expense" stroke="#CFC9FF" strokeWidth={2} dot={{ r: 3, fill: '#CFC9FF' }} connectNulls />
               )}
               {(trendMode === 'income' || trendMode === 'all') && (
-                <Line type="monotone" dataKey="income" stroke="#6366F1" strokeWidth={2} dot={{ r: 3, fill: '#6366F1' }} connectNulls />
+                <Line type="monotone" dataKey="income" stroke="#5865F2" strokeWidth={2} dot={{ r: 3, fill: '#5865F2' }} connectNulls />
               )}
             </LineChart>
           </ResponsiveContainer>
