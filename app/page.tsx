@@ -188,8 +188,8 @@ export default function Home() {
             <button onClick={goToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
           </div>
           {/* 달력 카드 */}
-          <div className="pb-6">
-            <div className="bg-surface rounded-2xl px-3 pt-4 pb-2">
+          <div>
+            <div className="bg-surface rounded-2xl px-3 pt-4 pb-6">
               <MonthlyCalendar
                 key={calKey}
                 showHeader={false}
