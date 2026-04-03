@@ -312,7 +312,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
           {/* 전체 폼 통합 박스 */}
           <div className="mb-3 bg-surface rounded-2xl overflow-visible">
-            <div className="flex items-center justify-between px-4 py-3.5">
+            <div className="flex items-center justify-between px-6 py-3.5">
               <span className="text-[16px]">날짜</span>
               <label className="relative cursor-pointer">
                 <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
@@ -332,10 +332,10 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 />
               </label>
             </div>
-            <div className="border-t border-border mx-4" />
+            <div className="border-t border-border mx-6" />
             {/* 카테고리 */}
             {/* 타입 선택 행 */}
-            <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center justify-between px-6 py-3">
               <span className="text-[16px]">카테고리</span>
               <div className="flex gap-1.5">
                 {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
@@ -368,13 +368,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             {/* 선택된 카테고리 표시 (타입 선택 후, 그리드 닫혔을 때) */}
             {type && categoryId && !categoryPickerOpen && (
               <>
-                <div className="border-t border-border mx-4" />
+                <div className="border-t border-border mx-6" />
                 <button
                   onClick={() => {
                     setKeypadActive(false)
                     setCategoryPickerOpen(true)
                   }}
-                  className="w-full flex items-center justify-between px-4 py-3.5"
+                  className="w-full flex items-center justify-between px-6 py-3.5"
                 >
                   <span className="text-[16px]">{categoryLabel}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
@@ -401,8 +401,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 />
               </div>
             )}
-            <div className="border-t border-border mx-4" />
-            <div className="flex items-center justify-between px-4 py-3.5">
+            <div className="border-t border-border mx-6" />
+            <div className="flex items-center justify-between px-6 py-3.5">
               <span className="text-[16px]">메모</span>
               <input
                 type="text"
@@ -417,13 +417,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
           {!editTransaction && (
             <>
-              <div className="border-t border-border mx-4" />
+              <div className="border-t border-border mx-6" />
               <div ref={repeatDropdownRef}>
               {/* 반복 행 */}
               <div className="relative">
                 <button
                   onClick={() => { setKeypadActive(false); setRepeatDropdownOpen(prev => !prev) }}
-                  className="w-full flex items-center justify-between px-4 py-3.5"
+                  className="w-full flex items-center justify-between px-6 py-3.5"
                 >
                   <span className="text-[16px]">반복</span>
                   <div className="flex items-center gap-1 text-muted-foreground">
@@ -463,8 +463,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               {/* 종료일 행 (반복 선택 시) */}
               {repeatFrequency !== 'none' && (
                 <>
-                  <div className="border-t border-border mx-4" />
-                  <div className="flex items-center justify-between px-4 py-3.5">
+                  <div className="border-t border-border mx-6" />
+                  <div className="flex items-center justify-between px-6 py-3.5">
                     <span className="text-[16px]">종료일</span>
                     <label className="relative cursor-pointer">
                       <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
