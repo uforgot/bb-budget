@@ -189,7 +189,7 @@ export default function Home() {
           </div>
           {/* 달력 카드 */}
           <div className="pb-6">
-            <div className="bg-surface rounded-2xl px-3 pt-4 pb-6">
+            <div className="bg-surface rounded-2xl px-3 pt-4 pb-2">
               <MonthlyCalendar
                 key={calKey}
                 showHeader={false}
