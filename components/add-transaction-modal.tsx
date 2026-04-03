@@ -136,6 +136,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         }
       })
     } else if (!editTransaction && open) {
+      setTimeout(() => amountInputRef.current?.focus(), 100)
       setRepeatFrequency('none')
       setRepeatDropdownOpen(false)
       const d = new Date(); d.setMonth(d.getMonth() + 1)
@@ -309,7 +310,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     const v = e.target.value.replace(/[^0-9]/g, '')
                     if (v.length <= 10) setRawAmount(v)
                   }}
-                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none caret-foreground text-foreground"
+                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none caret-foreground text-foreground placeholder:text-foreground"
                   style={{ letterSpacing: '-2px', width: `${Math.max(1, rawAmount.length || 1)}ch` }}
                   placeholder="0"
                 />
