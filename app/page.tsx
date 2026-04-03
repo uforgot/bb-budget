@@ -207,7 +207,7 @@ export default function Home() {
 
       {/* 하단 영역 */}
       <div className="bg-background min-h-[50vh] pb-32">
-        <div className="px-5">
+        <div>
           {/* 날짜 헤더 */}
           <div className="mb-4 px-5 pt-4">
             <div className="flex items-start justify-between">
