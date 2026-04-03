@@ -309,8 +309,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     const v = e.target.value.replace(/[^0-9]/g, '')
                     if (v.length <= 10) setRawAmount(v)
                   }}
-                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none text-center w-48 caret-foreground text-foreground"
-                  style={{ letterSpacing: '-2px', minWidth: 0 }}
+                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none caret-foreground text-foreground"
+                  style={{ letterSpacing: '-2px', width: `${Math.max(1, rawAmount.length || 1)}ch` }}
                   placeholder="0"
                 />
               </div>
