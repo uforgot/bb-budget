@@ -38,7 +38,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
             ) : null}
           </div>
           <div className="flex-1 min-w-0">
-            <span className={`text-xs text-foreground px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: '#1C1C1E' }}>
+            <span className={`text-xs text-white px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: tx.type === 'expense' ? '#FF4D8A' : tx.type === 'income' ? '#6A7BFF' : '#2CE6D6' }}>
               {!cat
                 ? <span className="text-muted-foreground">미분류</span>
                 : cat.parent_id
@@ -53,7 +53,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
             </span>
           </div>
           <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.end_date ? 'line-through ' : ''}${
-            tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+            'text-muted-foreground'
           }`}>
             ₩{tx.amount.toLocaleString()}
           </span>

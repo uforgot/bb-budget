@@ -452,11 +452,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
             {sd?.items && sd.items.length > 0 ? (
               <div className="flex flex-col">
                 {sd.items.map((item, i) => {
-                  const colorClass = item.type === 'savings'
-                    ? 'text-accent-mint'
-                    : item.type === 'expense'
-                      ? 'text-accent-coral'
-                      : 'text-accent-blue'
+                  const colorClass = 'text-muted-foreground'
                   return (
                     <div
                       key={i}
@@ -464,7 +460,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                       className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-foreground px-3 py-1.5 rounded-full" style={{ backgroundColor: '#1C1C1E' }}>
+                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? '#FF4D8A' : item.type === 'income' ? '#6A7BFF' : '#2CE6D6' }}>
                           {item.parentCategory ? (
                             <>{item.parentCategory}<span style={{ opacity: 0.6 }}> · {item.category}</span></>
                           ) : (
