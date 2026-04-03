@@ -310,7 +310,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
 
 
-          {/* 날짜 — Apple 스타일 카드 */}
+          {/* 날짜 + 카테고리 통합 박스 */}
           <div className="mb-3 bg-surface rounded-2xl">
             <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-[16px]">날짜</span>
@@ -332,10 +332,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 />
               </label>
             </div>
-          </div>
-
-          {/* 카테고리 — Apple 스타일 카드 */}
-          <div className="mb-3 bg-surface rounded-2xl">
+            <div className="border-t border-border mx-4" />
+            {/* 카테고리 */}
             {/* 타입 선택 행 */}
             <div className="flex items-center justify-between px-4 py-3">
               <span className="text-[16px]">카테고리</span>
@@ -401,8 +399,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             onClose={() => setCategoryPickerOpen(false)}
           />
 
-          {/* 메모 — Apple 스타일 카드 */}
-          <div className="mb-3 bg-surface rounded-2xl">
+          {/* 메모 + 반복 통합 박스 */}
+          <div className="mb-3 bg-surface rounded-2xl overflow-visible">
             <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-[16px]">메모</span>
               <input
@@ -416,11 +414,11 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
               />
             </div>
-          </div>
-
-          {/* 반복 설정 — Apple Calendar 스타일 */}
           {!editTransaction && (
-            <div className="mb-3 bg-surface rounded-2xl overflow-visible" ref={repeatDropdownRef}>
+            <>
+              <div className="border-t border-border mx-4" />
+              {/* 반복 */}
+              <div ref={repeatDropdownRef}>
               {/* 반복 행 */}
               <div className="relative">
                 <button
@@ -486,8 +484,10 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   </div>
                 </>
               )}
-            </div>
+              </div>
+            </>
           )}
+          </div>
 
         </div>
       </div>
