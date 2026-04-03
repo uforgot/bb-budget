@@ -172,13 +172,13 @@ export function MonthlyView({
               <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
                 <p className="text-[11px] text-muted-foreground mb-1">지출</p>
                 <p className="text-[20px] font-bold tabular-nums text-[#5865F2]" style={{ letterSpacing: '-0.5px' }}>
-                  {weekExpense > 0 ? `₩${weekExpense.toLocaleString()}` : '—'}
+                  {`₩${weekExpense.toLocaleString()}`}
                 </p>
               </div>
               <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
                 <p className="text-[11px] text-muted-foreground mb-1">수입</p>
                 <p className="text-[20px] font-bold tabular-nums" style={{ letterSpacing: '-0.5px', color: '#14b8a6' }}>
-                  {weekIncome > 0 ? `₩${weekIncome.toLocaleString()}` : '—'}
+                  {`₩${weekIncome.toLocaleString()}`}
                 </p>
               </div>
             </div>

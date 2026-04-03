@@ -213,13 +213,13 @@ export default function Home() {
             <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
               <p className="text-[11px] text-muted-foreground mb-1">{selectedDateLabel} 지출</p>
               <p className="text-[20px] font-bold tabular-nums text-[#5865F2]" style={{ letterSpacing: '-0.5px' }}>
-                {dayExpense > 0 ? `₩${dayExpense.toLocaleString()}` : '—'}
+                {`₩${dayExpense.toLocaleString()}`}
               </p>
             </div>
             <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
               <p className="text-[11px] text-muted-foreground mb-1">{selectedDateLabel} 수입</p>
               <p className="text-[20px] font-bold tabular-nums" style={{ letterSpacing: '-0.5px', color: '#14b8a6' }}>
-                {dayIncome > 0 ? `₩${dayIncome.toLocaleString()}` : '—'}
+                {`₩${dayIncome.toLocaleString()}`}
               </p>
             </div>
           </div>
