@@ -30,8 +30,8 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
           <div className="w-14 flex-shrink-0">
             {showDate ? (
               <div className="flex items-baseline gap-1.5">
-                <span className="text-sm font-medium">{DAY_NAMES[d.getDay()]}</span>
-                <span className="text-sm text-muted-foreground tabular-nums">{d.getDate()}일</span>
+                <span className="text-sm font-medium tabular-nums">{d.getDate()}일</span>
+                <span className="text-xs text-muted-foreground">{DAY_NAMES[d.getDay()]}</span>
               </div>
             ) : dateLabel ? (
               <span className="text-sm font-medium">{dateLabel}</span>
