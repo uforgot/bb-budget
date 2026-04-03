@@ -167,29 +167,21 @@ export function MonthlyView({
           <p className="text-sm text-muted-foreground text-center py-8">내역이 없습니다.</p>
         ) : (
           <>
-            {/* 주차 요약 카드 */}
-            {(() => {
-              const net = weekIncome - weekExpense
-              const netColor = 'text-foreground'
-              return (
-                <div className="mx-5 mb-3 mt-4 bg-surface rounded-2xl px-5 py-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[14px] font-semibold">{dateRangeLabel}</span>
-                    <span className={`text-[15px] font-bold tabular-nums ${netColor}`}>
-                      {net >= 0 ? '+' : '-'}₩{Math.abs(net).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[13px] text-muted-foreground">지출</span>
-                    <span className="text-[13px] font-semibold tabular-nums text-[#5865F2]">₩{weekExpense.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-[13px] text-muted-foreground">수입</span>
-                    <span className="text-[13px] font-semibold tabular-nums" style={{color:"#14b8a6"}}>₩{weekIncome.toLocaleString()}</span>
-                  </div>
-                </div>
-              )
-            })()}
+            {/* 주차 요약 카드 — 지출/수입 2분할 */}
+            <div className="mx-5 mb-3 mt-4 flex gap-3">
+              <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
+                <p className="text-[11px] text-muted-foreground mb-1">{actualMonth}월 {selectedWeek}주 차 지출</p>
+                <p className="text-[20px] font-bold tabular-nums text-[#5865F2]" style={{ letterSpacing: '-0.5px' }}>
+                  {weekExpense > 0 ? weekExpense.toLocaleString() : '—'}
+                </p>
+              </div>
+              <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
+                <p className="text-[11px] text-muted-foreground mb-1">{actualMonth}월 {selectedWeek}주 차 수입</p>
+                <p className="text-[20px] font-bold tabular-nums" style={{ letterSpacing: '-0.5px', color: '#14b8a6' }}>
+                  {weekIncome > 0 ? weekIncome.toLocaleString() : '—'}
+                </p>
+              </div>
+            </div>
             {/* 내역 */}
             {weekTxs.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
