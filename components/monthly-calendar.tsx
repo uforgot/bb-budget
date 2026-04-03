@@ -149,7 +149,7 @@ function MonthGrid({
                   </span>
                 )}
                 {(dayData?.income ?? 0) > 0 && (
-                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight' style={{color:'#9A9AFF'}} ${isFutureMonth ? 'opacity-40' : ''}`}>
+                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{color:'#9A9AFF'}}>
                     {formatAmount(dayData!.income!)}
                   </span>
                 )}
