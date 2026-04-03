@@ -40,15 +40,15 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
           <div className="flex-1 min-w-0">
             <span className={`text-xs text-white px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: tx.type === 'expense' ? '#FF4D8A' : tx.type === 'income' ? '#6A7BFF' : '#2CE6D6',  }}>
               {!cat
-                ? <span className="text-muted-foreground">미분류</span>
+                ? <span className="text-white">미분류</span>
                 : cat.parent_id
                   ? (() => {
                       const parent = categories.find((c: any) => c.id === cat.parent_id)
                       return parent
-                        ? <><span className="text-foreground">{parent.name}</span><span className="text-muted-foreground"> · {catName}</span></>
-                        : <span className="text-foreground">{catName}</span>
+                        ? <><span className="text-white">{parent.name}</span><span className="text-white/70"> · {catName}</span></>
+                        : <span className="text-white">{catName}</span>
                     })()
-                  : <span className="text-foreground">{catName}</span>
+                  : <span className="text-white">{catName}</span>
               }
             </span>
           </div>
