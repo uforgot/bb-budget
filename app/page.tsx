@@ -221,12 +221,12 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[13px] text-muted-foreground">수입</span>
-                  <span className="text-[13px] font-semibold tabular-nums text-accent-blue">₩{dayIncome.toLocaleString()}</span>
+                  <span className="text-[13px] text-muted-foreground">지출</span>
+                  <span className="text-[13px] font-semibold tabular-nums text-[#5865F2]">₩{dayExpense.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-[13px] text-muted-foreground">지출</span>
-                  <span className="text-[13px] font-semibold tabular-nums text-[#218C91]">₩{dayExpense.toLocaleString()}</span>
+                  <span className="text-[13px] text-muted-foreground">수입</span>
+                  <span className="text-[13px] font-semibold tabular-nums text-accent-blue">₩{dayIncome.toLocaleString()}</span>
                 </div>
               </div>
             )

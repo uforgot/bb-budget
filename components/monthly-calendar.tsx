@@ -149,7 +149,7 @@ function MonthGrid({
                   </span>
                 )}
                 {(dayData?.income ?? 0) > 0 && (
-                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-blue leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
+                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight' style={{color:'#9A9AFF'}} ${isFutureMonth ? 'opacity-40' : ''}`}>
                     {formatAmount(dayData!.income!)}
                   </span>
                 )}
@@ -460,7 +460,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                       className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? '#218C91' : item.type === 'income' ? '#5865F2' : '#6BBAA2',  }}>
+                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? '#5865F2' : item.type === 'income' ? '#9A9AFF' : '#6BBAA2',  }}>
                           {item.parentCategory ? (
                             <><span className="text-white">{item.parentCategory}</span><span className="text-white/70"> · {item.category}</span></>
                           ) : (
