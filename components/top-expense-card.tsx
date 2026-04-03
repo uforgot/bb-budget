@@ -93,8 +93,8 @@ export function TopExpenseCard({ year, month, items, total, type = 'expense' }: 
             return (
               <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#5D00FF20' }}>
-                    <Icon size={12} color="#5D00FF" strokeWidth={2.5} />
+                  <span className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#6A7BFF20' }}>
+                    <Icon size={12} color="#6A7BFF" strokeWidth={2.5} />
                   </span>
                   <span className="text-[13px] text-foreground">{item.name}</span>
                 </div>

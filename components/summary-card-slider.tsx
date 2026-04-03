@@ -60,9 +60,9 @@ export function SummaryCardSlider({
   }, [])
 
   const cards = [
-    { label: `${month}${unit} 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#5D00FF', img: '/card-income.png' },
-    { label: `${month}${unit} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#FF2E9A', img: '/card-expense.png' },
-    { label: `${month}${unit} 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#CFFF04', img: '/card-saving.png' },
+    { label: `${month}${unit} 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#6A7BFF', img: '/card-income.png' },
+    { label: `${month}${unit} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#FF4D8A', img: '/card-expense.png' },
+    { label: `${month}${unit} 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#2CE6D6', img: '/card-saving.png' },
     { label: `${month}${unit} 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : '#FF6B9D', img: '/card-balance.png' },
   ]
   const total = cards.length
