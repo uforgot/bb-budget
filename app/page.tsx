@@ -49,9 +49,7 @@ function DayTransactions({
 
   if (txs.length === 0) {
     return (
-      <p className="text-[13px] text-muted-foreground text-center py-6">
-        내역이 없어요
-      </p>
+      <p className="text-[14px] text-muted-foreground text-center py-6">내역이 없습니다</p>
     )
   }
 
