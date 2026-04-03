@@ -7,7 +7,7 @@
 @theme inline {
   --color-accent-blue: var(--accent-blue);
   --color-accent-coral: #5865F2;
-  --color-accent-purple: #6BBAA2;
+  --color-accent-purple: #8b5cf6;
   --color-surface: var(--surface);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -108,7 +108,7 @@
   --input: #3A3A3C;
   --ring: #6b7280;
   --accent-blue: #5865F2;
-  --accent-income: #9A9AFF;
+  --accent-income: #14b8a6;
   --surface: #1C1C1E;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);

@@ -38,7 +38,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
             ) : null}
           </div>
           <div className="flex-1 min-w-0">
-            <span className={`text-xs text-white px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: tx.type === 'expense' ? '#5865F2' : tx.type === 'income' ? '#9A9AFF' : '#6BBAA2' }}>
+            <span className={`text-xs text-white px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: tx.type === 'expense' ? '#5865F2' : tx.type === 'income' ? '#14b8a6' : '#8b5cf6' }}>
               {!cat
                 ? <span className="text-white">미분류</span>
                 : cat.parent_id
