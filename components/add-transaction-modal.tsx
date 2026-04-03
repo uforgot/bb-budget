@@ -78,6 +78,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
   })
   const repeatDropdownRef = useRef<HTMLDivElement>(null)
+  const amountInputRef = useRef<HTMLInputElement>(null)
 
   // 최근 사용 카테고리 로드
   useEffect(() => {
@@ -294,14 +295,24 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto px-5 pt-8 pb-4">
-          {/* 금액 표시 */}
-          <div className="mb-6 cursor-pointer py-4" onClick={() => setKeypadActive(true)}>
+          {/* 금액 입력 */}
+          <div className="mb-6 py-4" onClick={() => amountInputRef.current?.focus()}>
             <div className="flex flex-col items-center gap-1">
               <div className="flex items-baseline gap-1">
                 <span className="text-[32px] font-bold text-muted-foreground">₩</span>
-                <span className="text-[40px] font-bold tabular-nums" style={{ letterSpacing: '-2px' }}>
-                  {formatAmount(rawAmount)}
-                </span>
+                <input
+                  ref={amountInputRef}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={rawAmount}
+                  onChange={e => {
+                    const v = e.target.value.replace(/[^0-9]/g, '')
+                    if (v.length <= 10) setRawAmount(v)
+                  }}
+                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none text-center w-48 caret-foreground"
+                  style={{ letterSpacing: '-2px', minWidth: 0 }}
+                  placeholder="0"
+                />
               </div>
               <span className="text-[14px] text-muted-foreground">
                 {formatKorean(rawAmount)}
@@ -492,56 +503,9 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         </div>
       </div>
 
-      {/* 키패드 (하단 고정, 금액 탭 시에만) */}
-      {keypadActive && (
-        <div
-          className="w-full max-w-md mx-auto px-4 flex-shrink-0"
-          onTouchStart={(e) => {
-            const startY = e.touches[0].clientY
-            const onMove = (ev: TouchEvent) => {
-              if (ev.touches[0].clientY - startY > 60) {
-                setKeypadActive(false)
-                document.removeEventListener('touchmove', onMove)
-              }
-            }
-            document.addEventListener('touchmove', onMove, { passive: true })
-            document.addEventListener('touchend', () => document.removeEventListener('touchmove', onMove), { once: true })
-          }}
-        >
-          <div className="grid grid-cols-3 gap-1 mb-3">
-            {keypadKeys.map((row, ri) =>
-              row.map((key) => (
-                <button
-                  key={`${ri}-${key}`}
-                  onClick={() => handleKeypad(key)}
-                  className="h-16 flex items-center justify-center text-2xl font-medium rounded-lg active:bg-muted transition-colors"
-                >
-                  {key === 'backspace' ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 12l5-7h12a1 1 0 011 1v12a1 1 0 01-1 1H8l-5-7z" />
-                      <path d="M13 10l-4 4m0-4l4 4" />
-                    </svg>
-                  ) : (
-                    key
-                  )}
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
       {/* 하단 버튼 영역 */}
       <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
-        {keypadActive ? (
-          /* 키패드 열려 있을 때 → 닫기 버튼만 */
-          <button
-            onClick={() => setKeypadActive(false)}
-            className="w-full bg-surface text-foreground rounded-[18px] py-4 text-[16px] font-semibold"
-          >
-            닫기
-          </button>
-        ) : editTransaction ? (
+        {editTransaction ? (
           /* 수정 모드 */
           <div className="flex gap-2 mb-2">
             <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
