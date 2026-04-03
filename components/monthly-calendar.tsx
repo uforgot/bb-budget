@@ -461,7 +461,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                     <div
                       key={i}
                       onClick={() => !item.isRecurring && handleItemClick(selectedDay.day, i)}
-                      className={`flex items-center justify-between py-2 px-5 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
+                      className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-xs text-foreground px-3 py-1.5 rounded-full" style={{ backgroundColor: '#1C1C1E' }}>
