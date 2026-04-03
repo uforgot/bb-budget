@@ -243,7 +243,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const typeColors: Record<TransactionType, { active: string; inactive: string }> = {
     '지출': { active: 'bg-accent-coral text-white', inactive: 'bg-surface text-muted-foreground' },
     '수입': { active: 'bg-accent-blue text-white', inactive: 'bg-surface text-muted-foreground' },
-    '저축': { active: 'bg-accent-mint text-white', inactive: 'bg-surface text-muted-foreground' },
+    '저축': { active: 'bg-accent-purple text-white', inactive: 'bg-surface text-muted-foreground' },
   }
 
   const keypadKeys = [
@@ -514,7 +514,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             {editTransaction.type === 'savings' && (
               <button
                 onClick={() => setRecoverOpen(true)}
-                className="flex-1 bg-accent-mint/10 text-accent-mint rounded-[18px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 bg-accent-purple/10 text-accent-purple rounded-[18px] py-3.5 text-[16px] font-semibold"
               >
                 회수하기
               </button>

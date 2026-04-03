@@ -80,7 +80,7 @@ export function ActivityBubbleCard({ year, month, activities }: ActivityBubbleCa
                     style={{
                       width: isToday ? 5 : 3,
                       height: isToday ? 5 : 3,
-                      backgroundColor: isToday ? '#6A7BFF' : '#374151',
+                      backgroundColor: isToday ? '#6366F1' : '#374151',
                     }}
                   />
                 )}

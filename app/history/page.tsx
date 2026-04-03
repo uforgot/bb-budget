@@ -156,7 +156,7 @@ export default function History() {
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-0.5">{d.getFullYear()}년 {d.getMonth()+1}월 {d.getDate()}일</p>
                   </div>
-                  <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ml-3 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'}`}>
+                  <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ml-3 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'}`}>
                     ₩{tx.amount.toLocaleString()}
                   </span>
                 </div>

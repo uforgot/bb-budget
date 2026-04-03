@@ -230,7 +230,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
                 <span className="text-sm font-semibold">{month}월 {selectedDay}일 {dayOfWeek}</span>
                 {totalDay > 0 && (
                   <span className={`text-sm font-semibold tabular-nums ${
-                    totalExpense > 0 ? 'text-accent-coral' : totalIncome > 0 ? 'text-accent-blue' : 'text-accent-mint'
+                    totalExpense > 0 ? 'text-accent-coral' : totalIncome > 0 ? 'text-accent-blue' : 'text-accent-purple'
                   }`}>
                     ₩{totalDay.toLocaleString()}
                   </span>
@@ -242,7 +242,7 @@ export function MonthlyCalendar({ year: initYear, month: initMonth, data = {}, m
                 <div className="flex flex-col gap-2">
                   {selectedData.items.map((item, i) => {
                     const colorClass = item.type === 'savings'
-                      ? 'text-accent-mint'
+                      ? 'text-accent-purple'
                       : item.type === 'expense'
                         ? 'text-accent-coral'
                         : 'text-accent-blue'

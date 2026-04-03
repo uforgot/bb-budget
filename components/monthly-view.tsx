@@ -185,7 +185,7 @@ export function MonthlyView({
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-[13px] text-muted-foreground">지출</span>
-                    <span className="text-[13px] font-semibold tabular-nums text-[#FF4D8A]">₩{weekExpense.toLocaleString()}</span>
+                    <span className="text-[13px] font-semibold tabular-nums text-[#EC4899]">₩{weekExpense.toLocaleString()}</span>
                   </div>
                 </div>
               )
@@ -237,7 +237,7 @@ export function MonthlyView({
                           <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
                         </div>
                         <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
-                          r.type === 'expense' ? 'text-accent-coral' : r.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+                          r.type === 'expense' ? 'text-accent-coral' : r.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'
                         }`}>
                           ₩{r.amount.toLocaleString()}
                         </span>

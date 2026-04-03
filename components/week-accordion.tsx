@@ -87,7 +87,7 @@ export function WeekAccordion({
                       <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
                     </div>
                     <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
-                      r.type === 'expense' ? 'text-accent-coral' : r.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'
+                      r.type === 'expense' ? 'text-accent-coral' : r.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'
                     }`}>
                       ₩{r.amount.toLocaleString()}
                     </span>

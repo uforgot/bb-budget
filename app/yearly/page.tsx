@@ -156,7 +156,7 @@ export default function Yearly() {
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{d.getFullYear()}년 {d.getMonth()+1}월 {d.getDate()}일</p>
                     </div>
-                    <span className={`text-sm font-semibold tabular-nums ml-3 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-mint'}`}>
+                    <span className={`text-sm font-semibold tabular-nums ml-3 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'}`}>
                       ₩{tx.amount.toLocaleString()}
                     </span>
                   </div>
@@ -192,7 +192,7 @@ export default function Yearly() {
             {/* 월별 수입 현황 바 차트 */}
             <MonthlyBarChart
               label="번 수입"
-              color="#6A7BFF"
+              color="#6366F1"
               avgValue={avgIncome}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
@@ -205,7 +205,7 @@ export default function Yearly() {
             {/* 월별 지출 현황 바 차트 */}
             <MonthlyBarChart
               label="쓴 지출"
-              color="#FF4D8A"
+              color="#EC4899"
               avgValue={avgExpense}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
