@@ -194,7 +194,7 @@ export function MonthlyView({
             {weekTxs.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
             ) : (
-              <div className="flex flex-col">
+              <div className="flex flex-col px-5">
                 {weekTxs.map(tx => {
                   const showDivider = lastDate !== null && lastDate !== tx.date
                   const showDate = lastDate !== tx.date
