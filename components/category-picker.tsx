@@ -13,6 +13,17 @@ interface CategoryPickerProps {
   inline?: boolean
 }
 
+const TYPE_COLOR: Record<'income' | 'expense' | 'savings', string> = {
+  income: 'bg-accent-blue',
+  expense: 'bg-[#FF70FF]',
+  savings: 'bg-accent-mint',
+}
+const TYPE_CHILD_COLOR: Record<'income' | 'expense' | 'savings', string> = {
+  income: 'bg-accent-blue text-white',
+  expense: 'bg-[#FF70FF] text-white',
+  savings: 'bg-accent-mint text-white',
+}
+
 const CATEGORY_EMOJI: Record<string, string> = {
   '식비': '🍽️',
   '생활': '🏠',
@@ -104,7 +115,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[18px] transition-colors ${
-                        isExpanded || isSelected ? 'bg-accent-blue' : 'bg-muted'
+                        isExpanded || isSelected ? TYPE_COLOR[type] : 'bg-muted'
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
