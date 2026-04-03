@@ -208,34 +208,40 @@ export default function Home() {
       {/* 하단 영역 */}
       <div className="bg-background min-h-[50vh] pb-32">
         <div>
-          {/* 날짜 헤더 */}
-          <div className="mb-4 px-5 pt-4">
-            <div className="flex items-start justify-between">
-              <span className="text-[14px] font-semibold">{selectedDateLabel}</span>
-              <div className="text-right">
-                <div className="flex items-center justify-end gap-3 mb-1">
-                  <span className="text-[13px] text-muted-foreground">수입</span>
-                  <span className="text-[14px] font-semibold tabular-nums text-accent-blue">₩{dayIncome.toLocaleString()}</span>
+          {/* 날짜 요약 카드 */}
+          {(() => {
+            const net = dayIncome - dayExpense
+            const netColor = net >= 0 ? 'text-accent-blue' : 'text-[#FF70FF]'
+            return (
+              <div className="mx-5 mb-3 mt-4 bg-surface rounded-2xl px-5 py-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[14px] font-semibold">{selectedDateLabel}</span>
+                  <span className={`text-[15px] font-bold tabular-nums ${netColor}`}>
+                    {net >= 0 ? '+' : '-'}₩{Math.abs(net).toLocaleString()}
+                  </span>
                 </div>
-                <div className="flex items-center justify-end gap-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[13px] text-muted-foreground">수입</span>
+                  <span className="text-[13px] font-semibold tabular-nums text-accent-blue">₩{dayIncome.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
                   <span className="text-[13px] text-muted-foreground">지출</span>
-                  <span className="text-[14px] font-semibold tabular-nums text-accent-coral">₩{dayExpense.toLocaleString()}</span>
+                  <span className="text-[13px] font-semibold tabular-nums text-[#FF70FF]">₩{dayExpense.toLocaleString()}</span>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* 구분선 */}
-          <div className="border-t border-border mb-3 mx-5" />
+            )
+          })()}
 
           {/* 내역 */}
-          <DayTransactions
-            date={selectedDate}
-            refreshKey={refreshKey}
-            categories={categories}
-            onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
-            onDeleted={() => setRefreshKey(k => k + 1)}
-          />
+          <div className="px-5">
+            <DayTransactions
+              date={selectedDate}
+              refreshKey={refreshKey}
+              categories={categories}
+              onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
+              onDeleted={() => setRefreshKey(k => k + 1)}
+            />
+          </div>
         </div>
       </div>
 
