@@ -170,7 +170,7 @@ export function MonthlyView({
             {/* 주차 요약 카드 */}
             {(() => {
               const net = weekIncome - weekExpense
-              const netColor = net >= 0 ? 'text-accent-blue' : 'text-[#FF70FF]'
+              const netColor = net >= 0 ? 'text-accent-blue' : 'text-[#FF2E9A]'
               return (
                 <div className="mx-5 mb-3 mt-4 bg-surface rounded-2xl px-5 py-4">
                   <div className="flex items-center justify-between mb-3">
@@ -185,7 +185,7 @@ export function MonthlyView({
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-[13px] text-muted-foreground">지출</span>
-                    <span className="text-[13px] font-semibold tabular-nums text-[#FF70FF]">₩{weekExpense.toLocaleString()}</span>
+                    <span className="text-[13px] font-semibold tabular-nums text-[#FF2E9A]">₩{weekExpense.toLocaleString()}</span>
                   </div>
                 </div>
               )

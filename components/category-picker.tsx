@@ -15,12 +15,12 @@ interface CategoryPickerProps {
 
 const TYPE_COLOR: Record<'income' | 'expense' | 'savings', string> = {
   income: 'bg-accent-blue',
-  expense: 'bg-[#FF70FF]',
+  expense: 'bg-[#FF2E9A]',
   savings: 'bg-accent-mint',
 }
 const TYPE_CHILD_COLOR: Record<'income' | 'expense' | 'savings', string> = {
   income: 'bg-accent-blue text-white',
-  expense: 'bg-[#FF70FF] text-white',
+  expense: 'bg-[#FF2E9A] text-white',
   savings: 'bg-accent-mint text-white',
 }
 
