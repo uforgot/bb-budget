@@ -162,7 +162,7 @@ export function MonthlyView({
       </div>
 
       {/* 주차 요약 + 내역 */}
-      <div className="px-5">
+      <div>
         {isSelectedWeekFuture ? (
           <p className="text-sm text-muted-foreground text-center py-8">내역이 없습니다.</p>
         ) : (
