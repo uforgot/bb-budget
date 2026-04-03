@@ -298,8 +298,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           {/* 금액 입력 */}
           <div className="mb-6 py-4" onClick={() => amountInputRef.current?.focus()}>
             <div className="flex flex-col items-center gap-1">
-              <div className="flex items-baseline gap-1">
-                <span className="text-[32px] font-bold text-muted-foreground">₩</span>
+              <div className="flex items-baseline">
+                <span className="text-[32px] font-bold text-foreground">₩</span>
                 <input
                   ref={amountInputRef}
                   inputMode="numeric"
@@ -309,7 +309,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     const v = e.target.value.replace(/[^0-9]/g, '')
                     if (v.length <= 10) setRawAmount(v)
                   }}
-                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none text-center w-48 caret-foreground"
+                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none text-center w-48 caret-foreground text-foreground"
                   style={{ letterSpacing: '-2px', minWidth: 0 }}
                   placeholder="0"
                 />
