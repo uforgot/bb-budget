@@ -397,7 +397,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
             {/* 인라인 카테고리 그리드 */}
             {categoryPickerOpen && type !== null && (
-              <div>
+              <div className="px-5 pb-3">
                 <CategoryPicker
                   open={categoryPickerOpen && type !== null}
                   inline
