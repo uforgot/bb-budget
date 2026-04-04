@@ -169,7 +169,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
   // 인라인 모드 — 바텀시트 없이 그대로 렌더
   if (inline) {
     return (
-      <div className="mt-3 mb-3 bg-surface rounded-[22px] px-3 pt-3 pb-1">
+      <div className="mt-3 mb-3">
         {gridContent}
       </div>
     )
