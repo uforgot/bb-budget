@@ -27,7 +27,7 @@ export default function Settings() {
       <main className="max-w-lg mx-auto">
         {/* 보기 설정 */}
         <div className="px-4 pt-6 pb-2">
-          <p className="text-xs font-medium text-muted-foreground uppercase">보기 설정</p>
+          <p className="text-[14px] font-medium text-muted-foreground uppercase">보기 설정</p>
         </div>
 
         <div className="mx-4 rounded-[22px] bg-surface">
@@ -52,7 +52,7 @@ export default function Settings() {
 
         {/* 데이터 관리 */}
         <div className="px-4 pt-6 pb-2">
-          <p className="text-xs font-medium text-muted-foreground uppercase">데이터 관리</p>
+          <p className="text-[14px] font-medium text-muted-foreground uppercase">데이터 관리</p>
         </div>
 
         <div className="mx-4 rounded-[22px] bg-surface">
