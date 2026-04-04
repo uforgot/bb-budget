@@ -294,7 +294,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-md mx-auto px-5 pt-8 pb-4">
+        <div className="w-full max-w-md mx-auto px-4 pt-8 pb-4">
           {/* 금액 입력 */}
           <div className="mb-6 py-4" onClick={() => amountInputRef.current?.focus()}>
             <div className="flex flex-col items-center gap-1">
@@ -323,7 +323,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
           {/* 전체 폼 통합 박스 */}
           <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
-            <div className="flex items-center justify-between px-5 py-3.5">
+            <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-[16px]">날짜</span>
               <label className="relative cursor-pointer">
                 <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
@@ -346,7 +346,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className="border-t border-border mx-5" />
             {/* 카테고리 */}
             {/* 타입 선택 행 */}
-            <div className="flex items-center justify-between px-5 py-3">
+            <div className="flex items-center justify-between px-4 py-3">
               <span className="text-[16px]">카테고리</span>
               <div className="flex gap-1.5">
                 {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
@@ -385,7 +385,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setKeypadActive(false)
                     setCategoryPickerOpen(true)
                   }}
-                  className="w-full flex items-center justify-between px-5 py-3.5"
+                  className="w-full flex items-center justify-between px-4 py-3.5"
                 >
                   <span className="text-[16px]">{categoryLabel}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
@@ -413,7 +413,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </div>
             )}
             <div className="border-t border-border mx-5" />
-            <div className="flex items-center justify-between px-5 py-3.5">
+            <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-[16px]">메모</span>
               <input
                 type="text"
@@ -434,7 +434,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               <div className="relative">
                 <button
                   onClick={() => { setKeypadActive(false); setRepeatDropdownOpen(prev => !prev) }}
-                  className="w-full flex items-center justify-between px-5 py-3.5"
+                  className="w-full flex items-center justify-between px-4 py-3.5"
                 >
                   <span className="text-[16px]">반복</span>
                   <div className="flex items-center gap-1 text-muted-foreground">
@@ -475,7 +475,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               {repeatFrequency !== 'none' && (
                 <>
                   <div className="border-t border-border mx-5" />
-                  <div className="flex items-center justify-between px-5 py-3.5">
+                  <div className="flex items-center justify-between px-4 py-3.5">
                     <span className="text-[16px]">종료일</span>
                     <label className="relative cursor-pointer">
                       <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
@@ -545,7 +545,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
           <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '75dvh' }}>
             {/* Header */}
-            <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
+            <div className="flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0">
               <h3 className="text-base font-semibold">저축 회수</h3>
               <button
                 onClick={() => setRecoverOpen(false)}
@@ -559,7 +559,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
 
             {/* Content */}
-            <div className="px-5" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
+            <div className="px-4" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
               {/* 회수일 */}
               <div className="flex items-center justify-between py-3 border-b border-border">
                 <span className="text-[15px] text-muted-foreground">회수일</span>

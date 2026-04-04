@@ -150,7 +150,7 @@ export default function Home() {
       onRefresh={async () => setRefreshKey(k => k + 1)}
     >
       {/* 상단 바 */}
-      <div className="sticky top-0 z-30 bg-background px-5">
+      <div className="sticky top-0 z-30 bg-background px-4">
           <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
             <button onClick={() => router.push('/dashboard')} className="flex items-center justify-center w-8 h-8 rounded-lg" aria-label="대시보드">
               <LayoutGrid className="w-5 h-5 text-foreground" />
@@ -166,7 +166,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="px-5">
+        <div className="px-4">
           {/* 연월 타이틀 + 오늘 */}
           <div className="flex items-center justify-between mt-1 mb-4">
             <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ export default function Home() {
           </div>
 
           {/* 내역 */}
-          <div className="px-5">
+          <div className="px-4">
             <DayTransactions
               date={selectedDate}
               refreshKey={refreshKey}

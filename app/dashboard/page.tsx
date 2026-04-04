@@ -69,7 +69,7 @@ export default function Dashboard() {
 
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData}>
-      <div className="sticky top-0 z-30 bg-background px-5">
+      <div className="sticky top-0 z-30 bg-background px-4">
         <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           <button
             onClick={() => router.push('/')}
@@ -84,7 +84,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="px-5">
+      <div className="px-4">
         <h1 className="text-[28px] font-bold mt-1 mb-4">요약</h1>
         <BalanceCard
           prevBalance={prevBalance}
@@ -113,7 +113,7 @@ export default function Dashboard() {
       />
 
       {/* 리포트 임시 진입 버튼 */}
-      <div className="px-5 pb-8">
+      <div className="px-4 pb-8">
         <button
           onClick={() => router.push('/report')}
           className="w-full py-3 rounded-[22px] bg-surface text-muted-foreground text-[14px] font-medium"

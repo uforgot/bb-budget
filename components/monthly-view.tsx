@@ -143,7 +143,7 @@ export function MonthlyView({
       />
 
       {/* 주차 탭 버튼 */}
-      <div className="overflow-x-auto scrollbar-hide px-5 mb-4">
+      <div className="overflow-x-auto scrollbar-hide px-4 mb-4">
         <div className="flex gap-2" style={{ width: 'max-content' }}>
           {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
             <button
@@ -186,7 +186,7 @@ export function MonthlyView({
             {weekTxs.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
             ) : (
-              <div className="flex flex-col px-5">
+              <div className="flex flex-col px-4">
                 {weekTxs.map(tx => {
                   const showDivider = lastDate !== null && lastDate !== tx.date
                   const showDate = lastDate !== tx.date
@@ -214,7 +214,7 @@ export function MonthlyView({
                 const d = new Date(targetYear, actualMonth - 1, r.day)
                 return (
                   <div key={`recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border">
-                    <div className="px-5 py-2">
+                    <div className="px-4 py-2">
                       <div className="flex items-center gap-3">
                         <div className="w-14 flex-shrink-0">
                           <div className="flex items-baseline gap-1.5">

@@ -70,7 +70,7 @@ export default function History() {
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData}>
       <>
       {/* 상단 바 */}
-      <div className="sticky top-0 z-30 bg-background px-5">
+      <div className="sticky top-0 z-30 bg-background px-4">
         <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           <button onClick={() => router.push('/dashboard')} className="flex items-center justify-center w-8 h-8 rounded-lg" aria-label="대시보드">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
@@ -87,7 +87,7 @@ export default function History() {
       </div>
 
       {/* 타이틀 */}
-      <div className="px-5">
+      <div className="px-4">
         <div className="flex items-center justify-between mt-1 mb-4">
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-1 cursor-pointer">
@@ -119,8 +119,8 @@ export default function History() {
 
       {/* 검색 */}
       {searchMode && (
-        <div className="px-5 py-3">
-          <div className="flex items-center gap-2 bg-surface rounded-[22px] px-5 py-4">
+        <div className="px-4 py-3">
+          <div className="flex items-center gap-2 bg-surface rounded-[22px] px-4 py-4">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
             </svg>

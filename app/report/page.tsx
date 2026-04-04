@@ -54,7 +54,7 @@ function Card({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="bg-surface rounded-[22px] px-5 py-5 mb-4">
+    <div className="bg-surface rounded-[22px] px-4 py-5 mb-4">
       <button
         type="button"
         className="w-full flex items-center justify-between"
@@ -300,7 +300,7 @@ export default function Report() {
   if (loading) {
     return (
       <div className="min-h-dvh bg-background pb-32">
-        <div className="px-5">
+        <div className="px-4">
           <TopHeader title="리포트" />
           <p className="text-sm text-center text-muted-foreground mt-20">불러오는 중…</p>
         </div>
@@ -323,11 +323,11 @@ export default function Report() {
   // ─── render ───────────────────────────────────────────
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={handleRefresh}>
-      <div className="sticky top-0 z-30 bg-background px-5">
+      <div className="sticky top-0 z-30 bg-background px-4">
         <TopHeader title="리포트" />
       </div>
 
-      <div className="px-5 mt-3">
+      <div className="px-4 mt-3">
 
         {/* ── 카드 3: 연간 추이 ──────────────────────── */}
         <Card
