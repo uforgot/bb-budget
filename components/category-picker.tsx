@@ -114,7 +114,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                           if (!inline) onClose()
                         }
                       }}
-                      className={`flex flex-col items-center gap-1 py-3 rounded-[18px] transition-colors ${
+                      className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
                         isExpanded || isSelected ? TYPE_COLOR[type] : 'bg-muted'
                       }`}
                     >
@@ -129,7 +129,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                 })}
               </div>
               {expandedInRow && expandedChildren.length > 0 && (
-                <div className="bg-white/10 rounded-[18px] p-2 mb-2">
+                <div className="bg-white/10 rounded-[22px] p-2 mb-2">
                   <div className="grid grid-cols-4 gap-1.5">
                     {expandedChildren.map((child) => (
                       <button
@@ -159,7 +159,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
           if (!inline) onClose()
           router.push('/settings/categories')
         }}
-        className="w-full mt-2 mb-2 py-3.5 rounded-[18px] bg-muted text-[16px] font-medium text-muted-foreground"
+        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-muted text-[16px] font-medium text-muted-foreground"
       >
         카테고리 관리하기
       </button>
@@ -169,7 +169,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
   // 인라인 모드 — 바텀시트 없이 그대로 렌더
   if (inline) {
     return (
-      <div className="mt-3 mb-3 bg-surface rounded-2xl px-3 pt-3 pb-1">
+      <div className="mt-3 mb-3 bg-surface rounded-[22px] px-3 pt-3 pb-1">
         {gridContent}
       </div>
     )

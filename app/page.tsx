@@ -187,7 +187,7 @@ export default function Home() {
           </div>
           {/* 달력 카드 */}
           <div>
-            <div className="bg-surface rounded-2xl px-3 pt-4 pb-6">
+            <div className="bg-surface rounded-[22px] px-3 pt-4 pb-6">
               <MonthlyCalendar
                 key={calKey}
                 showHeader={false}
@@ -208,13 +208,13 @@ export default function Home() {
         <div>
           {/* 날짜 요약 카드 — 지출/수입 2분할 */}
           <div className="mx-5 mb-3 mt-4 flex gap-3">
-            <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
               <p className="text-[13px] text-muted-foreground mb-1">{selectedDateLabel} 지출</p>
               <p className="text-[20px] font-bold tabular-nums text-[#5865F2]" style={{ letterSpacing: '-0.5px' }}>
                 {`₩${dayExpense.toLocaleString()}`}
               </p>
             </div>
-            <div className="flex-1 bg-surface rounded-2xl px-4 py-4">
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
               <p className="text-[13px] text-muted-foreground mb-1">{selectedDateLabel} 수입</p>
               <p className="text-[20px] font-bold tabular-nums" style={{ letterSpacing: '-0.5px', color: '#14b8a6' }}>
                 {`₩${dayIncome.toLocaleString()}`}

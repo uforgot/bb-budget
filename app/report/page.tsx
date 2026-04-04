@@ -54,7 +54,7 @@ function Card({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="bg-surface rounded-[18px] px-5 py-5 mb-4">
+    <div className="bg-surface rounded-[22px] px-5 py-5 mb-4">
       <button
         type="button"
         className="w-full flex items-center justify-between"
@@ -736,11 +736,11 @@ export default function Report() {
         <>
           <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setTooltipModal(null)} />
           <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
-            <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+            <div className="bg-card rounded-[22px] px-6 py-5 w-full max-w-sm">
               <p className="text-sm leading-relaxed">{tooltipModal}</p>
               <button
                 onClick={() => setTooltipModal(null)}
-                className="w-full mt-4 py-3 rounded-[18px] bg-background text-[16px] font-medium text-muted-foreground"
+                className="w-full mt-4 py-3 rounded-[22px] bg-background text-[16px] font-medium text-muted-foreground"
               >
                 확인
               </button>

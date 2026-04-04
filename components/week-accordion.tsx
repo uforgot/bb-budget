@@ -47,7 +47,7 @@ export function WeekAccordion({
       {/* 주차 헤더 */}
       <div
         onClick={onToggle}
-        className="flex items-center justify-between px-5 py-4 cursor-pointer active:bg-muted/30 bg-surface rounded-[18px] mb-3"
+        className="flex items-center justify-between px-5 py-4 cursor-pointer active:bg-muted/30 bg-surface rounded-[22px] mb-3"
       >
         <span className="text-sm font-semibold">{actualMonthLabel} {weekNum}주 차</span>
         <div className="flex items-center gap-2">

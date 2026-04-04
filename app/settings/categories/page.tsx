@@ -216,7 +216,7 @@ export default function CategoriesSettings() {
           <div className="mt-10">
             <button
               onClick={() => setDeleteConfirm({ id: editingParent.id, name: editingParent.name, type: 'parent' })}
-              className="w-full py-3 text-accent-coral text-[16px] font-medium rounded-[18px] bg-accent-coral/10"
+              className="w-full py-3 text-accent-coral text-[16px] font-medium rounded-[22px] bg-accent-coral/10"
             >
               카테고리 삭제
             </button>
@@ -228,12 +228,12 @@ export default function CategoriesSettings() {
           <>
             <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
             <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
-              <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+              <div className="bg-card rounded-[22px] px-6 py-5 w-full max-w-sm">
                 <p className="text-sm font-semibold mb-2">{deleteConfirm.name} 카테고리를 정말 삭제하시겠습니까?</p>
                 <p className="text-xs text-muted-foreground mb-4">삭제하면 해당 카테고리의 내역이 미분류로 변경됩니다.</p>
                 <div className="flex gap-3">
-                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-[18px] bg-background text-[16px] font-medium text-muted-foreground">취소하기</button>
-                  <button onClick={() => { const isParent = deleteConfirm.type === 'parent'; confirmDelete(); if (isParent) setEditingParent(null) }} className="flex-1 py-3.5 rounded-[18px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold">삭제하기</button>
+                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-[22px] bg-background text-[16px] font-medium text-muted-foreground">취소하기</button>
+                  <button onClick={() => { const isParent = deleteConfirm.type === 'parent'; confirmDelete(); if (isParent) setEditingParent(null) }} className="flex-1 py-3.5 rounded-[22px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold">삭제하기</button>
                 </div>
               </div>
             </div>
@@ -258,7 +258,7 @@ export default function CategoriesSettings() {
 
       <div className="max-w-lg mx-auto px-5">
         {/* Segment control */}
-        <div className="flex bg-surface rounded-[18px] p-1 mt-4 mb-6">
+        <div className="flex bg-surface rounded-[22px] p-1 mt-4 mb-6">
           {TYPE_LABELS.map(({ key, label }) => (
             <button
               key={key}
@@ -307,18 +307,18 @@ export default function CategoriesSettings() {
                 onKeyDown={(e) => e.key === 'Enter' && handleAddRoot()}
                 autoFocus
                 style={{ fontSize: '16px' }}
-                className="w-full bg-card border border-border rounded-[18px] px-4 py-3"
+                className="w-full bg-card border border-border rounded-[22px] px-4 py-3"
               />
               <div className="flex gap-2">
-                <button onClick={handleAddRoot} className="flex-1 py-3.5 bg-surface text-muted-foreground rounded-[18px] text-[16px] font-medium">추가하기</button>
-                <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="flex-1 py-3.5 bg-surface text-muted-foreground rounded-[18px] text-[16px] font-medium">취소하기</button>
+                <button onClick={handleAddRoot} className="flex-1 py-3.5 bg-surface text-muted-foreground rounded-[22px] text-[16px] font-medium">추가하기</button>
+                <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="flex-1 py-3.5 bg-surface text-muted-foreground rounded-[22px] text-[16px] font-medium">취소하기</button>
               </div>
             </div>
           ) : (
             <>
               <button
                 onClick={() => setAddingRoot(true)}
-                className="flex-1 py-3.5 rounded-[18px] bg-surface text-[16px] font-medium text-muted-foreground"
+                className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
               >
                 카테고리 추가하기
               </button>
@@ -332,13 +332,13 @@ export default function CategoriesSettings() {
         <>
           <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
           <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
-            <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+            <div className="bg-card rounded-[22px] px-6 py-5 w-full max-w-sm">
               <p className="text-sm font-semibold mb-2">{deleteConfirm.name} 카테고리를 정말 삭제하시겠습니까?</p>
               <p className="text-xs text-muted-foreground mb-4">삭제하면 해당 카테고리의 내역이 미분류로 변경됩니다.</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="flex-1 py-3.5 rounded-[18px] bg-surface text-sm font-medium text-muted-foreground"
+                  className="flex-1 py-3.5 rounded-[22px] bg-surface text-sm font-medium text-muted-foreground"
                 >
                   취소하기
                 </button>
@@ -348,7 +348,7 @@ export default function CategoriesSettings() {
                     confirmDelete()
                     if (isParent) setEditingParent(null)
                   }}
-                  className="flex-1 py-3.5 rounded-[18px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold"
+                  className="flex-1 py-3.5 rounded-[22px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold"
                 >
                   삭제하기
                 </button>

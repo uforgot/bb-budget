@@ -138,7 +138,7 @@ export function SummaryCardSlider({
               className="flex-shrink-0 w-full"
               style={{ padding: '0 20px' }}
             >
-              <div className="rounded-2xl px-5 pt-5 pb-4 flex flex-col justify-between overflow-hidden relative" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+              <div className="rounded-[22px] px-5 pt-5 pb-4 flex flex-col justify-between overflow-hidden relative" style={{ minHeight: '150px', backgroundColor: card.bg }}>
                 {/* 데코 이미지 — 우측, 텍스트 3줄 센터 높이 */}
                 <img
                   src={card.img}

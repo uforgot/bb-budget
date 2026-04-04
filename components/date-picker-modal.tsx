@@ -33,7 +33,7 @@ export function DatePickerModal({ open, mode, year, month = 1, onClose, onSelect
     <div className="fixed inset-0 z-50 flex items-center justify-center px-6" onClick={onClose}>
       <div className="absolute inset-0 bg-black/40" />
       <div
-        className="relative w-full max-w-sm bg-surface rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-sm bg-surface rounded-[22px] overflow-hidden shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         {/* 타이틀 */}

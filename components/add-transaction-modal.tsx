@@ -322,7 +322,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
 
           {/* 전체 폼 통합 박스 */}
-          <div className="mb-3 bg-surface rounded-2xl overflow-visible">
+          <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
             <div className="flex items-center justify-between px-5 py-3.5">
               <span className="text-[16px]">날짜</span>
               <label className="relative cursor-pointer">
@@ -447,7 +447,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   </div>
                 </button>
                 {repeatDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-2xl overflow-hidden z-20 shadow-lg">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-[22px] overflow-hidden z-20 shadow-lg">
                     {(['none', 'weekly', 'monthly', 'yearly'] as const).map((opt, i) => (
                       <button
                         key={opt}
@@ -508,20 +508,20 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         {editTransaction ? (
           /* 수정 모드 */
           <div className="flex gap-2 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[22px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '수정하기'}
             </button>
             {editTransaction.type === 'savings' && (
               <button
                 onClick={() => setRecoverOpen(true)}
-                className="flex-1 bg-accent-purple/10 text-accent-purple rounded-[18px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 bg-accent-purple/10 text-accent-purple rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
                 회수하기
               </button>
             )}
             <button
               onClick={handleClose}
-              className="flex-1 bg-surface text-muted-foreground rounded-[18px] py-3.5 text-[16px] font-semibold"
+              className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
             >
               취소하기
             </button>
@@ -529,10 +529,10 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         ) : (
           /* 기록 모드 */
           <div className="flex gap-3 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
+            <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground rounded-[22px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '저장하기'}
             </button>
-            <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-[18px] py-3.5 text-[16px] font-semibold">
+            <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold">
               취소하기
             </button>
           </div>
@@ -623,7 +623,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setSaving(false)
                   }
                 }}
-                className="w-full mt-4 mb-4 py-3.5 rounded-[18px] bg-primary text-primary-foreground text-[16px] font-semibold"
+                className="w-full mt-4 mb-4 py-3.5 rounded-[22px] bg-primary text-primary-foreground text-[16px] font-semibold"
               >
                 {saving ? '처리 중...' : '적용하기'}
               </button>

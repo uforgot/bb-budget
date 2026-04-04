@@ -112,7 +112,7 @@ export default function RecurringPage() {
         {!adding && (
           <button
             onClick={() => { setAdding(true); setEditingId(null); setAmount(''); setDayOfMonth('10'); setCategoryId(''); setCategoryLabel(''); setDescription('') }}
-            className="w-full mb-4 py-3.5 rounded-[18px] bg-surface text-[16px] font-medium text-muted-foreground"
+            className="w-full mb-4 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
           >
             반복 지출 추가하기
           </button>
@@ -142,7 +142,7 @@ export default function RecurringPage() {
                   setFrequency('monthly')
                   setAdding(true)
                 }}
-                className={`bg-surface rounded-[18px] px-5 py-4 cursor-pointer active:bg-muted/30 ${!item.active ? 'opacity-40' : ''}`}
+                className={`bg-surface rounded-[22px] px-5 py-4 cursor-pointer active:bg-muted/30 ${!item.active ? 'opacity-40' : ''}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -174,7 +174,7 @@ export default function RecurringPage() {
 
         {/* 추가 폼 */}
         {adding ? (
-          <div className="mt-4 bg-surface rounded-[18px] px-5 py-4">
+          <div className="mt-4 bg-surface rounded-[22px] px-5 py-4">
             {/* 주기 선택 — 세그먼트 컨트롤 */}
             <div className="flex items-center justify-between mb-4">
               <span className="text-[16px] text-muted-foreground">주기</span>
@@ -296,13 +296,13 @@ export default function RecurringPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleAdd}
-                className="flex-1 py-3.5 rounded-[18px] bg-primary text-primary-foreground text-[16px] font-semibold"
+                className="flex-1 py-3.5 rounded-[22px] bg-primary text-primary-foreground text-[16px] font-semibold"
               >
                 {saving ? '저장 중...' : editingId ? '수정하기' : '저장하기'}
               </button>
               <button
                 onClick={() => { setAdding(false); setEditingId(null) }}
-                className="flex-1 py-3.5 rounded-[18px] bg-muted text-[16px] font-medium text-muted-foreground"
+                className="flex-1 py-3.5 rounded-[22px] bg-muted text-[16px] font-medium text-muted-foreground"
               >
                 취소하기
               </button>
@@ -327,12 +327,12 @@ export default function RecurringPage() {
         <>
           <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
           <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
-            <div className="bg-card rounded-[18px] px-6 py-5 w-full max-w-sm">
+            <div className="bg-card rounded-[22px] px-6 py-5 w-full max-w-sm">
               <p className="text-[16px] font-semibold mb-2">{deleteConfirm.name} 반복 지출을 삭제하시겠습니까?</p>
               <p className="text-xs text-muted-foreground mb-4">기존에 확정된 내역은 유지됩니다.</p>
               <div className="flex gap-3">
-                <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-[18px] bg-background text-[16px] font-medium text-muted-foreground">취소하기</button>
-                <button onClick={() => { handleDelete(deleteConfirm.id); setDeleteConfirm(null) }} className="flex-1 py-3.5 rounded-[18px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold">삭제하기</button>
+                <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-[22px] bg-background text-[16px] font-medium text-muted-foreground">취소하기</button>
+                <button onClick={() => { handleDelete(deleteConfirm.id); setDeleteConfirm(null) }} className="flex-1 py-3.5 rounded-[22px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold">삭제하기</button>
               </div>
             </div>
           </div>

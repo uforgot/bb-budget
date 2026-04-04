@@ -116,7 +116,7 @@ export default function Dashboard() {
       <div className="px-5 pb-8">
         <button
           onClick={() => router.push('/report')}
-          className="w-full py-3 rounded-2xl bg-surface text-muted-foreground text-[14px] font-medium"
+          className="w-full py-3 rounded-[22px] bg-surface text-muted-foreground text-[14px] font-medium"
         >
           리포트 (임시)
         </button>

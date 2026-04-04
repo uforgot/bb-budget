@@ -27,7 +27,7 @@ export function BalanceCard({
   const thisPct = 100 - prevPct
 
   return (
-    <div className="bg-surface rounded-2xl px-5 py-5 mb-3">
+    <div className="bg-surface rounded-[22px] px-5 py-5 mb-3">
       <p className="text-[16px] font-bold mb-3">현재 잔액</p>
       <p className="text-[30px] font-bold tabular-nums mb-6" style={{ letterSpacing: '-1px' }}>
         ₩{totalBalance.toLocaleString()}
@@ -108,7 +108,7 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
     { label: '저축', value: prevSavings, color: '#43B581' },
   ]
   return (
-    <div className="bg-surface rounded-2xl px-5 pt-4 pb-4 mb-3">
+    <div className="bg-surface rounded-[22px] px-5 pt-4 pb-4 mb-3">
       <p className="text-[16px] font-bold mb-3">{year}년 {month}월 요약</p>
       <div className="flex flex-col gap-3">
         {rows.map(({ label, value, color }) => {
