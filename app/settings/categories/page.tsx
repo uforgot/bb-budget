@@ -97,6 +97,16 @@ export default function CategoriesSettings() {
     })
   }
 
+  const handleTouchMove = (event: React.TouchEvent<HTMLButtonElement>) => {
+    if (!editMode || !activeDragIdRef.current) return
+    const touch = event.touches[0]
+    if (!touch) return
+    const element = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('[data-category-id]') as HTMLElement | null
+    const overId = element?.dataset.categoryId
+    if (!overId) return
+    handleMoveOver(overId)
+  }
+
   const finishDrag = async () => {
     clearDragTimer()
     const activeId = activeDragIdRef.current
@@ -300,13 +310,13 @@ export default function CategoriesSettings() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14">
+      <header className="relative flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14">
         <button onClick={() => router.back()} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <h1 className="text-[16px] font-semibold">카테고리 관리</h1>
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold pointer-events-none">카테고리 관리</h1>
         <button
           onClick={async () => {
             if (editMode) {
@@ -316,7 +326,7 @@ export default function CategoriesSettings() {
             activeDragIdRef.current = null
             setDraggingId(null)
           }}
-          className="text-[14px] text-accent-blue font-medium"
+          className="relative z-10 text-[14px] text-accent-blue font-medium"
         >
           {editMode ? '완료' : '편집'}
         </button>
@@ -347,6 +357,7 @@ export default function CategoriesSettings() {
           {orderedParents.map((parent) => (
             <button
               key={parent.id}
+              data-category-id={parent.id}
               onClick={() => {
                 if (editMode || draggingId || suppressClickRef.current) return
                 setEditingParent(parent)
@@ -360,10 +371,7 @@ export default function CategoriesSettings() {
                 activeDragIdRef.current = parent.id
                 setDraggingId(parent.id)
               }}
-              onTouchMove={() => {
-                if (!editMode || !activeDragIdRef.current) return
-                handleMoveOver(parent.id)
-              }}
+              onTouchMove={handleTouchMove}
               onTouchEnd={() => {
                 if (!editMode) return
                 finishDrag()
