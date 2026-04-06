@@ -176,7 +176,7 @@ export default function RecurringPage() {
         {adding ? (
           <>
             <div className="mt-4 bg-surface rounded-[22px] overflow-visible">
-              <div className="flex items-center justify-between px-4 py-3.5">
+              <div className="flex items-center justify-between px-4 py-3">
                 <span className="text-[16px]">주기</span>
                 <div className="flex gap-1.5">
                   {(['weekly', 'monthly', 'yearly'] as const).map(f => (
@@ -309,19 +309,21 @@ export default function RecurringPage() {
               </div>
             </div>
 
-            <div className="flex gap-3 mt-3 pb-10">
-              <button
-                onClick={handleAdd}
-                className="flex-1 py-3.5 rounded-[22px] bg-primary text-primary-foreground text-[16px] font-semibold"
-              >
-                {saving ? '저장 중...' : editingId ? '수정하기' : '저장하기'}
-              </button>
-              <button
-                onClick={() => { setAdding(false); setEditingId(null); setCategoryPickerOpen(false) }}
-                className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
-              >
-                취소하기
-              </button>
+            <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background -mx-5 mt-3" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+              <div className="flex gap-3 mb-2">
+                <button
+                  onClick={handleAdd}
+                  className="flex-1 py-3.5 rounded-[22px] bg-primary text-primary-foreground text-[16px] font-semibold"
+                >
+                  {saving ? '저장 중...' : editingId ? '수정하기' : '저장하기'}
+                </button>
+                <button
+                  onClick={() => { setAdding(false); setEditingId(null); setCategoryPickerOpen(false) }}
+                  className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-semibold text-muted-foreground"
+                >
+                  취소하기
+                </button>
+              </div>
             </div>
           </>
         ) : null}
