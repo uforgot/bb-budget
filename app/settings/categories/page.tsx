@@ -38,7 +38,7 @@ export default function CategoriesSettings() {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
-  const [activeDragIndex, setActiveDragIndex] = useState<number | null>(null)
+  const [localParents, setLocalParents] = useState<Category[]>([])
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const dragStartIndexRef = useRef<number | null>(null)
   const didDragRef = useRef(false)
@@ -60,8 +60,8 @@ export default function CategoriesSettings() {
   const parents = categories.filter(c => !c.parent_id).sort((a, b) => a.sort_order - b.sort_order)
 
   useEffect(() => {
-    if (!draggingId) setDropIndex(null)
-  }, [draggingId])
+    setLocalParents(parents)
+  }, [categories])
   const childrenOf = (parentId: string) =>
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
 
@@ -138,8 +138,15 @@ export default function CategoriesSettings() {
     }
   }
 
-  const moveParent = (_fromIndex: number, toIndex: number) => {
+  const moveParent = (fromIndex: number, toIndex: number) => {
     setDropIndex(toIndex)
+    setLocalParents(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(fromIndex, 1)
+      next.splice(toIndex, 0, moved)
+      return next
+    })
+    dragStartIndexRef.current = toIndex
   }
 
   const persistParentOrder = async (ordered: Category[]) => {
@@ -161,22 +168,19 @@ export default function CategoriesSettings() {
 
   const finishDrag = async () => {
     clearDragTimer()
-    if (!draggingId || activeDragIndex === null || dropIndex === null) return
-    const shouldPersist = didDragRef.current && activeDragIndex !== dropIndex
-    const nextParents = [...parents]
-    const [moved] = nextParents.splice(activeDragIndex, 1)
-    nextParents.splice(dropIndex, 0, moved)
+    if (!draggingId) return
+    const ordered = [...localParents]
     setDraggingId(null)
-    setActiveDragIndex(null)
     setDropIndex(null)
     dragStartIndexRef.current = null
+    const shouldPersist = didDragRef.current
     didDragRef.current = false
     if (shouldPersist) {
       suppressClickRef.current = true
       setTimeout(() => {
         suppressClickRef.current = false
       }, 250)
-      await persistParentOrder(nextParents)
+      await persistParentOrder(ordered)
     }
   }
 
@@ -340,18 +344,19 @@ export default function CategoriesSettings() {
 
         {/* Category cards */}
         <div className="grid grid-cols-4 gap-2">
-          {(() => {
-            const rendered = [...parents]
-            const placeholderIndex = dropIndex ?? activeDragIndex
-            if (draggingId !== null && activeDragIndex !== null) {
-              rendered.splice(activeDragIndex, 1)
-            }
-            return rendered.map((parent, visualIndex) => {
-              const actualIndex = parents.findIndex(p => p.id === parent.id)
-              const card = (
+          {localParents.map((parent, index) => {
+            const isDragging = draggingId === parent.id
+            const showGhost = draggingId !== null && dropIndex === index && draggingId !== parent.id
+            return (
+              <div key={parent.id} className="relative">
+                {showGhost && (
+                  <div className="absolute inset-0 rounded-[22px] bg-white/15 ring-2 ring-dashed ring-white/45 z-0 flex flex-col items-center justify-center gap-1">
+                    <span className="text-lg opacity-40">✦</span>
+                    <span className="text-[11px] font-semibold text-white/55">여기로 이동</span>
+                  </div>
+                )}
                 <button
-                  key={parent.id}
-                  data-parent-index={actualIndex}
+                  data-parent-index={index}
                   draggable={false}
                   onClick={() => {
                     if (draggingId || didDragRef.current || suppressClickRef.current) {
@@ -368,9 +373,8 @@ export default function CategoriesSettings() {
                     didDragRef.current = false
                     dragTimerRef.current = setTimeout(() => {
                       setDraggingId(parent.id)
-                      setActiveDragIndex(actualIndex)
-                      setDropIndex(actualIndex)
-                      dragStartIndexRef.current = actualIndex
+                      setDropIndex(index)
+                      dragStartIndexRef.current = index
                     }, 350)
                   }}
                   onTouchMove={handleTouchMove}
@@ -378,7 +382,6 @@ export default function CategoriesSettings() {
                   onTouchCancel={() => {
                     clearDragTimer()
                     setDraggingId(null)
-                    setActiveDragIndex(null)
                     setDropIndex(null)
                     dragStartIndexRef.current = null
                     didDragRef.current = false
@@ -388,9 +391,8 @@ export default function CategoriesSettings() {
                     didDragRef.current = false
                     dragTimerRef.current = setTimeout(() => {
                       setDraggingId(parent.id)
-                      setActiveDragIndex(actualIndex)
-                      setDropIndex(actualIndex)
-                      dragStartIndexRef.current = actualIndex
+                      setDropIndex(index)
+                      dragStartIndexRef.current = index
                     }, 350)
                   }}
                   onMouseUp={finishDrag}
@@ -398,39 +400,18 @@ export default function CategoriesSettings() {
                   onMouseEnter={() => {
                     if (!draggingId || dragStartIndexRef.current === null || draggingId === parent.id) return
                     didDragRef.current = true
-                    moveParent(dragStartIndexRef.current, actualIndex)
+                    if (dragStartIndexRef.current !== index) moveParent(dragStartIndexRef.current, index)
                   }}
-                  className="relative w-full flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all touch-none select-none bg-muted"
+                  className={`relative w-full flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all touch-none select-none ${
+                    isDragging ? 'bg-muted opacity-0 scale-95' : 'bg-muted'
+                  }`}
                 >
                   <span className="text-xl">{getEmoji(parent)}</span>
                   <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
                 </button>
-              )
-
-              if (placeholderIndex === visualIndex) {
-                return (
-                  <>
-                    <div key={`ghost-${parent.id}-${visualIndex}`} className="rounded-[22px] bg-white/15 ring-2 ring-dashed ring-white/45 flex flex-col items-center justify-center gap-1 py-3">
-                      <span className="text-lg opacity-40">✦</span>
-                      <span className="text-[11px] font-semibold text-white/55">여기로 이동</span>
-                    </div>
-                    {card}
-                  </>
-                )
-              }
-
-              return card
-            }).concat(
-              placeholderIndex === rendered.length
-                ? [
-                    <div key="ghost-end" className="rounded-[22px] bg-white/15 ring-2 ring-dashed ring-white/45 flex flex-col items-center justify-center gap-1 py-3">
-                      <span className="text-lg opacity-40">✦</span>
-                      <span className="text-[11px] font-semibold text-white/55">여기로 이동</span>
-                    </div>,
-                  ]
-                : []
+              </div>
             )
-          })()}
+          })}
         </div>
 
         {/* 하단 버튼 */}
