@@ -37,6 +37,7 @@ export default function CategoriesSettings() {
   const [newRootName, setNewRootName] = useState('')
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [dropIndex, setDropIndex] = useState<number | null>(null)
   const [localParents, setLocalParents] = useState<Category[]>([])
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const dragStartIndexRef = useRef<number | null>(null)
@@ -138,6 +139,7 @@ export default function CategoriesSettings() {
   }
 
   const moveParent = (fromIndex: number, toIndex: number) => {
+    setDropIndex(toIndex)
     setLocalParents(prev => {
       const next = [...prev]
       const [moved] = next.splice(fromIndex, 1)
@@ -169,6 +171,7 @@ export default function CategoriesSettings() {
     if (!draggingId) return
     const ordered = [...localParents]
     setDraggingId(null)
+    setDropIndex(null)
     dragStartIndexRef.current = null
     const shouldPersist = didDragRef.current
     didDragRef.current = false
@@ -362,6 +365,7 @@ export default function CategoriesSettings() {
                   didDragRef.current = false
                   dragTimerRef.current = setTimeout(() => {
                     setDraggingId(parent.id)
+                    setDropIndex(index)
                     dragStartIndexRef.current = index
                   }, 350)
                 }}
@@ -370,6 +374,7 @@ export default function CategoriesSettings() {
                 onTouchCancel={() => {
                   clearDragTimer()
                   setDraggingId(null)
+                  setDropIndex(null)
                   dragStartIndexRef.current = null
                   didDragRef.current = false
                 }}
@@ -378,6 +383,7 @@ export default function CategoriesSettings() {
                   didDragRef.current = false
                   dragTimerRef.current = setTimeout(() => {
                     setDraggingId(parent.id)
+                    setDropIndex(index)
                     dragStartIndexRef.current = index
                   }, 350)
                 }}
@@ -388,8 +394,12 @@ export default function CategoriesSettings() {
                   didDragRef.current = true
                   if (dragStartIndexRef.current !== index) moveParent(dragStartIndexRef.current, index)
                 }}
-                className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors touch-none select-none ${
-                  draggingId === parent.id ? 'bg-muted scale-[0.98] opacity-70' : 'bg-muted'
+                className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all touch-none select-none ${
+                  draggingId === parent.id
+                    ? 'bg-background scale-[1.04] opacity-90 shadow-[0_12px_28px_rgba(0,0,0,0.18)] ring-1 ring-border z-10'
+                    : dropIndex === index
+                      ? 'bg-background/70 ring-1 ring-dashed ring-border'
+                      : 'bg-muted'
                 }`}
               >
                 <span className="text-xl">{getEmoji(parent)}</span>
