@@ -295,32 +295,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto px-4 pt-8 pb-4">
-          {/* 금액 입력 */}
-          <div className="mb-6 py-4" onClick={() => amountInputRef.current?.focus()}>
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex items-baseline">
-                <span className="text-[32px] font-bold text-foreground">₩</span>
-                <input
-                  ref={amountInputRef}
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={rawAmount ? parseInt(rawAmount).toLocaleString() : ''}
-                  onChange={e => {
-                    const v = e.target.value.replace(/[^0-9]/g, '')
-                    if (v.length <= 10) setRawAmount(v)
-                  }}
-                  className="text-[40px] font-bold tabular-nums bg-transparent outline-none caret-foreground text-foreground placeholder:text-foreground"
-                  style={{ letterSpacing: '-2px', width: `${Math.max(1, (rawAmount ? parseInt(rawAmount).toLocaleString().length : 1))}ch` }}
-                  placeholder="0"
-                />
-              </div>
-              <span className="text-[14px] text-muted-foreground">
-                {formatKorean(rawAmount)}
-              </span>
-            </div>
-          </div>
-
-
           {/* 전체 폼 통합 박스 */}
           <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
             <div className="flex items-center justify-between px-4 py-3.5">
@@ -412,6 +386,30 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 />
               </div>
             )}
+            <div className="border-t border-border mx-5" />
+            <div className="flex items-center justify-between px-4 py-3.5" onClick={() => amountInputRef.current?.focus()}>
+              <span className="text-[16px]">금액</span>
+              <div className="flex flex-col items-end">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[16px] text-muted-foreground">₩</span>
+                  <input
+                    ref={amountInputRef}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={rawAmount ? parseInt(rawAmount).toLocaleString() : ''}
+                    onChange={e => {
+                      const v = e.target.value.replace(/[^0-9]/g, '')
+                      if (v.length <= 10) setRawAmount(v)
+                    }}
+                    className="text-[16px] font-semibold tabular-nums bg-transparent outline-none caret-foreground text-foreground placeholder:text-muted-foreground text-right w-28"
+                    placeholder="0"
+                  />
+                </div>
+                <span className="text-[12px] text-muted-foreground">
+                  {formatKorean(rawAmount)}
+                </span>
+              </div>
+            </div>
             <div className="border-t border-border mx-5" />
             <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-[16px]">메모</span>
