@@ -22,7 +22,7 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
   return (
     <div className="bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 min-h-[190px] flex flex-col justify-between">
       <div>
-        <div className="flex items-start justify-between gap-3 mb-2">
+        <div className="flex items-start justify-between gap-3 mb-0.5">
           <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 예산</p>
           <button
             onClick={onOpenSettings}
@@ -36,7 +36,7 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
           {hasBudget ? formatCurrency(remaining) : '₩0'}
         </p>
 
-        <p className="text-[13px] font-semibold text-white/70 leading-tight mt-2">
+        <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
           {hasBudget
             ? remaining > 0
               ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 지킬 수 있어요`
