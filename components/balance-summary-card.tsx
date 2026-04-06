@@ -67,11 +67,11 @@ function BalanceFooter({
       </div>
       <div className="flex items-start justify-between">
         <div>
-          <DashboardCardFooterLabel>{prevMonth}월 잔액</DashboardCardFooterLabel>
+          <DashboardCardFooterLabel className="text-[13px] font-semibold">{prevMonth}월 잔액</DashboardCardFooterLabel>
           <DashboardCardFooterValue>{formatCurrency(prevBalance)}</DashboardCardFooterValue>
         </div>
         <div className="text-right">
-          <DashboardCardFooterLabel>{month}월 잔액</DashboardCardFooterLabel>
+          <DashboardCardFooterLabel className="text-[13px] font-semibold">{month}월 잔액</DashboardCardFooterLabel>
           <DashboardCardFooterValue className={thisMonthBalance < 0 ? 'text-[#5865F2]' : ''}>
             {formatCurrency(thisMonthBalance)}
           </DashboardCardFooterValue>

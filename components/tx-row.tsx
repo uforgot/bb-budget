@@ -35,7 +35,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
                 <span className="text-xs text-muted-foreground">{DAY_NAMES[d.getDay()]}</span>
               </div>
             ) : dateLabel ? (
-              <span className="text-sm font-medium">{dateLabel}</span>
+              <span className="text-[13px] font-semibold">{dateLabel}</span>
             ) : null}
           </div>
           <div className="flex-1 min-w-0">
