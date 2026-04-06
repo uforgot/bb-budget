@@ -1,6 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+
+function formatKoreanAmount(raw: string) {
+  const n = parseInt(raw || '0')
+  if (!n) return '0원'
+  const eok = Math.floor(n / 100000000)
+  const man = Math.floor((n % 100000000) / 10000)
+  const rest = n % 10000
+  let result = ''
+  if (eok) result += `${eok}억 `
+  if (man) result += `${man}만 `
+  if (rest) result += `${rest.toLocaleString()}`
+  return result.trim() + '원'
+}
 import { useRouter } from 'next/navigation'
 import { getRecurringTransactions, addRecurringTransaction, deleteRecurringTransaction, getCategories, type RecurringTransaction, type Category } from '@/lib/api'
 import { CategoryPicker } from '@/components/category-picker'
@@ -259,7 +272,7 @@ export default function RecurringPage() {
                 <label className="relative flex flex-col items-end cursor-text min-w-[96px]">
                   <span className="text-[16px] font-semibold tabular-nums text-foreground">{amount ? parseInt(amount).toLocaleString() : '0'}</span>
                   {amount ? (
-                    <span className="text-[12px] text-muted-foreground">{parseInt(amount).toLocaleString()}원</span>
+                    <span className="text-[12px] text-muted-foreground">{formatKoreanAmount(amount)}</span>
                   ) : null}
                   <input
                     type="text"
