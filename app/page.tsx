@@ -209,7 +209,7 @@ export default function Home() {
       <div className="bg-background min-h-[50vh] pb-32">
         <div>
           {/* 날짜 요약 카드 — 지출/수입 2분할 */}
-          <div className="mx-5 mb-3 mt-4 flex gap-3">
+          <div className="mx-5 mb-3 mt-3 flex gap-3">
             <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
               <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
               <p className="text-[20px] font-bold tabular-nums text-[#5865F2]" style={{ letterSpacing: '-0.5px' }}>
