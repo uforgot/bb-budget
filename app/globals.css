@@ -53,6 +53,7 @@
 
 :root {
   --radius: 1.125rem;
+  --calendar-selected-day: #E5E7EB;
   --background: #f3f4f6;
   --foreground: #111827;
   --card: #ffffff;
@@ -86,6 +87,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --surface: #ffffff;
+  --bar-muted-color: #9CA3AF;
 }
 
 .dark {
@@ -110,6 +112,8 @@
   --accent-blue: #5865F2;
   --accent-income: #14b8a6;
   --surface: #1C1C1E;
+  --calendar-selected-day: #3A3A3C;
+  --bar-muted-color: #2C2C2E;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);

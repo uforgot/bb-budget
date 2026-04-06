@@ -2,6 +2,7 @@
 
 import { deleteTransaction, type Transaction, type Category } from '@/lib/api'
 import { SwipeToDelete } from '@/components/swipe-to-delete'
+import { typography, semanticColors } from '@/components/ui-colors'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -38,7 +39,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
             ) : null}
           </div>
           <div className="flex-1 min-w-0">
-            <span className={`text-xs text-white px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: tx.type === 'expense' ? '#5865F2' : tx.type === 'income' ? '#14b8a6' : '#8b5cf6' }}>
+            <span className={`text-xs text-white px-3 py-1 rounded-full inline-block ${tx.end_date ? 'line-through' : ''}`} style={{ backgroundColor: tx.type === 'expense' ? semanticColors.expense : tx.type === 'income' ? semanticColors.income : semanticColors.savings }}>
               {!cat
                 ? <span className="text-white">미분류</span>
                 : cat.parent_id
@@ -52,9 +53,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
               }
             </span>
           </div>
-          <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.end_date ? 'line-through ' : ''}${
-            'text-muted-foreground'
-          }`}>
+          <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.end_date ? 'line-through ' : ''}${typography.cardSubtle ? ` ${typography.cardSubtle}` : ''}`}>
             ₩{tx.amount.toLocaleString()}
           </span>
         </div>

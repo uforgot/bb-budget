@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
+import { typography, semanticColors } from '@/components/ui-colors'
 
 function fmt(n: number) {
   const abs = Math.abs(n)
@@ -60,10 +61,10 @@ export function SummaryCardSlider({
   }, [])
 
   const cards = [
-    { label: `${month}${unit} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: '#5865F2', img: '/card-expense.png' },
-    { label: `${month}${unit} 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: '#14b8a6', img: '/card-income.png' },
-    { label: `${month}${unit} 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: '#8b5cf6', img: '/card-saving.png' },
-    { label: `${month}${unit} 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : '#FF6B9D', img: '/card-balance.png' },
+    { label: `${month}${unit} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: semanticColors.expense, img: '/card-expense.png' },
+    { label: `${month}${unit} 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: semanticColors.income, img: '/card-income.png' },
+    { label: `${month}${unit} 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: semanticColors.savings, img: '/card-saving.png' },
+    { label: `${month}${unit} 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : semanticColors.balanceNegative, img: '/card-balance.png' },
   ]
   const total = cards.length
 
@@ -148,12 +149,12 @@ export function SummaryCardSlider({
                   style={{ transform: 'translateY(-50%) translateX(-5%)' }}
                 />
                 <div>
-                  <p className="text-[13px] font-semibold text-white/80 mb-0.5">{card.label}</p>
-                  <p className="text-[24px] font-bold tabular-nums text-white leading-tight" style={{ letterSpacing: '-1px' }}>
+                  <p className={`text-[13px] font-semibold ${typography.cardTitle} mb-0.5`}>{card.label}</p>
+                  <p className={`text-[24px] font-bold tabular-nums ${typography.cardBody} leading-tight`} style={{ letterSpacing: '-1px' }}>
                     ₩{card.amount.toLocaleString()}
                   </p>
                 </div>
-                {dt && <p className="text-[13px] font-semibold text-white/70 leading-tight">{dt}</p>}
+                {dt && <p className={`text-[13px] font-semibold ${typography.cardSubtleStrong} leading-tight`}>{dt}</p>}
               </div>
             </div>
           )

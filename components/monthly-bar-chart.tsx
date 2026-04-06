@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { semanticColors, surfaces, typography } from '@/components/ui-colors'
 
 interface MonthData {
   month: number
@@ -34,7 +35,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
     <div className="bg-surface rounded-[22px] px-4 pt-5 pb-6 mb-4">
       {/* 헤더 */}
       <div className="mb-5">
-        <p className="text-[13px] font-semibold text-white/80 mb-0.5">
+        <p className={`text-[13px] font-semibold ${typography.cardTitle} mb-0.5`}>
           {selectedData ? `${selectedData.month}월 ${label}` : label}
         </p>
         <p className="text-[24px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
@@ -48,7 +49,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
           const isOver = diff > 0
           const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만`
           return (
-            <p className="text-[13px] mt-1 text-white/60">
+            <p className={`text-[13px] mt-1 ${typography.cardSubtleStrong}`}>
               {avgLabel} {toMan(avgValue)}원보다 {toMan(Math.abs(diff))}원 {isOver ? '더' : '덜'} {label.includes('수입') ? '벌었어요' : '썼어요'}
             </p>
           )
@@ -65,7 +66,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               : Math.max(6, Math.round((d.value / maxValue) * MAX_H))
             const barColor = d.isFuture
               ? 'rgba(255,255,255,0.08)'
-              : isSelected ? color : '#2C2C2E'
+              : isSelected ? color : 'var(--bar-muted-color)'
 
             return (
               <div
@@ -78,7 +79,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
                 <span style={{
                   fontSize: 11,
                   fontWeight: isSelected ? 600 : 400,
-                  color: isSelected ? '#fff' : 'rgba(255,255,255,0.35)',
+                  color: isSelected ? 'var(--foreground)' : 'var(--muted-foreground)',
                   height: LABEL_H,
                   display: 'flex',
                   alignItems: 'center',

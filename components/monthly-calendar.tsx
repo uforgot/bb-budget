@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { getMonthlySummary, getRecurringPreview, type Transaction } from '@/lib/api'
+import { surfaces, typography, semanticColors } from '@/components/ui-colors'
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -130,7 +131,7 @@ function MonthGrid({
               key={day}
               onClick={() => onDayClick(year, month, day)}
               className={`relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors`}
-              style={selected ? { backgroundColor: '#3A3A3C' } : {}}
+              style={selected ? { backgroundColor: 'var(--calendar-selected-day)' } : {}}
             >
               <span className="relative flex items-center justify-center size-6 flex-shrink-0">
                 {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
@@ -144,7 +145,7 @@ function MonthGrid({
               </span>
               <div className="flex flex-col items-center gap-0 mt-0.5">
                 {(dayData?.expense ?? 0) > 0 && (
-                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal text-accent-coral leading-tight ${isFutureMonth ? 'opacity-40' : ''}`}>
+                  <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: semanticColors.expense }}>
                     {formatAmount(dayData!.expense!)}
                   </span>
                 )}
@@ -377,7 +378,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
       {/* Fixed weekday row */}
       <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-2">
         {WEEKDAYS.map(day => (
-          <div key={day} className="text-center text-[11px] font-medium text-muted-foreground">
+          <div key={day} className={`text-center text-[11px] font-medium ${typography.cardSubtle}`}>
             {day}
           </div>
         ))}
@@ -452,7 +453,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
             {sd?.items && sd.items.length > 0 ? (
               <div className="flex flex-col">
                 {sd.items.map((item, i) => {
-                  const colorClass = 'text-muted-foreground'
+                  const colorClass = typography.cardSubtle
                   return (
                     <div
                       key={i}
@@ -460,9 +461,9 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                       className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? '#5865F2' : item.type === 'income' ? '#14b8a6' : '#8b5cf6',  }}>
+                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? semanticColors.expense : item.type === 'income' ? semanticColors.income : semanticColors.savings }}>
                           {item.parentCategory ? (
-                            <><span className="text-white">{item.parentCategory}</span><span className="text-white/70"> · {item.category}</span></>
+                            <><span className="text-white">{item.parentCategory}</span><span className="text-white/80 dark:text-white/70"> · {item.category}</span></>
                           ) : (
                             <span className="text-white">{item.category}</span>
                           )}
