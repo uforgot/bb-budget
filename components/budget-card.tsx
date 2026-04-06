@@ -134,7 +134,7 @@ function BudgetFooter({
 
   return (
     <DashboardCardFooter>
-      <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3 bg-white/10">
+      <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3 bg-black/10 dark:bg-white/10">
         <div className="h-full rounded-full" style={{ width: `${percent}%`, backgroundColor: '#5865F2' }} />
       </div>
       <div className="flex items-start justify-between">
