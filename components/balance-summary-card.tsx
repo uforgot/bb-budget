@@ -34,7 +34,7 @@ export function BalanceCard({
   return (
     <div className="bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 min-h-[150px] flex flex-col justify-between">
       <div>
-        <p className="text-[13px] font-semibold text-white/80 mb-0.5">현재 잔액</p>
+        <p className="text-[13px] font-semibold text-white/80 mb-0.5">잔액</p>
         <p className="text-[24px] font-bold tabular-nums text-white leading-tight mb-6" style={{ letterSpacing: '-1px' }}>
           {formatCurrency(totalBalance)}
         </p>
@@ -42,7 +42,7 @@ export function BalanceCard({
 
       <div>
         <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3 bg-white/10">
-          <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#FFFFFF' }} />
+          <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#8B5CF6' }} />
           <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
         </div>
         <div className="flex items-start justify-between">

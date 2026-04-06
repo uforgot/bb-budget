@@ -35,10 +35,10 @@ export function BudgetCard({
   const hasBudget = budget > 0
 
   return (
-    <div className={`bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 flex flex-col justify-between ${hasBudget ? 'min-h-[190px]' : 'min-h-[150px]'}`}>
+    <div className={`bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 flex flex-col justify-between ${hasBudget ? 'min-h-[200px]' : 'min-h-[150px]'}`}>
       <div>
         <div className="flex items-start justify-between gap-3 mb-0.5">
-          <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 예산</p>
+          <p className="text-[13px] font-semibold text-white/80 mb-0.5">한 달 예산</p>
         </div>
 
         <div className="flex items-center gap-2 mt-0.5">
@@ -98,7 +98,7 @@ export function BudgetCard({
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[14px] text-white mb-0.5">지출</p>
-              <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(spent)} ({percent}%)</p>
+              <p className="text-[14px] font-semibold tabular-nums text-[#5865F2]">{formatCurrency(spent)} ({percent}%)</p>
             </div>
             <div className="text-right">
               <p className="text-[14px] text-white mb-0.5">총예산</p>
