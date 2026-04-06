@@ -4,7 +4,12 @@ interface BudgetCardProps {
   budget: number
   spent: number
   daysLeft: number
-  onOpenSettings: () => void
+  isEditing: boolean
+  editValue: string
+  onEditChange: (value: string) => void
+  onStartEdit: () => void
+  onCancelEdit: () => void
+  onSaveEdit: () => void
 }
 
 function formatCurrency(n: number) {
@@ -12,7 +17,17 @@ function formatCurrency(n: number) {
   return n < 0 ? `-₩${abs}` : `₩${abs}`
 }
 
-export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCardProps) {
+export function BudgetCard({
+  budget,
+  spent,
+  daysLeft,
+  isEditing,
+  editValue,
+  onEditChange,
+  onStartEdit,
+  onCancelEdit,
+  onSaveEdit,
+}: BudgetCardProps) {
   const remaining = budget - spent
   const percent = budget > 0 ? Math.min(Math.max(Math.round((spent / budget) * 100), 0), 100) : 0
   const safeDaysLeft = Math.max(daysLeft, 1)
@@ -24,25 +39,60 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
       <div>
         <div className="flex items-start justify-between gap-3 mb-0.5">
           <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 예산</p>
-          <button
-            onClick={onOpenSettings}
-            className="text-[13px] font-semibold text-accent-blue"
-          >
-            설정
-          </button>
+          {hasBudget && !isEditing && (
+            <button
+              onClick={onStartEdit}
+              className="text-[13px] font-semibold text-accent-blue"
+            >
+              설정
+            </button>
+          )}
         </div>
 
-        <p className={`text-[24px] font-bold tabular-nums leading-tight ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
-          {hasBudget ? formatCurrency(remaining) : '₩0'}
-        </p>
+        {isEditing ? (
+          <div className="mt-1">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[24px] font-bold text-white">₩</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={editValue ? parseInt(editValue, 10).toLocaleString() : ''}
+                onChange={(e) => onEditChange(e.target.value.replace(/[^0-9]/g, ''))}
+                className="flex-1 text-[24px] font-bold tabular-nums text-white bg-transparent outline-none"
+                style={{ letterSpacing: '-1px' }}
+                placeholder="0"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={onSaveEdit} className="flex-1 py-3 rounded-[22px] bg-primary text-primary-foreground text-[15px] font-semibold">저장</button>
+              <button onClick={onCancelEdit} className="flex-1 py-3 rounded-[22px] bg-white/10 text-white text-[15px] font-semibold">취소</button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className={`text-[24px] font-bold tabular-nums leading-tight ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
+                {hasBudget ? formatCurrency(remaining) : '₩0'}
+              </p>
+              {!hasBudget && (
+                <button onClick={onStartEdit} className="text-white/35" aria-label="예산 수정">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/>
+                  </svg>
+                </button>
+              )}
+            </div>
 
-        <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
-          {hasBudget
-            ? remaining > 0
-              ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 지킬 수 있어요`
-              : '이번 달 예산을 초과했어요'
-            : '한 달 예산 설정하고 남은 금액을 확인하세요'}
-        </p>
+            <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
+              {hasBudget
+                ? remaining > 0
+                  ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 지킬 수 있어요`
+                  : '이번 달 예산을 초과했어요'
+                : '한 달 예산 설정하고 남은 금액을 확인하세요'}
+            </p>
+          </>
+        )}
       </div>
 
       {hasBudget ? (
@@ -70,7 +120,7 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
         </div>
       ) : (
         <button
-          onClick={onOpenSettings}
+          onClick={onStartEdit}
           className="w-full mt-4 py-3.5 rounded-[22px] bg-white/10 text-[16px] font-semibold text-white"
         >
           이번 달 예산 설정하기

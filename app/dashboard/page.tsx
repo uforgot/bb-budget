@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { BalanceCard, MonthlySummaryCard } from '@/components/balance-summary-card'
-import { BudgetCard, BudgetSettingsSheet } from '@/components/budget-card'
+import { BudgetCard } from '@/components/budget-card'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
 
@@ -24,7 +24,7 @@ export default function Dashboard() {
   const [allTimeSavings, setAllTimeSavings] = useState(0)
   const [prevSavings, setPrevSavings] = useState(0)
   const [prevBalance, setPrevBalance] = useState(0)
-  const [budgetSheetOpen, setBudgetSheetOpen] = useState(false)
+  const [budgetEditing, setBudgetEditing] = useState(false)
   const [budgetInput, setBudgetInput] = useState('')
 
   const loadData = useCallback(async () => {
@@ -85,7 +85,7 @@ export default function Dashboard() {
   const handleSaveBudget = () => {
     if (typeof window === 'undefined') return
     localStorage.setItem(`budget:${budgetStorageKey}`, budgetInput || '0')
-    setBudgetSheetOpen(false)
+    setBudgetEditing(false)
     window.dispatchEvent(new Event('focus'))
   }
 
@@ -121,7 +121,18 @@ export default function Dashboard() {
           budget={monthlyBudget}
           spent={monthExpense}
           daysLeft={daysLeft}
-          onOpenSettings={() => setBudgetSheetOpen(true)}
+          isEditing={budgetEditing}
+          editValue={budgetInput}
+          onEditChange={setBudgetInput}
+          onStartEdit={() => {
+            setBudgetInput(monthlyBudget > 0 ? String(monthlyBudget) : '')
+            setBudgetEditing(true)
+          }}
+          onCancelEdit={() => {
+            setBudgetInput(monthlyBudget > 0 ? String(monthlyBudget) : '')
+            setBudgetEditing(false)
+          }}
+          onSaveEdit={handleSaveBudget}
         />
         <MonthlySummaryCard
           year={calYear}
@@ -140,13 +151,6 @@ export default function Dashboard() {
         onSave={() => {}}
       />
 
-      <BudgetSettingsSheet
-        open={budgetSheetOpen}
-        value={budgetInput}
-        onChange={setBudgetInput}
-        onClose={() => setBudgetSheetOpen(false)}
-        onSave={handleSaveBudget}
-      />
 
       {/* 리포트 임시 진입 버튼 */}
       <div className="px-4 pb-8">
