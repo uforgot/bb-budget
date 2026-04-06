@@ -260,7 +260,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       }`}
     >
       {/* 헤더 */}
-      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 border-b border-border bg-background flex-shrink-0">
+      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 bg-background flex-shrink-0">
         <button
           onClick={handleClose}
           className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"

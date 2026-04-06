@@ -125,7 +125,7 @@ export default function CategoriesSettings() {
     const children = childrenOf(editingParent.id)
     return (
       <div className="min-h-dvh bg-background">
-        <header className="relative flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 border-b border-border">
+        <header className="relative flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14">
           <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
@@ -135,7 +135,7 @@ export default function CategoriesSettings() {
           <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); loadCategories() }} className="text-[14px] text-accent-blue font-medium z-10">완료</button>
         </header>
 
-        <div className="max-w-lg mx-auto px-5 pt-8">
+        <div className="max-w-lg mx-auto px-5 pt-6">
           {/* 이모지 */}
           <div className="flex justify-center mb-8">
             <button
@@ -246,7 +246,7 @@ export default function CategoriesSettings() {
   // 목록 페이지
   return (
     <div className="min-h-dvh bg-background">
-      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 border-b border-border">
+      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14">
         <button onClick={() => router.back()} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m15 18-6-6 6-6" />
@@ -256,9 +256,9 @@ export default function CategoriesSettings() {
         <div className="w-8" />
       </header>
 
-      <div className="max-w-lg mx-auto px-5">
+      <div className="max-w-lg mx-auto px-5 pt-6">
         {/* Type pills */}
-        <div className="flex gap-1.5 mt-4 mb-6">
+        <div className="flex gap-1.5 mb-6">
           {TYPE_LABELS.map(({ key, label }) => (
             <button
               key={key}
