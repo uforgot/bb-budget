@@ -41,6 +41,7 @@ export default function CategoriesSettings() {
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const dragStartIndexRef = useRef<number | null>(null)
   const didDragRef = useRef(false)
+  const suppressClickRef = useRef(false)
 
   const supabase = createClient() as any
 
@@ -171,7 +172,13 @@ export default function CategoriesSettings() {
     dragStartIndexRef.current = null
     const shouldPersist = didDragRef.current
     didDragRef.current = false
-    if (shouldPersist) await persistParentOrder(ordered)
+    if (shouldPersist) {
+      suppressClickRef.current = true
+      setTimeout(() => {
+        suppressClickRef.current = false
+      }, 250)
+      await persistParentOrder(ordered)
+    }
   }
 
   // 편집 상세 페이지
@@ -341,7 +348,7 @@ export default function CategoriesSettings() {
                 data-parent-index={index}
                 draggable={false}
                 onClick={() => {
-                  if (draggingId || didDragRef.current) {
+                  if (draggingId || didDragRef.current || suppressClickRef.current) {
                     didDragRef.current = false
                     return
                   }
