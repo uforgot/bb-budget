@@ -158,7 +158,7 @@ export default function CategoriesSettings() {
 
           {/* 카테고리명 */}
           <div className="flex items-center gap-3 py-4 border-b border-border">
-            <span className="text-xs text-muted-foreground w-16 flex-shrink-0">카테고리명</span>
+            <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0">카테고리명</span>
             <input
               type="text"
               value={editName}
@@ -171,7 +171,7 @@ export default function CategoriesSettings() {
 
           {/* 소분류 */}
           <div className="flex items-start gap-3 py-4 border-b border-border">
-            <span className="text-xs text-muted-foreground w-16 flex-shrink-0 mt-1.5">소분류</span>
+            <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
             <div className="flex-1">
               <div className="flex flex-wrap gap-2">
                 {children.map((child) => (
