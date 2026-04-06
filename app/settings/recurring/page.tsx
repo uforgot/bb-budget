@@ -256,15 +256,15 @@ export default function RecurringPage() {
               <div className="border-t border-border mx-5" />
               <div className="flex items-center justify-between px-4 py-3.5">
                 <span className="text-[16px]">금액</span>
-                <div className="flex items-baseline gap-0">
-                  <span className="text-[16px] text-muted-foreground">₩</span>
+                <div className="flex items-baseline justify-end">
+                  <span className="text-[16px] font-semibold tabular-nums text-foreground">₩{amount ? parseInt(amount).toLocaleString() : '0'}</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     placeholder="0"
-                    value={amount ? parseInt(amount).toLocaleString() : ''}
+                    value={amount}
                     onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
+                    className="sr-only"
                     style={{ fontSize: '16px' }}
                   />
                 </div>

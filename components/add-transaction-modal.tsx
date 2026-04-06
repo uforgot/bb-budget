@@ -390,18 +390,18 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className="flex items-center justify-between px-4 py-3.5" onClick={() => amountInputRef.current?.focus()}>
               <span className="text-[16px]">금액</span>
               <div className="flex flex-col items-end">
-                <div className="flex items-baseline gap-0">
-                  <span className="text-[16px] text-muted-foreground">₩</span>
+                <div className="flex items-baseline justify-end">
+                  <span className="text-[16px] font-semibold tabular-nums text-foreground">₩{rawAmount ? parseInt(rawAmount).toLocaleString() : '0'}</span>
                   <input
                     ref={amountInputRef}
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    value={rawAmount ? parseInt(rawAmount).toLocaleString() : ''}
+                    value={rawAmount}
                     onChange={e => {
                       const v = e.target.value.replace(/[^0-9]/g, '')
                       if (v.length <= 10) setRawAmount(v)
                     }}
-                    className="text-[16px] font-semibold tabular-nums bg-transparent outline-none caret-foreground text-foreground placeholder:text-muted-foreground text-right w-28"
+                    className="sr-only"
                     placeholder="0"
                   />
                 </div>
