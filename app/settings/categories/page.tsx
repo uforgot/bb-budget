@@ -79,8 +79,26 @@ export default function CategoriesSettings() {
   }
 
   const persistOrder = async (nextIds: string[]) => {
-    await reorderParentCategories(type, nextIds)
-    await loadCategories()
+    const prevCategories = categories
+    setCategories(prev => {
+      const parentMap = new Map(prev.filter(c => !c.parent_id).map(c => [c.id, c]))
+      const reorderedParents = nextIds
+        .map((id, index) => {
+          const parent = parentMap.get(id)
+          return parent ? { ...parent, sort_order: index + 1 } : null
+        })
+        .filter(Boolean) as Category[]
+      const children = prev.filter(c => c.parent_id)
+      return [...reorderedParents, ...children]
+    })
+
+    try {
+      await reorderParentCategories(type, nextIds)
+      await loadCategories()
+    } catch (error) {
+      setCategories(prevCategories)
+      throw error
+    }
   }
 
   const handleMoveOver = (overId: string) => {
