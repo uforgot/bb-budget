@@ -50,15 +50,15 @@ export function BudgetCard({
         </div>
 
         <div className="flex items-center gap-2 mt-0.5">
-          <div className={`flex items-center gap-0 text-[24px] font-bold tabular-nums leading-tight ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
+          <div className={`flex items-center gap-0 text-[24px] font-bold tabular-nums leading-tight ${(hasBudget || isEditing) ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
             <span>₩</span>
             {isEditing ? (
               <input
                 type="text"
                 inputMode="numeric"
-                value={editValue || ''}
+                value={editValue ? parseInt(editValue, 10).toLocaleString() : ''}
                 onChange={(e) => onEditChange(e.target.value.replace(/[^0-9]/g, ''))}
-                className="w-[140px] text-[24px] font-bold tabular-nums text-current bg-transparent outline-none"
+                className="w-[140px] text-[24px] font-bold tabular-nums text-white bg-transparent outline-none"
                 placeholder="0"
               />
             ) : (
@@ -67,7 +67,7 @@ export function BudgetCard({
           </div>
 
           {!hasBudget && !isEditing && (
-            <button onClick={onStartEdit} className="text-white/35" aria-label="예산 수정">
+            <button onClick={onStartEdit} className="text-white/35 flex items-center justify-center self-center" aria-label="예산 수정">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9"/>
                 <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/>
