@@ -35,18 +35,10 @@ export function BudgetCard({
   const hasBudget = budget > 0
 
   return (
-    <div className="bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 min-h-[150px] flex flex-col justify-between">
+    <div className={`bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 flex flex-col justify-between ${hasBudget ? 'min-h-[190px]' : 'min-h-[150px]'}`}>
       <div>
         <div className="flex items-start justify-between gap-3 mb-0.5">
           <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 예산</p>
-          {hasBudget && !isEditing && (
-            <button
-              onClick={onStartEdit}
-              className="text-[13px] font-semibold text-accent-blue"
-            >
-              설정
-            </button>
-          )}
         </div>
 
         <div className="flex items-center gap-2 mt-0.5">
@@ -76,6 +68,16 @@ export function BudgetCard({
           )}
         </div>
 
+        {!isEditing && (
+          <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
+            {hasBudget
+              ? remaining > 0
+                ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 달성할 수 있어요`
+                : '이번 달 예산을 초과했어요'
+              : '한 달 예산 설정하고 남은 금액을 확인하세요'}
+          </p>
+        )}
+
         {isEditing && (
           <div className="flex gap-2 mt-4">
             <button onClick={onSaveEdit} className="flex-1 py-3 rounded-[22px] bg-primary text-primary-foreground text-[15px] font-semibold">저장</button>
@@ -84,7 +86,7 @@ export function BudgetCard({
         )}
       </div>
 
-      {hasBudget ? (
+      {hasBudget && !isEditing && (
         <div>
           <div className="h-[6px] rounded-full overflow-hidden mb-3 bg-white/10">
             <div
@@ -99,19 +101,23 @@ export function BudgetCard({
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[12px] text-white/70 mb-0.5">지출</p>
-              <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(spent)}</p>
+              <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(spent)} ({percent}%)</p>
             </div>
             <div className="text-right">
               <p className="text-[12px] text-white/70 mb-0.5">총 예산</p>
-              <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(budget)}</p>
+              <div className="flex items-center justify-end gap-1.5">
+                <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(budget)}</p>
+                <button onClick={onStartEdit} className="text-white/70 flex items-center justify-center" aria-label="예산 수정">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      ) : !isEditing ? (
-        <p className="text-[13px] font-semibold text-white/70 leading-tight">
-          한 달 예산 설정하고 남은 금액을 확인하세요
-        </p>
-      ) : null}
+      )}
     </div>
   )
 }
