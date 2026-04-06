@@ -46,20 +46,20 @@ function BudgetAmount({
   const remaining = budget - spent
 
   return (
-    <div className={`flex items-center gap-0 text-[24px] font-bold tabular-nums ${typography.cardBody} leading-tight mb-6`} style={{ letterSpacing: '-1px' }}>
-      <span className={(hasBudget || isEditing) ? typography.cardBody : 'text-muted-foreground'}>₩</span>
+    <div className="flex items-center gap-0 text-[24px] font-bold tabular-nums text-[#111827] dark:text-white leading-tight mb-6" style={{ letterSpacing: '-1px' }}>
+      <span className={(hasBudget || isEditing) ? 'text-[#111827] dark:text-white' : 'text-muted-foreground'}>₩</span>
       {isEditing ? (
         <input
           type="text"
           inputMode="numeric"
           value={editValue ? parseInt(editValue, 10).toLocaleString() : ''}
           onChange={(e) => onEditChange(e.target.value.replace(/[^0-9]/g, ''))}
-          className={`w-[140px] text-[24px] font-bold tabular-nums ${typography.cardBody} bg-transparent outline-none`}
+          className="w-[140px] text-[24px] font-bold tabular-nums text-[#111827] dark:text-white bg-transparent outline-none"
           placeholder="0"
         />
       ) : (
         <>
-          <span className={(hasBudget || isEditing) ? typography.cardBody : 'text-muted-foreground'}>
+          <span className={(hasBudget || isEditing) ? 'text-[#111827] dark:text-white' : 'text-muted-foreground'}>
             {hasBudget
               ? remaining >= 0
                 ? `${Math.abs(remaining).toLocaleString()} 남음`
