@@ -378,7 +378,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
       {/* Fixed weekday row */}
       <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-2">
         {WEEKDAYS.map(day => (
-          <div key={day} className={`text-center text-[11px] font-medium ${typography.cardSubtle}`}>
+          <div key={day} className={`text-center text-[10px] font-medium ${typography.cardSubtle}`}>
             {day}
           </div>
         ))}
