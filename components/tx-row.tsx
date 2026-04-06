@@ -12,11 +12,13 @@ interface TxRowProps {
   showDate: boolean
   dateLabel?: string
   showDescription?: boolean
+  emphasizeDateLabel?: boolean
+  emphasizeAmount?: boolean
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }
 
-export function TxRow({ tx, categories, showDate, dateLabel, showDescription = true, onEdit, onDeleted }: TxRowProps) {
+export function TxRow({ tx, categories, showDate, dateLabel, showDescription = true, emphasizeDateLabel = false, emphasizeAmount = false, onEdit, onDeleted }: TxRowProps) {
   const cat = tx.category as any
   const catName = cat?.name || ''
   const d = new Date(tx.date)
@@ -35,7 +37,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
                 <span className="text-xs text-muted-foreground">{DAY_NAMES[d.getDay()]}</span>
               </div>
             ) : dateLabel ? (
-              <span className="text-[13px] font-semibold">{dateLabel}</span>
+              <span className={emphasizeDateLabel ? 'text-[14px] font-semibold' : 'text-[13px] font-semibold'}>{dateLabel}</span>
             ) : null}
           </div>
           <div className="flex-1 min-w-0">
@@ -53,7 +55,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
               }
             </span>
           </div>
-          <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.end_date ? 'line-through ' : ''}${typography.cardSubtle ? ` ${typography.cardSubtle}` : ''}`}>
+          <span className={`${emphasizeAmount ? 'text-[14px]' : 'text-sm'} font-semibold tabular-nums flex-shrink-0 ${tx.end_date ? 'line-through ' : ''}${typography.cardSubtle ? ` ${typography.cardSubtle}` : ''}`}>
             ₩{tx.amount.toLocaleString()}
           </span>
         </div>

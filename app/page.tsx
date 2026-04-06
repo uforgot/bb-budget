@@ -63,6 +63,8 @@ function DayTransactions({
           showDate={false}
           dateLabel={i === 0 ? '상세' : undefined}
           showDescription
+          emphasizeDateLabel
+          emphasizeAmount
           onEdit={onEdit}
           onDeleted={onDeleted}
         />
