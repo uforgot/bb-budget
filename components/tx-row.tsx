@@ -14,11 +14,12 @@ interface TxRowProps {
   showDescription?: boolean
   emphasizeDateLabel?: boolean
   emphasizeAmount?: boolean
+  emphasizeDateValue?: boolean
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }
 
-export function TxRow({ tx, categories, showDate, dateLabel, showDescription = true, emphasizeDateLabel = false, emphasizeAmount = false, onEdit, onDeleted }: TxRowProps) {
+export function TxRow({ tx, categories, showDate, dateLabel, showDescription = true, emphasizeDateLabel = false, emphasizeAmount = false, emphasizeDateValue = false, onEdit, onDeleted }: TxRowProps) {
   const cat = tx.category as any
   const catName = cat?.name || ''
   const d = new Date(tx.date)
@@ -33,7 +34,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
           <div className="w-14 flex-shrink-0">
             {showDate ? (
               <div className="flex items-baseline gap-1.5">
-                <span className="text-sm font-medium tabular-nums">{d.getDate()}일</span>
+                <span className={emphasizeDateValue ? 'text-[14px] font-medium tabular-nums' : 'text-sm font-medium tabular-nums'}>{d.getDate()}일</span>
                 <span className="text-xs text-muted-foreground">{DAY_NAMES[d.getDay()]}</span>
               </div>
             ) : dateLabel ? (
