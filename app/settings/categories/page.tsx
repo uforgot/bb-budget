@@ -389,7 +389,7 @@ export default function CategoriesSettings() {
                 finishDrag()
               }}
               onTouchCancel={cancelDrag}
-              className={`relative flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors select-none touch-none ${
+              className={`relative flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all duration-200 ease-out select-none touch-none ${
                 draggingId === parent.id ? 'bg-background ring-1 ring-border opacity-35' : 'bg-muted'
               }`}
             >
