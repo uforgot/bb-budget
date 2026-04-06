@@ -74,15 +74,6 @@ export function BudgetCard({
           )}
         </div>
 
-        {!isEditing && (
-          <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
-            {hasBudget
-              ? remaining >= 0
-                ? `남은 ${daysLeft}일 간 하루에 ${formatCurrency(dailyBudget)}씩 쓸 수 있어요`
-                : '이번 달 예산을 초과했어요'
-              : '한 달 예산 설정하고 남은 금액을 확인하세요'}
-          </p>
-        )}
 
         {isEditing && (
           <div className="flex gap-2 mt-4">
@@ -92,7 +83,7 @@ export function BudgetCard({
         )}
       </div>
 
-      {hasBudget && !isEditing && (
+      {hasBudget && !isEditing ? (
         <div>
           <div className="h-[6px] rounded-full overflow-hidden mb-3 bg-white/10">
             <div
@@ -110,7 +101,7 @@ export function BudgetCard({
               <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(spent)} ({percent}%)</p>
             </div>
             <div className="text-right">
-              <p className="text-[14px] text-white mb-0.5">총 예산</p>
+              <p className="text-[14px] text-white mb-0.5">총예산</p>
               <div className="flex items-center justify-end gap-1.5">
                 <p className="text-[14px] font-semibold tabular-nums text-[#3A3A3C]">{formatCurrency(budget)}</p>
                 <button onClick={onStartEdit} className="text-white/70 flex items-center justify-center self-center" aria-label="예산 수정">
@@ -123,7 +114,11 @@ export function BudgetCard({
             </div>
           </div>
         </div>
-      )}
+      ) : !hasBudget && !isEditing ? (
+        <p className="text-[13px] font-semibold text-white/70 leading-tight">
+          한 달 예산 설정하고 남은 금액을 확인하세요
+        </p>
+      ) : null}
     </div>
   )
 }
