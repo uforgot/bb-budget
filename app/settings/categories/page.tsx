@@ -40,6 +40,7 @@ export default function CategoriesSettings() {
   const [localParents, setLocalParents] = useState<Category[]>([])
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const dragStartIndexRef = useRef<number | null>(null)
+  const didDragRef = useRef(false)
 
   const supabase = createClient() as any
 
@@ -148,6 +149,29 @@ export default function CategoriesSettings() {
   const persistParentOrder = async (ordered: Category[]) => {
     await reorderParentCategories(type, ordered.map(parent => parent.id))
     await loadCategories()
+  }
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLButtonElement>) => {
+    if (!draggingId || dragStartIndexRef.current === null) return
+    const touch = event.touches[0]
+    if (!touch) return
+    const element = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('[data-parent-index]') as HTMLElement | null
+    if (!element) return
+    const toIndex = Number(element.dataset.parentIndex)
+    if (Number.isNaN(toIndex) || toIndex === dragStartIndexRef.current) return
+    didDragRef.current = true
+    moveParent(dragStartIndexRef.current, toIndex)
+  }
+
+  const finishDrag = async () => {
+    clearDragTimer()
+    if (!draggingId) return
+    const ordered = [...localParents]
+    setDraggingId(null)
+    dragStartIndexRef.current = null
+    const shouldPersist = didDragRef.current
+    didDragRef.current = false
+    if (shouldPersist) await persistParentOrder(ordered)
   }
 
   // 편집 상세 페이지
@@ -314,35 +338,50 @@ export default function CategoriesSettings() {
             return (
               <button
                 key={parent.id}
+                data-parent-index={index}
                 draggable={false}
                 onClick={() => {
-                  if (draggingId) return
+                  if (draggingId || didDragRef.current) {
+                    didDragRef.current = false
+                    return
+                  }
                   setEditingParent(parent)
                   setEditName(parent.name)
                   setAddingSubCat(false)
                   setNewSubCat('')
                 }}
-                onPointerDown={() => {
+                onTouchStart={() => {
                   clearDragTimer()
+                  didDragRef.current = false
                   dragTimerRef.current = setTimeout(() => {
                     setDraggingId(parent.id)
                     dragStartIndexRef.current = index
                   }, 350)
                 }}
-                onPointerUp={async () => {
+                onTouchMove={handleTouchMove}
+                onTouchEnd={finishDrag}
+                onTouchCancel={() => {
                   clearDragTimer()
-                  if (draggingId === parent.id) {
-                    setDraggingId(null)
-                    dragStartIndexRef.current = null
-                    await persistParentOrder(localParents)
-                  }
+                  setDraggingId(null)
+                  dragStartIndexRef.current = null
+                  didDragRef.current = false
                 }}
-                onPointerLeave={clearDragTimer}
-                onPointerEnter={() => {
+                onMouseDown={() => {
+                  clearDragTimer()
+                  didDragRef.current = false
+                  dragTimerRef.current = setTimeout(() => {
+                    setDraggingId(parent.id)
+                    dragStartIndexRef.current = index
+                  }, 350)
+                }}
+                onMouseUp={finishDrag}
+                onMouseLeave={clearDragTimer}
+                onMouseEnter={() => {
                   if (!draggingId || dragStartIndexRef.current === null || draggingId === parent.id) return
+                  didDragRef.current = true
                   if (dragStartIndexRef.current !== index) moveParent(dragStartIndexRef.current, index)
                 }}
-                className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
+                className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors touch-none select-none ${
                   draggingId === parent.id ? 'bg-muted scale-[0.98] opacity-70' : 'bg-muted'
                 }`}
               >
