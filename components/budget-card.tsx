@@ -49,49 +49,48 @@ export function BudgetCard({
           )}
         </div>
 
-        {isEditing ? (
-          <div className="mt-1">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[24px] font-bold text-white">₩</span>
+        <div className="flex items-center gap-2 mt-0.5">
+          <div className={`flex items-center gap-0 text-[24px] font-bold tabular-nums leading-tight ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
+            <span>₩</span>
+            {isEditing ? (
               <input
                 type="text"
                 inputMode="numeric"
-                value={editValue ? parseInt(editValue, 10).toLocaleString() : ''}
+                value={editValue || ''}
                 onChange={(e) => onEditChange(e.target.value.replace(/[^0-9]/g, ''))}
-                className="flex-1 text-[24px] font-bold tabular-nums text-white bg-transparent outline-none"
-                style={{ letterSpacing: '-1px' }}
+                className="w-[140px] text-[24px] font-bold tabular-nums text-current bg-transparent outline-none"
                 placeholder="0"
               />
-            </div>
-            <div className="flex gap-2">
-              <button onClick={onSaveEdit} className="flex-1 py-3 rounded-[22px] bg-primary text-primary-foreground text-[15px] font-semibold">저장</button>
-              <button onClick={onCancelEdit} className="flex-1 py-3 rounded-[22px] bg-white/10 text-white text-[15px] font-semibold">취소</button>
-            </div>
+            ) : (
+              <span>{hasBudget ? Math.abs(remaining).toLocaleString() : '0'}</span>
+            )}
           </div>
-        ) : (
-          <>
-            <div className="flex items-center gap-2 mt-0.5">
-              <p className={`text-[24px] font-bold tabular-nums leading-tight ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
-                {hasBudget ? formatCurrency(remaining) : '₩0'}
-              </p>
-              {!hasBudget && (
-                <button onClick={onStartEdit} className="text-white/35" aria-label="예산 수정">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 20h9"/>
-                    <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/>
-                  </svg>
-                </button>
-              )}
-            </div>
 
-            <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
-              {hasBudget
-                ? remaining > 0
-                  ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 지킬 수 있어요`
-                  : '이번 달 예산을 초과했어요'
-                : '한 달 예산 설정하고 남은 금액을 확인하세요'}
-            </p>
-          </>
+          {!hasBudget && !isEditing && (
+            <button onClick={onStartEdit} className="text-white/35" aria-label="예산 수정">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/>
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {!isEditing && (
+          <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
+            {hasBudget
+              ? remaining > 0
+                ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 지킬 수 있어요`
+                : '이번 달 예산을 초과했어요'
+              : '한 달 예산 설정하고 남은 금액을 확인하세요'}
+          </p>
+        )}
+
+        {isEditing && (
+          <div className="flex gap-2 mt-4">
+            <button onClick={onSaveEdit} className="flex-1 py-3 rounded-[22px] bg-primary text-primary-foreground text-[15px] font-semibold">저장</button>
+            <button onClick={onCancelEdit} className="flex-1 py-3 rounded-[22px] bg-white/10 text-white text-[15px] font-semibold">취소</button>
+          </div>
         )}
       </div>
 
@@ -130,63 +129,3 @@ export function BudgetCard({
   )
 }
 
-interface BudgetSettingsSheetProps {
-  open: boolean
-  value: string
-  onChange: (value: string) => void
-  onClose: () => void
-  onSave: () => void
-}
-
-export function BudgetSettingsSheet({ open, value, onChange, onClose, onSave }: BudgetSettingsSheetProps) {
-  if (!open) return null
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-
-      <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '75dvh' }}>
-        <div className="flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0">
-          <h3 className="text-base font-semibold">이번 달 예산 설정</h3>
-          <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground" aria-label="닫기">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="px-4" style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}>
-          <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
-            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-              <span className="text-[15px] text-muted-foreground">예산 금액</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[15px] text-muted-foreground">₩</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={value ? parseInt(value, 10).toLocaleString() : ''}
-                  onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ''))}
-                  className="text-[15px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-36"
-                  style={{ fontSize: '16px' }}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-            <div className="px-4 py-3 text-[13px] text-muted-foreground leading-snug">
-              이번 달 지출 한도를 입력하면 남은 예산과 하루 권장 사용액을 계산해드려요.
-            </div>
-          </div>
-
-          <div className="flex gap-3 mb-2">
-            <button onClick={onSave} className="flex-1 bg-primary text-primary-foreground rounded-[22px] py-3.5 text-[16px] font-semibold">
-              저장하기
-            </button>
-            <button onClick={onClose} className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold">
-              취소하기
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
