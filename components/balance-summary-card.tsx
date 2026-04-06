@@ -35,7 +35,7 @@ export function BalanceCard({
     <div className="bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 min-h-[150px] flex flex-col justify-between">
       <div>
         <p className="text-[13px] font-semibold text-white/80 mb-0.5">현재 잔액</p>
-        <p className="text-[24px] font-bold tabular-nums text-white leading-tight mb-3" style={{ letterSpacing: '-1px' }}>
+        <p className="text-[24px] font-bold tabular-nums text-white leading-tight mb-6" style={{ letterSpacing: '-1px' }}>
           {formatCurrency(totalBalance)}
         </p>
       </div>
