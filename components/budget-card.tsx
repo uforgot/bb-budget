@@ -99,7 +99,7 @@ export function BudgetCard({
               className="h-full rounded-full"
               style={{
                 width: `${percent}%`,
-                backgroundColor: remaining >= 0 ? '#14F195' : '#5865F2',
+                backgroundColor: '#5865F2',
               }}
             />
           </div>
@@ -112,7 +112,7 @@ export function BudgetCard({
             <div className="text-right">
               <p className="text-[14px] text-white mb-0.5">총 예산</p>
               <div className="flex items-center justify-end gap-1.5">
-                <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(budget)}</p>
+                <p className="text-[14px] font-semibold tabular-nums text-[#3A3A3C]">{formatCurrency(budget)}</p>
                 <button onClick={onStartEdit} className="text-white/70 flex items-center justify-center self-center" aria-label="예산 수정">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 20h9"/>
