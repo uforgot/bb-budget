@@ -45,7 +45,7 @@ function BudgetAmount({
   const remaining = budget - spent
 
   return (
-    <div className="flex items-center gap-2 text-[24px] font-bold tabular-nums text-white leading-tight mb-6" style={{ letterSpacing: '-1px' }}>
+    <div className="flex items-center gap-0 text-[24px] font-bold tabular-nums text-white leading-tight mb-6" style={{ letterSpacing: '-1px' }}>
       <span className={(hasBudget || isEditing) ? 'text-white' : 'text-muted-foreground'}>₩</span>
       {isEditing ? (
         <input
