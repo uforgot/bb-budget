@@ -17,6 +17,11 @@ function fmtAmt(n: number) {
   return `₩${n.toLocaleString()}`
 }
 
+function formatCurrency(n: number) {
+  const abs = Math.abs(n).toLocaleString()
+  return n < 0 ? `-₩${abs}` : `₩${abs}`
+}
+
 export function BalanceCard({
   prevBalance, thisMonthBalance, totalBalance, month,
   monthIncome = 0, monthExpense = 0, monthSavings = 0,
@@ -31,7 +36,7 @@ export function BalanceCard({
       <div>
         <p className="text-[13px] font-semibold text-white/80 mb-0.5">현재 잔액</p>
         <p className="text-[24px] font-bold tabular-nums text-white leading-tight mb-3" style={{ letterSpacing: '-1px' }}>
-          ₩{totalBalance.toLocaleString()}
+          {formatCurrency(totalBalance)}
         </p>
       </div>
 
@@ -43,12 +48,12 @@ export function BalanceCard({
         <div className="flex items-start justify-between">
           <div>
             <p className="text-[14px] text-white mb-0.5">{prevMonth}월 잔액</p>
-            <p className="text-[14px] font-semibold tabular-nums text-white">₩{prevBalance.toLocaleString()}</p>
+            <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(prevBalance)}</p>
           </div>
           <div className="text-right">
             <p className="text-[14px] text-white mb-0.5">{month}월 잔액</p>
             <p className={`text-[14px] font-semibold tabular-nums ${thisMonthBalance < 0 ? 'text-[#5865F2]' : 'text-white'}`}>
-              ₩{thisMonthBalance.toLocaleString()}
+              {formatCurrency(thisMonthBalance)}
             </p>
           </div>
         </div>
@@ -120,7 +125,7 @@ export function MonthlySummaryCard({ month, income, savings, prevSavings, year }
             <div key={label}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[14px] text-foreground">{label}</span>
-                <span className="text-[14px] font-semibold tabular-nums">₩{value.toLocaleString()}</span>
+                <span className="text-[14px] font-semibold tabular-nums">{formatCurrency(value)}</span>
               </div>
               <div className="h-[6px] bg-muted rounded-full overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
