@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { BalanceCard, MonthlySummaryCard } from '@/components/balance-summary-card'
+import { BudgetCard, BudgetSettingsSheet } from '@/components/budget-card'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
 
@@ -23,6 +24,8 @@ export default function Dashboard() {
   const [allTimeSavings, setAllTimeSavings] = useState(0)
   const [prevSavings, setPrevSavings] = useState(0)
   const [prevBalance, setPrevBalance] = useState(0)
+  const [budgetSheetOpen, setBudgetSheetOpen] = useState(false)
+  const [budgetInput, setBudgetInput] = useState('')
 
   const loadData = useCallback(async () => {
     try {
@@ -66,6 +69,25 @@ export default function Dashboard() {
 
   const totalAssets = allTimeIncome - allTimeExpense
   const cashBalance = totalAssets - allTimeSavings
+  const budgetStorageKey = `${calYear}-${String(calMonth).padStart(2, '0')}`
+  const monthlyBudget = typeof window !== 'undefined'
+    ? Number(localStorage.getItem(`budget:${budgetStorageKey}`) || 0)
+    : 0
+  const daysInMonth = new Date(calYear, calMonth, 0).getDate()
+  const daysLeft = Math.max(daysInMonth - today.getDate() + 1, 0)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const saved = localStorage.getItem(`budget:${budgetStorageKey}`) || ''
+    setBudgetInput(saved)
+  }, [budgetStorageKey])
+
+  const handleSaveBudget = () => {
+    if (typeof window === 'undefined') return
+    localStorage.setItem(`budget:${budgetStorageKey}`, budgetInput || '0')
+    setBudgetSheetOpen(false)
+    window.dispatchEvent(new Event('focus'))
+  }
 
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData}>
@@ -95,6 +117,12 @@ export default function Dashboard() {
           monthExpense={monthExpense}
           monthSavings={prevSavings}
         />
+        <BudgetCard
+          budget={monthlyBudget}
+          spent={monthExpense}
+          daysLeft={daysLeft}
+          onOpenSettings={() => setBudgetSheetOpen(true)}
+        />
         <MonthlySummaryCard
           year={calYear}
           month={calMonth}
@@ -110,6 +138,14 @@ export default function Dashboard() {
         editTransaction={editTx}
         onClose={() => { setModalOpen(false); setEditTx(null); loadData() }}
         onSave={() => {}}
+      />
+
+      <BudgetSettingsSheet
+        open={budgetSheetOpen}
+        value={budgetInput}
+        onChange={setBudgetInput}
+        onClose={() => setBudgetSheetOpen(false)}
+        onSave={handleSaveBudget}
       />
 
       {/* 리포트 임시 진입 버튼 */}
