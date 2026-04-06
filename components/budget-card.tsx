@@ -94,7 +94,7 @@ export function BudgetCard({
         )}
       </div>
 
-      {hasBudget ? (
+      {hasBudget && (
         <div>
           <div className="h-[6px] rounded-full overflow-hidden mb-3 bg-white/10">
             <div
@@ -117,13 +117,6 @@ export function BudgetCard({
             </div>
           </div>
         </div>
-      ) : (
-        <button
-          onClick={onStartEdit}
-          className="w-full mt-4 py-3.5 rounded-[22px] bg-white/10 text-[16px] font-semibold text-white"
-        >
-          이번 달 예산 설정하기
-        </button>
       )}
     </div>
   )
