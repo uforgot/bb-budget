@@ -47,10 +47,10 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
           const diff = selectedData.value - avgValue
           if (diff === 0) return null
           const isOver = diff > 0
-          const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만`
+          const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
           return (
-            <p className={`text-[13px] mt-1 ${typography.cardSubtleStrong}`}>
-              {avgLabel} {toMan(avgValue)}원보다 {toMan(Math.abs(diff))}원 {isOver ? '더' : '덜'} {label.includes('수입') ? '벌었어요' : '썼어요'}
+            <p className="text-[13px] font-semibold mt-1 text-foreground/70 dark:text-white/70">
+              {avgLabel} {toMan(avgValue)}보다 {toMan(Math.abs(diff))} {isOver ? '더' : '덜'} {label.includes('수입') ? '벌었어요' : '썼어요'}
             </p>
           )
         })()}
