@@ -77,7 +77,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               >
                 <div style={{ width: BAR_W, height: barH, backgroundColor: barColor, borderRadius: 6, marginBottom: 8, flexShrink: 0 }} />
                 <span style={{
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: isSelected ? 600 : 400,
                   color: isSelected ? 'var(--foreground)' : '#9CA3AF',
                   height: LABEL_H,
