@@ -100,11 +100,11 @@ export function BudgetCard({
 
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[12px] text-white/70 mb-0.5">지출</p>
+              <p className="text-[14px] text-white mb-0.5">지출</p>
               <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(spent)} ({percent}%)</p>
             </div>
             <div className="text-right">
-              <p className="text-[12px] text-white/70 mb-0.5">총 예산</p>
+              <p className="text-[14px] text-white mb-0.5">총 예산</p>
               <div className="flex items-center justify-end gap-1.5">
                 <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(budget)}</p>
                 <button onClick={onStartEdit} className="text-white/70 flex items-center justify-center self-center" aria-label="예산 수정">
