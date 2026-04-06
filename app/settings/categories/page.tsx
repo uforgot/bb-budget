@@ -252,7 +252,7 @@ export default function CategoriesSettings() {
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <h1 className="text-[17px] font-semibold">카테고리 관리</h1>
+        <h1 className="text-[16px] font-semibold">카테고리 관리</h1>
         <div className="w-8" />
       </header>
 

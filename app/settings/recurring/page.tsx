@@ -103,7 +103,7 @@ export default function RecurringPage() {
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <h1 className="text-[17px] font-semibold">반복 지출 관리</h1>
+        <h1 className="text-[16px] font-semibold">반복 지출 관리</h1>
         <div className="w-8" />
       </header>
 
@@ -174,126 +174,142 @@ export default function RecurringPage() {
 
         {/* 추가 폼 */}
         {adding ? (
-          <div className="mt-4 bg-surface rounded-[22px] px-5 py-4">
-            {/* 주기 선택 — 세그먼트 컨트롤 */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[16px] text-muted-foreground">주기</span>
-              <div className="flex bg-muted rounded-full p-1">
-                {(['weekly', 'monthly', 'yearly'] as const).map(f => (
-                  <button
-                    key={f}
-                    onClick={() => setFrequency(f)}
-                    className={`px-4 py-1.5 rounded-full text-[16px] font-medium transition-colors ${
-                      frequency === f ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
-                    }`}
-                  >
-                    {f === 'weekly' ? '매주' : f === 'monthly' ? '매월' : '매년'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 주기별 날짜 선택 */}
-            {frequency === 'weekly' && (
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[15px] text-muted-foreground">요일</span>
-                <div className="flex gap-1">
-                  {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
+          <>
+            <div className="mt-4 bg-surface rounded-[22px] overflow-visible">
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-[16px]">주기</span>
+                <div className="flex gap-1.5">
+                  {(['weekly', 'monthly', 'yearly'] as const).map(f => (
                     <button
-                      key={i}
-                      onClick={() => setDayOfWeek(String(i))}
-                      className={`w-8 h-8 rounded-full text-xs font-medium transition-colors ${
-                        dayOfWeek === String(i) ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground'
+                      key={f}
+                      onClick={() => setFrequency(f)}
+                      className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
+                        frequency === f ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'
                       }`}
                     >
-                      {d}
+                      {f === 'weekly' ? '매주' : f === 'monthly' ? '매월' : '매년'}
                     </button>
                   ))}
                 </div>
               </div>
-            )}
-            {frequency === 'monthly' && (
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[16px] text-muted-foreground">매월</span>
-                <div className="flex items-center gap-1">
+
+              <div className="border-t border-border mx-5" />
+              {frequency === 'weekly' && (
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <span className="text-[16px]">요일</span>
+                  <div className="flex gap-1.5">
+                    {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setDayOfWeek(String(i))}
+                        className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
+                          dayOfWeek === String(i) ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {frequency === 'monthly' && (
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <span className="text-[16px]">매월</span>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={dayOfMonth}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^0-9]/g, '')
+                        if (v === '' || (parseInt(v) >= 1 && parseInt(v) <= 31)) setDayOfMonth(v)
+                      }}
+                      className="text-[16px] font-semibold bg-transparent border-none outline-none text-right w-10"
+                      style={{ fontSize: '16px' }}
+                    />
+                    <span className="text-[16px] text-muted-foreground">일</span>
+                  </div>
+                </div>
+              )}
+              {frequency === 'yearly' && (
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <span className="text-[16px]">날짜</span>
+                  <label className="relative cursor-pointer">
+                    <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+                      {yearDate ? (() => {
+                        const d = new Date(yearDate + 'T00:00:00')
+                        return `${d.getMonth() + 1}월 ${d.getDate()}일`
+                      })() : '선택'}
+                    </span>
+                    <input
+                      type="date"
+                      value={yearDate}
+                      onChange={(e) => e.target.value && setYearDate(e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      style={{ fontSize: '16px' }}
+                    />
+                  </label>
+                </div>
+              )}
+
+              <div className="border-t border-border mx-5" />
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-[16px]">금액</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[16px] text-muted-foreground">₩</span>
                   <input
                     type="text"
                     inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={dayOfMonth}
-                    onChange={(e) => {
-                      const v = e.target.value.replace(/[^0-9]/g, '')
-                      if (v === '' || (parseInt(v) >= 1 && parseInt(v) <= 31)) setDayOfMonth(v)
-                    }}
-                    className="text-[16px] font-semibold bg-transparent border-none outline-none text-right w-10"
+                    placeholder="0"
+                    value={amount ? parseInt(amount).toLocaleString() : ''}
+                    onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                    className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
                     style={{ fontSize: '16px' }}
                   />
-                  <span className="text-[15px] text-muted-foreground">일</span>
                 </div>
               </div>
-            )}
-            {frequency === 'yearly' && (
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[15px] text-muted-foreground">날짜</span>
-                <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
-                  <span>{yearDate ? (() => {
-                    const d = new Date(yearDate + 'T00:00:00')
-                    return `${d.getMonth() + 1}월 ${d.getDate()}일`
-                  })() : '선택'}</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                  <input
-                    type="date"
-                    value={yearDate}
-                    onChange={(e) => e.target.value && setYearDate(e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    style={{ fontSize: '16px' }}
-                  />
-                </label>
-              </div>
-            )}
 
-            {/* 금액 */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[16px] text-muted-foreground">금액</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[16px] text-muted-foreground">₩</span>
+              <div className="border-t border-border mx-5" />
+              <button
+                onClick={() => setCategoryPickerOpen(prev => !prev)}
+                className="w-full flex items-center justify-between px-4 py-3.5"
+              >
+                <span className="text-[16px]">카테고리</span>
+                <span className="text-[16px] text-foreground">{categoryLabel || '선택'}</span>
+              </button>
+              {categoryPickerOpen && (
+                <div className="px-3 pb-3">
+                  <CategoryPicker
+                    open={categoryPickerOpen}
+                    inline
+                    type="expense"
+                    selected={categoryId}
+                    onSelect={(id, label) => {
+                      setCategoryId(id)
+                      setCategoryLabel(label)
+                      setCategoryPickerOpen(false)
+                    }}
+                    onClose={() => setCategoryPickerOpen(false)}
+                  />
+                </div>
+              )}
+
+              <div className="border-t border-border mx-5" />
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-[16px]">메모</span>
                 <input
                   type="text"
-                  inputMode="numeric"
-                  placeholder="0"
-                  value={amount ? parseInt(amount).toLocaleString() : ''}
-                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                  className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-28"
+                  placeholder="입력"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40 text-right"
                   style={{ fontSize: '16px' }}
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[16px] text-muted-foreground">카테고리</span>
-              <button
-                onClick={() => setCategoryPickerOpen(true)}
-                className="text-[16px] text-foreground"
-              >
-                {categoryLabel || '선택'}
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[16px] text-muted-foreground">메모</span>
-              <input
-                type="text"
-                placeholder="메모를 입력하세요"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="text-[16px] bg-transparent border-none outline-none text-right w-40"
-                style={{ fontSize: '16px' }}
-              />
-            </div>
-
-            <div className="flex gap-3">
+            <div className="flex gap-3 mt-3 pb-10">
               <button
                 onClick={handleAdd}
                 className="flex-1 py-3.5 rounded-[22px] bg-primary text-primary-foreground text-[16px] font-semibold"
@@ -301,24 +317,13 @@ export default function RecurringPage() {
                 {saving ? '저장 중...' : editingId ? '수정하기' : '저장하기'}
               </button>
               <button
-                onClick={() => { setAdding(false); setEditingId(null) }}
-                className="flex-1 py-3.5 rounded-[22px] bg-muted text-[16px] font-medium text-muted-foreground"
+                onClick={() => { setAdding(false); setEditingId(null); setCategoryPickerOpen(false) }}
+                className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
               >
                 취소하기
               </button>
             </div>
-
-            <CategoryPicker
-              open={categoryPickerOpen}
-              type="expense"
-              selected={categoryId}
-              onSelect={(id, label) => {
-                setCategoryId(id)
-                setCategoryLabel(label)
-              }}
-              onClose={() => setCategoryPickerOpen(false)}
-            />
-          </div>
+          </>
         ) : null}
       </div>
 
