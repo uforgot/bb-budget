@@ -398,7 +398,7 @@ export default function CategoriesSettings() {
                   draggingId === parent.id
                     ? 'bg-muted opacity-0 scale-95'
                     : dropIndex === index
-                      ? 'bg-background/40 ring-1 ring-dashed ring-border opacity-60'
+                      ? 'bg-foreground/10 ring-1 ring-dashed ring-foreground/30 opacity-100'
                       : 'bg-muted'
                 }`}
               >
