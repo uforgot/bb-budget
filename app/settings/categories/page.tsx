@@ -257,14 +257,20 @@ export default function CategoriesSettings() {
       </header>
 
       <div className="max-w-lg mx-auto px-5">
-        {/* Segment control */}
-        <div className="flex bg-surface rounded-[22px] p-1 mt-4 mb-6">
+        {/* Type pills */}
+        <div className="flex gap-1.5 mt-4 mb-6">
           {TYPE_LABELS.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setType(key)}
-              className={`flex-1 py-2.5 rounded-lg text-[16px] font-medium transition-colors ${
-                type === key ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
+              className={`flex-1 py-2.5 rounded-[22px] text-[14px] font-medium transition-colors ${
+                type === key
+                  ? key === 'income'
+                    ? 'bg-[#14b8a6] text-white'
+                    : key === 'expense'
+                      ? 'bg-[#5865F2] text-white'
+                      : 'bg-accent-purple text-white'
+                  : 'bg-muted text-muted-foreground'
               }`}
             >
               {label}
@@ -272,10 +278,9 @@ export default function CategoriesSettings() {
           ))}
         </div>
 
-        {/* 4-column grid */}
-        <div className="grid grid-cols-4 gap-y-5 gap-x-2">
+        {/* Category cards */}
+        <div className="grid grid-cols-4 gap-2">
           {parents.map((parent) => {
-            const children = childrenOf(parent.id)
             return (
               <button
                 key={parent.id}
@@ -285,11 +290,12 @@ export default function CategoriesSettings() {
                   setAddingSubCat(false)
                   setNewSubCat('')
                 }}
-                className="flex flex-col items-center gap-1.5"
+                className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
+                  'bg-muted'
+                }`}
               >
-                <span className="text-3xl">{getEmoji(parent)}</span>
-                <span className="text-sm font-medium">{parent.name}</span>
-                <span className="text-xs text-muted-foreground">소분류 {children.length}개</span>
+                <span className="text-xl">{getEmoji(parent)}</span>
+                <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
               </button>
             )
           })}
