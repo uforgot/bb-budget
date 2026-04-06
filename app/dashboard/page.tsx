@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
-import { BalanceCard, MonthlySummaryCard } from '@/components/balance-summary-card'
+import { BalanceCard } from '@/components/balance-summary-card'
 import { BudgetCard } from '@/components/budget-card'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { type Transaction } from '@/lib/api'
@@ -133,13 +133,6 @@ export default function Dashboard() {
             setBudgetEditing(false)
           }}
           onSaveEdit={handleSaveBudget}
-        />
-        <MonthlySummaryCard
-          year={calYear}
-          month={calMonth}
-          income={monthIncome}
-          savings={monthExpense}
-          prevSavings={prevSavings}
         />
       </div>
 
