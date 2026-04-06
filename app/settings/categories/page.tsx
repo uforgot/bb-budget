@@ -396,9 +396,9 @@ export default function CategoriesSettings() {
                 }}
                 className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all touch-none select-none ${
                   draggingId === parent.id
-                    ? 'bg-background scale-[1.04] opacity-90 shadow-[0_12px_28px_rgba(0,0,0,0.18)] ring-1 ring-border z-10'
+                    ? 'bg-muted opacity-0 scale-95'
                     : dropIndex === index
-                      ? 'bg-background/70 ring-1 ring-dashed ring-border'
+                      ? 'bg-background/40 ring-1 ring-dashed ring-border opacity-60'
                       : 'bg-muted'
                 }`}
               >
