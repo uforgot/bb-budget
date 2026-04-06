@@ -35,7 +35,7 @@ export function BudgetCard({
   const hasBudget = budget > 0
 
   return (
-    <div className={`bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 flex flex-col justify-between ${hasBudget ? 'min-h-[190px]' : 'min-h-[150px]'}`}>
+    <div className={`bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 flex flex-col justify-between ${hasBudget ? 'min-h-[210px]' : 'min-h-[150px]'}`}>
       <div>
         <div className="flex items-start justify-between gap-3 mb-0.5">
           <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 예산</p>
