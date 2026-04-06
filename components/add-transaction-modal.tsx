@@ -294,7 +294,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-md mx-auto px-4 pt-8 pb-4">
+        <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
           <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
             <div className="flex items-center justify-between px-4 py-3.5">
@@ -390,7 +390,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className="flex items-center justify-between px-4 py-3.5" onClick={() => amountInputRef.current?.focus()}>
               <span className="text-[16px]">금액</span>
               <div className="flex flex-col items-end">
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-baseline gap-0.5">
                   <span className="text-[16px] text-muted-foreground">₩</span>
                   <input
                     ref={amountInputRef}
@@ -405,9 +405,11 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     placeholder="0"
                   />
                 </div>
-                <span className="text-[12px] text-muted-foreground">
-                  {formatKorean(rawAmount)}
-                </span>
+                {rawAmount ? (
+                  <span className="text-[12px] text-muted-foreground">
+                    {formatKorean(rawAmount)}
+                  </span>
+                ) : null}
               </div>
             </div>
             <div className="border-t border-border mx-5" />

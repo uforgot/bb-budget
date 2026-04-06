@@ -256,7 +256,7 @@ export default function RecurringPage() {
               <div className="border-t border-border mx-5" />
               <div className="flex items-center justify-between px-4 py-3.5">
                 <span className="text-[16px]">금액</span>
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-baseline gap-0.5">
                   <span className="text-[16px] text-muted-foreground">₩</span>
                   <input
                     type="text"
