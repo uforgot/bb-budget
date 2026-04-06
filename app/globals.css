@@ -87,7 +87,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --surface: #ffffff;
-  --bar-muted-color: #9CA3AF;
+  --bar-muted-color: #E5E7EB;
 }
 
 .dark {
@@ -112,7 +112,7 @@
   --accent-blue: #5865F2;
   --accent-income: #14b8a6;
   --surface: #1C1C1E;
-  --calendar-selected-day: #3A3A3C;
+  --calendar-selected-day: #2C2C2E;
   --bar-muted-color: #2C2C2E;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
