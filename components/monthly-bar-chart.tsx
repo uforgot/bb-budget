@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { semanticColors, surfaces, typography } from '@/components/ui-colors'
+import { typography } from '@/components/ui-colors'
 
 interface MonthData {
   month: number
@@ -79,7 +79,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
                 <span style={{
                   fontSize: 11,
                   fontWeight: isSelected ? 600 : 400,
-                  color: isSelected ? 'var(--foreground)' : 'var(--muted-foreground)',
+                  color: isSelected ? 'var(--foreground)' : '#9CA3AF',
                   height: LABEL_H,
                   display: 'flex',
                   alignItems: 'center',

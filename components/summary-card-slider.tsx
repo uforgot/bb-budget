@@ -149,12 +149,12 @@ export function SummaryCardSlider({
                   style={{ transform: 'translateY(-50%) translateX(-5%)' }}
                 />
                 <div>
-                  <p className={`text-[13px] font-semibold ${typography.cardTitle} mb-0.5`}>{card.label}</p>
-                  <p className={`text-[24px] font-bold tabular-nums ${typography.cardBody} leading-tight`} style={{ letterSpacing: '-1px' }}>
+                  <p className={`text-[13px] font-semibold ${typography.cardBodyInverse} opacity-80 mb-0.5`}>{card.label}</p>
+                  <p className={`text-[24px] font-bold tabular-nums ${typography.cardBodyInverse} leading-tight`} style={{ letterSpacing: '-1px' }}>
                     ₩{card.amount.toLocaleString()}
                   </p>
                 </div>
-                {dt && <p className={`text-[13px] font-semibold ${typography.cardSubtleStrong} leading-tight`}>{dt}</p>}
+                {dt && <p className={`text-[13px] font-semibold ${typography.cardSubtleInverse} leading-tight`}>{dt}</p>}
               </div>
             </div>
           )

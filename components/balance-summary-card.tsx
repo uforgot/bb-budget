@@ -1,5 +1,6 @@
 'use client'
 
+import { semanticColors } from '@/components/ui-colors'
 import {
   DashboardCard,
   DashboardCardHeader,
@@ -67,11 +68,11 @@ function BalanceFooter({
       <div className="flex items-start justify-between">
         <div>
           <DashboardCardFooterLabel>{prevMonth}월 잔액</DashboardCardFooterLabel>
-          <DashboardCardFooterValue className="text-white">{formatCurrency(prevBalance)}</DashboardCardFooterValue>
+          <DashboardCardFooterValue>{formatCurrency(prevBalance)}</DashboardCardFooterValue>
         </div>
         <div className="text-right">
           <DashboardCardFooterLabel>{month}월 잔액</DashboardCardFooterLabel>
-          <DashboardCardFooterValue className={thisMonthBalance < 0 ? 'text-[#5865F2]' : 'text-white'}>
+          <DashboardCardFooterValue className={thisMonthBalance < 0 ? 'text-[#5865F2]' : ''}>
             {formatCurrency(thisMonthBalance)}
           </DashboardCardFooterValue>
         </div>

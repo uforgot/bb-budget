@@ -1,5 +1,6 @@
 'use client'
 
+import { typography } from '@/components/ui-colors'
 import {
   DashboardCard,
   DashboardCardFooter,
@@ -45,20 +46,20 @@ function BudgetAmount({
   const remaining = budget - spent
 
   return (
-    <div className="flex items-center gap-0 text-[24px] font-bold tabular-nums text-white leading-tight mb-6" style={{ letterSpacing: '-1px' }}>
-      <span className={(hasBudget || isEditing) ? 'text-white' : 'text-muted-foreground'}>₩</span>
+    <div className={`flex items-center gap-0 text-[24px] font-bold tabular-nums ${typography.cardBody} leading-tight mb-6`} style={{ letterSpacing: '-1px' }}>
+      <span className={(hasBudget || isEditing) ? typography.cardBody : 'text-muted-foreground'}>₩</span>
       {isEditing ? (
         <input
           type="text"
           inputMode="numeric"
           value={editValue ? parseInt(editValue, 10).toLocaleString() : ''}
           onChange={(e) => onEditChange(e.target.value.replace(/[^0-9]/g, ''))}
-          className="w-[140px] text-[24px] font-bold tabular-nums text-white bg-transparent outline-none"
+          className={`w-[140px] text-[24px] font-bold tabular-nums ${typography.cardBody} bg-transparent outline-none`}
           placeholder="0"
         />
       ) : (
         <>
-          <span className={(hasBudget || isEditing) ? 'text-white' : 'text-muted-foreground'}>
+          <span className={(hasBudget || isEditing) ? typography.cardBody : 'text-muted-foreground'}>
             {hasBudget
               ? remaining >= 0
                 ? `${Math.abs(remaining).toLocaleString()} 남음`
@@ -66,7 +67,7 @@ function BudgetAmount({
               : '0'}
           </span>
           {!hasBudget && (
-            <button onClick={onStartEdit} className="text-white flex items-center justify-center self-center" aria-label="예산 수정">
+            <button onClick={onStartEdit} className={`${typography.iconStrong} flex items-center justify-center self-center`} aria-label="예산 수정">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9" />
                 <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z" />
@@ -144,8 +145,8 @@ function BudgetFooter({
         <div className="text-right">
           <DashboardCardFooterLabel>총예산</DashboardCardFooterLabel>
           <div className="flex items-center justify-end gap-1.5">
-            <DashboardCardFooterValue className="text-white">{formatCurrency(budget)}</DashboardCardFooterValue>
-            <button onClick={onStartEdit} className="text-white/70 flex items-center justify-center self-center" aria-label="예산 수정">
+            <DashboardCardFooterValue>{formatCurrency(budget)}</DashboardCardFooterValue>
+            <button onClick={onStartEdit} className={`${typography.iconStrong} flex items-center justify-center self-center`} aria-label="예산 수정">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9" />
                 <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z" />
@@ -187,7 +188,7 @@ export function BudgetCard({
       {hasBudget && !isEditing ? (
         <BudgetFooter budget={budget} spent={spent} onStartEdit={onStartEdit} />
       ) : !hasBudget && !isEditing ? (
-        <p className="text-[13px] font-semibold text-white/70 leading-tight">
+        <p className={`text-[13px] font-semibold ${typography.cardSubtleStrong} leading-tight`}>
           한 달 예산 설정하고 남은 금액을 확인하세요
         </p>
       ) : null}

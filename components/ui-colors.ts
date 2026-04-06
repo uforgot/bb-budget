@@ -1,10 +1,14 @@
 export const typography = {
-  cardTitle: 'text-foreground/80',
-  cardBody: 'text-foreground',
+  cardTitle: 'text-foreground/80 dark:text-white/80',
+  cardBody: 'text-foreground dark:text-white',
+  cardBodyInverse: 'text-white',
   cardSubtle: 'text-muted-foreground',
   cardSubtleStrong: 'text-foreground/60 dark:text-white/70',
+  cardSubtleInverse: 'text-gray-200 dark:text-white/70',
   badgeText: 'text-white',
   iconStrong: 'text-foreground',
+  iconToolbar: 'text-foreground',
+  lightGrayStrong: '#9CA3AF',
 } as const
 
 export const surfaces = {
