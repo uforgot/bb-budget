@@ -26,14 +26,14 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
           <p className="text-[13px] font-semibold text-white/80">이번 달 예산</p>
           <button
             onClick={onOpenSettings}
-            className="text-[14px] font-semibold text-white/80"
+            className="text-[14px] font-semibold text-accent-blue"
           >
             설정
           </button>
         </div>
 
-        <p className="text-[24px] font-bold tabular-nums text-white leading-tight mb-2" style={{ letterSpacing: '-1px' }}>
-          {hasBudget ? `${formatCurrency(remaining)} 남음` : '예산을 설정하세요'}
+        <p className={`text-[24px] font-bold tabular-nums leading-tight mb-2 ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
+          {hasBudget ? `${formatCurrency(remaining)} 남음` : '₩0'}
         </p>
 
         <p className="text-[14px] text-white/70 leading-snug mb-5">
@@ -41,7 +41,7 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
             ? remaining > 0
               ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 지킬 수 있어요`
               : '이번 달 예산을 초과했어요'
-            : '월 예산을 설정하면 남은 예산과 하루 권장 사용액을 보여드려요'}
+            : '한 달 예산 설정하고 남은 금액을 확인하세요'}
         </p>
       </div>
 
