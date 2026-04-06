@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
@@ -43,6 +43,8 @@ export default function CategoriesSettings() {
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const suppressClickRef = useRef(false)
   const activeDragIdRef = useRef<string | null>(null)
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+  const prevRectsRef = useRef<Record<string, DOMRect>>({})
 
   const supabase = createClient() as any
 
@@ -65,6 +67,29 @@ export default function CategoriesSettings() {
   useEffect(() => {
     setOrderedParentIds(parents.map(parent => parent.id))
   }, [categories])
+
+  useLayoutEffect(() => {
+    const nextRects: Record<string, DOMRect> = {}
+    orderedParents.forEach((parent) => {
+      const el = itemRefs.current[parent.id]
+      if (!el) return
+      const nextRect = el.getBoundingClientRect()
+      const prevRect = prevRectsRef.current[parent.id]
+      nextRects[parent.id] = nextRect
+      if (!prevRect) return
+      const dx = prevRect.left - nextRect.left
+      const dy = prevRect.top - nextRect.top
+      if (!dx && !dy) return
+      el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px)` },
+          { transform: 'translate(0, 0)' },
+        ],
+        { duration: 180, easing: 'ease-out' }
+      )
+    })
+    prevRectsRef.current = nextRects
+  }, [orderedParents])
 
   const childrenOf = (parentId: string) =>
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
@@ -367,6 +392,7 @@ export default function CategoriesSettings() {
           {orderedParents.map((parent) => (
             <button
               key={parent.id}
+              ref={(el) => { itemRefs.current[parent.id] = el }}
               data-category-id={parent.id}
               onClick={() => {
                 if (editMode || draggingId || suppressClickRef.current) return
