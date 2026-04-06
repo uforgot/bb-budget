@@ -390,7 +390,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className="flex items-center justify-between px-4 py-3.5" onClick={() => amountInputRef.current?.focus()}>
               <span className="text-[16px]">금액</span>
               <div className="flex flex-col items-end">
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-baseline gap-0">
                   <span className="text-[16px] text-muted-foreground">₩</span>
                   <input
                     ref={amountInputRef}
