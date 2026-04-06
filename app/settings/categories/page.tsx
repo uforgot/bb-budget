@@ -307,7 +307,19 @@ export default function CategoriesSettings() {
           </svg>
         </button>
         <h1 className="text-[16px] font-semibold">카테고리 관리</h1>
-        <div className="w-8" />
+        <button
+          onClick={async () => {
+            if (editMode) {
+              await persistOrder(orderedParentIds)
+            }
+            setEditMode(prev => !prev)
+            activeDragIdRef.current = null
+            setDraggingId(null)
+          }}
+          className="text-[14px] text-accent-blue font-medium"
+        >
+          {editMode ? '완료' : '편집'}
+        </button>
       </header>
 
       <div className="max-w-lg mx-auto px-5 pt-6">
@@ -336,30 +348,33 @@ export default function CategoriesSettings() {
             <button
               key={parent.id}
               onClick={() => {
-                if (draggingId || suppressClickRef.current) return
+                if (editMode || draggingId || suppressClickRef.current) return
                 setEditingParent(parent)
                 setEditName(parent.name)
                 setAddingSubCat(false)
                 setNewSubCat('')
               }}
               onTouchStart={() => {
+                if (!editMode) return
                 clearDragTimer()
-                dragTimerRef.current = setTimeout(() => {
-                  activeDragIdRef.current = parent.id
-                  setDraggingId(parent.id)
-                }, 350)
+                activeDragIdRef.current = parent.id
+                setDraggingId(parent.id)
               }}
               onTouchMove={() => {
-                if (!activeDragIdRef.current) return
+                if (!editMode || !activeDragIdRef.current) return
                 handleMoveOver(parent.id)
               }}
-              onTouchEnd={finishDrag}
+              onTouchEnd={() => {
+                if (!editMode) return
+                finishDrag()
+              }}
               onTouchCancel={cancelDrag}
-              className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors select-none touch-none ${
+              className={`relative flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors select-none touch-none ${
                 draggingId === parent.id ? 'bg-background ring-1 ring-border opacity-70' : 'bg-muted'
               }`}
             >
-              <span className="text-xl">{getEmoji(parent)}</span>
+              {editMode && <span className="absolute top-1.5 right-1.5 text-[10px] text-muted-foreground">⋮⋮</span>}
+              <span className={`text-xl ${editMode ? 'animate-pulse' : ''}`}>{getEmoji(parent)}</span>
               <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
             </button>
           ))}
