@@ -22,35 +22,34 @@ export function BalanceCard({
   monthIncome = 0, monthExpense = 0, monthSavings = 0,
 }: BalanceCardProps) {
   const prevMonth = month > 1 ? month - 1 : 12
-  const max = Math.max(Math.abs(prevBalance), Math.abs(thisMonthBalance), 1)
-  const rows = [
-    { label: `${prevMonth}월 잔액`, value: prevBalance, color: '#AEB4FF' },
-    { label: `${month}월 잔액`, value: thisMonthBalance, color: '#5865F2' },
-  ]
+  const total = Math.abs(prevBalance) + Math.abs(thisMonthBalance) || 1
+  const prevPct = Math.round((Math.abs(prevBalance) / total) * 100)
+  const thisPct = 100 - prevPct
 
   return (
-    <div className="bg-surface rounded-[22px] px-5 pt-4 pb-4 mb-3">
-      <p className="text-[16px] font-bold mb-0.5">현재 잔액</p>
-      <p className="text-[24px] font-bold tabular-nums leading-tight mb-4" style={{ letterSpacing: '-1px' }}>
-        ₩{totalBalance.toLocaleString()}
-      </p>
-      <div className="flex flex-col gap-3">
-        {rows.map(({ label, value, color }) => {
-          const pct = max > 0 ? Math.max(Math.round((Math.abs(value) / max) * 100), Math.abs(value) > 0 ? 4 : 0) : 0
-          return (
-            <div key={label}>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[14px] text-foreground">{label}</span>
-                <span className={`text-[14px] font-semibold tabular-nums ${value < 0 ? 'text-accent-coral' : ''}`}>
-                  ₩{value.toLocaleString()}
-                </span>
-              </div>
-              <div className="h-[6px] bg-muted rounded-full overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
-              </div>
-            </div>
-          )
-        })}
+    <div className="bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 min-h-[150px] flex flex-col justify-between">
+      <div>
+        <p className="text-[13px] font-semibold text-white/80 mb-0.5">현재 잔액</p>
+        <p className="text-[24px] font-bold tabular-nums text-white leading-tight" style={{ letterSpacing: '-1px' }}>
+          ₩{totalBalance.toLocaleString()}
+        </p>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[14px] text-white">{prevMonth}월 잔액</span>
+          <span className="text-[14px] font-semibold tabular-nums text-white">₩{prevBalance.toLocaleString()}</span>
+        </div>
+        <div className="flex h-[6px] rounded-full overflow-hidden gap-[2px] mb-3 bg-white/10">
+          <div className="h-full rounded-full" style={{ width: `${prevPct}%`, backgroundColor: '#AEB4FF' }} />
+          <div className="h-full rounded-full" style={{ width: `${thisPct}%`, backgroundColor: '#5865F2' }} />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-[14px] text-white">{month}월 잔액</span>
+          <span className={`text-[14px] font-semibold tabular-nums ${thisMonthBalance < 0 ? 'text-[#5865F2]' : 'text-white'}`}>
+            ₩{thisMonthBalance.toLocaleString()}
+          </span>
+        </div>
       </div>
     </div>
   )
