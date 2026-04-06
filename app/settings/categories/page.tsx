@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { getCategories, addCategory, type Category } from '@/lib/api'
+import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
 import { EmojiPicker } from '@/components/emoji-picker'
 
@@ -36,6 +36,10 @@ export default function CategoriesSettings() {
   const [addingRoot, setAddingRoot] = useState(false)
   const [newRootName, setNewRootName] = useState('')
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [localParents, setLocalParents] = useState<Category[]>([])
+  const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const dragStartIndexRef = useRef<number | null>(null)
 
   const supabase = createClient() as any
 
@@ -51,6 +55,10 @@ export default function CategoriesSettings() {
   }, [type])
 
   const parents = categories.filter(c => !c.parent_id).sort((a, b) => a.sort_order - b.sort_order)
+
+  useEffect(() => {
+    setLocalParents(parents)
+  }, [categories])
   const childrenOf = (parentId: string) =>
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
 
@@ -118,6 +126,28 @@ export default function CategoriesSettings() {
     } finally {
       setSavingRoot(false)
     }
+  }
+
+  const clearDragTimer = () => {
+    if (dragTimerRef.current) {
+      clearTimeout(dragTimerRef.current)
+      dragTimerRef.current = null
+    }
+  }
+
+  const moveParent = (fromIndex: number, toIndex: number) => {
+    setLocalParents(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(fromIndex, 1)
+      next.splice(toIndex, 0, moved)
+      return next
+    })
+    dragStartIndexRef.current = toIndex
+  }
+
+  const persistParentOrder = async (ordered: Category[]) => {
+    await reorderParentCategories(type, ordered.map(parent => parent.id))
+    await loadCategories()
   }
 
   // 편집 상세 페이지
@@ -280,18 +310,40 @@ export default function CategoriesSettings() {
 
         {/* Category cards */}
         <div className="grid grid-cols-4 gap-2">
-          {parents.map((parent) => {
+          {localParents.map((parent, index) => {
             return (
               <button
                 key={parent.id}
+                draggable={false}
                 onClick={() => {
+                  if (draggingId) return
                   setEditingParent(parent)
                   setEditName(parent.name)
                   setAddingSubCat(false)
                   setNewSubCat('')
                 }}
+                onPointerDown={() => {
+                  clearDragTimer()
+                  dragTimerRef.current = setTimeout(() => {
+                    setDraggingId(parent.id)
+                    dragStartIndexRef.current = index
+                  }, 350)
+                }}
+                onPointerUp={async () => {
+                  clearDragTimer()
+                  if (draggingId === parent.id) {
+                    setDraggingId(null)
+                    dragStartIndexRef.current = null
+                    await persistParentOrder(localParents)
+                  }
+                }}
+                onPointerLeave={clearDragTimer}
+                onPointerEnter={() => {
+                  if (!draggingId || dragStartIndexRef.current === null || draggingId === parent.id) return
+                  if (dragStartIndexRef.current !== index) moveParent(dragStartIndexRef.current, index)
+                }}
                 className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
-                  'bg-muted'
+                  draggingId === parent.id ? 'bg-muted scale-[0.98] opacity-70' : 'bg-muted'
                 }`}
               >
                 <span className="text-xl">{getEmoji(parent)}</span>

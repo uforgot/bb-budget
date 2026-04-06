@@ -47,6 +47,19 @@ export async function addCategory(name: string, type: string) {
   return data as Category
 }
 
+export async function reorderParentCategories(type: string, orderedIds: string[]) {
+  const supabase = getSupabase() as any
+  for (let i = 0; i < orderedIds.length; i += 1) {
+    const { error } = await supabase
+      .from('categories')
+      .update({ sort_order: i + 1 })
+      .eq('id', orderedIds[i])
+      .eq('type', type)
+      .is('parent_id', null)
+    if (error) throw error
+  }
+}
+
 // 거래 내역
 export async function getTransactions(filters?: { year?: number; month?: number; type?: string }) {
   let query = getSupabase()
