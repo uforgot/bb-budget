@@ -119,7 +119,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
-                      <span className={`text-[11px] font-medium ${
+                      <span className={`text-[12px] font-medium ${
                         isExpanded || isSelected ? 'text-foreground' : 'text-muted-foreground'
                       }`}>
                         {parent.name}
@@ -138,7 +138,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                           onSelect(child.id, `${expandedInRow.name} > ${child.name}`)
                           if (!inline) onClose()
                         }}
-                        className={`py-2 rounded-lg text-[11px] transition-colors ${
+                        className={`py-2 rounded-lg text-[12px] transition-colors ${
                           selected === child.id
                             ? TYPE_CHILD_COLOR[type] + ' font-medium'
                             : 'bg-card text-foreground'
