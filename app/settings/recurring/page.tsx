@@ -107,7 +107,7 @@ export default function RecurringPage() {
         <div className="w-8" />
       </header>
 
-      <div className="px-5 pt-6">
+      <div className={`px-5 pt-6 ${adding ? 'pb-36' : ''}`}>
         {/* 추가 버튼 (상단) */}
         {!adding && (
           <button
@@ -309,7 +309,7 @@ export default function RecurringPage() {
               </div>
             </div>
 
-            <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background -mx-5 mt-3" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+            <div className="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
               <div className="flex gap-3 mb-2">
                 <button
                   onClick={handleAdd}
