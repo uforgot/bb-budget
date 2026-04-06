@@ -20,23 +20,23 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
   const hasBudget = budget > 0
 
   return (
-    <div className="bg-surface rounded-[22px] px-5 pt-4 pb-4 mb-3 min-h-[190px] flex flex-col justify-between">
+    <div className="bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 min-h-[190px] flex flex-col justify-between">
       <div>
         <div className="flex items-start justify-between gap-3 mb-2">
-          <p className="text-[16px] font-bold text-white">이번 달 예산</p>
+          <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 예산</p>
           <button
             onClick={onOpenSettings}
-            className="text-[16px] font-bold text-accent-blue"
+            className="text-[13px] font-semibold text-accent-blue"
           >
             설정
           </button>
         </div>
 
-        <p className={`text-[24px] font-bold tabular-nums leading-tight mb-1 ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
+        <p className={`text-[24px] font-bold tabular-nums leading-tight ${hasBudget ? 'text-white' : 'text-muted-foreground'}`} style={{ letterSpacing: '-1px' }}>
           {hasBudget ? formatCurrency(remaining) : '₩0'}
         </p>
 
-        <p className="text-[14px] font-semibold text-white/70 leading-snug mb-4">
+        <p className="text-[13px] font-semibold text-white/70 leading-tight mt-2">
           {hasBudget
             ? remaining > 0
               ? `앞으로 하루에 ${formatCurrency(dailyBudget)}씩 쓰면 목표를 지킬 수 있어요`
@@ -45,28 +45,37 @@ export function BudgetCard({ budget, spent, daysLeft, onOpenSettings }: BudgetCa
         </p>
       </div>
 
-      <div>
-        <div className="h-[6px] rounded-full overflow-hidden mb-3 bg-white/10">
-          <div
-            className="h-full rounded-full"
-            style={{
-              width: `${hasBudget ? percent : 0}%`,
-              backgroundColor: remaining >= 0 ? '#14F195' : '#5865F2',
-            }}
-          />
-        </div>
+      {hasBudget ? (
+        <div>
+          <div className="h-[6px] rounded-full overflow-hidden mb-3 bg-white/10">
+            <div
+              className="h-full rounded-full"
+              style={{
+                width: `${percent}%`,
+                backgroundColor: remaining >= 0 ? '#14F195' : '#5865F2',
+              }}
+            />
+          </div>
 
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[12px] text-white/70 mb-0.5">지출</p>
-            <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(spent)}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[12px] text-white/70 mb-0.5">총 예산</p>
-            <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(budget)}</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-[12px] text-white/70 mb-0.5">지출</p>
+              <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(spent)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[12px] text-white/70 mb-0.5">총 예산</p>
+              <p className="text-[14px] font-semibold tabular-nums text-white">{formatCurrency(budget)}</p>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <button
+          onClick={onOpenSettings}
+          className="w-full mt-4 py-3.5 rounded-[22px] bg-white/10 text-[16px] font-semibold text-white"
+        >
+          이번 달 예산 설정하기
+        </button>
+      )}
     </div>
   )
 }
