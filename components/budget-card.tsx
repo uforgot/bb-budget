@@ -188,7 +188,7 @@ export function BudgetCard({
       {hasBudget && !isEditing ? (
         <BudgetFooter budget={budget} spent={spent} onStartEdit={onStartEdit} />
       ) : !hasBudget && !isEditing ? (
-        <p className={`text-[13px] font-semibold ${typography.cardSubtleStrong} leading-tight`}>
+        <p className={`text-[14px] font-semibold ${typography.cardSubtleStrong} leading-tight`}>
           한 달 예산 설정하고 남은 금액을 확인하세요
         </p>
       ) : null}
