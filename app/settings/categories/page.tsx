@@ -38,6 +38,7 @@ export default function CategoriesSettings() {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [orderedParentIds, setOrderedParentIds] = useState<string[]>([])
+  const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null)
 
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const suppressClickRef = useRef(false)
@@ -101,6 +102,7 @@ export default function CategoriesSettings() {
     if (!editMode || !activeDragIdRef.current) return
     const touch = event.touches[0]
     if (!touch) return
+    setDragPosition({ x: touch.clientX, y: touch.clientY })
     const element = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('[data-category-id]') as HTMLElement | null
     const overId = element?.dataset.categoryId
     if (!overId) return
@@ -114,6 +116,7 @@ export default function CategoriesSettings() {
     const nextIds = [...orderedParentIds]
     activeDragIdRef.current = null
     setDraggingId(null)
+    setDragPosition(null)
     suppressClickRef.current = true
     setTimeout(() => {
       suppressClickRef.current = false
@@ -125,6 +128,7 @@ export default function CategoriesSettings() {
     clearDragTimer()
     activeDragIdRef.current = null
     setDraggingId(null)
+    setDragPosition(null)
     setOrderedParentIds(parents.map(parent => parent.id))
   }
 
@@ -317,19 +321,7 @@ export default function CategoriesSettings() {
           </svg>
         </button>
         <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold pointer-events-none">카테고리 관리</h1>
-        <button
-          onClick={async () => {
-            if (editMode) {
-              await persistOrder(orderedParentIds)
-            }
-            setEditMode(prev => !prev)
-            activeDragIdRef.current = null
-            setDraggingId(null)
-          }}
-          className="relative z-10 text-[14px] text-accent-blue font-medium"
-        >
-          {editMode ? '완료' : '편집'}
-        </button>
+        <div className="w-8" />
       </header>
 
       <div className="max-w-lg mx-auto px-5 pt-6">
@@ -365,11 +357,13 @@ export default function CategoriesSettings() {
                 setAddingSubCat(false)
                 setNewSubCat('')
               }}
-              onTouchStart={() => {
+              onTouchStart={(event) => {
                 if (!editMode) return
                 clearDragTimer()
                 activeDragIdRef.current = parent.id
                 setDraggingId(parent.id)
+                const touch = event.touches[0]
+                if (touch) setDragPosition({ x: touch.clientX, y: touch.clientY })
               }}
               onTouchMove={handleTouchMove}
               onTouchEnd={() => {
@@ -378,7 +372,7 @@ export default function CategoriesSettings() {
               }}
               onTouchCancel={cancelDrag}
               className={`relative flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors select-none touch-none ${
-                draggingId === parent.id ? 'bg-background ring-1 ring-border opacity-70' : 'bg-muted'
+                draggingId === parent.id ? 'bg-background ring-1 ring-border opacity-35' : 'bg-muted'
               }`}
             >
               {editMode && <span className="absolute top-1.5 right-1.5 text-[10px] text-muted-foreground">⋮⋮</span>}
@@ -389,7 +383,20 @@ export default function CategoriesSettings() {
         </div>
 
         <div className="flex gap-3 mt-8 pb-10">
-          {addingRoot ? (
+          {editMode ? (
+            <button
+              onClick={async () => {
+                await persistOrder(orderedParentIds)
+                setEditMode(false)
+                activeDragIdRef.current = null
+                setDraggingId(null)
+                setDragPosition(null)
+              }}
+              className="flex-1 py-3.5 rounded-[22px] bg-accent-blue text-white text-[16px] font-semibold"
+            >
+              편집 완료
+            </button>
+          ) : addingRoot ? (
             <div className="flex flex-col gap-2 flex-1">
               <input
                 type="text"
@@ -407,15 +414,41 @@ export default function CategoriesSettings() {
               </div>
             </div>
           ) : (
-            <button
-              onClick={() => setAddingRoot(true)}
-              className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
-            >
-              카테고리 추가하기
-            </button>
+            <div className="flex gap-3 flex-1">
+              <button
+                onClick={() => setAddingRoot(true)}
+                className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
+              >
+                카테고리 추가하기
+              </button>
+              <button
+                onClick={() => {
+                  setEditMode(true)
+                  setAddingRoot(false)
+                }}
+                className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
+              >
+                편집
+              </button>
+            </div>
           )}
         </div>
       </div>
+
+      {draggingId && dragPosition && (() => {
+        const active = orderedParents.find(parent => parent.id === draggingId) || parents.find(parent => parent.id === draggingId)
+        return active ? (
+          <div
+            className="fixed pointer-events-none z-[90] -translate-x-1/2 -translate-y-1/2"
+            style={{ left: dragPosition.x, top: dragPosition.y }}
+          >
+            <div className="flex flex-col items-center gap-1 py-3 px-4 rounded-[22px] bg-surface shadow-[0_12px_28px_rgba(0,0,0,0.18)] ring-1 ring-border opacity-95">
+              <span className="text-xl">{getEmoji(active)}</span>
+              <span className="text-[12px] font-medium text-muted-foreground">{active.name}</span>
+            </div>
+          </div>
+        ) : null
+      })()}
 
       {deleteConfirm && (
         <>
