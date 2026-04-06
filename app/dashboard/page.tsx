@@ -117,6 +117,15 @@ export default function Dashboard() {
           monthExpense={monthExpense}
           monthSavings={prevSavings}
         />
+        <BalanceCard
+          prevBalance={prevBalance}
+          thisMonthBalance={monthIncome - monthExpense}
+          totalBalance={cashBalance}
+          month={calMonth}
+          monthIncome={monthIncome}
+          monthExpense={monthExpense}
+          monthSavings={prevSavings}
+        />
         <BudgetCard
           budget={monthlyBudget}
           spent={monthExpense}
