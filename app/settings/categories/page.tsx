@@ -345,71 +345,66 @@ export default function CategoriesSettings() {
         {/* Category cards */}
         <div className="grid grid-cols-4 gap-2">
           {localParents.map((parent, index) => {
-            const isDragging = draggingId === parent.id
-            const showGhost = draggingId !== null && dropIndex === index && draggingId !== parent.id
             return (
-              <div key={parent.id} className="relative">
-                {showGhost && (
-                  <div className="absolute inset-0 rounded-[22px] bg-white/15 ring-2 ring-dashed ring-white/45 z-0 flex flex-col items-center justify-center gap-1">
-                    <span className="text-lg opacity-40">✦</span>
-                    <span className="text-[11px] font-semibold text-white/55">여기로 이동</span>
-                  </div>
-                )}
-                <button
-                  data-parent-index={index}
-                  draggable={false}
-                  onClick={() => {
-                    if (draggingId || didDragRef.current || suppressClickRef.current) {
-                      didDragRef.current = false
-                      return
-                    }
-                    setEditingParent(parent)
-                    setEditName(parent.name)
-                    setAddingSubCat(false)
-                    setNewSubCat('')
-                  }}
-                  onTouchStart={() => {
-                    clearDragTimer()
+              <button
+                key={parent.id}
+                data-parent-index={index}
+                draggable={false}
+                onClick={() => {
+                  if (draggingId || didDragRef.current || suppressClickRef.current) {
                     didDragRef.current = false
-                    dragTimerRef.current = setTimeout(() => {
-                      setDraggingId(parent.id)
-                      setDropIndex(index)
-                      dragStartIndexRef.current = index
-                    }, 350)
-                  }}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={finishDrag}
-                  onTouchCancel={() => {
-                    clearDragTimer()
-                    setDraggingId(null)
-                    setDropIndex(null)
-                    dragStartIndexRef.current = null
-                    didDragRef.current = false
-                  }}
-                  onMouseDown={() => {
-                    clearDragTimer()
-                    didDragRef.current = false
-                    dragTimerRef.current = setTimeout(() => {
-                      setDraggingId(parent.id)
-                      setDropIndex(index)
-                      dragStartIndexRef.current = index
-                    }, 350)
-                  }}
-                  onMouseUp={finishDrag}
-                  onMouseLeave={clearDragTimer}
-                  onMouseEnter={() => {
-                    if (!draggingId || dragStartIndexRef.current === null || draggingId === parent.id) return
-                    didDragRef.current = true
-                    if (dragStartIndexRef.current !== index) moveParent(dragStartIndexRef.current, index)
-                  }}
-                  className={`relative w-full flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all touch-none select-none ${
-                    isDragging ? 'bg-muted opacity-0 scale-95' : 'bg-muted'
-                  }`}
-                >
-                  <span className="text-xl">{getEmoji(parent)}</span>
-                  <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
-                </button>
-              </div>
+                    return
+                  }
+                  setEditingParent(parent)
+                  setEditName(parent.name)
+                  setAddingSubCat(false)
+                  setNewSubCat('')
+                }}
+                onTouchStart={() => {
+                  clearDragTimer()
+                  didDragRef.current = false
+                  dragTimerRef.current = setTimeout(() => {
+                    setDraggingId(parent.id)
+                    setDropIndex(index)
+                    dragStartIndexRef.current = index
+                  }, 350)
+                }}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={finishDrag}
+                onTouchCancel={() => {
+                  clearDragTimer()
+                  setDraggingId(null)
+                  setDropIndex(null)
+                  dragStartIndexRef.current = null
+                  didDragRef.current = false
+                }}
+                onMouseDown={() => {
+                  clearDragTimer()
+                  didDragRef.current = false
+                  dragTimerRef.current = setTimeout(() => {
+                    setDraggingId(parent.id)
+                    setDropIndex(index)
+                    dragStartIndexRef.current = index
+                  }, 350)
+                }}
+                onMouseUp={finishDrag}
+                onMouseLeave={clearDragTimer}
+                onMouseEnter={() => {
+                  if (!draggingId || dragStartIndexRef.current === null || draggingId === parent.id) return
+                  didDragRef.current = true
+                  if (dragStartIndexRef.current !== index) moveParent(dragStartIndexRef.current, index)
+                }}
+                className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all touch-none select-none ${
+                  draggingId === parent.id
+                    ? 'bg-muted opacity-0 scale-95'
+                    : dropIndex === index
+                      ? 'bg-foreground/10 ring-1 ring-dashed ring-foreground/30 opacity-100'
+                      : 'bg-muted'
+                }`}
+              >
+                <span className="text-xl">{getEmoji(parent)}</span>
+                <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
+              </button>
             )
           })}
         </div>
