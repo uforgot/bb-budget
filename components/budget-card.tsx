@@ -29,7 +29,7 @@ export function BudgetCard({
   onSaveEdit,
 }: BudgetCardProps) {
   const remaining = budget - spent
-  const percent = budget > 0 ? Math.min(Math.max(Math.round((spent / budget) * 100), 0), 100) : 0
+  const percent = budget > 0 ? Math.max(Math.round((spent / budget) * 100), 0) : 0
   const safeDaysLeft = Math.max(daysLeft, 1)
   const dailyBudget = remaining > 0 ? Math.floor(remaining / safeDaysLeft) : 0
   const hasBudget = budget > 0
@@ -38,7 +38,7 @@ export function BudgetCard({
     <div className={`bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 flex flex-col justify-between ${hasBudget ? 'min-h-[190px]' : 'min-h-[150px]'}`}>
       <div>
         <div className="flex items-start justify-between gap-3 mb-0.5">
-          <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 남은 예산</p>
+          <p className="text-[13px] font-semibold text-white/80 mb-0.5">이번 달 예산</p>
         </div>
 
         <div className="flex items-center gap-2 mt-0.5">
@@ -54,7 +54,13 @@ export function BudgetCard({
                 placeholder="0"
               />
             ) : (
-              <span>{hasBudget ? Math.abs(remaining).toLocaleString() : '0'}</span>
+              <span>
+                {hasBudget
+                  ? remaining >= 0
+                    ? `${Math.abs(remaining).toLocaleString()} 남음`
+                    : `${Math.abs(remaining).toLocaleString()} 초과`
+                  : '0'}
+              </span>
             )}
           </div>
 
@@ -71,7 +77,7 @@ export function BudgetCard({
         {!isEditing && (
           <p className="text-[13px] font-semibold text-white/70 leading-tight mt-1">
             {hasBudget
-              ? remaining > 0
+              ? remaining >= 0
                 ? `남은 ${daysLeft}일 간 하루에 ${formatCurrency(dailyBudget)}씩 쓸 수 있어요`
                 : '이번 달 예산을 초과했어요'
               : '한 달 예산 설정하고 남은 금액을 확인하세요'}
