@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { getCategories, addCategory, type Category } from '@/lib/api'
+import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
 import { EmojiPicker } from '@/components/emoji-picker'
 
@@ -36,6 +36,12 @@ export default function CategoriesSettings() {
   const [addingRoot, setAddingRoot] = useState(false)
   const [newRootName, setNewRootName] = useState('')
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [orderedParentIds, setOrderedParentIds] = useState<string[]>([])
+
+  const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const suppressClickRef = useRef(false)
+  const activeDragIdRef = useRef<string | null>(null)
 
   const supabase = createClient() as any
 
@@ -51,10 +57,66 @@ export default function CategoriesSettings() {
   }, [type])
 
   const parents = categories.filter(c => !c.parent_id).sort((a, b) => a.sort_order - b.sort_order)
+  const orderedParents = orderedParentIds.length
+    ? orderedParentIds.map(id => parents.find(parent => parent.id === id)).filter(Boolean) as Category[]
+    : parents
+
+  useEffect(() => {
+    setOrderedParentIds(parents.map(parent => parent.id))
+  }, [categories])
+
   const childrenOf = (parentId: string) =>
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
 
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; type: 'parent' | 'child' } | null>(null)
+
+  const clearDragTimer = () => {
+    if (dragTimerRef.current) {
+      clearTimeout(dragTimerRef.current)
+      dragTimerRef.current = null
+    }
+  }
+
+  const persistOrder = async (nextIds: string[]) => {
+    await reorderParentCategories(type, nextIds)
+    await loadCategories()
+  }
+
+  const handleMoveOver = (overId: string) => {
+    const activeId = activeDragIdRef.current
+    if (!activeId || activeId === overId) return
+
+    setOrderedParentIds(prev => {
+      const fromIndex = prev.indexOf(activeId)
+      const toIndex = prev.indexOf(overId)
+      if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return prev
+      const next = [...prev]
+      next.splice(fromIndex, 1)
+      next.splice(toIndex, 0, activeId)
+      return next
+    })
+  }
+
+  const finishDrag = async () => {
+    clearDragTimer()
+    const activeId = activeDragIdRef.current
+    if (!activeId) return
+    const nextIds = [...orderedParentIds]
+    activeDragIdRef.current = null
+    setDraggingId(null)
+    suppressClickRef.current = true
+    setTimeout(() => {
+      suppressClickRef.current = false
+    }, 250)
+    await persistOrder(nextIds)
+  }
+
+  const cancelDrag = () => {
+    clearDragTimer()
+    activeDragIdRef.current = null
+    setDraggingId(null)
+    setOrderedParentIds(parents.map(parent => parent.id))
+  }
 
   const handleDeleteParent = async (id: string) => {
     const children = childrenOf(id)
@@ -270,23 +332,37 @@ export default function CategoriesSettings() {
         </div>
 
         <div className="grid grid-cols-4 gap-2">
-          {parents.map((parent) => {
-            return (
-              <button
-                key={parent.id}
-                onClick={() => {
-                  setEditingParent(parent)
-                  setEditName(parent.name)
-                  setAddingSubCat(false)
-                  setNewSubCat('')
-                }}
-                className="flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors bg-muted"
-              >
-                <span className="text-xl">{getEmoji(parent)}</span>
-                <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
-              </button>
-            )
-          })}
+          {orderedParents.map((parent) => (
+            <button
+              key={parent.id}
+              onClick={() => {
+                if (draggingId || suppressClickRef.current) return
+                setEditingParent(parent)
+                setEditName(parent.name)
+                setAddingSubCat(false)
+                setNewSubCat('')
+              }}
+              onTouchStart={() => {
+                clearDragTimer()
+                dragTimerRef.current = setTimeout(() => {
+                  activeDragIdRef.current = parent.id
+                  setDraggingId(parent.id)
+                }, 350)
+              }}
+              onTouchMove={() => {
+                if (!activeDragIdRef.current) return
+                handleMoveOver(parent.id)
+              }}
+              onTouchEnd={finishDrag}
+              onTouchCancel={cancelDrag}
+              className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors select-none touch-none ${
+                draggingId === parent.id ? 'bg-background ring-1 ring-border opacity-70' : 'bg-muted'
+              }`}
+            >
+              <span className="text-xl">{getEmoji(parent)}</span>
+              <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
+            </button>
+          ))}
         </div>
 
         <div className="flex gap-3 mt-8 pb-10">
