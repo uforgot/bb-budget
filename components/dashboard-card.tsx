@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from 'react'
 import { typography } from '@/components/ui-colors'
 
 export const DASHBOARD_CARD_BASE_CLASS = 'bg-surface rounded-[22px] px-5 pt-5 pb-4 mb-3 min-h-[150px] flex flex-col justify-between'
-export const DASHBOARD_CARD_TITLE_CLASS = `text-[13px] font-semibold ${typography.cardTitle} mb-0.5`
+export const DASHBOARD_CARD_TITLE_CLASS = `text-[14px] font-semibold ${typography.cardTitle} mb-0.5`
 export const DASHBOARD_CARD_AMOUNT_CLASS = 'text-[24px] font-bold tabular-nums text-[#111827] dark:text-white leading-tight'
 export const DASHBOARD_CARD_FOOTER_LABEL_CLASS = `text-[14px] ${typography.cardBody} mb-0.5`
 export const DASHBOARD_CARD_FOOTER_VALUE_CLASS = `text-[14px] font-semibold tabular-nums ${typography.cardBody}`

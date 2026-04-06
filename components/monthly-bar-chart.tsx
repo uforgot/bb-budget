@@ -35,7 +35,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
     <div className="bg-surface rounded-[22px] px-4 pt-5 pb-6 mb-4">
       {/* 헤더 */}
       <div className="mb-5">
-        <p className={`text-[13px] font-semibold ${typography.cardTitle} mb-0.5`}>
+        <p className={`text-[14px] font-semibold ${typography.cardTitle} mb-0.5`}>
           {selectedData ? `${selectedData.month}월 ${label}` : label}
         </p>
         <p className="text-[24px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
@@ -49,7 +49,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
           const isOver = diff > 0
           const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
           return (
-            <p className="text-[13px] font-semibold mt-1 text-foreground/70 dark:text-white/70">
+            <p className="text-[14px] font-semibold mt-1 text-foreground/70 dark:text-white/70">
               {avgLabel} {toMan(avgValue)}보다 {toMan(Math.abs(diff))} {isOver ? '더' : '덜'} {label.includes('수입') ? '벌었어요' : '썼어요'}
             </p>
           )
