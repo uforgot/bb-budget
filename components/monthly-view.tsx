@@ -286,6 +286,10 @@ const WeekDayCard = memo(function WeekDayCard({
   onDeleted: () => void
   registerRef: (node: HTMLDivElement | null) => void
 }) {
+  const dayIncome = txs.filter(tx => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0)
+    + recurring.filter(item => item.type === 'income').reduce((sum, item) => sum + item.amount, 0)
+  const dayExpense = txs.filter(tx => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0)
+    + recurring.filter(item => item.type === 'expense').reduce((sum, item) => sum + item.amount, 0)
   return (
     <div
       ref={registerRef}
@@ -339,6 +343,17 @@ const WeekDayCard = memo(function WeekDayCard({
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{r.amount.toLocaleString()}</span>
             </div>
           ))}
+        </div>
+
+        <div className="mt-4 border-t border-border pt-3 space-y-2">
+          <div className="flex items-center justify-between text-[13px]">
+            <span className="text-muted-foreground">수입</span>
+            <span className="font-semibold tabular-nums text-foreground">₩{dayIncome.toLocaleString()}</span>
+          </div>
+          <div className="flex items-center justify-between text-[13px]">
+            <span className="text-muted-foreground">지출</span>
+            <span className="font-semibold tabular-nums text-foreground">₩{dayExpense.toLocaleString()}</span>
+          </div>
         </div>
       </div>
     </div>
