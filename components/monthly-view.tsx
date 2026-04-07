@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { TxRow } from '@/components/tx-row'
@@ -125,6 +126,7 @@ export function MonthlyView({
     if (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1) return today.getDate()
     return 1
   })
+  const [calendarRefreshKey, setCalendarRefreshKey] = useState(0)
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
   const [focusedWeekDay, setFocusedWeekDay] = useState<number | null>(null)
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -135,6 +137,7 @@ export function MonthlyView({
     setSelectedWeek(currentWeekNum)
     setFocusedWeekDay(targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? today.getDate() : 1)
     setSelectedDay(targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? today.getDate() : 1)
+    setCalendarRefreshKey(k => k + 1)
   }, [monthOffset, currentWeekNum, targetYear, actualMonth, today])
 
   const monthRecurring = useMemo(() => isFutureMonth ? recurringItems : [], [isFutureMonth, recurringItems])
@@ -262,36 +265,15 @@ export function MonthlyView({
       {selectedTab === 'calendar' ? (
         <div>
           <div className="px-4">
-            <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
-              {WEEKDAYS_MON.map(day => (
-                <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-y-1 pt-2">
-              {calendarCells.map((day, i) => {
-                if (!day) return <div key={`empty-${i}`} className="h-[56px]" />
-                const summary = dailySummaries.get(day)
-                const isToday = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 && day === today.getDate()
-                const isSelected = day === selectedDay
-                return (
-                  <button
-                    key={day}
-                    onClick={() => setSelectedDay(day)}
-                    className="relative flex h-[56px] flex-col items-center justify-start rounded-lg pt-1"
-                    style={isSelected ? { backgroundColor: 'var(--calendar-selected-day)' } : undefined}
-                  >
-                    <span className="relative flex items-center justify-center size-6 flex-shrink-0">
-                      {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
-                      <span className={`relative text-sm tabular-nums leading-none ${isToday ? 'text-white font-bold' : 'text-foreground'}`}>{day}</span>
-                    </span>
-                    <div className="mt-0.5 flex flex-col items-center gap-0">
-                      {(summary?.expense ?? 0) > 0 && <span className="text-[8px] font-semibold leading-tight" style={{ color: semanticColors.expense }}>{formatCompactAmount(summary!.expense)}</span>}
-                      {(summary?.income ?? 0) > 0 && <span className="text-[8px] font-semibold leading-tight" style={{ color: semanticColors.income }}>{formatCompactAmount(summary!.income)}</span>}
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
+            <MonthlyCalendar
+              key={`history-calendar-${targetYear}-${actualMonth}-${calendarRefreshKey}`}
+              showHeader={false}
+              showDayDetail={false}
+              targetYear={targetYear}
+              targetMonth={actualMonth}
+              refreshKey={calendarRefreshKey}
+              onDaySelect={(_, __, day) => setSelectedDay(day)}
+            />
           </div>
 
           <div className="mx-5 mb-3 mt-4 flex gap-3">
@@ -345,6 +327,11 @@ export function MonthlyView({
         <div>
           <div className="px-4">
             <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
+              {WEEKDAYS_MON.map(day => (
+                <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-y-1 pt-2">
               {weekDays.map(day => {
                 const date = new Date(targetYear, actualMonth - 1, day)
                 const selected = focusedWeekDay === day
