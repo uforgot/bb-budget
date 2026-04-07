@@ -145,7 +145,7 @@ export function SummaryCardSlider({
               className="flex-shrink-0 w-full"
               style={{ padding: '0 20px' }}
             >
-              <div className="rounded-[22px] px-5 pt-5 pb-4 flex flex-col justify-between overflow-hidden relative" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+              <div className="rounded-[22px] px-4 pt-4 pb-4 flex flex-col justify-between overflow-hidden relative" style={{ minHeight: '150px', backgroundColor: card.bg }}>
                 {/* 데코 이미지 — 우측, 텍스트 3줄 센터 높이 */}
                 <img
                   src={card.img}
@@ -155,12 +155,12 @@ export function SummaryCardSlider({
                   style={{ transform: 'translateY(-50%) translateX(-5%)' }}
                 />
                 <div>
-                  <p className={`text-[14px] font-semibold ${typography.cardBodyInverse} opacity-80 mb-0.5`}>{card.label}</p>
+                  <p className={`text-[14px] font-medium ${typography.cardBodyInverse} opacity-80 mb-1`}>{card.label}</p>
                   <p className={`text-[24px] font-bold tabular-nums ${typography.cardBodyInverse} leading-tight`} style={{ letterSpacing: '-1px' }}>
                     ₩{card.amount.toLocaleString()}
                   </p>
                 </div>
-                {dt && <p className={`text-[14px] font-semibold ${typography.cardSubtleInverse} leading-tight`}>{dt}</p>}
+                {dt && <p className={`text-[13px] font-medium ${typography.cardSubtleInverse} leading-snug`}>{dt}</p>}
               </div>
             </div>
           )
