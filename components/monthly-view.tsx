@@ -388,8 +388,12 @@ export function MonthlyView({
   const weekDayButtonRefs = useRef<Record<number, HTMLButtonElement | null>>({})
   const stickyRef = useRef<HTMLDivElement | null>(null)
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
+  const lastMonthKeyRef = useRef(`${targetYear}-${actualMonth}`)
 
   useEffect(() => {
+    const monthKey = `${targetYear}-${actualMonth}`
+    if (lastMonthKeyRef.current === monthKey) return
+    lastMonthKeyRef.current = monthKey
     setViewMode('week')
     setSelectedWeek(currentWeekNum)
     setSelectedDay(defaultDay)
