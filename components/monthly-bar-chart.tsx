@@ -68,6 +68,8 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               ? 'rgba(255,255,255,0.08)'
               : isSelected ? color : 'var(--bar-muted-color)'
 
+            const borderRadius = Math.min(6, Math.max(2, Math.floor(barH / 2)))
+
             return (
               <div
                 key={d.month}
@@ -75,7 +77,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
                 className="flex flex-col items-center justify-end"
                 onClick={() => { if (!d.isFuture) setSelectedMonth(d.month) }}
               >
-                <div style={{ width: BAR_W, height: barH, backgroundColor: barColor, borderRadius: 6, marginBottom: 8, flexShrink: 0 }} />
+                <div style={{ width: BAR_W, height: barH, backgroundColor: barColor, borderRadius, marginBottom: 8, flexShrink: 0 }} />
                 <span style={{
                   fontSize: 10,
                   fontWeight: isSelected ? 600 : 400,
