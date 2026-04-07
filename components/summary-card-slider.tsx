@@ -68,7 +68,13 @@ export function SummaryCardSlider({
   ]
   const total = cards.length
 
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) return false
+    return !!target.closest('button, a, input, select, textarea, [role="button"], [data-no-swipe="true"]')
+  }
+
   const onTouchStart = (e: React.TouchEvent) => {
+    if (isInteractiveTarget(e.target)) return
     isDragging.current = true
     setDragging(true)
     dragDirection.current = null
@@ -166,6 +172,7 @@ export function SummaryCardSlider({
         {cards.map((_, i) => (
           <button
             key={i}
+            data-no-swipe="true"
             onClick={() => setCurrent(i)}
             className={`rounded-full transition-all ${i === current ? 'w-4 h-1.5 bg-foreground' : 'w-1.5 h-1.5 bg-foreground/20'}`}
           />
