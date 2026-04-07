@@ -266,8 +266,7 @@ const WeekDayCard = memo(function WeekDayCard({
     >
       <div className="px-4 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
-          <span className="text-[14px] font-semibold tabular-nums">{day}일</span>
-          <span className="text-[12px] text-muted-foreground">{DAY_NAMES[date.getDay()]}요일</span>
+          <span className="text-[14px] font-semibold tabular-nums">{date.getMonth() + 1}월 {day}일 {DAY_NAMES[date.getDay()]}요일</span>
         </div>
       </div>
 
