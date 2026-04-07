@@ -113,7 +113,7 @@ function MonthGrid({
     selectedDay?.year === year && selectedDay?.month === month && selectedDay?.day === day
 
   return (
-    <div className="w-full px-2">
+    <div className="w-full px-0">
       {/* Month separator */}
       <div className="h-2" />
 
