@@ -121,19 +121,17 @@ export default function Home() {
           </div>
           {/* 달력 카드 */}
           <div>
-            <div className="bg-surface rounded-[22px] pt-4 pb-6">
-              <MonthlyCalendar
-                key={calKey}
-                showHeader={false}
-                showDayDetail={false}
-                targetYear={calYear}
-                targetMonth={calMonth}
-                onMonthChange={handleMonthChange}
-                onDaySelect={handleDaySelect}
-                onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
-                refreshKey={refreshKey}
-              />
-            </div>
+            <MonthlyCalendar
+              key={calKey}
+              showHeader={false}
+              showDayDetail={false}
+              targetYear={calYear}
+              targetMonth={calMonth}
+              onMonthChange={handleMonthChange}
+              onDaySelect={handleDaySelect}
+              onTransactionClick={tx => { setEditTx(tx); setModalOpen(true) }}
+              refreshKey={refreshKey}
+            />
           </div>
         </div>
 
