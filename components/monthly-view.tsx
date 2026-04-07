@@ -382,7 +382,6 @@ export function MonthlyView({
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
   const [selectedDay, setSelectedDay] = useState(defaultDay)
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
-  const stickyRef = useRef<HTMLDivElement | null>(null)
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
 
   useEffect(() => {
@@ -481,8 +480,7 @@ export function MonthlyView({
     setSelectedDay(day)
     if (!node) return
     setHighlightedDate(key)
-    const stickyHeight = stickyRef.current?.getBoundingClientRect().height ?? 0
-    const top = node.getBoundingClientRect().top + window.scrollY - stickyHeight - 12
+    const top = node.getBoundingClientRect().top + window.scrollY - 118
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
@@ -503,7 +501,7 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      <div ref={stickyRef} className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
+      <div className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
         <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
           <div className="flex gap-2" style={{ width: 'max-content' }}>
             <button
