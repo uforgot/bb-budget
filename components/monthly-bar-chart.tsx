@@ -35,7 +35,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
     <div className="bg-surface rounded-[22px] px-4 pt-5 pb-6 mb-4">
       {/* 헤더 */}
       <div className="mb-5">
-        <p className={`text-[14px] font-semibold ${typography.cardTitle} mb-0.5`}>
+        <p className="text-[14px] font-semibold text-foreground mb-0.5">
           {selectedData ? `${selectedData.month}월 ${label}` : label}
         </p>
         <p className="text-[24px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
