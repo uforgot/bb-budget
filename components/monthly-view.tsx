@@ -163,26 +163,23 @@ const WeekStripView = memo(function WeekStripView({
   const leadingEmpty = Array.from({ length: firstWeekday }, (_, i) => i)
 
   return (
-    <div className="px-4">
-      <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
-        {WEEKDAYS_MON.map(day => (
-          <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-y-1 pt-2">
+    <div className="px-4 mb-4">
+      <div className="grid grid-cols-7 gap-2">
         {leadingEmpty.map(i => (
-          <div key={`empty-${i}`} className="h-[50px]" />
+          <div key={`empty-${i}`} className="h-[64px]" />
         ))}
         {weekDays.map(day => {
           const selected = focusedWeekDay === day
+          const weekdayLabel = WEEKDAYS_MON[(new Date(year, month - 1, day).getDay() + 6) % 7]
           return (
             <button
               key={day}
               data-no-swipe="true"
               onClick={() => onSelectDay(day)}
-              className="flex flex-col items-center justify-start pb-2"
+              className={`flex h-[64px] flex-col items-center justify-center rounded-[22px] transition-colors ${selected ? 'bg-accent-blue text-white' : 'bg-surface text-foreground'}`}
             >
-              <span className={`mt-1 flex size-8 items-center justify-center rounded-full text-[14px] font-semibold tabular-nums ${selected ? 'bg-accent-blue text-white' : 'bg-surface text-foreground'}`}>{day}</span>
+              <span className={`text-[10px] font-medium ${selected ? 'text-white/80' : 'text-muted-foreground'}`}>{weekdayLabel}</span>
+              <span className="mt-1 text-[16px] font-semibold tabular-nums">{day}</span>
             </button>
           )
         })}
