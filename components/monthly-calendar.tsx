@@ -385,6 +385,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
   }, [])
 
   const handleSheetTouchStart = useCallback((e: React.TouchEvent) => {
+    e.stopPropagation()
     isSheetDraggingRef.current = true
     sheetStartYRef.current = e.touches[0].clientY
     sheetMoveYRef.current = e.touches[0].clientY
@@ -393,15 +394,29 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
 
   const handleSheetTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isSheetDraggingRef.current) return
+    e.stopPropagation()
     const y = e.touches[0].clientY
     const diff = y - sheetStartYRef.current
     sheetMoveYRef.current = y
     if (diff > 0) {
+      e.preventDefault()
       setSheetOffset(diff)
     }
   }, [])
 
-  const handleSheetTouchEnd = useCallback(() => {
+  const handleSheetTouchEnd = useCallback((e?: React.TouchEvent) => {
++    e?.stopPropagation()
+     if (!isSheetDraggingRef.current) return
+     isSheetDraggingRef.current = false
+     const diff = sheetMoveYRef.current - sheetStartYRef.current
+     if (diff > 90) {
+       closeSheet()
+       return
+     }
+     setIsSheetClosing(true)
+     setSheetOffset(0)
+     setTimeout(() => setIsSheetClosing(false), 180)
+   }, [closeSheet])
     if (!isSheetDraggingRef.current) return
     isSheetDraggingRef.current = false
     const diff = sheetMoveYRef.current - sheetStartYRef.current
@@ -503,7 +518,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
               className={isSheet ? "fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] shadow-[0_-12px_40px_rgba(0,0,0,0.18)]" : "mt-1"}
               onTouchStart={isSheet ? handleSheetTouchStart : undefined}
               onTouchMove={isSheet ? handleSheetTouchMove : undefined}
-              onTouchEnd={isSheet ? handleSheetTouchEnd : undefined}
+              onTouchEnd={isSheet ? (e) => handleSheetTouchEnd(e) : undefined}
               style={isSheet ? { transform: `translate3d(0, ${sheetOffset}px, 0)`, transition: isSheetClosing ? 'transform 180ms ease-out' : 'none' } : undefined}
             >
               {isSheet && (
