@@ -202,8 +202,6 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
   const isDraggingRef = useRef(false)
   const [dragOffset, setDragOffset] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [sheetOffset, setSheetOffset] = useState(0)
-  const [isSheetClosing, setIsSheetClosing] = useState(false)
 
   const goMonth = useCallback((dir: -1 | 1) => {
     setFocusedMonthIndex(prev => {
@@ -370,50 +368,6 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
     if (dayTxs[itemIndex]) onTransactionClick(dayTxs[itemIndex])
   }, [selectedDay, dataCache, onTransactionClick])
 
-  const sheetStartYRef = useRef(0)
-  const sheetMoveYRef = useRef(0)
-  const isSheetDraggingRef = useRef(false)
-
-  const closeSheet = useCallback(() => {
-    setIsSheetClosing(true)
-    setSheetOffset(420)
-    setTimeout(() => {
-      setSelectedDay(null)
-      setSheetOffset(0)
-      setIsSheetClosing(false)
-    }, 180)
-  }, [])
-
-  const handleSheetTouchStart = useCallback((e: React.TouchEvent) => {
-    isSheetDraggingRef.current = true
-    sheetStartYRef.current = e.touches[0].clientY
-    sheetMoveYRef.current = e.touches[0].clientY
-    setIsSheetClosing(false)
-  }, [])
-
-  const handleSheetTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isSheetDraggingRef.current) return
-    const y = e.touches[0].clientY
-    const diff = y - sheetStartYRef.current
-    sheetMoveYRef.current = y
-    if (diff > 0) {
-      setSheetOffset(diff)
-    }
-  }, [])
-
-  const handleSheetTouchEnd = useCallback(() => {
-    if (!isSheetDraggingRef.current) return
-    isSheetDraggingRef.current = false
-    const diff = sheetMoveYRef.current - sheetStartYRef.current
-    if (diff > 90) {
-      closeSheet()
-      return
-    }
-    setIsSheetClosing(true)
-    setSheetOffset(0)
-    setTimeout(() => setIsSheetClosing(false), 180)
-  }, [closeSheet])
-
   return (
     <div>
       {/* 연월 헤더 */}
@@ -497,15 +451,9 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
         return (
           <>
             {isSheet && (
-              <div className="fixed inset-0 z-40 bg-black/35" onClick={closeSheet} />
+              <div className="fixed inset-0 z-40 bg-black/35" onClick={() => setSelectedDay(null)} />
             )}
-            <div
-              className={isSheet ? "fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] shadow-[0_-12px_40px_rgba(0,0,0,0.18)]" : "mt-1"}
-              onTouchStart={isSheet ? handleSheetTouchStart : undefined}
-              onTouchMove={isSheet ? handleSheetTouchMove : undefined}
-              onTouchEnd={isSheet ? handleSheetTouchEnd : undefined}
-              style={isSheet ? { transform: `translate3d(0, ${sheetOffset}px, 0)`, transition: isSheetClosing ? 'transform 180ms ease-out' : 'none' } : undefined}
-            >
+            <div className={isSheet ? "fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] shadow-[0_-12px_40px_rgba(0,0,0,0.18)]" : "mt-1"}>
               {isSheet && (
                 <>
                   <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-muted" />
