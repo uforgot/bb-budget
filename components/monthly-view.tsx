@@ -492,7 +492,7 @@ export function MonthlyView({
 
     if (isSticky) {
       const cardTop = node.getBoundingClientRect().top
-      const delta = cardTop - stickyRect.bottom - 10
+      const delta = cardTop - stickyRect.bottom - 9
       window.scrollTo({ top: Math.max(0, window.scrollY + delta), behavior: 'smooth' })
     } else {
       const stickyOffset = stickyRef.current.offsetTop
@@ -501,7 +501,7 @@ export function MonthlyView({
       window.setTimeout(() => {
         const newStickyBottom = stickyRef.current?.getBoundingClientRect().bottom ?? 0
         const cardTop = node.getBoundingClientRect().top
-        const delta = cardTop - newStickyBottom - 10
+        const delta = cardTop - newStickyBottom - 9
         window.scrollTo({ top: Math.max(0, window.scrollY + delta), behavior: 'smooth' })
       }, 300)
     }
