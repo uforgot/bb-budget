@@ -266,7 +266,7 @@ const WeekDayCard = memo(function WeekDayCard({
     >
       <div className="px-4 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
-          <span className="text-[14px] font-semibold tabular-nums">{date.getMonth() + 1}월 {day}일 {DAY_NAMES[date.getDay()]}요일</span>
+          <span className="text-[14px] font-semibold tabular-nums text-foreground">{date.getMonth() + 1}월 {day}일 {DAY_NAMES[date.getDay()]}요일</span>
         </div>
       </div>
 
@@ -287,11 +287,11 @@ const WeekDayCard = memo(function WeekDayCard({
                     style={{ backgroundColor: tx.type === 'expense' ? semanticColors.expense : tx.type === 'income' ? semanticColors.income : semanticColors.savings }}
                   />
                   <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden text-[14px] text-foreground">
-                    <span className="flex-shrink-0">{label}</span>
+                    <span className="flex-shrink-0 font-medium text-foreground">{label}</span>
                     {memoText && <span className="truncate text-[10px] text-muted-foreground">{memoText}</span>}
                   </div>
                 </div>
-                <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{tx.amount.toLocaleString()}</span>
+                <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">₩{tx.amount.toLocaleString()}</span>
               </button>
             )
           })}
@@ -304,23 +304,23 @@ const WeekDayCard = memo(function WeekDayCard({
                   style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}
                 />
                 <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden text-[14px] text-foreground">
-                  <span className="flex-shrink-0">{r.categoryName || '미분류'}</span>
+                  <span className="flex-shrink-0 font-medium text-foreground">{r.categoryName || '미분류'}</span>
                   {r.description && <span className="truncate text-[10px] text-muted-foreground">{r.description}</span>}
                 </div>
               </div>
-              <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{r.amount.toLocaleString()}</span>
+              <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">₩{r.amount.toLocaleString()}</span>
             </div>
           ))}
         </div>
 
         <div className="mt-4 border-t border-border pt-3 space-y-2">
           <div className="flex items-center justify-between text-[13px] text-muted-foreground">
-            <span>수입</span>
-            <span className="font-semibold tabular-nums">₩{dayIncome.toLocaleString()}</span>
+            <span className="font-normal text-muted-foreground">수입</span>
+            <span className="font-semibold tabular-nums text-muted-foreground">₩{dayIncome.toLocaleString()}</span>
           </div>
           <div className="flex items-center justify-between text-[13px] text-muted-foreground">
-            <span>지출</span>
-            <span className="font-semibold tabular-nums">₩{dayExpense.toLocaleString()}</span>
+            <span className="font-normal text-muted-foreground">지출</span>
+            <span className="font-semibold tabular-nums text-muted-foreground">₩{dayExpense.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -501,7 +501,7 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      <div className="overflow-x-auto scrollbar-hide px-5 mb-4">
+      <div className="overflow-x-auto scrollbar-hide px-4 mb-4">
         <div className="flex gap-2" style={{ width: 'max-content' }}>
           <button
             data-no-swipe="true"
