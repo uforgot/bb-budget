@@ -102,7 +102,7 @@ const MonthlyGridView = memo(function MonthlyGridView({
 
   return (
     <div>
-      <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
+      <div className="grid grid-cols-7 pt-3 pb-2 mb-1 px-0">
         {WEEKDAYS_MON.map(day => (
           <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
         ))}
@@ -196,72 +196,41 @@ const WeekStripView = memo(function WeekStripView({
 
 const CalendarDayDetail = memo(function CalendarDayDetail({
   selectedDay,
+  targetYear,
+  targetMonth,
   calendarDayTxs,
   calendarDayRecurring,
-  calendarDayIncome,
-  calendarDayExpense,
   categories,
   onEdit,
   onDeleted,
 }: {
   selectedDay: number
+  targetYear: number
+  targetMonth: number
   calendarDayTxs: Transaction[]
   calendarDayRecurring: RecurringItem[]
-  calendarDayIncome: number
-  calendarDayExpense: number
   categories: Category[]
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }) {
-  return (
-    <>
-      <div className="mx-5 mb-3 mt-4 flex gap-3">
-        <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
-          <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
-          <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{calendarDayExpense.toLocaleString()}</p>
-        </div>
-        <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
-          <p className="text-[14px] font-semibold text-muted-foreground mb-1">수입</p>
-          <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{calendarDayIncome.toLocaleString()}</p>
-        </div>
-      </div>
+  if (calendarDayTxs.length === 0 && calendarDayRecurring.length === 0) {
+    return <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
+  }
 
-      <div className="flex flex-col px-4 pb-8">
-        {calendarDayTxs.length === 0 && calendarDayRecurring.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
-        ) : (
-          <>
-            {calendarDayTxs.map((tx, index) => (
-              <TxRow
-                key={tx.id}
-                tx={tx}
-                categories={categories}
-                showDate={false}
-                dateLabel={index === 0 ? `${selectedDay}일` : undefined}
-                emphasizeDateLabel
-                emphasizeAmount
-                onEdit={onEdit}
-                onDeleted={onDeleted}
-              />
-            ))}
-            {calendarDayRecurring.map((r, ri) => (
-              <div key={`calendar-recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border px-5 py-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-14 flex-shrink-0">{ri === 0 ? <span className="text-[14px] font-semibold">예정</span> : null}</div>
-                  <div className="flex-1 min-w-0 flex items-center gap-2">
-                    <span className="text-xs text-white px-3 py-1 rounded-full inline-block" style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}>
-                      {r.categoryName || '미분류'}
-                    </span>
-                  </div>
-                  <span className="text-sm font-semibold tabular-nums flex-shrink-0">₩{r.amount.toLocaleString()}</span>
-                </div>
-                {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
-              </div>
-            ))}
-          </>
-        )}
-      </div>
-    </>
+  return (
+    <div className="pb-8 pt-4">
+      <WeekDayCard
+        day={selectedDay}
+        date={new Date(targetYear, targetMonth - 1, selectedDay)}
+        txs={calendarDayTxs}
+        recurring={calendarDayRecurring}
+        categories={categories}
+        highlighted={false}
+        onEdit={onEdit}
+        onDeleted={onDeleted}
+        registerRef={() => {}}
+      />
+    </div>
   )
 })
 
@@ -570,10 +539,10 @@ export function MonthlyView({
 
           <CalendarDayDetail
             selectedDay={selectedDay}
+            targetYear={targetYear}
+            targetMonth={actualMonth}
             calendarDayTxs={calendarDayTxs}
             calendarDayRecurring={calendarDayRecurring}
-            calendarDayIncome={calendarDayIncome}
-            calendarDayExpense={calendarDayExpense}
             categories={categories}
             onEdit={onEdit}
             onDeleted={onDeleted}
