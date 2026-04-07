@@ -501,27 +501,28 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      <div className="overflow-x-auto scrollbar-hide px-5 mb-4">
-        <div className="flex gap-2" style={{ width: 'max-content' }}>
-          <button
-            data-no-swipe="true"
-            onClick={() => setViewMode('calendar')}
-            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'calendar' ? 'bg-accent-blue text-white' : 'bg-surface text-[#A3A3AA] dark:text-muted-foreground'}`}
-          >
-            달력
-          </button>
-          {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
+      <div className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20' : ''}`}>
+        <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
+          <div className="flex gap-2" style={{ width: 'max-content' }}>
             <button
-              key={week}
               data-no-swipe="true"
-              onClick={() => handleWeekTabClick(week)}
-              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-surface text-[#A3A3AA] dark:text-muted-foreground'}`}
+              onClick={() => setViewMode('calendar')}
+              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'calendar' ? 'bg-accent-blue text-white' : 'bg-surface text-[#A3A3AA] dark:text-muted-foreground'}`}
             >
-              {week}주 차
+              달력
             </button>
-          ))}
+            {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
+              <button
+                key={week}
+                data-no-swipe="true"
+                onClick={() => handleWeekTabClick(week)}
+                className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-surface text-[#A3A3AA] dark:text-muted-foreground'}`}
+              >
+                {week}주 차
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
       {viewMode === 'calendar' ? (
         <div>
@@ -556,7 +557,12 @@ export function MonthlyView({
             focusedWeekDay={selectedDay}
             onSelectDay={jumpToDay}
           />
+        </div>
+      )}
+      </div>
 
+      {viewMode === 'week' && (
+        <>
           <div className="mx-5 mb-3 mt-4 flex gap-3">
             <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
               <p className="text-[14px] font-semibold text-foreground mb-1">주간 지출</p>
@@ -594,7 +600,7 @@ export function MonthlyView({
               })
             )}
           </div>
-        </div>
+        </>
       )}
     </>
   )
