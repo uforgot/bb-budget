@@ -494,7 +494,11 @@ export function MonthlyView({
       window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     }
 
-    setTimeout(doScroll, 150)
+    if (stickyRef.current.getBoundingClientRect().top === 0) {
+      doScroll()
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(doScroll))
+    }
 
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
