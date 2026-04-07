@@ -1,11 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { TxRow } from '@/components/tx-row'
+import { semanticColors } from '@/components/ui-colors'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
+const WEEKDAYS_MON = ['월', '화', '수', '목', '금', '토', '일']
+
+type TabMode = 'calendar' | number
 
 function getWeekNum(year: number, month: number, day: number): number {
   const firstDay = new Date(year, month - 1, 1)
@@ -25,6 +29,24 @@ function getWeekDateRange(year: number, month: number, weekNum: number): { start
   const daysInMonth = new Date(year, month, 0).getDate()
   const endDay = Math.min(daysInMonth, weekNum * 7 - firstMonday)
   return { startDay, endDay }
+}
+
+function formatDateKey(year: number, month: number, day: number) {
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
+function getMonthGrid(year: number, month: number): (number | null)[] {
+  const firstDayWeekday = (new Date(year, month - 1, 1).getDay() + 6) % 7
+  const daysInMonth = new Date(year, month, 0).getDate()
+  const cells: (number | null)[] = []
+  for (let i = 0; i < firstDayWeekday; i++) cells.push(null)
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d)
+  return cells
+}
+
+function formatCompactAmount(amount: number): string {
+  if (amount >= 10000) return `${Math.floor(amount / 10000)}만`
+  return amount.toLocaleString()
 }
 
 interface RecurringItem {
@@ -62,11 +84,11 @@ export function MonthlyView({
   const daysInMonth = new Date(targetYear, actualMonth, 0).getDate()
   const monthEndDate = `${targetYear}-${String(actualMonth).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`
 
-  // 해당 월 트랜잭션
   const monthTxs = transactions.filter(t => {
     const d = new Date(t.date)
     return d.getFullYear() === targetYear && d.getMonth() + 1 === actualMonth
   })
+
   let monthIncome = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
   let monthExpense = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   if (isFutureMonth) {
@@ -74,14 +96,12 @@ export function MonthlyView({
     monthIncome += recurringItems.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0)
   }
 
-  // 요약
   const monthSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
   const cumIncome = transactions.filter(t => t.type === 'income' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
   const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
   const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
   const monthBalance = cumIncome - cumExpense - cumSavings
 
-  // 전월
   const prevM = actualMonth === 1 ? 12 : actualMonth - 1
   const prevY = actualMonth === 1 ? targetYear - 1 : targetYear
   const prevDays = new Date(prevY, prevM, 0).getDate()
@@ -95,39 +115,116 @@ export function MonthlyView({
   const prevCumExp = transactions.filter(t => t.type === 'expense' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
   const prevBalance = prevCumInc - prevCumExp - prevSavingsAmt
 
-  // 주차
   const totalWeeks = getWeekNum(targetYear, actualMonth, daysInMonth)
   const currentWeekNum = (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1)
     ? getWeekNum(today.getFullYear(), today.getMonth() + 1, today.getDate())
     : isFutureMonth ? 1 : totalWeeks
 
+  const [selectedTab, setSelectedTab] = useState<TabMode>('calendar')
+  const [selectedDay, setSelectedDay] = useState(() => {
+    if (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1) return today.getDate()
+    return 1
+  })
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
+  const [focusedWeekDay, setFocusedWeekDay] = useState<number | null>(null)
+  const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
 
-  // 선택된 주의 거래
+  useEffect(() => {
+    setSelectedTab('calendar')
+    setSelectedWeek(currentWeekNum)
+    setFocusedWeekDay(targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? today.getDate() : 1)
+    setSelectedDay(targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? today.getDate() : 1)
+  }, [monthOffset, currentWeekNum, targetYear, actualMonth, today])
+
+  const monthRecurring = useMemo(() => isFutureMonth ? recurringItems : [], [isFutureMonth, recurringItems])
+
+  const dailySummaries = useMemo(() => {
+    const map = new Map<number, { income: number; expense: number }>()
+    for (const tx of monthTxs) {
+      const day = new Date(tx.date).getDate()
+      const current = map.get(day) ?? { income: 0, expense: 0 }
+      if (tx.type === 'income') current.income += tx.amount
+      if (tx.type === 'expense') current.expense += tx.amount
+      map.set(day, current)
+    }
+    if (isFutureMonth) {
+      for (const item of monthRecurring) {
+        const current = map.get(item.day) ?? { income: 0, expense: 0 }
+        if (item.type === 'income') current.income += item.amount
+        if (item.type === 'expense') current.expense += item.amount
+        map.set(item.day, current)
+      }
+    }
+    return map
+  }, [monthTxs, monthRecurring, isFutureMonth])
+
+  const calendarDayTxs = monthTxs
+    .filter(t => new Date(t.date).getDate() === selectedDay)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+  const calendarDayRecurring = monthRecurring.filter(r => r.day === selectedDay)
+  const calendarDayIncome = (dailySummaries.get(selectedDay)?.income ?? 0)
+  const calendarDayExpense = (dailySummaries.get(selectedDay)?.expense ?? 0)
+
+  const calendarCells = getMonthGrid(targetYear, actualMonth)
+
   const weekTxs = monthTxs
     .filter(t => getWeekNumFromDate(t.date) === selectedWeek)
     .sort((a, b) => {
-      const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime()
-      return dateDiff !== 0 ? dateDiff : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      const dateDiff = new Date(a.date).getTime() - new Date(b.date).getTime()
+      return dateDiff !== 0 ? dateDiff : new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     })
 
+  const weekRecurring = isFutureMonth
+    ? recurringItems.filter(r => getWeekNum(targetYear, actualMonth, r.day) === selectedWeek)
+    : []
+
   const weekIncome = weekTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+    + weekRecurring.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0)
   const weekExpense = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+    + weekRecurring.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0)
 
-  // 주차 날짜 범위
   const { startDay, endDay } = getWeekDateRange(targetYear, actualMonth, selectedWeek)
-  const dateRangeLabel = `${actualMonth}월 ${startDay}일 - ${actualMonth}월 ${endDay}일`
+  const weekDays = Array.from({ length: endDay - startDay + 1 }, (_, i) => startDay + i)
 
-  // 미래 주 여부
-  const isSelectedWeekFuture = (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1)
-    ? selectedWeek > currentWeekNum
-    : isFutureMonth
+  const groupedWeekTxs = useMemo(() => {
+    const groups = new Map<string, Transaction[]>()
+    for (const tx of weekTxs) {
+      const list = groups.get(tx.date) ?? []
+      list.push(tx)
+      groups.set(tx.date, list)
+    }
+    return groups
+  }, [weekTxs])
 
-  let lastDate: string | null = null
+  const groupedWeekRecurring = useMemo(() => {
+    const groups = new Map<string, RecurringItem[]>()
+    for (const item of weekRecurring) {
+      const key = formatDateKey(targetYear, actualMonth, item.day)
+      const list = groups.get(key) ?? []
+      list.push(item)
+      groups.set(key, list)
+    }
+    return groups
+  }, [weekRecurring, targetYear, actualMonth])
+
+  const weekSectionDays = weekDays.filter(day => {
+    const key = formatDateKey(targetYear, actualMonth, day)
+    return (groupedWeekTxs.get(key)?.length ?? 0) > 0 || (groupedWeekRecurring.get(key)?.length ?? 0) > 0
+  })
+
+  const jumpToDay = (day: number) => {
+    const key = formatDateKey(targetYear, actualMonth, day)
+    const node = dayRefs.current[key]
+    setFocusedWeekDay(day)
+    setHighlightedDate(key)
+    node?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
+  }
 
   return (
     <>
-      {/* 요약 카드 슬라이더 */}
       <SummaryCardSlider
         month={actualMonth}
         income={monthIncome}
@@ -142,18 +239,19 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      {/* 주차 탭 버튼 */}
       <div className="overflow-x-auto scrollbar-hide px-4 mb-4">
         <div className="flex gap-2" style={{ width: 'max-content' }}>
+          <button
+            onClick={() => setSelectedTab('calendar')}
+            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${selectedTab === 'calendar' ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground'}`}
+          >
+            달력
+          </button>
           {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
             <button
               key={week}
-              onClick={() => setSelectedWeek(week)}
-              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${
-                week === selectedWeek
-                  ? 'bg-accent-blue text-white'
-                  : 'bg-surface text-muted-foreground'
-              }`}
+              onClick={() => { setSelectedTab(week); setSelectedWeek(week) }}
+              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${selectedTab === week ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground'}`}
             >
               {week}주 차
             </button>
@@ -161,89 +259,174 @@ export function MonthlyView({
         </div>
       </div>
 
-      {/* 주차 요약 + 내역 */}
-      <div>
-        {isSelectedWeekFuture ? (
-          <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
-        ) : (
-          <>
-            {/* 주차 요약 카드 — 지출/수입 2분할 */}
-            <div className="mx-5 mb-3 mt-4 flex gap-3">
-              <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
-                <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
-                <p className="text-[20px] font-bold tabular-nums text-[#5865F2]" style={{ letterSpacing: '-0.5px' }}>
-                  {`₩${weekExpense.toLocaleString()}`}
-                </p>
-              </div>
-              <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
-                <p className="text-[14px] font-semibold text-muted-foreground mb-1">수입</p>
-                <p className="text-[20px] font-bold tabular-nums" style={{ letterSpacing: '-0.5px', color: '#14b8a6' }}>
-                  {`₩${weekIncome.toLocaleString()}`}
-                </p>
-              </div>
+      {selectedTab === 'calendar' ? (
+        <div>
+          <div className="px-4">
+            <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
+              {WEEKDAYS_MON.map(day => (
+                <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
+              ))}
             </div>
-            {/* 내역 */}
-            {weekTxs.length === 0 ? (
+            <div className="grid grid-cols-7 gap-y-1 pt-2">
+              {calendarCells.map((day, i) => {
+                if (!day) return <div key={`empty-${i}`} className="h-[56px]" />
+                const summary = dailySummaries.get(day)
+                const isToday = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 && day === today.getDate()
+                const isSelected = day === selectedDay
+                return (
+                  <button
+                    key={day}
+                    onClick={() => setSelectedDay(day)}
+                    className="relative flex h-[56px] flex-col items-center justify-start rounded-lg pt-1"
+                    style={isSelected ? { backgroundColor: 'var(--calendar-selected-day)' } : undefined}
+                  >
+                    <span className="relative flex items-center justify-center size-6 flex-shrink-0">
+                      {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
+                      <span className={`relative text-sm tabular-nums leading-none ${isToday ? 'text-white font-bold' : 'text-foreground'}`}>{day}</span>
+                    </span>
+                    <div className="mt-0.5 flex flex-col items-center gap-0">
+                      {(summary?.expense ?? 0) > 0 && <span className="text-[8px] font-semibold leading-tight" style={{ color: semanticColors.expense }}>{formatCompactAmount(summary!.expense)}</span>}
+                      {(summary?.income ?? 0) > 0 && <span className="text-[8px] font-semibold leading-tight" style={{ color: semanticColors.income }}>{formatCompactAmount(summary!.income)}</span>}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="mx-5 mb-3 mt-4 flex gap-3">
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+              <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
+              <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{calendarDayExpense.toLocaleString()}</p>
+            </div>
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+              <p className="text-[14px] font-semibold text-muted-foreground mb-1">수입</p>
+              <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{calendarDayIncome.toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col px-4 pb-8">
+            {calendarDayTxs.length === 0 && calendarDayRecurring.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
             ) : (
-              <div className="flex flex-col px-4">
-                {weekTxs.map(tx => {
-                  const showDivider = lastDate !== null && lastDate !== tx.date
-                  const showDate = lastDate !== tx.date
-                  lastDate = tx.date
-                  return (
-                    <div key={tx.id}>
-                      {showDivider && <div className="border-t border-border mx-5 my-1" />}
+              <>
+                {calendarDayTxs.map((tx, index) => (
+                  <TxRow
+                    key={tx.id}
+                    tx={tx}
+                    categories={categories}
+                    showDate={false}
+                    dateLabel={index === 0 ? `${selectedDay}일` : undefined}
+                    emphasizeDateLabel
+                    emphasizeAmount
+                    onEdit={onEdit}
+                    onDeleted={onDeleted}
+                  />
+                ))}
+                {calendarDayRecurring.map((r, ri) => (
+                  <div key={`calendar-recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border px-5 py-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 flex-shrink-0">{ri === 0 ? <span className="text-[14px] font-semibold">예정</span> : null}</div>
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                        <span className="text-xs text-white px-3 py-1 rounded-full inline-block" style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}>
+                          {r.categoryName || '미분류'}
+                        </span>
+                      </div>
+                      <span className="text-sm font-semibold tabular-nums flex-shrink-0">₩{r.amount.toLocaleString()}</span>
+                    </div>
+                    {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className="px-4">
+            <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
+              {weekDays.map(day => {
+                const date = new Date(targetYear, actualMonth - 1, day)
+                const selected = focusedWeekDay === day
+                return (
+                  <button
+                    key={day}
+                    onClick={() => jumpToDay(day)}
+                    className="flex flex-col items-center gap-1 pb-2"
+                  >
+                    <span className="text-[10px] font-medium text-muted-foreground">{WEEKDAYS_MON[(date.getDay() + 6) % 7]}</span>
+                    <span className={`flex size-8 items-center justify-center rounded-full text-[14px] font-semibold tabular-nums ${selected ? 'bg-accent-blue text-white' : 'bg-surface text-foreground'}`}>{day}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="mx-5 mb-3 mt-4 flex gap-3">
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+              <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
+              <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{weekExpense.toLocaleString()}</p>
+            </div>
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+              <p className="text-[14px] font-semibold text-muted-foreground mb-1">수입</p>
+              <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{weekIncome.toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col px-4 pb-8">
+            {weekSectionDays.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
+            ) : (
+              weekSectionDays.map(day => {
+                const key = formatDateKey(targetYear, actualMonth, day)
+                const txs = groupedWeekTxs.get(key) ?? []
+                const recurring = groupedWeekRecurring.get(key) ?? []
+                const date = new Date(targetYear, actualMonth - 1, day)
+                return (
+                  <div
+                    key={key}
+                    ref={node => { dayRefs.current[key] = node }}
+                    className={`rounded-[20px] transition-colors ${highlightedDate === key ? 'bg-surface/80' : ''}`}
+                  >
+                    <div className="px-5 pt-4 pb-2">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[16px] font-semibold tabular-nums">{day}일</span>
+                        <span className="text-[12px] text-muted-foreground">{DAY_NAMES[date.getDay()]}요일</span>
+                      </div>
+                    </div>
+                    {txs.map(tx => (
                       <TxRow
+                        key={tx.id}
                         tx={tx}
                         categories={categories}
-                        showDate={showDate}
-                        emphasizeDateValue
+                        showDate={false}
                         emphasizeAmount
                         onEdit={onEdit}
                         onDeleted={onDeleted}
                       />
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {/* 반복 지출 예정 */}
-            {isFutureMonth && recurringItems
-              .filter(r => getWeekNum(targetYear, actualMonth, r.day) === selectedWeek)
-              .map((r, ri) => {
-                const d = new Date(targetYear, actualMonth - 1, r.day)
-                return (
-                  <div key={`recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border">
-                    <div className="px-4 py-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-14 flex-shrink-0">
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="text-sm font-medium">{DAY_NAMES[d.getDay()]}</span>
-                            <span className="text-[13px] font-semibold text-muted-foreground tabular-nums">{r.day}일</span>
+                    ))}
+                    {recurring.map((r, ri) => (
+                      <div key={`${key}-recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border px-5 py-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-14 flex-shrink-0">{ri === 0 && txs.length === 0 ? <span className="text-[14px] font-semibold">예정</span> : null}</div>
+                          <div className="flex-1 min-w-0 flex items-center gap-2">
+                            <span className="text-xs text-white px-3 py-1 rounded-full inline-block" style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}>
+                              {r.categoryName || '미분류'}
+                            </span>
+                            <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
                           </div>
+                          <span className="text-sm font-semibold tabular-nums flex-shrink-0">₩{r.amount.toLocaleString()}</span>
                         </div>
-                        <div className="flex-1 min-w-0 flex items-center gap-2">
-                          <span className="text-xs text-foreground px-3 py-1 rounded-full inline-block" style={{ backgroundColor: '#1C1C1E' }}>
-                            <span className="text-foreground">{r.categoryName || '미분류'}</span>
-                          </span>
-                          <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
-                        </div>
-                        <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${
-                          r.type === 'expense' ? 'text-accent-coral' : r.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'
-                        }`}>
-                          ₩{r.amount.toLocaleString()}
-                        </span>
+                        {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
                       </div>
-                      {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
-                    </div>
+                    ))}
                   </div>
                 )
-              })}
-          </>
-        )}
-      </div>
+              })
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }
