@@ -506,7 +506,7 @@ export function MonthlyView({
           <button
             data-no-swipe="true"
             onClick={() => setViewMode('calendar')}
-            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'calendar' ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground'}`}
+            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'calendar' ? 'bg-accent-blue text-white' : 'bg-surface text-[#B0B0B7] dark:text-muted-foreground'}`}
           >
             달력
           </button>
@@ -515,7 +515,7 @@ export function MonthlyView({
               key={week}
               data-no-swipe="true"
               onClick={() => handleWeekTabClick(week)}
-              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground'}`}
+              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-surface text-[#B0B0B7] dark:text-muted-foreground'}`}
             >
               {week}주 차
             </button>
