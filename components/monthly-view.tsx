@@ -488,8 +488,8 @@ export function MonthlyView({
     const stickyRect = stickyRef.current?.getBoundingClientRect()
     const buttonRect = weekDayButtonRefs.current[day]?.getBoundingClientRect()
     const stickyHeight = stickyRect?.height ?? 0
-    const buttonOffset = buttonRect && stickyRect ? Math.max(0, buttonRect.top - stickyRect.top) : 0
-    const top = node.getBoundingClientRect().top + window.scrollY - stickyHeight + buttonOffset - 6
+    const buttonBottomOffset = buttonRect && stickyRect ? Math.max(0, buttonRect.bottom - stickyRect.top) : 0
+    const top = node.getBoundingClientRect().top + window.scrollY - stickyHeight + buttonBottomOffset + 8
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
