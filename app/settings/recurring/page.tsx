@@ -107,7 +107,7 @@ export default function RecurringPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 bg-background">
+      <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14 bg-background">
         <button
           onClick={() => router.back()}
           className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
@@ -325,7 +325,7 @@ export default function RecurringPage() {
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+            <div className="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto px-5 pt-3 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
               <div className="flex gap-3 mb-2">
                 <button
                   onClick={handleAdd}
