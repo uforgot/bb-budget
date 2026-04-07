@@ -174,10 +174,9 @@ export interface MonthlyCalendarProps {
   showDayDetail?: boolean
   targetYear?: number  // 마운트 시 초기 연월 (key 리마운트 연동, 이후 스와이프 방해 안 함)
   targetMonth?: number // 1-indexed (key 변경 시만 적용)
-  dayDetailMode?: 'inline' | 'sheet'
 }
 
-export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true, targetYear, targetMonth, dayDetailMode = 'inline' }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true, targetYear, targetMonth }: MonthlyCalendarProps) {
   const anchor = targetYear && targetMonth ? new Date(targetYear, targetMonth - 1, 1) : new Date()
   const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(anchor))
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
@@ -445,84 +444,48 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
         const sd = selectedDayData?.data
         const totalExpense = sd?.expense ?? 0
         const totalIncome = sd?.income ?? 0
-        const items = sd?.items ?? []
-        const isSheet = dayDetailMode === 'sheet'
+        const totalSavings = sd?.savings ?? 0
+        const totalDay = totalIncome - totalExpense
 
         return (
-          <>
-            {isSheet && (
-              <div className="fixed inset-0 z-40 bg-black/35" onClick={() => setSelectedDay(null)} />
-            )}
-            <div className={isSheet ? "fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+24px)] shadow-[0_-12px_40px_rgba(0,0,0,0.18)]" : "mt-1"}>
-              {isSheet && (
-                <>
-                  <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-muted" />
-                  <div className="mb-4 flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[20px] font-bold tabular-nums text-foreground">{selectedDay.month + 1}월 {selectedDay.day}일</p>
-                      <p className="mt-1 text-[13px] text-muted-foreground">{dayOfWeek}</p>
-                    </div>
-                    <button
-                      onClick={() => setSelectedDay(null)}
-                      className="flex size-8 items-center justify-center rounded-full text-muted-foreground"
-                      aria-label="닫기"
+          <div className="mt-1">
+            {/* Items list */}
+            {sd?.items && sd.items.length > 0 ? (
+              <div className="flex flex-col">
+                {sd.items.map((item, i) => {
+                  const colorClass = typography.cardSubtle
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => !item.isRecurring && handleItemClick(selectedDay.day, i)}
+                      className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                    </button>
-                  </div>
-                  <div className="mb-4 grid grid-cols-2 gap-3">
-                    <div className="rounded-[20px] bg-surface px-4 py-4">
-                      <p className="mb-1 text-[13px] font-semibold text-muted-foreground">지출</p>
-                      <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{totalExpense.toLocaleString()}</p>
-                    </div>
-                    <div className="rounded-[20px] bg-surface px-4 py-4">
-                      <p className="mb-1 text-[13px] font-semibold text-muted-foreground">수입</p>
-                      <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{totalIncome.toLocaleString()}</p>
-                    </div>
-                  </div>
-                  <p className="mb-2 text-[12px] font-semibold text-muted-foreground">상세 내역</p>
-                </>
-              )}
-
-              {items.length > 0 ? (
-                <div className="flex max-h-[48dvh] flex-col overflow-y-auto">
-                  {items.map((item, i) => {
-                    const colorClass = typography.cardSubtle
-                    return (
-                      <div
-                        key={i}
-                        onClick={() => !item.isRecurring && handleItemClick(selectedDay.day, i)}
-                        className={`flex items-center justify-between py-3 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
-                      >
-                        <div className="flex min-w-0 items-center gap-3">
-                          <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? semanticColors.expense : item.type === 'income' ? semanticColors.income : semanticColors.savings }}>
-                            {item.parentCategory ? (
-                              <><span className="text-white">{item.parentCategory}</span><span className="text-white/80 dark:text-white/70"> · {item.category}</span></>
-                            ) : (
-                              <span className="text-white">{item.category}</span>
-                            )}
-                          </span>
-                          <div className="min-w-0">
-                            {item.description && (
-                              <p className="truncate text-[13px] text-foreground">{item.description}</p>
-                            )}
-                            {item.isRecurring && (
-                              <span className="mt-1 inline-flex text-[10px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
-                            )}
-                          </div>
-                        </div>
-                        <span className={`ml-3 flex-shrink-0 text-sm font-semibold tabular-nums ${colorClass}`}>
-                          ₩{item.amount.toLocaleString()}
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? semanticColors.expense : item.type === 'income' ? semanticColors.income : semanticColors.savings }}>
+                          {item.parentCategory ? (
+                            <><span className="text-white">{item.parentCategory}</span><span className="text-white/80 dark:text-white/70"> · {item.category}</span></>
+                          ) : (
+                            <span className="text-white">{item.category}</span>
+                          )}
                         </span>
+                        {item.isRecurring && (
+                          <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
+                        )}
+                        {i === 0 && item.description && (
+                          <span className="text-[10px] text-muted-foreground line-clamp-1">{item.description}</span>
+                        )}
                       </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <p className="text-[14px] text-muted-foreground text-center py-6">내역이 없습니다</p>
-              )}
-            </div>
-          </>
+                      <span className={`text-sm font-semibold tabular-nums ${colorClass}`}>
+                        ₩{item.amount.toLocaleString()}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-[14px] text-muted-foreground text-center py-6">내역이 없습니다</p>
+            )}
+          </div>
         )
       })()}
     </div>

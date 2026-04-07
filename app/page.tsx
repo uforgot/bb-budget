@@ -26,6 +26,8 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [dayIncome, setDayIncome] = useState(0)
+  const [dayExpense, setDayExpense] = useState(0)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [calKey, setCalKey] = useState(0)
   const selectChangingRef = useRef(false) // select 변경 중 플래그
@@ -35,6 +37,19 @@ export default function Home() {
     const d = new Date(calYear, calMonth - 1, selectedDay)
     return `${calMonth}월 ${selectedDay}일 ${DAY_NAMES[d.getDay()]}요일`
   })()
+
+  // 선택 날짜 합계 로드
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { getTransactions } = await import('@/lib/api')
+        const txs = await getTransactions({ year: calYear, month: calMonth })
+        const dayTxs = txs.filter(t => t.date === selectedDate)
+        setDayIncome(dayTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0))
+        setDayExpense(dayTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0))
+      } catch {}
+    })()
+  }, [selectedDate, calYear, calMonth, refreshKey])
 
   // 반복 거래 자동 등록 (최초 1회)
   useEffect(() => {
@@ -109,8 +124,7 @@ export default function Home() {
             <MonthlyCalendar
               key={calKey}
               showHeader={false}
-              showDayDetail
-              dayDetailMode="sheet"
+              showDayDetail={false}
               targetYear={calYear}
               targetMonth={calMonth}
               onMonthChange={handleMonthChange}
@@ -121,7 +135,27 @@ export default function Home() {
           </div>
         </div>
 
-      <div className="pb-32" />
+      {/* 하단 영역 */}
+      <div className="bg-background min-h-[50vh] pb-32">
+        <div>
+          {/* 날짜 요약 카드 — 지출/수입 2분할 */}
+          <div className="mx-5 mt-3 flex gap-3">
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+              <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
+              <p className="text-[20px] font-bold tabular-nums text-[#5865F2]" style={{ letterSpacing: '-0.5px' }}>
+                {`₩${dayExpense.toLocaleString()}`}
+              </p>
+            </div>
+            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+              <p className="text-[14px] font-semibold text-muted-foreground mb-1">수입</p>
+              <p className="text-[20px] font-bold tabular-nums" style={{ letterSpacing: '-0.5px', color: '#14b8a6' }}>
+                {`₩${dayIncome.toLocaleString()}`}
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
 
       <DatePickerModal
         open={pickerOpen}
