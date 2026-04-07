@@ -260,7 +260,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       }`}
     >
       {/* 헤더 */}
-      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 bg-background flex-shrink-0">
+      <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14 bg-background flex-shrink-0">
         <button
           onClick={handleClose}
           className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
@@ -317,7 +317,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 />
               </label>
             </div>
-            <div className="border-t border-border mx-5" />
+            <div className="border-t border-border mx-4" />
             {/* 카테고리 */}
             {/* 타입 선택 행 */}
             <div className="flex items-center justify-between px-4 py-3">
@@ -353,7 +353,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             {/* 선택된 카테고리 표시 (타입 선택 후, 그리드 닫혔을 때) */}
             {type && categoryId && !categoryPickerOpen && (
               <>
-                <div className="border-t border-border mx-5" />
+                <div className="border-t border-border mx-4" />
                 <button
                   onClick={() => {
                     setKeypadActive(false)
@@ -386,7 +386,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 />
               </div>
             )}
-            <div className="border-t border-border mx-5" />
+            <div className="border-t border-border mx-4" />
             <div className="flex items-center justify-between px-4 py-3.5" onClick={() => amountInputRef.current?.focus()}>
               <span className="text-[16px]">금액</span>
               <div className="flex flex-col items-end">
@@ -412,7 +412,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 ) : null}
               </div>
             </div>
-            <div className="border-t border-border mx-5" />
+            <div className="border-t border-border mx-4" />
             <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-[16px]">메모</span>
               <input
@@ -428,7 +428,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </div>
           {!editTransaction && (
             <>
-              <div className="border-t border-border mx-5" />
+              <div className="border-t border-border mx-4" />
               <div ref={repeatDropdownRef}>
               {/* 반복 행 */}
               <div className="relative">
@@ -474,7 +474,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               {/* 종료일 행 (반복 선택 시) */}
               {repeatFrequency !== 'none' && (
                 <>
-                  <div className="border-t border-border mx-5" />
+                  <div className="border-t border-border mx-4" />
                   <div className="flex items-center justify-between px-4 py-3.5">
                     <span className="text-[16px]">종료일</span>
                     <label className="relative cursor-pointer">
