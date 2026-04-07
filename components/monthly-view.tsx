@@ -482,14 +482,30 @@ export function MonthlyView({
   const jumpToDay = (day: number) => {
     const key = formatDateKey(targetYear, actualMonth, day)
     const node = dayRefs.current[key]
+    if (!node || !stickyRef.current) return
+
     setSelectedDay(day)
-    if (!node) return
     setHighlightedDate(key)
-    const stickyBottom = stickyRef.current?.getBoundingClientRect().bottom ?? 0
-    const cardTop = node.getBoundingClientRect().top
-    const delta = cardTop - stickyBottom - 8
-    const top = Math.max(0, window.scrollY + delta)
-    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+
+    const stickyRect = stickyRef.current.getBoundingClientRect()
+    const isSticky = stickyRect.top === 0
+
+    if (isSticky) {
+      const cardTop = node.getBoundingClientRect().top
+      const delta = cardTop - stickyRect.bottom + 20
+      window.scrollTo({ top: Math.max(0, window.scrollY + delta), behavior: 'smooth' })
+    } else {
+      const stickyOffset = stickyRef.current.offsetTop
+      window.scrollTo({ top: stickyOffset, behavior: 'smooth' })
+
+      window.setTimeout(() => {
+        const newStickyBottom = stickyRef.current?.getBoundingClientRect().bottom ?? 0
+        const cardTop = node.getBoundingClientRect().top
+        const delta = cardTop - newStickyBottom + 20
+        window.scrollTo({ top: Math.max(0, window.scrollY + delta), behavior: 'smooth' })
+      }, 300)
+    }
+
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
 
