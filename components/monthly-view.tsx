@@ -378,14 +378,14 @@ export function MonthlyView({
     : isFutureMonth ? 1 : totalWeeks
   const defaultDay = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? today.getDate() : 1
 
-  const [viewMode, setViewMode] = useState<ViewMode>('calendar')
+  const [viewMode, setViewMode] = useState<ViewMode>('week')
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
   const [selectedDay, setSelectedDay] = useState(defaultDay)
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
 
   useEffect(() => {
-    setViewMode('calendar')
+    setViewMode('week')
     setSelectedWeek(currentWeekNum)
     setSelectedDay(defaultDay)
     setHighlightedDate(null)
