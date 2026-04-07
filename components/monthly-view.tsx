@@ -306,9 +306,14 @@ const WeekDayCard = memo(function WeekDayCard({
                 onClick={() => onEdit(tx)}
                 className="flex w-full items-center justify-between gap-3 text-left"
               >
-                <div className="min-w-0 flex-1 text-[14px]">
-                  <span className="font-medium text-foreground">{label}</span>
-                  {memoText && <span className="text-muted-foreground"> - {memoText}</span>}
+                <div className="min-w-0 flex flex-1 items-center gap-2 overflow-hidden">
+                  <span
+                    className="inline-flex flex-shrink-0 rounded-full px-3 py-1 text-xs text-white"
+                    style={{ backgroundColor: tx.type === 'expense' ? semanticColors.expense : tx.type === 'income' ? semanticColors.income : semanticColors.savings }}
+                  >
+                    {label}
+                  </span>
+                  {memoText && <span className="truncate text-[14px] text-muted-foreground">{memoText}</span>}
                 </div>
                 <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{tx.amount.toLocaleString()}</span>
               </button>
@@ -317,9 +322,14 @@ const WeekDayCard = memo(function WeekDayCard({
 
           {recurring.map((r, ri) => (
             <div key={`${day}-recurring-${ri}`} className="flex items-center justify-between gap-3 opacity-40 italic">
-              <div className="min-w-0 flex-1 text-[14px]">
-                <span className="font-medium text-foreground">{r.categoryName || '미분류'}</span>
-                {r.description && <span className="text-muted-foreground"> - {r.description}</span>}
+              <div className="min-w-0 flex flex-1 items-center gap-2 overflow-hidden">
+                <span
+                  className="inline-flex flex-shrink-0 rounded-full px-3 py-1 text-xs text-white"
+                  style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}
+                >
+                  {r.categoryName || '미분류'}
+                </span>
+                {r.description && <span className="truncate text-[14px] text-muted-foreground">{r.description}</span>}
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{r.amount.toLocaleString()}</span>
             </div>
