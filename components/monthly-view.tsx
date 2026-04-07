@@ -126,7 +126,6 @@ export function MonthlyView({
     if (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1) return today.getDate()
     return 1
   })
-  const [calendarRefreshKey, setCalendarRefreshKey] = useState(0)
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
   const [focusedWeekDay, setFocusedWeekDay] = useState<number | null>(null)
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -137,7 +136,6 @@ export function MonthlyView({
     setSelectedWeek(currentWeekNum)
     setFocusedWeekDay(targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? today.getDate() : 1)
     setSelectedDay(targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? today.getDate() : 1)
-    setCalendarRefreshKey(k => k + 1)
   }, [monthOffset, currentWeekNum, targetYear, actualMonth, today])
 
   const monthRecurring = useMemo(() => isFutureMonth ? recurringItems : [], [isFutureMonth, recurringItems])
@@ -266,12 +264,11 @@ export function MonthlyView({
         <div>
           <div className="px-4">
             <MonthlyCalendar
-              key={`history-calendar-${targetYear}-${actualMonth}-${calendarRefreshKey}`}
+              key={`history-calendar-${targetYear}-${actualMonth}`}
               showHeader={false}
               showDayDetail={false}
               targetYear={targetYear}
               targetMonth={actualMonth}
-              refreshKey={calendarRefreshKey}
               onDaySelect={(_, __, day) => setSelectedDay(day)}
             />
           </div>
