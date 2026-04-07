@@ -108,7 +108,7 @@ function MonthlyGridView({
                 key={day}
                 data-no-swipe="true"
                 onClick={() => onSelectDay(day)}
-                className="relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors w-full"
+                className="relative flex h-[52px] w-full cursor-pointer flex-col items-center justify-start rounded-lg pt-1 transition-colors"
                 style={selected ? { backgroundColor: 'var(--calendar-selected-day)' } : {}}
               >
                 <span className="relative flex items-center justify-center size-6 flex-shrink-0">
