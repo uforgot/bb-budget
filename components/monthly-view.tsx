@@ -66,7 +66,7 @@ function getCategoryLabel(tx: Transaction, categories: Category[]) {
   if (!cat) return '미분류'
   if (!cat.parent_id) return cat.name
   const parent = categories.find(c => c.id === cat.parent_id)
-  return parent ? `${parent.name} - ${cat.name}` : cat.name
+  return parent ? `${parent.name} · ${cat.name}` : cat.name
 }
 
 function getTypeLabel(type: Transaction['type'] | RecurringItem['type']) {
@@ -311,14 +311,14 @@ const WeekDayCard = memo(function WeekDayCard({
               >
                 <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
                   <span
-                    className="inline-flex flex-shrink-0 rounded-full px-3 py-1 text-xs text-white"
+                    className="inline-flex flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] text-white"
                     style={{ backgroundColor: tx.type === 'expense' ? semanticColors.expense : tx.type === 'income' ? semanticColors.income : semanticColors.savings }}
                   >
                     {getTypeLabel(tx.type)}
                   </span>
                   <div className="min-w-0 flex-1 truncate text-[14px] text-foreground">
                     <span>{label}</span>
-                    {memoText && <span className="text-[10px] text-muted-foreground"> - {memoText}</span>}
+                    {memoText && <span className="text-[10px] text-muted-foreground"> {memoText}</span>}
                   </div>
                 </div>
                 <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{tx.amount.toLocaleString()}</span>
@@ -330,14 +330,14 @@ const WeekDayCard = memo(function WeekDayCard({
             <div key={`${day}-recurring-${ri}`} className="flex items-center justify-between gap-3 opacity-40 italic">
               <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
                 <span
-                  className="inline-flex flex-shrink-0 rounded-full px-3 py-1 text-xs text-white"
+                  className="inline-flex flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] text-white"
                   style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}
                 >
                   {getTypeLabel(r.type)}
                 </span>
                 <div className="min-w-0 flex-1 truncate text-[14px] text-foreground">
                   <span>{r.categoryName || '미분류'}</span>
-                  {r.description && <span className="text-[10px] text-muted-foreground"> - {r.description}</span>}
+                  {r.description && <span className="text-[10px] text-muted-foreground"> {r.description}</span>}
                 </div>
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{r.amount.toLocaleString()}</span>
