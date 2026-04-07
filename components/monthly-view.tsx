@@ -264,13 +264,13 @@ const WeekDayCard = memo(function WeekDayCard({
       ref={registerRef}
       className={`mx-5 mb-3 rounded-[22px] bg-surface transition-colors ${highlighted ? 'ring-1 ring-accent-blue/40' : ''}`}
     >
-      <div className="px-5 pt-4 pb-3">
+      <div className="px-4 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
           <span className="text-[14px] font-semibold tabular-nums text-foreground">{date.getMonth() + 1}월 {day}일 {DAY_NAMES[date.getDay()]}요일</span>
         </div>
       </div>
 
-      <div className="px-5 pb-5">
+      <div className="px-4 pb-5">
         <div className="space-y-4">
           {txs.map(tx => {
             const label = getCategoryLabel(tx, categories)
@@ -525,7 +525,7 @@ export function MonthlyView({
 
       {viewMode === 'calendar' ? (
         <div>
-          <div className="px-5">
+          <div className="px-4">
             <MonthlyGridView
               year={targetYear}
               month={actualMonth}
