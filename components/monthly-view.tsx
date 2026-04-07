@@ -483,23 +483,13 @@ export function MonthlyView({
     const key = formatDateKey(targetYear, actualMonth, day)
     const node = dayRefs.current[key]
     setSelectedDay(day)
-    if (!node || !stickyRef.current) return
+    if (!node) return
     setHighlightedDate(key)
-
-    const doScroll = () => {
-      const stickyBottom = stickyRef.current?.getBoundingClientRect().bottom ?? 0
-      const cardTop = node.getBoundingClientRect().top
-      const delta = cardTop - stickyBottom - 8
-      const top = Math.max(0, window.scrollY + delta)
-      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
-    }
-
-    if (stickyRef.current.getBoundingClientRect().top === 0) {
-      doScroll()
-    } else {
-      requestAnimationFrame(() => requestAnimationFrame(doScroll))
-    }
-
+    const stickyBottom = stickyRef.current?.getBoundingClientRect().bottom ?? 0
+    const cardTop = node.getBoundingClientRect().top
+    const delta = cardTop - stickyBottom - 8
+    const top = Math.max(0, window.scrollY + delta)
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
 
