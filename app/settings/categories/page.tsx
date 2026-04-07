@@ -218,7 +218,7 @@ export default function CategoriesSettings() {
     const children = childrenOf(editingParent.id)
     return (
       <div className="min-h-dvh bg-background">
-        <header className="relative flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14">
+        <header className="relative flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14">
           <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
@@ -332,7 +332,7 @@ export default function CategoriesSettings() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="relative flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14">
+      <header className="relative flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14">
         <button onClick={() => router.back()} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m15 18-6-6 6-6" />
