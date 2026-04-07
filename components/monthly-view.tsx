@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { MonthlyCalendar } from '@/components/monthly-calendar'
 import { type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { TxRow } from '@/components/tx-row'
@@ -36,6 +35,14 @@ function formatDateKey(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
 
+function formatAmount(amount: number): string {
+  if (amount >= 10000) {
+    const man = Math.floor(amount / 10000)
+    return `${man}만`
+  }
+  return amount.toLocaleString()
+}
+
 interface RecurringItem {
   day: number
   type: string
@@ -56,6 +63,122 @@ interface MonthlyViewProps {
   setAutoExpanded: (v: boolean) => void
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
+}
+
+function MonthlyGridView({
+  year,
+  month,
+  selectedDay,
+  dailySummaries,
+  isFutureMonth,
+  onSelectDay,
+}: {
+  year: number
+  month: number
+  selectedDay: number
+  dailySummaries: Map<number, { income: number; expense: number }>
+  isFutureMonth: boolean
+  onSelectDay: (day: number) => void
+}) {
+  const today = new Date()
+  const isCurrentMonth = today.getFullYear() === year && today.getMonth() + 1 === month
+  const todayDate = today.getDate()
+  const firstDayWeekday = (new Date(year, month - 1, 1).getDay() + 6) % 7
+  const daysInMonth = new Date(year, month, 0).getDate()
+
+  const cells: (number | null)[] = []
+  for (let i = 0; i < firstDayWeekday; i++) cells.push(null)
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d)
+
+  return (
+    <div>
+      <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
+        {WEEKDAYS_MON.map(day => (
+          <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
+        ))}
+      </div>
+      <div className="w-full px-0">
+        <div className="h-2" />
+        <div className="grid grid-cols-7">
+          {cells.map((day, i) => {
+            if (!day) return <div key={`e-${i}`} className="h-[52px]" />
+
+            const dayData = dailySummaries.get(day)
+            const isToday = isCurrentMonth && day === todayDate
+            const selected = selectedDay === day
+
+            return (
+              <div
+                key={day}
+                onClick={() => onSelectDay(day)}
+                className="relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors"
+                style={selected ? { backgroundColor: 'var(--calendar-selected-day)' } : {}}
+              >
+                <span className="relative flex items-center justify-center size-6 flex-shrink-0">
+                  {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
+                  <span className={`relative text-sm tabular-nums leading-none ${isToday ? 'text-white font-bold' : 'text-foreground'}`}>
+                    {day}
+                  </span>
+                </span>
+                <div className="flex flex-col items-center gap-0 mt-0.5">
+                  {(dayData?.expense ?? 0) > 0 && (
+                    <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: semanticColors.expense }}>
+                      {formatAmount(dayData!.expense)}
+                    </span>
+                  )}
+                  {(dayData?.income ?? 0) > 0 && (
+                    <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: '#14b8a6' }}>
+                      {formatAmount(dayData!.income)}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function WeekStripView({
+  year,
+  month,
+  weekDays,
+  focusedWeekDay,
+  onSelectDay,
+}: {
+  year: number
+  month: number
+  weekDays: number[]
+  focusedWeekDay: number | null
+  onSelectDay: (day: number) => void
+}) {
+  return (
+    <div className="px-4">
+      <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
+        {WEEKDAYS_MON.map(day => (
+          <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-y-1 pt-2">
+        {weekDays.map(day => {
+          const selected = focusedWeekDay === day
+          return (
+            <button
+              key={day}
+              data-no-swipe="true"
+              onClick={() => onSelectDay(day)}
+              className="flex flex-col items-center gap-1 pb-2"
+            >
+              <span className="text-[10px] font-medium text-muted-foreground">{WEEKDAYS_MON[(new Date(year, month - 1, day).getDay() + 6) % 7]}</span>
+              <span className={`flex size-8 items-center justify-center rounded-full text-[14px] font-semibold tabular-nums ${selected ? 'bg-accent-blue text-white' : 'bg-surface text-foreground'}`}>{day}</span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 export function MonthlyView({
@@ -111,22 +234,15 @@ export function MonthlyView({
   const [viewMode, setViewMode] = useState<ViewMode>('calendar')
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
   const [selectedDay, setSelectedDay] = useState(defaultDay)
-  const [focusedWeekDay, setFocusedWeekDay] = useState<number | null>(defaultDay)
-  const syncRef = useRef({ monthKey: '', day: -1, week: -1 })
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
 
   useEffect(() => {
-    const monthKey = `${targetYear}-${actualMonth}`
-    if (syncRef.current.monthKey === monthKey) return
-    syncRef.current.monthKey = monthKey
-    syncRef.current.day = defaultDay
-    syncRef.current.week = currentWeekNum
     setViewMode('calendar')
-    setSelectedDay(defaultDay)
     setSelectedWeek(currentWeekNum)
-    setFocusedWeekDay(defaultDay)
-  }, [targetYear, actualMonth, defaultDay, currentWeekNum])
+    setSelectedDay(defaultDay)
+    setHighlightedDate(null)
+  }, [targetYear, actualMonth, currentWeekNum, defaultDay])
 
   const monthRecurring = useMemo(() => isFutureMonth ? recurringItems : [], [isFutureMonth, recurringItems])
 
@@ -203,25 +319,17 @@ export function MonthlyView({
     return (groupedWeekTxs.get(key)?.length ?? 0) > 0 || (groupedWeekRecurring.get(key)?.length ?? 0) > 0
   })
 
-  const handleCalendarDaySelect = (day: number) => {
-    if (syncRef.current.day === day) return
-    syncRef.current.day = day
-    setSelectedDay(day)
-  }
-
   const handleWeekTabClick = (week: number) => {
-    if (syncRef.current.week === week && viewMode === 'week') return
-    syncRef.current.week = week
     setViewMode('week')
     setSelectedWeek(week)
     const { startDay } = getWeekDateRange(targetYear, actualMonth, week)
-    setFocusedWeekDay(startDay)
+    setSelectedDay(startDay)
   }
 
   const jumpToDay = (day: number) => {
     const key = formatDateKey(targetYear, actualMonth, day)
     const node = dayRefs.current[key]
-    setFocusedWeekDay(day)
+    setSelectedDay(day)
     setHighlightedDate(key)
     node?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
@@ -268,13 +376,13 @@ export function MonthlyView({
       {viewMode === 'calendar' ? (
         <div>
           <div className="px-4">
-            <MonthlyCalendar
-              key={`history-calendar-${targetYear}-${actualMonth}`}
-              showHeader={false}
-              showDayDetail={false}
-              targetYear={targetYear}
-              targetMonth={actualMonth}
-              onDaySelect={(_, __, day) => handleCalendarDaySelect(day)}
+            <MonthlyGridView
+              year={targetYear}
+              month={actualMonth}
+              selectedDay={selectedDay}
+              dailySummaries={dailySummaries}
+              isFutureMonth={isFutureMonth}
+              onSelectDay={setSelectedDay}
             />
           </div>
 
@@ -327,29 +435,13 @@ export function MonthlyView({
         </div>
       ) : (
         <div>
-          <div className="px-4">
-            <div className="grid grid-cols-7 pt-3 pb-2 mb-1 border-b border-border px-0">
-              {WEEKDAYS_MON.map(day => (
-                <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-y-1 pt-2">
-              {weekDays.map(day => {
-                const selected = focusedWeekDay === day
-                return (
-                  <button
-                    key={day}
-                    data-no-swipe="true"
-                    onClick={() => jumpToDay(day)}
-                    className="flex flex-col items-center gap-1 pb-2"
-                  >
-                    <span className="text-[10px] font-medium text-muted-foreground">{WEEKDAYS_MON[(new Date(targetYear, actualMonth - 1, day).getDay() + 6) % 7]}</span>
-                    <span className={`flex size-8 items-center justify-center rounded-full text-[14px] font-semibold tabular-nums ${selected ? 'bg-accent-blue text-white' : 'bg-surface text-foreground'}`}>{day}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+          <WeekStripView
+            year={targetYear}
+            month={actualMonth}
+            weekDays={weekDays}
+            focusedWeekDay={selectedDay}
+            onSelectDay={jumpToDay}
+          />
 
           <div className="mx-5 mb-3 mt-4 flex gap-3">
             <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
