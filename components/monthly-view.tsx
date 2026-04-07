@@ -158,12 +158,14 @@ const WeekStripView = memo(function WeekStripView({
   weekDays,
   focusedWeekDay,
   onSelectDay,
+  registerDayButton,
 }: {
   year: number
   month: number
   weekDays: number[]
   focusedWeekDay: number | null
   onSelectDay: (day: number) => void
+  registerDayButton: (day: number, node: HTMLButtonElement | null) => void
 }) {
   const firstWeekday = weekDays.length > 0 ? (new Date(year, month - 1, weekDays[0]).getDay() + 6) % 7 : 0
   const leadingEmpty = Array.from({ length: firstWeekday }, (_, i) => i)
@@ -180,6 +182,7 @@ const WeekStripView = memo(function WeekStripView({
           return (
             <button
               key={day}
+              ref={node => registerDayButton(day, node)}
               data-no-swipe="true"
               onClick={() => onSelectDay(day)}
               className={`flex h-[64px] flex-col items-center justify-center rounded-[22px] transition-colors ${selected ? 'bg-accent-blue text-white' : 'bg-background text-foreground'}`}
@@ -314,12 +317,12 @@ const WeekDayCard = memo(function WeekDayCard({
         </div>
 
         <div className="mt-4 border-t border-border pt-3 space-y-2">
-          <div className="flex items-center justify-between text-[14px] text-muted-foreground">
-            <span className="font-medium text-muted-foreground">수입</span>
+          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
+            <span className="font-normal text-muted-foreground">수입</span>
             <span className="font-semibold tabular-nums text-muted-foreground">₩{dayIncome.toLocaleString()}</span>
           </div>
-          <div className="flex items-center justify-between text-[14px] text-muted-foreground">
-            <span className="font-medium text-muted-foreground">지출</span>
+          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
+            <span className="font-normal text-muted-foreground">지출</span>
             <span className="font-semibold tabular-nums text-muted-foreground">₩{dayExpense.toLocaleString()}</span>
           </div>
         </div>
@@ -382,6 +385,8 @@ export function MonthlyView({
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
   const [selectedDay, setSelectedDay] = useState(defaultDay)
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const weekDayButtonRefs = useRef<Record<number, HTMLButtonElement | null>>({})
+  const stickyRef = useRef<HTMLDivElement | null>(null)
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
 
   useEffect(() => {
@@ -480,7 +485,10 @@ export function MonthlyView({
     setSelectedDay(day)
     if (!node) return
     setHighlightedDate(key)
-    const top = node.getBoundingClientRect().top + window.scrollY - 118
+    const stickyBottom = stickyRef.current?.getBoundingClientRect().bottom ?? 0
+    const cardTop = node.getBoundingClientRect().top
+    const delta = cardTop - stickyBottom - 8
+    const top = Math.max(0, window.scrollY + delta)
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
@@ -501,7 +509,7 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      <div className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
+      <div ref={stickyRef} className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
         <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
           <div className="flex gap-2" style={{ width: 'max-content' }}>
             <button
@@ -556,6 +564,7 @@ export function MonthlyView({
             weekDays={weekDays}
             focusedWeekDay={selectedDay}
             onSelectDay={jumpToDay}
+            registerDayButton={(day, node) => { weekDayButtonRefs.current[day] = node }}
           />
         </div>
       )}
@@ -563,13 +572,13 @@ export function MonthlyView({
 
       {viewMode === 'week' && (
         <>
-          <div className="mx-5 mb-3 mt-0 flex gap-3">
+          <div className="mx-5 mb-3 mt-4 flex gap-3">
             <div className="flex-1 bg-surface rounded-[22px] px-4 pt-4 pb-3">
-              <p className="text-[14px] font-semibold text-foreground mb-1">{selectedWeek}주 차 지출</p>
+              <p className="text-[14px] font-semibold text-foreground mb-1">주간 지출</p>
               <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{weekExpense.toLocaleString()}</p>
             </div>
             <div className="flex-1 bg-surface rounded-[22px] px-4 pt-4 pb-3">
-              <p className="text-[14px] font-semibold text-foreground mb-1">{selectedWeek}주 차 수입</p>
+              <p className="text-[14px] font-semibold text-foreground mb-1">주간 수입</p>
               <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{weekIncome.toLocaleString()}</p>
             </div>
           </div>
