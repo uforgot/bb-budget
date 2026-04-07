@@ -406,7 +406,8 @@ export function MonthlyView({
     setSelectedDay(day)
     if (!node) return
     setHighlightedDate(key)
-    node.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const top = node.getBoundingClientRect().top + window.scrollY - 132
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
 
