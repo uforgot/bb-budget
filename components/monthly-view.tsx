@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { TxRow } from '@/components/tx-row'
@@ -61,7 +61,7 @@ interface MonthlyViewProps {
   onDeleted: () => void
 }
 
-function MonthlyGridView({
+const MonthlyGridView = memo(function MonthlyGridView({
   year,
   month,
   selectedDay,
@@ -136,9 +136,9 @@ function MonthlyGridView({
       </div>
     </div>
   )
-}
+})
 
-function WeekStripView({
+const WeekStripView = memo(function WeekStripView({
   year,
   month,
   weekDays,
@@ -176,7 +176,78 @@ function WeekStripView({
       </div>
     </div>
   )
-}
+})
+
+const CalendarDayDetail = memo(function CalendarDayDetail({
+  selectedDay,
+  calendarDayTxs,
+  calendarDayRecurring,
+  calendarDayIncome,
+  calendarDayExpense,
+  categories,
+  onEdit,
+  onDeleted,
+}: {
+  selectedDay: number
+  calendarDayTxs: Transaction[]
+  calendarDayRecurring: RecurringItem[]
+  calendarDayIncome: number
+  calendarDayExpense: number
+  categories: Category[]
+  onEdit: (tx: Transaction) => void
+  onDeleted: () => void
+}) {
+  return (
+    <>
+      <div className="mx-5 mb-3 mt-4 flex gap-3">
+        <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+          <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
+          <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{calendarDayExpense.toLocaleString()}</p>
+        </div>
+        <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
+          <p className="text-[14px] font-semibold text-muted-foreground mb-1">수입</p>
+          <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{calendarDayIncome.toLocaleString()}</p>
+        </div>
+      </div>
+
+      <div className="flex flex-col px-4 pb-8">
+        {calendarDayTxs.length === 0 && calendarDayRecurring.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
+        ) : (
+          <>
+            {calendarDayTxs.map((tx, index) => (
+              <TxRow
+                key={tx.id}
+                tx={tx}
+                categories={categories}
+                showDate={false}
+                dateLabel={index === 0 ? `${selectedDay}일` : undefined}
+                emphasizeDateLabel
+                emphasizeAmount
+                onEdit={onEdit}
+                onDeleted={onDeleted}
+              />
+            ))}
+            {calendarDayRecurring.map((r, ri) => (
+              <div key={`calendar-recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border px-5 py-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-14 flex-shrink-0">{ri === 0 ? <span className="text-[14px] font-semibold">예정</span> : null}</div>
+                  <div className="flex-1 min-w-0 flex items-center gap-2">
+                    <span className="text-xs text-white px-3 py-1 rounded-full inline-block" style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}>
+                      {r.categoryName || '미분류'}
+                    </span>
+                  </div>
+                  <span className="text-sm font-semibold tabular-nums flex-shrink-0">₩{r.amount.toLocaleString()}</span>
+                </div>
+                {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </>
+  )
+})
 
 export function MonthlyView({
   monthOffset, transactions, categories, recurringItems,
@@ -267,9 +338,9 @@ export function MonthlyView({
     .filter(t => new Date(t.date).getDate() === selectedDay)
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()), [monthTxs, selectedDay])
 
-  const calendarDayRecurring = monthRecurring.filter(r => r.day === selectedDay)
-  const calendarDayIncome = (dailySummaries.get(selectedDay)?.income ?? 0)
-  const calendarDayExpense = (dailySummaries.get(selectedDay)?.expense ?? 0)
+  const calendarDayRecurring = useMemo(() => monthRecurring.filter(r => r.day === selectedDay), [monthRecurring, selectedDay])
+  const calendarDayIncome = dailySummaries.get(selectedDay)?.income ?? 0
+  const calendarDayExpense = dailySummaries.get(selectedDay)?.expense ?? 0
 
   const weekTxs = useMemo(() => monthTxs
     .filter(t => getWeekNumFromDate(t.date) === selectedWeek)
@@ -278,9 +349,9 @@ export function MonthlyView({
       return dateDiff !== 0 ? dateDiff : new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     }), [monthTxs, selectedWeek])
 
-  const weekRecurring = isFutureMonth
+  const weekRecurring = useMemo(() => isFutureMonth
     ? recurringItems.filter(r => getWeekNum(targetYear, actualMonth, r.day) === selectedWeek)
-    : []
+    : [], [isFutureMonth, recurringItems, targetYear, actualMonth, selectedWeek])
 
   const weekIncome = weekTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
     + weekRecurring.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0)
@@ -311,10 +382,10 @@ export function MonthlyView({
     return groups
   }, [weekRecurring, targetYear, actualMonth])
 
-  const weekSectionDays = weekDays.filter(day => {
+  const weekSectionDays = useMemo(() => weekDays.filter(day => {
     const key = formatDateKey(targetYear, actualMonth, day)
     return (groupedWeekTxs.get(key)?.length ?? 0) > 0 || (groupedWeekRecurring.get(key)?.length ?? 0) > 0
-  })
+  }), [weekDays, groupedWeekTxs, groupedWeekRecurring, targetYear, actualMonth])
 
   const handleWeekTabClick = (week: number) => {
     setViewMode('week')
@@ -385,52 +456,16 @@ export function MonthlyView({
             />
           </div>
 
-          <div className="mx-5 mb-3 mt-4 flex gap-3">
-            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
-              <p className="text-[14px] font-semibold text-muted-foreground mb-1">지출</p>
-              <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{calendarDayExpense.toLocaleString()}</p>
-            </div>
-            <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
-              <p className="text-[14px] font-semibold text-muted-foreground mb-1">수입</p>
-              <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{calendarDayIncome.toLocaleString()}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col px-4 pb-8">
-            {calendarDayTxs.length === 0 && calendarDayRecurring.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
-            ) : (
-              <>
-                {calendarDayTxs.map((tx, index) => (
-                  <TxRow
-                    key={tx.id}
-                    tx={tx}
-                    categories={categories}
-                    showDate={false}
-                    dateLabel={index === 0 ? `${selectedDay}일` : undefined}
-                    emphasizeDateLabel
-                    emphasizeAmount
-                    onEdit={onEdit}
-                    onDeleted={onDeleted}
-                  />
-                ))}
-                {calendarDayRecurring.map((r, ri) => (
-                  <div key={`calendar-recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border px-5 py-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-14 flex-shrink-0">{ri === 0 ? <span className="text-[14px] font-semibold">예정</span> : null}</div>
-                      <div className="flex-1 min-w-0 flex items-center gap-2">
-                        <span className="text-xs text-white px-3 py-1 rounded-full inline-block" style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}>
-                          {r.categoryName || '미분류'}
-                        </span>
-                      </div>
-                      <span className="text-sm font-semibold tabular-nums flex-shrink-0">₩{r.amount.toLocaleString()}</span>
-                    </div>
-                    {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
+          <CalendarDayDetail
+            selectedDay={selectedDay}
+            calendarDayTxs={calendarDayTxs}
+            calendarDayRecurring={calendarDayRecurring}
+            calendarDayIncome={calendarDayIncome}
+            calendarDayExpense={calendarDayExpense}
+            categories={categories}
+            onEdit={onEdit}
+            onDeleted={onDeleted}
+          />
         </div>
       ) : (
         <div>
