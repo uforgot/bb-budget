@@ -7,6 +7,7 @@ interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
   children: React.ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
 const THRESHOLD = 80;
@@ -57,7 +58,7 @@ function FlowerSpinner({ progress, spinning }: { progress: number; spinning: boo
   );
 }
 
-export function PullToRefresh({ onRefresh, children, className = '' }: PullToRefreshProps) {
+export function PullToRefresh({ onRefresh, children, className = '', disabled = false }: PullToRefreshProps) {
   const [pullDistance, setPullDistance] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const startYRef = useRef(0);
@@ -65,15 +66,16 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (disabled) return;
     if (window.scrollY === 0) {
       startYRef.current = e.touches[0].clientY;
       pullingRef.current = true;
     }
-  }, []);
+  }, [disabled]);
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      if (!pullingRef.current || refreshing) return;
+      if (disabled || !pullingRef.current || refreshing) return;
       const diff = e.touches[0].clientY - startYRef.current;
       if (diff > 0 && window.scrollY === 0) {
         setPullDistance(Math.min(diff * 0.5, 120));
@@ -83,7 +85,7 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
   );
 
   const handleTouchEnd = useCallback(async () => {
-    if (!pullingRef.current) return;
+    if (disabled || !pullingRef.current) return;
     pullingRef.current = false;
     if (pullDistance >= THRESHOLD && !refreshing) {
       setRefreshing(true);
@@ -95,7 +97,7 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
     } else {
       setPullDistance(0);
     }
-  }, [pullDistance, refreshing, onRefresh]);
+  }, [disabled, pullDistance, refreshing, onRefresh]);
 
   const progress = Math.min(pullDistance / THRESHOLD, 1);
 

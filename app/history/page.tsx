@@ -67,7 +67,7 @@ export default function History() {
   }
 
   return (
-    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData}>
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData} disabled>
       <>
       {/* 상단 바 */}
       <div className="sticky top-0 z-30 bg-background px-4">
