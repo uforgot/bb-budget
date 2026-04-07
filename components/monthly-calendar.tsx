@@ -453,7 +453,7 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
             {isSheet && (
               <div className="fixed inset-0 z-40 bg-black/35" onClick={() => setSelectedDay(null)} />
             )}
-            <div className={isSheet ? "fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+24px)] shadow-[0_-12px_40px_rgba(0,0,0,0.18)]" : "mt-1"}>
+            <div className={isSheet ? "fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] shadow-[0_-12px_40px_rgba(0,0,0,0.18)]" : "mt-1"}>
               {isSheet && (
                 <>
                   <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-muted" />
