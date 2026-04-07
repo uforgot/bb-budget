@@ -480,7 +480,7 @@ export function MonthlyView({
     setSelectedDay(day)
     if (!node) return
     setHighlightedDate(key)
-    const top = node.getBoundingClientRect().top + window.scrollY - 132
+    const top = node.getBoundingClientRect().top + window.scrollY - 118
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
@@ -501,7 +501,7 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      <div className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-3' : ''}`}>
+      <div className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
         <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
           <div className="flex gap-2" style={{ width: 'max-content' }}>
             <button
