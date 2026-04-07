@@ -501,7 +501,7 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      <div className="overflow-x-auto scrollbar-hide px-4 mb-4">
+      <div className="overflow-x-auto scrollbar-hide px-5 mb-4">
         <div className="flex gap-2" style={{ width: 'max-content' }}>
           <button
             data-no-swipe="true"
