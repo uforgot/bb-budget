@@ -69,6 +69,12 @@ function getCategoryLabel(tx: Transaction, categories: Category[]) {
   return parent ? `${parent.name} - ${cat.name}` : cat.name
 }
 
+function getTypeLabel(type: Transaction['type'] | RecurringItem['type']) {
+  if (type === 'income') return '수입'
+  if (type === 'savings') return '저축'
+  return '지출'
+}
+
 const MonthlyGridView = memo(function MonthlyGridView({
   year,
   month,
@@ -308,9 +314,12 @@ const WeekDayCard = memo(function WeekDayCard({
                     className="inline-flex flex-shrink-0 rounded-full px-3 py-1 text-xs text-white"
                     style={{ backgroundColor: tx.type === 'expense' ? semanticColors.expense : tx.type === 'income' ? semanticColors.income : semanticColors.savings }}
                   >
-                    {label}
+                    {getTypeLabel(tx.type)}
                   </span>
-                  {memoText && <span className="truncate text-[10px] text-muted-foreground">{memoText}</span>}
+                  <div className="min-w-0 flex-1 truncate text-[14px] text-foreground">
+                    <span>{label}</span>
+                    {memoText && <span className="text-[10px] text-muted-foreground"> - {memoText}</span>}
+                  </div>
                 </div>
                 <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{tx.amount.toLocaleString()}</span>
               </button>
@@ -324,9 +333,12 @@ const WeekDayCard = memo(function WeekDayCard({
                   className="inline-flex flex-shrink-0 rounded-full px-3 py-1 text-xs text-white"
                   style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}
                 >
-                  {r.categoryName || '미분류'}
+                  {getTypeLabel(r.type)}
                 </span>
-                {r.description && <span className="truncate text-[10px] text-muted-foreground">{r.description}</span>}
+                <div className="min-w-0 flex-1 truncate text-[14px] text-foreground">
+                  <span>{r.categoryName || '미분류'}</span>
+                  {r.description && <span className="text-[10px] text-muted-foreground"> - {r.description}</span>}
+                </div>
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{r.amount.toLocaleString()}</span>
             </div>
