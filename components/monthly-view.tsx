@@ -61,6 +61,14 @@ interface MonthlyViewProps {
   onDeleted: () => void
 }
 
+function getCategoryLabel(tx: Transaction, categories: Category[]) {
+  const cat = tx.category as Category | undefined
+  if (!cat) return '미분류'
+  if (!cat.parent_id) return cat.name
+  const parent = categories.find(c => c.id === cat.parent_id)
+  return parent ? `${parent.name} - ${cat.name}` : cat.name
+}
+
 const MonthlyGridView = memo(function MonthlyGridView({
   year,
   month,
@@ -251,6 +259,74 @@ const CalendarDayDetail = memo(function CalendarDayDetail({
         )}
       </div>
     </>
+  )
+})
+
+const WeekDayCard = memo(function WeekDayCard({
+  day,
+  date,
+  txs,
+  recurring,
+  categories,
+  highlighted,
+  onEdit,
+  onDeleted,
+  registerRef,
+}: {
+  day: number
+  date: Date
+  txs: Transaction[]
+  recurring: RecurringItem[]
+  categories: Category[]
+  highlighted: boolean
+  onEdit: (tx: Transaction) => void
+  onDeleted: () => void
+  registerRef: (node: HTMLDivElement | null) => void
+}) {
+  return (
+    <div
+      ref={registerRef}
+      className={`mx-4 mb-3 rounded-[22px] bg-surface transition-colors ${highlighted ? 'ring-1 ring-accent-blue/40' : ''}`}
+    >
+      <div className="px-4 pt-4 pb-3">
+        <div className="flex items-baseline gap-2">
+          <span className="text-[16px] font-semibold tabular-nums">{day}일</span>
+          <span className="text-[12px] text-muted-foreground">{DAY_NAMES[date.getDay()]}요일</span>
+        </div>
+      </div>
+
+      <div className="px-4 pb-3">
+        <div className="space-y-2">
+          {txs.map(tx => {
+            const label = getCategoryLabel(tx, categories)
+            const memoText = tx.description?.trim()
+            return (
+              <button
+                key={tx.id}
+                onClick={() => onEdit(tx)}
+                className="flex w-full items-center justify-between gap-3 text-left"
+              >
+                <div className="min-w-0 flex-1 text-[14px]">
+                  <span className="font-medium text-foreground">{label}</span>
+                  {memoText && <span className="text-muted-foreground"> - {memoText}</span>}
+                </div>
+                <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{tx.amount.toLocaleString()}</span>
+              </button>
+            )
+          })}
+
+          {recurring.map((r, ri) => (
+            <div key={`${day}-recurring-${ri}`} className="flex items-center justify-between gap-3 opacity-40 italic">
+              <div className="min-w-0 flex-1 text-[14px]">
+                <span className="font-medium text-foreground">{r.categoryName || '미분류'}</span>
+                {r.description && <span className="text-muted-foreground"> - {r.description}</span>}
+              </div>
+              <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{r.amount.toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 })
 
@@ -494,7 +570,7 @@ export function MonthlyView({
             </div>
           </div>
 
-          <div className="flex flex-col px-4 pb-8">
+          <div className="pb-8">
             {weekSectionDays.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
             ) : (
@@ -504,44 +580,18 @@ export function MonthlyView({
                 const recurring = groupedWeekRecurring.get(key) ?? []
                 const date = new Date(targetYear, actualMonth - 1, day)
                 return (
-                  <div
+                  <WeekDayCard
                     key={key}
-                    ref={node => { dayRefs.current[key] = node }}
-                    className={`rounded-[20px] transition-colors ${highlightedDate === key ? 'bg-surface/80' : ''}`}
-                  >
-                    <div className="px-5 pt-4 pb-2">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[16px] font-semibold tabular-nums">{day}일</span>
-                        <span className="text-[12px] text-muted-foreground">{DAY_NAMES[date.getDay()]}요일</span>
-                      </div>
-                    </div>
-                    {txs.map(tx => (
-                      <TxRow
-                        key={tx.id}
-                        tx={tx}
-                        categories={categories}
-                        showDate={false}
-                        emphasizeAmount
-                        onEdit={onEdit}
-                        onDeleted={onDeleted}
-                      />
-                    ))}
-                    {recurring.map((r, ri) => (
-                      <div key={`${key}-recurring-${ri}`} className="opacity-40 italic border-dashed border-b border-border px-5 py-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-14 flex-shrink-0">{ri === 0 && txs.length === 0 ? <span className="text-[14px] font-semibold">예정</span> : null}</div>
-                          <div className="flex-1 min-w-0 flex items-center gap-2">
-                            <span className="text-xs text-white px-3 py-1 rounded-full inline-block" style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}>
-                              {r.categoryName || '미분류'}
-                            </span>
-                            <span className="text-[9px] bg-accent-coral/20 text-accent-coral px-1.5 py-0.5 rounded">예정</span>
-                          </div>
-                          <span className="text-sm font-semibold tabular-nums flex-shrink-0">₩{r.amount.toLocaleString()}</span>
-                        </div>
-                        {r.description && <p className="text-[10px] text-muted-foreground truncate mt-1 pl-[68px]">{r.description}</p>}
-                      </div>
-                    ))}
-                  </div>
+                    day={day}
+                    date={date}
+                    txs={txs}
+                    recurring={recurring}
+                    categories={categories}
+                    highlighted={highlightedDate === key}
+                    onEdit={onEdit}
+                    onDeleted={onDeleted}
+                    registerRef={node => { dayRefs.current[key] = node }}
+                  />
                 )
               })
             )}
