@@ -492,12 +492,12 @@ export function MonthlyView({
     if (isSticky) {
       const stickyBottom = stickyRect.bottom
       const cardTop = node.getBoundingClientRect().top
-      const delta = cardTop - stickyBottom + 20
+      const delta = cardTop - stickyBottom - 8
       const top = Math.max(0, window.scrollY + delta)
       window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     } else {
       const stickyHeight = stickyRef.current.offsetHeight
-      const targetY = Math.max(0, node.offsetTop - stickyHeight + 20)
+      const targetY = Math.max(0, node.offsetTop - stickyHeight - 8)
       window.scrollTo({ top: targetY, behavior: 'smooth' })
     }
 
