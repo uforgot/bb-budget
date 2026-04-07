@@ -594,11 +594,11 @@ export function MonthlyView({
         <>
           <div className="mx-5 mb-3 mt-4 flex gap-3">
             <div className="flex-1 bg-surface rounded-[22px] px-4 pt-4 pb-3">
-              <p className="text-[14px] font-semibold text-foreground mb-1">주간 지출</p>
+              <p className="text-[14px] font-semibold text-foreground mb-0">주간 지출</p>
               <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{weekExpense.toLocaleString()}</p>
             </div>
             <div className="flex-1 bg-surface rounded-[22px] px-4 pt-4 pb-3">
-              <p className="text-[14px] font-semibold text-foreground mb-1">주간 수입</p>
+              <p className="text-[14px] font-semibold text-foreground mb-0">주간 수입</p>
               <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.income }}>₩{weekIncome.toLocaleString()}</p>
             </div>
           </div>
