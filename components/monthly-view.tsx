@@ -57,10 +57,6 @@ interface MonthlyViewProps {
   transactions: Transaction[]
   categories: Category[]
   recurringItems: RecurringItem[]
-  expandedWeeks: Set<number>
-  autoExpanded: boolean
-  setExpandedWeeks: (v: Set<number>) => void
-  setAutoExpanded: (v: boolean) => void
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }
@@ -108,10 +104,11 @@ function MonthlyGridView({
             const selected = selectedDay === day
 
             return (
-              <div
+              <button
                 key={day}
+                data-no-swipe="true"
                 onClick={() => onSelectDay(day)}
-                className="relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors"
+                className="relative flex flex-col items-center justify-start cursor-pointer pt-1 h-[52px] rounded-lg transition-colors w-full"
                 style={selected ? { backgroundColor: 'var(--calendar-selected-day)' } : {}}
               >
                 <span className="relative flex items-center justify-center size-6 flex-shrink-0">
@@ -132,7 +129,7 @@ function MonthlyGridView({
                     </span>
                   )}
                 </div>
-              </div>
+              </button>
             )
           })}
         </div>
@@ -324,14 +321,16 @@ export function MonthlyView({
     setSelectedWeek(week)
     const { startDay } = getWeekDateRange(targetYear, actualMonth, week)
     setSelectedDay(startDay)
+    setHighlightedDate(null)
   }
 
   const jumpToDay = (day: number) => {
     const key = formatDateKey(targetYear, actualMonth, day)
     const node = dayRefs.current[key]
     setSelectedDay(day)
+    if (!node) return
     setHighlightedDate(key)
-    node?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    node.scrollIntoView({ behavior: 'smooth', block: 'start' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
 

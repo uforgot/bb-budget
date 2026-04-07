@@ -14,8 +14,6 @@ export default function History() {
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Transaction[]>([])
-  const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set())
-  const [autoExpanded, setAutoExpanded] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -62,8 +60,6 @@ export default function History() {
 
   const goCurrentMonth = () => {
     setMonthOffset(0)
-    setExpandedWeeks(new Set())
-    setAutoExpanded(false)
   }
 
   return (
@@ -93,7 +89,7 @@ export default function History() {
             <label className="flex items-center gap-1 cursor-pointer">
               <select
                 value={currentYear}
-                onChange={e => { const y = Number(e.target.value); setMonthOffset((y - now.getFullYear()) * 12 + (currentMonth - (now.getMonth() + 1))); setExpandedWeeks(new Set()); setAutoExpanded(false) }}
+                onChange={e => { const y = Number(e.target.value); setMonthOffset((y - now.getFullYear()) * 12 + (currentMonth - (now.getMonth() + 1))) }}
                 className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
                 style={{ letterSpacing: '-1px' }}
               >
@@ -104,7 +100,7 @@ export default function History() {
             <label className="flex items-center cursor-pointer">
               <select
                 value={currentMonth}
-                onChange={e => { const m = Number(e.target.value); setMonthOffset((currentYear - now.getFullYear()) * 12 + (m - (now.getMonth() + 1))); setExpandedWeeks(new Set()); setAutoExpanded(false) }}
+                onChange={e => { const m = Number(e.target.value); setMonthOffset((currentYear - now.getFullYear()) * 12 + (m - (now.getMonth() + 1))) }}
                 className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
                 style={{ letterSpacing: '-1px' }}
               >
@@ -173,10 +169,6 @@ export default function History() {
           transactions={transactions}
           categories={categories}
           recurringItems={recurringItems}
-          expandedWeeks={expandedWeeks}
-          autoExpanded={autoExpanded}
-          setExpandedWeeks={setExpandedWeeks}
-          setAutoExpanded={setAutoExpanded}
           onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
           onDeleted={loadData}
         />
