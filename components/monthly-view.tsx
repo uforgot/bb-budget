@@ -298,8 +298,8 @@ const WeekDayCard = memo(function WeekDayCard({
         </div>
       </div>
 
-      <div className="px-4 pb-3">
-        <div className="space-y-3">
+      <div className="px-4 pb-5">
+        <div className="space-y-4">
           {txs.map(tx => {
             const label = getCategoryLabel(tx, categories)
             const memoText = tx.description?.trim()
@@ -311,14 +311,12 @@ const WeekDayCard = memo(function WeekDayCard({
               >
                 <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
                   <span
-                    className="inline-flex flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] text-white"
+                    className="size-2.5 flex-shrink-0 rounded-full"
                     style={{ backgroundColor: tx.type === 'expense' ? semanticColors.expense : tx.type === 'income' ? semanticColors.income : semanticColors.savings }}
-                  >
-                    {getTypeLabel(tx.type)}
-                  </span>
-                  <div className="min-w-0 flex-1 truncate text-[14px] text-foreground">
-                    <span>{label}</span>
-                    {memoText && <span className="text-[10px] text-muted-foreground"> {memoText}</span>}
+                  />
+                  <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden text-[14px] text-foreground">
+                    <span className="flex-shrink-0">{label}</span>
+                    {memoText && <span className="truncate text-[10px] text-muted-foreground">{memoText}</span>}
                   </div>
                 </div>
                 <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{tx.amount.toLocaleString()}</span>
@@ -330,14 +328,12 @@ const WeekDayCard = memo(function WeekDayCard({
             <div key={`${day}-recurring-${ri}`} className="flex items-center justify-between gap-3 opacity-40 italic">
               <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
                 <span
-                  className="inline-flex flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] text-white"
+                  className="size-2.5 flex-shrink-0 rounded-full"
                   style={{ backgroundColor: r.type === 'expense' ? semanticColors.expense : semanticColors.income }}
-                >
-                  {getTypeLabel(r.type)}
-                </span>
-                <div className="min-w-0 flex-1 truncate text-[14px] text-foreground">
-                  <span>{r.categoryName || '미분류'}</span>
-                  {r.description && <span className="text-[10px] text-muted-foreground"> {r.description}</span>}
+                />
+                <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden text-[14px] text-foreground">
+                  <span className="flex-shrink-0">{r.categoryName || '미분류'}</span>
+                  {r.description && <span className="truncate text-[10px] text-muted-foreground">{r.description}</span>}
                 </div>
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums">₩{r.amount.toLocaleString()}</span>
