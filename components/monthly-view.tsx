@@ -158,12 +158,14 @@ const WeekStripView = memo(function WeekStripView({
   weekDays,
   focusedWeekDay,
   onSelectDay,
+  registerDayButton,
 }: {
   year: number
   month: number
   weekDays: number[]
   focusedWeekDay: number | null
   onSelectDay: (day: number) => void
+  registerDayButton: (day: number, node: HTMLButtonElement | null) => void
 }) {
   const firstWeekday = weekDays.length > 0 ? (new Date(year, month - 1, weekDays[0]).getDay() + 6) % 7 : 0
   const leadingEmpty = Array.from({ length: firstWeekday }, (_, i) => i)
@@ -180,6 +182,7 @@ const WeekStripView = memo(function WeekStripView({
           return (
             <button
               key={day}
+              ref={node => registerDayButton(day, node)}
               data-no-swipe="true"
               onClick={() => onSelectDay(day)}
               className={`flex h-[64px] flex-col items-center justify-center rounded-[22px] transition-colors ${selected ? 'bg-accent-blue text-white' : 'bg-background text-foreground'}`}
@@ -382,6 +385,7 @@ export function MonthlyView({
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
   const [selectedDay, setSelectedDay] = useState(defaultDay)
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const weekDayButtonRefs = useRef<Record<number, HTMLButtonElement | null>>({})
   const stickyRef = useRef<HTMLDivElement | null>(null)
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
 
@@ -481,8 +485,11 @@ export function MonthlyView({
     setSelectedDay(day)
     if (!node) return
     setHighlightedDate(key)
-    const stickyHeight = stickyRef.current?.getBoundingClientRect().height ?? 0
-    const top = node.getBoundingClientRect().top + window.scrollY - stickyHeight + 18
+    const stickyRect = stickyRef.current?.getBoundingClientRect()
+    const buttonRect = weekDayButtonRefs.current[day]?.getBoundingClientRect()
+    const stickyHeight = stickyRect?.height ?? 0
+    const buttonOffset = buttonRect && stickyRect ? Math.max(0, buttonRect.top - stickyRect.top) : 0
+    const top = node.getBoundingClientRect().top + window.scrollY - stickyHeight + buttonOffset - 6
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     window.setTimeout(() => setHighlightedDate(current => current === key ? null : current), 1400)
   }
@@ -558,6 +565,7 @@ export function MonthlyView({
             weekDays={weekDays}
             focusedWeekDay={selectedDay}
             onSelectDay={jumpToDay}
+            registerDayButton={(day, node) => { weekDayButtonRefs.current[day] = node }}
           />
         </div>
       )}
