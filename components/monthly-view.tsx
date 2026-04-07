@@ -297,7 +297,7 @@ const WeekDayCard = memo(function WeekDayCard({
     >
       <div className="px-4 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
-          <span className="text-[16px] font-semibold tabular-nums">{day}일</span>
+          <span className="text-[14px] font-semibold tabular-nums">{day}일</span>
           <span className="text-[12px] text-muted-foreground">{DAY_NAMES[date.getDay()]}요일</span>
         </div>
       </div>
@@ -346,13 +346,13 @@ const WeekDayCard = memo(function WeekDayCard({
         </div>
 
         <div className="mt-4 border-t border-border pt-3 space-y-2">
-          <div className="flex items-center justify-between text-[13px]">
-            <span className="text-muted-foreground">수입</span>
-            <span className="font-semibold tabular-nums text-foreground">₩{dayIncome.toLocaleString()}</span>
+          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
+            <span>수입</span>
+            <span className="font-semibold tabular-nums">₩{dayIncome.toLocaleString()}</span>
           </div>
-          <div className="flex items-center justify-between text-[13px]">
-            <span className="text-muted-foreground">지출</span>
-            <span className="font-semibold tabular-nums text-foreground">₩{dayExpense.toLocaleString()}</span>
+          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
+            <span>지출</span>
+            <span className="font-semibold tabular-nums">₩{dayExpense.toLocaleString()}</span>
           </div>
         </div>
       </div>
