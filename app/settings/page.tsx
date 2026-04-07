@@ -11,7 +11,7 @@ export default function Settings() {
   return (
     <div className="min-h-dvh bg-background">
       {/* 헤더 */}
-      <header className="flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] h-14 bg-background">
+      <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14 bg-background">
         <button
           onClick={() => router.back()}
           className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
@@ -26,11 +26,11 @@ export default function Settings() {
 
       <main className="max-w-lg mx-auto">
         {/* 보기 설정 */}
-        <div className="px-4 pt-6 pb-2">
+        <div className="px-5 pt-6 pb-2">
           <p className="text-[14px] font-medium text-muted-foreground uppercase">보기 설정</p>
         </div>
 
-        <div className="mx-4 rounded-[22px] bg-surface">
+        <div className="mx-5 rounded-[22px] bg-surface">
           <div className="flex items-center justify-between px-4 py-3">
             <span className="text-[16px]">다크 모드</span>
             <button
@@ -51,11 +51,11 @@ export default function Settings() {
         </div>
 
         {/* 데이터 관리 */}
-        <div className="px-4 pt-6 pb-2">
+        <div className="px-5 pt-6 pb-2">
           <p className="text-[14px] font-medium text-muted-foreground uppercase">데이터 관리</p>
         </div>
 
-        <div className="mx-4 rounded-[22px] bg-surface">
+        <div className="mx-5 rounded-[22px] bg-surface">
           <Link
             href="/settings/categories"
             className="flex items-center justify-between px-4 py-4 border-b border-border"
