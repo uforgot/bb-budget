@@ -169,7 +169,7 @@ const WeekStripView = memo(function WeekStripView({
   const leadingEmpty = Array.from({ length: firstWeekday }, (_, i) => i)
 
   return (
-    <div className="px-4 mb-4">
+    <div className="px-5 mb-4">
       <div className="grid grid-cols-7 gap-2">
         {leadingEmpty.map(i => (
           <div key={`empty-${i}`} className="h-[64px]" />
@@ -262,15 +262,15 @@ const WeekDayCard = memo(function WeekDayCard({
   return (
     <div
       ref={registerRef}
-      className={`mx-4 mb-3 rounded-[22px] bg-surface transition-colors ${highlighted ? 'ring-1 ring-accent-blue/40' : ''}`}
+      className={`mx-5 mb-3 rounded-[22px] bg-surface transition-colors ${highlighted ? 'ring-1 ring-accent-blue/40' : ''}`}
     >
-      <div className="px-4 pt-4 pb-3">
+      <div className="px-5 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
           <span className="text-[14px] font-semibold tabular-nums text-foreground">{date.getMonth() + 1}월 {day}일 {DAY_NAMES[date.getDay()]}요일</span>
         </div>
       </div>
 
-      <div className="px-4 pb-5">
+      <div className="px-5 pb-5">
         <div className="space-y-4">
           {txs.map(tx => {
             const label = getCategoryLabel(tx, categories)
@@ -501,7 +501,7 @@ export function MonthlyView({
         hasPrev={prevTxs.length > 0}
       />
 
-      <div className="overflow-x-auto scrollbar-hide px-4 mb-4">
+      <div className="overflow-x-auto scrollbar-hide px-5 mb-4">
         <div className="flex gap-2" style={{ width: 'max-content' }}>
           <button
             data-no-swipe="true"
@@ -525,7 +525,7 @@ export function MonthlyView({
 
       {viewMode === 'calendar' ? (
         <div>
-          <div className="px-4">
+          <div className="px-5">
             <MonthlyGridView
               year={targetYear}
               month={actualMonth}
@@ -557,7 +557,7 @@ export function MonthlyView({
             onSelectDay={jumpToDay}
           />
 
-          <div className="mx-4 mb-3 mt-4 flex gap-3">
+          <div className="mx-5 mb-3 mt-4 flex gap-3">
             <div className="flex-1 bg-surface rounded-[22px] px-4 py-4">
               <p className="text-[14px] font-semibold text-muted-foreground mb-1">주간 지출</p>
               <p className="text-[20px] font-bold tabular-nums" style={{ color: semanticColors.expense }}>₩{weekExpense.toLocaleString()}</p>
