@@ -159,7 +159,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
           if (!inline) onClose()
           router.push('/settings/categories')
         }}
-        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-muted text-[16px] font-medium text-muted-foreground"
+        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-[#f5f5f7] dark:bg-muted text-[16px] font-medium text-muted-foreground"
       >
         카테고리 관리하기
       </button>

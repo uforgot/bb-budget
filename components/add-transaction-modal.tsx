@@ -342,7 +342,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                       }
                     }}
                     className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                      type === t ? typeColors[t].active : 'bg-muted text-muted-foreground'
+                      type === t ? typeColors[t].active : 'bg-[#f5f5f7] dark:bg-muted text-muted-foreground'
                     }`}
                   >
                     {t}
