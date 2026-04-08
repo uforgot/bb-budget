@@ -393,7 +393,7 @@ export function MonthlyView({
   const lastMonthKeyRef = useRef(`${targetYear}-${actualMonth}`)
 
   useEffect(() => {
-    if (forceCalendarView) setViewMode('calendar')
+    setViewMode(forceCalendarView ? 'calendar' : 'week')
   }, [forceCalendarView])
 
   useEffect(() => {
