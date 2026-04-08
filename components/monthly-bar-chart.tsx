@@ -61,9 +61,12 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
         <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: ITEM_W * 12 }}>
           {data.map(d => {
             const isSelected = d.month === selectedMonth
-            const barH = d.isFuture || d.value === 0
+            const hasValue = !d.isFuture && d.value > 0
+            const barH = d.isFuture
               ? 6
-              : Math.max(6, Math.round((d.value / maxValue) * MAX_H))
+              : hasValue
+                ? Math.max(6, Math.round((d.value / maxValue) * MAX_H))
+                : 0
             const barColor = d.isFuture
               ? 'rgba(255,255,255,0.08)'
               : isSelected ? color : 'var(--bar-muted-color)'
@@ -77,7 +80,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
                 className="flex flex-col items-center justify-end"
                 onClick={() => { if (!d.isFuture) setSelectedMonth(d.month) }}
               >
-                <div style={{ width: BAR_W, height: barH, backgroundColor: barColor, borderRadius, marginBottom: 8, flexShrink: 0 }} />
+                <div style={{ width: BAR_W, height: barH, backgroundColor: hasValue || d.isFuture ? barColor : 'transparent', borderRadius, marginBottom: 8, flexShrink: 0 }} />
                 <span style={{
                   fontSize: 10,
                   fontWeight: isSelected ? 600 : 400,
