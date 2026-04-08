@@ -103,13 +103,13 @@ const MonthlyGridView = memo(function MonthlyGridView({
 
   return (
     <div>
-      <div className="grid grid-cols-7 pt-3 pb-1 px-0">
+      <div className="grid grid-cols-7 pt-3 pb-0 px-0">
         {WEEKDAYS_MON.map(day => (
           <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
         ))}
       </div>
       <div className="w-full px-0">
-        <div className="h-2" />
+        <div className="h-0.5" />
         <div className="grid grid-cols-7">
           {cells.map((day, i) => {
             if (!day) return <div key={`e-${i}`} className="h-[52px]" />
