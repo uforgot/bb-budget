@@ -14,9 +14,9 @@ interface CategoryPickerProps {
 }
 
 const TYPE_COLOR: Record<'income' | 'expense' | 'savings', string> = {
-  income: 'bg-[#14b8a6]',
-  expense: 'bg-[#5865F2]',
-  savings: 'bg-accent-purple',
+  income: 'bg-[#ccfbf1] dark:bg-[#14b8a6]',
+  expense: 'bg-[#eef2ff] dark:bg-[#5865F2]',
+  savings: 'bg-[#f3e8ff] dark:bg-accent-purple',
 }
 const TYPE_CHILD_COLOR: Record<'income' | 'expense' | 'savings', string> = {
   income: 'bg-[#14b8a6] text-white',
@@ -120,7 +120,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
                       <span className={`text-[12px] font-medium ${
-                        isExpanded || isSelected ? 'text-foreground' : 'text-muted-foreground'
+                        isExpanded || isSelected ? 'text-foreground dark:text-white' : 'text-muted-foreground'
                       }`}>
                         {parent.name}
                       </span>
