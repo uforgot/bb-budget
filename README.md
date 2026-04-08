@@ -128,6 +128,46 @@
 | 저축 | #2dd4bf | /card-saving.png |
 | 잔액 | #2C2C2E | /card-balance.png |
 
+## Recent UX Changes (2026-04-07 ~ 2026-04-08)
+
+### History / Monthly page
+- History default entry now opens the current week instead of the old daily/home flow.
+- Home route (`/`) now redirects to `/history`.
+- Bottom nav daily tab was removed. Monthly/history is now the primary detailed browsing surface.
+- Header right action changed from text button to icon toggle:
+  - monthly/week mode shows a calendar icon
+  - calendar mode shows a list icon
+- Calendar mode was restructured:
+  - summary slider hidden
+  - week tab strip hidden
+  - calendar is shown directly under the year/month header
+  - clicking a day opens the daily detail card below
+
+### Weekly history view
+- Week strip redesigned as weekday+date pills.
+- Inactive week pills now use muted text with opacity instead of a hardcoded color.
+- Weekly summary card copy updated to `N주 차 지출` / `N주 차 수입`.
+- Weekly summary cards and daily detail cards were restyled toward an iOS Settings-like spacing system:
+  - outer spacing ~20px
+  - card inner padding ~16px
+- Day jump scroll logic was iterated many times; current baseline is the simpler sticky-aware version restored around commit history after multiple experiments.
+
+### Daily detail cards
+- Daily detail is now shown as rounded cards grouped by date.
+- Header format: `N월 N일 N요일`.
+- Category/detail rows were simplified to reduce noise.
+- Bottom summary rows now use:
+  - labels: 14px medium
+  - amounts: 14px semibold
+- Additional spacing was added between the date header and the first row.
+
+### Shared summary cards
+- Monthly/yearly summary slider internal padding and typography were tightened slightly.
+- Yearly chart section title color was aligned with history page title tone.
+
+### Theme / polish
+- Initial light-mode dark flash was reduced by removing default SSR `dark` class and letting the inline theme script add `dark` only when saved theme is dark.
+
 ## Roadmap
 
 ### Phase 1 — MVP ✅
