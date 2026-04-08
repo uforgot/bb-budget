@@ -116,12 +116,12 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
-                        isSelected ? TYPE_COLOR[type] : isExpanded ? 'bg-[#eceef8] dark:bg-muted' : 'bg-[#f5f5f7] dark:bg-muted'
+                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-[#f5f5f7] dark:bg-muted'
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
                       <span className={`text-[12px] font-medium ${
-                        isSelected ? 'text-foreground dark:text-white' : isExpanded ? 'text-foreground' : 'text-muted-foreground'
+                        isSelected || isExpanded ? 'text-foreground dark:text-white' : 'text-muted-foreground'
                       }`}>
                         {parent.name}
                       </span>
@@ -142,7 +142,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         className={`py-2 rounded-lg text-[12px] transition-colors ${
                           selected === child.id
                             ? TYPE_CHILD_COLOR[type] + ' font-medium'
-                            : 'bg-card text-foreground'
+                            : 'bg-[#f5f5f7] dark:bg-card text-foreground'
                         }`}
                       >
                         {child.name}
