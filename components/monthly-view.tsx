@@ -613,7 +613,7 @@ export function MonthlyView({
             {weekSectionDays.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">내역이 없어요</p>
             ) : (
-              weekSectionDays.map(day => {
+              [...weekSectionDays].reverse().map(day => {
                 const key = formatDateKey(targetYear, actualMonth, day)
                 const txs = groupedWeekTxs.get(key) ?? []
                 const recurring = groupedWeekRecurring.get(key) ?? []
