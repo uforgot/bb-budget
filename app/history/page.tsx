@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { CalendarDays, List } from 'lucide-react'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
@@ -59,8 +60,8 @@ export default function History() {
     }))
   }, [searchMode, searchQuery, transactions, categories])
 
-  const openCalendarView = () => {
-    setForceCalendarView(true)
+  const toggleCalendarView = () => {
+    setForceCalendarView(v => !v)
   }
 
   return (
@@ -110,7 +111,9 @@ export default function History() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0 -ml-1.5"><path d="m6 9 6 6 6-6"/></svg>
             </label>
           </div>
-          <button onClick={openCalendarView} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">달력</button>
+          <button onClick={toggleCalendarView} className="flex items-center justify-center w-10 h-10 rounded-full bg-accent-blue text-white" aria-label={forceCalendarView ? '월간 보기' : '달력 보기'}>
+            {forceCalendarView ? <List size={18} /> : <CalendarDays size={18} />}
+          </button>
         </div>
       </div>
 
