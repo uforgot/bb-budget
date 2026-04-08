@@ -129,7 +129,8 @@ const MonthlyGridView = memo(function MonthlyGridView({
                 <span className="relative flex items-center justify-center size-6 flex-shrink-0">
                   {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_4px_rgba(59,130,246,0.22)]" />}
                   <span
-                    className={`relative text-[16px] font-semibold tracking-[-0.0625em] tabular-nums leading-none ${isToday ? 'text-white' : 'text-foreground'}`}
+                    className={`relative text-[16px] font-semibold tabular-nums leading-none ${isToday ? 'text-white' : 'text-foreground'}`}
+                    style={isToday ? undefined : { letterSpacing: '-0.0625em' }}
                   >
                     {day}
                   </span>
