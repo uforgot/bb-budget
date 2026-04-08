@@ -96,7 +96,8 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                   const isExpanded = expandedParent === parent.id
                   const children = childrenOf(parent.id)
                   const hasChildren = children.length > 0
-                  const isSelected = selected === parent.id || (expandedParent === parent.id && children.some(c => c.id === selected))
+                  const hasSelectedChild = children.some(c => c.id === selected)
+                  const isSelected = selected === parent.id || hasSelectedChild
                   return (
                     <button
                       key={parent.id}
@@ -115,12 +116,12 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
-                        isExpanded || isSelected ? TYPE_COLOR[type] : 'bg-[#f5f5f7] dark:bg-muted'
+                        isSelected ? TYPE_COLOR[type] : isExpanded ? 'bg-[#eceef8] dark:bg-muted' : 'bg-[#f5f5f7] dark:bg-muted'
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
                       <span className={`text-[12px] font-medium ${
-                        isExpanded || isSelected ? 'text-foreground dark:text-white' : 'text-muted-foreground'
+                        isSelected ? 'text-foreground dark:text-white' : isExpanded ? 'text-foreground' : 'text-muted-foreground'
                       }`}>
                         {parent.name}
                       </span>
