@@ -58,13 +58,13 @@ function getCatIcon(name: string): LucideIcon {
 }
 
 function fmt(n: number) {
-  if (n >= 100000000) {
-    const eok = Math.floor(n / 100000000)
-    const man = Math.floor((n % 100000000) / 10000)
-    return man > 0 ? `${eok.toLocaleString()}억 ${man.toLocaleString()}만` : `${eok.toLocaleString()}억`
-  }
-  if (n >= 10000) return `${Math.floor(n / 10000).toLocaleString()}만`
   return n.toLocaleString()
+}
+
+function fmtPct(n: number) {
+  if (n >= 10) return `${Math.round(n)}%`
+  if (n >= 1) return `${n.toFixed(1)}%`
+  return '1% 미만'
 }
 
 interface CategoryExpenseItem {
@@ -74,9 +74,11 @@ interface CategoryExpenseItem {
 }
 
 export function CategoryExpenseCard({ items }: { items: CategoryExpenseItem[] }) {
+  const total = items.reduce((sum, item) => sum + item.amount, 0)
+
   return (
     <div className="bg-surface rounded-[22px] px-5 pt-4 pb-4 mb-3">
-      <p className="text-[16px] font-bold mb-3">카테고리별 지출</p>
+      <p className="text-[14px] font-bold mb-3">카테고리별 지출</p>
       {items.length === 0 ? (
         <p className="text-[12px] text-muted-foreground text-center py-4">이번 달 지출 내역이 없어요</p>
       ) : (
@@ -85,25 +87,34 @@ export function CategoryExpenseCard({ items }: { items: CategoryExpenseItem[] })
             const Icon = getCatIcon(item.name)
             const diff = item.amount - item.prevAmount
             const diffText = item.prevAmount > 0
-              ? `${diff >= 0 ? '+' : '-'}₩${fmt(Math.abs(diff))}`
+              ? `지난달 대비 ${diff >= 0 ? '+' : '-'}₩${fmt(Math.abs(diff))}`
               : '전월 없음'
+            const pct = total > 0 ? (item.amount / total) * 100 : 0
 
             return (
-              <div key={item.name} className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex items-start gap-2.5">
-                  <span className="mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#5865F220' }}>
-                    <Icon size={14} color="#5865F2" strokeWidth={2.5} />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-[14px] font-medium text-foreground leading-tight">{item.name}</p>
-                    <p className="mt-1 text-[12px] text-muted-foreground leading-tight">
-                      지난달 ₩{fmt(item.prevAmount)} · {diffText}
-                    </p>
+              <div key={item.name} className="flex flex-col gap-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex items-start gap-2.5">
+                    <span className="mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#5865F220' }}>
+                      <Icon size={14} color="#5865F2" strokeWidth={2.5} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-[14px] font-medium text-foreground leading-tight">{item.name}</p>
+                        <span className="text-[12px] text-muted-foreground">{fmtPct(pct)}</span>
+                      </div>
+                      <p className="mt-1 text-[12px] text-muted-foreground leading-tight">
+                        지난달 ₩{fmt(item.prevAmount)} · {diffText}
+                      </p>
+                    </div>
                   </div>
+                  <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">
+                    ₩{fmt(item.amount)}
+                  </span>
                 </div>
-                <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">
-                  ₩{fmt(item.amount)}
-                </span>
+                <div className="h-[6px] rounded-full bg-muted overflow-hidden ml-[38px]">
+                  <div className="h-full rounded-full bg-[#5865F2]" style={{ width: `${Math.max(pct, item.amount > 0 ? 4 : 0)}%` }} />
+                </div>
               </div>
             )
           })}
