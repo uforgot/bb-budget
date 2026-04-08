@@ -103,7 +103,7 @@ const MonthlyGridView = memo(function MonthlyGridView({
 
   return (
     <div>
-      <div className="grid grid-cols-7 pt-3 pb-2 mb-1 px-0">
+      <div className="grid grid-cols-7 pt-3 pb-1 px-0">
         {WEEKDAYS_MON.map(day => (
           <div key={day} className="text-center text-[10px] font-medium text-muted-foreground">{day}</div>
         ))}
@@ -134,7 +134,7 @@ const MonthlyGridView = memo(function MonthlyGridView({
                     {day}
                   </span>
                 </span>
-                <div className="flex flex-col items-center gap-0 mt-0.5">
+                <div className="flex flex-col items-center gap-0 mt-0">
                   {(dayData?.expense ?? 0) > 0 && (
                     <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: semanticColors.expense }}>
                       {formatAmount(dayData!.expense)}
