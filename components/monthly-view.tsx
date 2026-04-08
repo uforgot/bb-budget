@@ -521,35 +521,39 @@ export function MonthlyView({
 
   return (
     <>
-      <SummaryCardSlider
-        month={actualMonth}
-        income={monthIncome}
-        expense={monthExpense}
-        savings={monthSavingsAmt}
-        balance={monthBalance}
-        prevMonth={prevM}
-        prevIncome={prevIncome}
-        prevExpense={prevExpense}
-        prevSavings={prevSavingsAmt}
-        prevBalance={prevBalance}
-        hasPrev={prevTxs.length > 0}
-      />
+      {viewMode !== 'calendar' && (
+        <SummaryCardSlider
+          month={actualMonth}
+          income={monthIncome}
+          expense={monthExpense}
+          savings={monthSavingsAmt}
+          balance={monthBalance}
+          prevMonth={prevM}
+          prevIncome={prevIncome}
+          prevExpense={prevExpense}
+          prevSavings={prevSavingsAmt}
+          prevBalance={prevBalance}
+          hasPrev={prevTxs.length > 0}
+        />
+      )}
 
       <div ref={stickyRef} className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
-        <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
-          <div className="flex gap-2" style={{ width: 'max-content' }}>
-            {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
-              <button
-                key={week}
-                data-no-swipe="true"
-                onClick={() => handleWeekTabClick(week)}
-                className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground opacity-70'}`}
-              >
-                {week}주 차
-              </button>
-            ))}
+        {viewMode !== 'calendar' && (
+          <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
+            <div className="flex gap-2" style={{ width: 'max-content' }}>
+              {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
+                <button
+                  key={week}
+                  data-no-swipe="true"
+                  onClick={() => handleWeekTabClick(week)}
+                  className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground opacity-70'}`}
+                >
+                  {week}주 차
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
       {viewMode === 'calendar' ? (
         <div>
