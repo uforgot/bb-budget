@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
-import { BalanceCard } from '@/components/balance-summary-card'
 import { BudgetCard } from '@/components/budget-card'
+import { CategoryExpenseCard } from '@/components/category-expense-card'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { type Transaction } from '@/lib/api'
+import { type Transaction, type Category } from '@/lib/api'
 
 export default function Dashboard() {
   const router = useRouter()
@@ -19,37 +19,59 @@ export default function Dashboard() {
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [monthIncome, setMonthIncome] = useState(0)
   const [monthExpense, setMonthExpense] = useState(0)
-  const [allTimeIncome, setAllTimeIncome] = useState(0)
-  const [allTimeExpense, setAllTimeExpense] = useState(0)
-  const [allTimeSavings, setAllTimeSavings] = useState(0)
-  const [prevSavings, setPrevSavings] = useState(0)
-  const [prevBalance, setPrevBalance] = useState(0)
+  const [categoryTop5, setCategoryTop5] = useState<Array<{ name: string; amount: number; prevAmount: number }>>([])
   const [budgetEditing, setBudgetEditing] = useState(false)
   const [budgetInput, setBudgetInput] = useState('')
 
   const loadData = useCallback(async () => {
     try {
-      const { getTransactions } = await import('@/lib/api')
-      const [all, txs] = await Promise.all([
-        getTransactions({}),
-        getTransactions({ year: calYear, month: calMonth }),
-      ])
+      const { getTransactions, getCategories } = await import('@/lib/api')
+      const prevMonthDate = new Date(calYear, calMonth - 2, 1)
+      const prevYear = prevMonthDate.getFullYear()
+      const prevMonth = prevMonthDate.getMonth() + 1
 
-      setAllTimeIncome(all.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0))
-      setAllTimeExpense(all.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0))
-      setAllTimeSavings(all.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0))
+      const [txs, prevTxs, categories] = await Promise.all([
+        getTransactions({ year: calYear, month: calMonth }),
+        getTransactions({ year: prevYear, month: prevMonth }),
+        getCategories('expense'),
+      ])
 
       setMonthIncome(txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0))
       setMonthExpense(txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0))
 
-      const prevEnd = new Date(calYear, calMonth - 1, 0)
-      const prevEndStr = `${prevEnd.getFullYear()}-${String(prevEnd.getMonth() + 1).padStart(2,'0')}-${String(prevEnd.getDate()).padStart(2,'0')}`
-      const prevTxs = all.filter(t => t.date <= prevEndStr)
-      const pInc = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-      const pExp = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-      const pSav = prevTxs.filter(t => t.type === 'savings' && !t.end_date).reduce((s, t) => s + t.amount, 0)
-      setPrevSavings(pSav)
-      setPrevBalance(pInc - pExp - pSav)
+      const parentMap = new Map<string, Category>()
+      const categoryMap = new Map<string, Category>()
+      categories.forEach(category => {
+        categoryMap.set(category.id, category)
+        if (!category.parent_id) parentMap.set(category.id, category)
+      })
+
+      const summarizeByParent = (list: Transaction[]) => {
+        const totals = new Map<string, number>()
+        list
+          .filter(tx => tx.type === 'expense')
+          .forEach(tx => {
+            const category = tx.category ?? categoryMap.get(tx.category_id)
+            if (!category) return
+            const parentId = category.parent_id ?? category.id
+            totals.set(parentId, (totals.get(parentId) ?? 0) + tx.amount)
+          })
+        return totals
+      }
+
+      const currentTotals = summarizeByParent(txs)
+      const prevTotals = summarizeByParent(prevTxs)
+
+      const top5 = Array.from(currentTotals.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([parentId, amount]) => ({
+          name: parentMap.get(parentId)?.name ?? categoryMap.get(parentId)?.name ?? '미분류',
+          amount,
+          prevAmount: prevTotals.get(parentId) ?? 0,
+        }))
+
+      setCategoryTop5(top5)
     } catch (e) {
       console.error('대시보드 데이터 로드 실패:', e)
     }
@@ -67,8 +89,6 @@ export default function Dashboard() {
     }
   }, [loadData])
 
-  const totalAssets = allTimeIncome - allTimeExpense
-  const cashBalance = totalAssets - allTimeSavings
   const budgetStorageKey = `${calYear}-${String(calMonth).padStart(2, '0')}`
   const monthlyBudget = typeof window !== 'undefined'
     ? Number(localStorage.getItem(`budget:${budgetStorageKey}`) || 0)
@@ -108,15 +128,6 @@ export default function Dashboard() {
 
       <div className="px-4">
         <h1 className="text-[28px] font-bold mt-1 mb-4">요약</h1>
-        <BalanceCard
-          prevBalance={prevBalance}
-          thisMonthBalance={monthIncome - monthExpense}
-          totalBalance={cashBalance}
-          month={calMonth}
-          monthIncome={monthIncome}
-          monthExpense={monthExpense}
-          monthSavings={prevSavings}
-        />
         <BudgetCard
           budget={monthlyBudget}
           spent={monthExpense}
@@ -134,6 +145,7 @@ export default function Dashboard() {
           }}
           onSaveEdit={handleSaveBudget}
         />
+        <CategoryExpenseCard items={categoryTop5} />
       </div>
 
       <AddTransactionModal
