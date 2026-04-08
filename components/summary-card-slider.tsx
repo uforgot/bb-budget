@@ -156,7 +156,7 @@ export function SummaryCardSlider({
                 />
                 <div>
                   <p className={`text-[14px] font-medium text-white mb-0`}>{card.label}</p>
-                  <p className={`text-[24px] font-bold tabular-nums ${typography.cardBodyInverse} leading-tight`} style={{ letterSpacing: '-1px' }}>
+                  <p className={`text-[24px] font-bold tracking-[-0.0416667em] tabular-nums ${typography.cardBodyInverse} leading-tight`}>
                     ₩{card.amount.toLocaleString()}
                   </p>
                 </div>
