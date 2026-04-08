@@ -16,6 +16,7 @@ export default function History() {
   const [searchResults, setSearchResults] = useState<Transaction[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
+  const [forceCalendarView, setForceCalendarView] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [recurringItems, setRecurringItems] = useState<{ day: number; type: string; amount: number; category_id: string; description: string; categoryName?: string }[]>([])
@@ -58,8 +59,8 @@ export default function History() {
     }))
   }, [searchMode, searchQuery, transactions, categories])
 
-  const goCurrentMonth = () => {
-    setMonthOffset(0)
+  const openCalendarView = () => {
+    setForceCalendarView(true)
   }
 
   return (
@@ -109,7 +110,7 @@ export default function History() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0 -ml-1.5"><path d="m6 9 6 6 6-6"/></svg>
             </label>
           </div>
-          <button onClick={goCurrentMonth} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">금월</button>
+          <button onClick={openCalendarView} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">달력</button>
         </div>
       </div>
 
@@ -169,6 +170,7 @@ export default function History() {
           transactions={transactions}
           categories={categories}
           recurringItems={recurringItems}
+          forceCalendarView={forceCalendarView}
           onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
           onDeleted={loadData}
         />

@@ -57,6 +57,7 @@ interface MonthlyViewProps {
   transactions: Transaction[]
   categories: Category[]
   recurringItems: RecurringItem[]
+  forceCalendarView?: boolean
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }
@@ -333,6 +334,7 @@ const WeekDayCard = memo(function WeekDayCard({
 
 export function MonthlyView({
   monthOffset, transactions, categories, recurringItems,
+  forceCalendarView = false,
   onEdit, onDeleted,
 }: MonthlyViewProps) {
   const now = new Date()
@@ -391,14 +393,18 @@ export function MonthlyView({
   const lastMonthKeyRef = useRef(`${targetYear}-${actualMonth}`)
 
   useEffect(() => {
+    if (forceCalendarView) setViewMode('calendar')
+  }, [forceCalendarView])
+
+  useEffect(() => {
     const monthKey = `${targetYear}-${actualMonth}`
     if (lastMonthKeyRef.current === monthKey) return
     lastMonthKeyRef.current = monthKey
-    setViewMode('week')
+    setViewMode(forceCalendarView ? 'calendar' : 'week')
     setSelectedWeek(currentWeekNum)
     setSelectedDay(defaultDay)
     setHighlightedDate(null)
-  }, [targetYear, actualMonth, currentWeekNum, defaultDay])
+  }, [targetYear, actualMonth, currentWeekNum, defaultDay, forceCalendarView])
 
   const monthRecurring = useMemo(() => isFutureMonth ? recurringItems : [], [isFutureMonth, recurringItems])
 
@@ -532,13 +538,6 @@ export function MonthlyView({
       <div ref={stickyRef} className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
         <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
           <div className="flex gap-2" style={{ width: 'max-content' }}>
-            <button
-              data-no-swipe="true"
-              onClick={() => setViewMode('calendar')}
-              className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'calendar' ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground opacity-70'}`}
-            >
-              달력
-            </button>
             {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
               <button
                 key={week}
