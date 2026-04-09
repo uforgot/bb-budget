@@ -477,7 +477,11 @@ export default function CategoriesSettings() {
                 draggingId === parent.id ? 'bg-background ring-1 ring-border opacity-35' : 'bg-muted'
               }`}
             >
-              {editMode && <span className="absolute top-1.5 right-1.5 text-[10px] text-muted-foreground">⋮⋮</span>}
+              {editMode && (
+                <span className="absolute top-1.5 right-1.5 text-muted-foreground/70">
+                  <ArrowUpDown size={12} strokeWidth={2} />
+                </span>
+              )}
               <span className={`text-xl ${editMode ? 'animate-pulse' : ''}`}>{getEmoji(parent)}</span>
               <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
             </button>
