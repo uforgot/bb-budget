@@ -185,6 +185,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       } else {
         const saved = await addTransaction(payload)
         // 반복 설정이 있으면 recurring_transactions에도 등록
+        // 현재 recurring 엔진은 day_of_month 기반 monthly 스키마만 안정적으로 지원함
         if (repeatFrequency !== 'none') {
           const { addRecurringTransaction } = await import('@/lib/api')
           const dayVal = new Date(date + 'T00:00:00').getDate()
@@ -194,8 +195,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             category_id: categoryId,
             description: memo || null,
             day_of_month: dayVal,
-            frequency: repeatFrequency,
-            end_date: repeatEndDate,
             active: true,
           })
         }
