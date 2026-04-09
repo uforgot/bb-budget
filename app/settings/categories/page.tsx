@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { MoveVertical } from 'lucide-react'
+import { ArrowUpDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
@@ -414,7 +414,7 @@ export default function CategoriesSettings() {
             className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${editMode ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'}`}
             aria-label="순서 변경"
           >
-            <MoveVertical size={18} strokeWidth={2} />
+            <ArrowUpDown size={18} strokeWidth={2} />
           </button>
         </div>
 
