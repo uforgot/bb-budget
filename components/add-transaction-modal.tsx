@@ -513,8 +513,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </button>
             {editTransaction.type === 'savings' && (
               <button
-                onClick={() => setRecoverOpen(true)}
-                className="flex-1 bg-accent-purple/10 text-accent-purple rounded-[22px] py-3.5 text-[16px] font-semibold"
+                onClick={() => setRecoverOpen(prev => !prev)}
+                className="flex-1 bg-[#14b8a6] text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
                 회수하기
               </button>
@@ -537,30 +537,19 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </button>
           </div>
         )}
-      </div>
-      {/* 회수 바텀시트 — 카테고리 피커 스타일 */}
-      {recoverOpen && editTransaction && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setRecoverOpen(false)} />
+        {recoverOpen && editTransaction && (
+          <div className="w-full max-w-md mx-auto px-4 pt-3 pb-2 bg-background">
+            <div className="bg-surface rounded-[22px] px-4 py-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[16px] font-semibold">저축 회수</h3>
+                <button
+                  onClick={() => setRecoverOpen(false)}
+                  className="text-sm text-muted-foreground"
+                >
+                  닫기
+                </button>
+              </div>
 
-          <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '75dvh' }}>
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0">
-              <h3 className="text-base font-semibold">저축 회수</h3>
-              <button
-                onClick={() => setRecoverOpen(false)}
-                className="p-1 text-muted-foreground hover:text-foreground"
-                aria-label="닫기"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Content */}
-            <div className="px-4" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
-              {/* 회수일 */}
               <div className="flex items-center justify-between py-3 border-b border-border">
                 <span className="text-[15px] text-muted-foreground">회수일</span>
                 <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
@@ -578,7 +567,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 </label>
               </div>
 
-              {/* 회수 금액 */}
               <div className="flex items-center justify-between py-3 border-b border-border">
                 <span className="text-[15px] text-muted-foreground">회수 금액</span>
                 <div className="flex items-baseline gap-1">
@@ -594,43 +582,48 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 </div>
               </div>
 
-              {/* 적용하기 버튼 — 카테고리 관리 버튼 스타일 (화이트) */}
-              <button
-                onClick={async () => {
-                  const amount = parseInt(recoverAmount, 10)
-                  if (!amount) { alert('금액을 입력해주세요'); return }
-                  const { addTransaction, updateTransaction } = await import('@/lib/api')
-                  setSaving(true)
-                  try {
-                    const catName = (editTransaction.category as any)?.name || '저축'
-                    // 1. 수입 트랜잭션 생성
-                    await addTransaction({
-                      type: 'income',
-                      amount,
-                      category_id: editTransaction.category_id,
-                      description: `${catName} 회수`,
-                      date: recoverDate,
-                    })
-                    // 2. 기존 저축에 end_date 기록 (삭제 안 함)
-                    await updateTransaction(editTransaction.id, { end_date: recoverDate })
-                    setRawAmount(''); setMemo(''); setEditDate(null)
-                    setRecoverOpen(false)
-                    onClose()
-                  } catch (e: unknown) {
-                    const msg = e instanceof Error ? e.message : JSON.stringify(e)
-                    alert(`회수 실패: ${msg}`)
-                  } finally {
-                    setSaving(false)
-                  }
-                }}
-                className="w-full mt-4 mb-4 py-3.5 rounded-[22px] bg-primary text-primary-foreground text-[16px] font-semibold"
-              >
-                {saving ? '처리 중...' : '적용하기'}
-              </button>
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={async () => {
+                    const amount = parseInt(recoverAmount, 10)
+                    if (!amount) { alert('금액을 입력해주세요'); return }
+                    const { addTransaction, updateTransaction } = await import('@/lib/api')
+                    setSaving(true)
+                    try {
+                      const catName = (editTransaction.category as any)?.name || '저축'
+                      await addTransaction({
+                        type: 'income',
+                        amount,
+                        category_id: editTransaction.category_id,
+                        description: `${catName} 회수`,
+                        date: recoverDate,
+                      })
+                      await updateTransaction(editTransaction.id, { end_date: recoverDate })
+                      setRawAmount(''); setMemo(''); setEditDate(null)
+                      setRecoverOpen(false)
+                      onClose()
+                    } catch (e: unknown) {
+                      const msg = e instanceof Error ? e.message : JSON.stringify(e)
+                      alert(`회수 실패: ${msg}`)
+                    } finally {
+                      setSaving(false)
+                    }
+                  }}
+                  className="flex-1 py-3.5 rounded-[22px] bg-[#14b8a6] text-white text-[16px] font-semibold"
+                >
+                  {saving ? '처리 중...' : '적용하기'}
+                </button>
+                <button
+                  onClick={() => setRecoverOpen(false)}
+                  className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-semibold text-muted-foreground"
+                >
+                  취소하기
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
