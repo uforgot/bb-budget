@@ -197,7 +197,7 @@ export default function RecurringPage() {
                       key={f}
                       onClick={() => setFrequency(f)}
                       className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                        frequency === f ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'
+                        frequency === f ? 'bg-accent-blue text-white' : 'bg-background text-muted-foreground ring-1 ring-border'
                       }`}
                     >
                       {f === 'weekly' ? '매주' : f === 'monthly' ? '매월' : '매년'}
@@ -216,7 +216,7 @@ export default function RecurringPage() {
                         key={i}
                         onClick={() => setDayOfWeek(String(i))}
                         className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                          dayOfWeek === String(i) ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'
+                          dayOfWeek === String(i) ? 'bg-accent-blue text-white' : 'bg-background text-muted-foreground ring-1 ring-border'
                         }`}
                       >
                         {d}
