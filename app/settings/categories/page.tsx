@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { MoveVertical } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
@@ -413,15 +414,7 @@ export default function CategoriesSettings() {
             className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${editMode ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'}`}
             aria-label="순서 변경"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 4v16" />
-              <path d="m8 8 4-4 4 4" />
-              <path d="m8 16 4 4 4-4" />
-              <path d="M5 8h3" />
-              <path d="M5 16h3" />
-              <path d="M16 8h3" />
-              <path d="M16 16h3" />
-            </svg>
+            <MoveVertical size={18} strokeWidth={2} />
           </button>
         </div>
 
