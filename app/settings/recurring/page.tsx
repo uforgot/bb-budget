@@ -208,7 +208,7 @@ export default function RecurringPage() {
 
               <div className="border-t border-border mx-5" />
               {frequency === 'weekly' && (
-                <div className="flex items-center justify-between px-4 py-3.5">
+                <div className="flex items-center justify-between px-4 py-3">
                   <span className="text-[16px]">요일</span>
                   <div className="flex gap-1.5">
                     {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
