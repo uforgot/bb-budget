@@ -324,7 +324,7 @@ export default function CategoriesSettings() {
           <div className="mt-10">
             <button
               onClick={() => setDeleteConfirm({ id: editingParent.id, name: editingParent.name, type: 'parent' })}
-              className="w-full py-3 text-accent-blue text-[16px] font-medium rounded-[22px] bg-surface"
+              className="w-full py-3 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue"
             >
               카테고리 삭제
             </button>
