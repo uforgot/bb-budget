@@ -43,6 +43,7 @@ export default function CategoriesSettings() {
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const suppressClickRef = useRef(false)
   const activeDragIdRef = useRef<string | null>(null)
+  const pendingDragIdRef = useRef<string | null>(null)
 
   const supabase = createClient() as any
 
@@ -117,9 +118,19 @@ export default function CategoriesSettings() {
   }
 
   const handleTouchMove = (event: React.TouchEvent<HTMLButtonElement>) => {
-    if (!editMode || !activeDragIdRef.current) return
+    if (!editMode) return
     const touch = event.touches[0]
     if (!touch) return
+
+    if (!activeDragIdRef.current) {
+      const startId = pendingDragIdRef.current
+      if (!startId) return
+      const startTarget = event.currentTarget.getBoundingClientRect()
+      const moved = Math.abs(touch.clientX - (startTarget.left + startTarget.width / 2)) > 8 || Math.abs(touch.clientY - (startTarget.top + startTarget.height / 2)) > 8
+      if (moved) clearDragTimer()
+      return
+    }
+
     setDragPosition({ x: touch.clientX, y: touch.clientY })
     const element = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('[data-category-id]') as HTMLElement | null
     const overId = element?.dataset.categoryId
@@ -129,6 +140,7 @@ export default function CategoriesSettings() {
 
   const finishDrag = async () => {
     clearDragTimer()
+    pendingDragIdRef.current = null
     const activeId = activeDragIdRef.current
     if (!activeId) return
     const nextIds = [...orderedParentIds]
@@ -144,6 +156,7 @@ export default function CategoriesSettings() {
 
   const cancelDrag = () => {
     clearDragTimer()
+    pendingDragIdRef.current = null
     activeDragIdRef.current = null
     setDraggingId(null)
     setDragPosition(null)
@@ -378,14 +391,23 @@ export default function CategoriesSettings() {
               onTouchStart={(event) => {
                 if (!editMode) return
                 clearDragTimer()
-                activeDragIdRef.current = parent.id
-                setDraggingId(parent.id)
+                pendingDragIdRef.current = parent.id
                 const touch = event.touches[0]
-                if (touch) setDragPosition({ x: touch.clientX, y: touch.clientY })
+                dragTimerRef.current = setTimeout(() => {
+                  if (!pendingDragIdRef.current) return
+                  activeDragIdRef.current = parent.id
+                  setDraggingId(parent.id)
+                  if (touch) setDragPosition({ x: touch.clientX, y: touch.clientY })
+                }, 350)
               }}
               onTouchMove={handleTouchMove}
               onTouchEnd={() => {
                 if (!editMode) return
+                if (!activeDragIdRef.current) {
+                  clearDragTimer()
+                  pendingDragIdRef.current = null
+                  return
+                }
                 finishDrag()
               }}
               onTouchCancel={cancelDrag}
@@ -443,6 +465,8 @@ export default function CategoriesSettings() {
                 onClick={() => {
                   setEditMode(true)
                   setAddingRoot(false)
+                  pendingDragIdRef.current = null
+                  activeDragIdRef.current = null
                 }}
                 className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
               >
