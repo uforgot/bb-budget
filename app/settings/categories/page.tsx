@@ -358,29 +358,88 @@ export default function CategoriesSettings() {
           </svg>
         </button>
         <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold pointer-events-none">카테고리 관리</h1>
-        <div className="w-8" />
+        <button
+          onClick={() => {
+            setAddingRoot(prev => !prev)
+            setEditMode(false)
+            pendingDragIdRef.current = null
+            activeDragIdRef.current = null
+            touchStartRef.current = null
+            if (addingRoot) setNewRootName('')
+          }}
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10"
+          aria-label="카테고리 추가"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14" />
+            <path d="M5 12h14" />
+          </svg>
+        </button>
       </header>
 
       <div className="max-w-lg mx-auto px-5 pt-6">
-        <div className="flex gap-1.5 mb-6">
-          {TYPE_LABELS.map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setType(key)}
-              className={`flex-1 py-2.5 rounded-[22px] text-[14px] font-medium transition-colors ${
-                type === key
-                  ? key === 'income'
-                    ? 'bg-[#14b8a6] text-white'
-                    : key === 'expense'
-                      ? 'bg-[#5865F2] text-white'
-                      : 'bg-accent-purple text-white'
-                  : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex flex-wrap gap-2">
+            {TYPE_LABELS.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setType(key)}
+                className={`px-4 py-2 rounded-[18px] text-[14px] font-medium transition-colors ${
+                  type === key
+                    ? key === 'income'
+                      ? 'bg-[#14b8a6] text-white'
+                      : key === 'expense'
+                        ? 'bg-[#5865F2] text-white'
+                        : 'bg-accent-purple text-white'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => {
+              setEditMode(prev => !prev)
+              setAddingRoot(false)
+              setNewRootName('')
+              pendingDragIdRef.current = null
+              activeDragIdRef.current = null
+              touchStartRef.current = null
+              setDraggingId(null)
+              setDragPosition(null)
+            }}
+            className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${editMode ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'}`}
+            aria-label="순서 변경"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 6h13" />
+              <path d="M8 12h13" />
+              <path d="M8 18h13" />
+              <path d="M3 6h.01" />
+              <path d="M3 12h.01" />
+              <path d="M3 18h.01" />
+            </svg>
+          </button>
         </div>
+
+        {addingRoot && (
+          <div className="flex items-center gap-2 mb-6">
+            <input
+              type="text"
+              placeholder="새 카테고리명"
+              value={newRootName}
+              onChange={(e) => setNewRootName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddRoot()}
+              autoFocus
+              style={{ fontSize: '16px' }}
+              className="flex-1 bg-card border border-border rounded-[18px] px-4 py-2.5"
+            />
+            <button onClick={handleAddRoot} className="px-4 py-2.5 rounded-[18px] bg-surface text-[14px] font-medium text-foreground">추가</button>
+            <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="px-4 py-2.5 rounded-[18px] bg-surface text-[14px] font-medium text-muted-foreground">취소</button>
+          </div>
+        )}
 
         <div className="grid grid-cols-4 gap-2">
           {orderedParents.map((parent) => (
@@ -431,13 +490,15 @@ export default function CategoriesSettings() {
           ))}
         </div>
 
-        <div className="flex gap-3 mt-8 pb-10">
-          {editMode ? (
+        {editMode && (
+          <div className="flex mt-8 pb-10">
             <button
               onClick={async () => {
                 await persistOrder(orderedParentIds)
                 setEditMode(false)
                 activeDragIdRef.current = null
+                pendingDragIdRef.current = null
+                touchStartRef.current = null
                 setDraggingId(null)
                 setDragPosition(null)
               }}
@@ -445,46 +506,8 @@ export default function CategoriesSettings() {
             >
               편집 완료
             </button>
-          ) : addingRoot ? (
-            <div className="flex flex-col gap-2 flex-1">
-              <input
-                type="text"
-                placeholder="카테고리명"
-                value={newRootName}
-                onChange={(e) => setNewRootName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddRoot()}
-                autoFocus
-                style={{ fontSize: '16px' }}
-                className="w-full bg-card border border-border rounded-[22px] px-4 py-3"
-              />
-              <div className="flex gap-2">
-                <button onClick={handleAddRoot} className="flex-1 py-3.5 bg-surface text-muted-foreground rounded-[22px] text-[16px] font-medium">추가하기</button>
-                <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="flex-1 py-3.5 bg-surface text-muted-foreground rounded-[22px] text-[16px] font-medium">취소하기</button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex gap-3 flex-1">
-              <button
-                onClick={() => setAddingRoot(true)}
-                className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
-              >
-                카테고리 추가하기
-              </button>
-              <button
-                onClick={() => {
-                  setEditMode(true)
-                  setAddingRoot(false)
-                  pendingDragIdRef.current = null
-                  activeDragIdRef.current = null
-                  touchStartRef.current = null
-                }}
-                className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-medium text-muted-foreground"
-              >
-                편집
-              </button>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {draggingId && dragPosition && (() => {
