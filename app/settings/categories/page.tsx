@@ -324,7 +324,7 @@ export default function CategoriesSettings() {
           <div className="mt-10">
             <button
               onClick={() => setDeleteConfirm({ id: editingParent.id, name: editingParent.name, type: 'parent' })}
-              className="w-full py-3 text-accent-coral text-[16px] font-medium rounded-[22px] bg-accent-coral/10"
+              className="w-full py-3 text-accent-blue text-[16px] font-medium rounded-[22px] bg-surface"
             >
               카테고리 삭제
             </button>
@@ -478,8 +478,8 @@ export default function CategoriesSettings() {
               }`}
             >
               {editMode && (
-                <span className="absolute top-1.5 right-1.5 text-muted-foreground/70">
-                  <ArrowUpDown size={12} strokeWidth={2} />
+                <span className="absolute top-1.5 right-1.5 scale-90 text-muted-foreground/40">
+                  <ArrowUpDown size={10} strokeWidth={2} />
                 </span>
               )}
               <span className={`text-xl ${editMode ? 'animate-pulse' : ''}`}>{getEmoji(parent)}</span>
