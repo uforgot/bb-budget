@@ -186,17 +186,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         await addTransaction(payload)
         if (repeatFrequency !== 'none') {
           const { addRecurringTransaction } = await import('@/lib/api')
-          const sourceDate = new Date(date + 'T00:00:00')
           await addRecurringTransaction({
             type: dbType,
             amount: numAmount,
             category_id: categoryId,
             description: memo || null,
             frequency: repeatFrequency,
-            day_of_week: repeatFrequency === 'weekly' ? sourceDate.getDay() : null,
-            day_of_month: repeatFrequency === 'weekly' ? null : sourceDate.getDate(),
-            month_of_year: repeatFrequency === 'yearly' ? sourceDate.getMonth() + 1 : null,
-            start_date: date,
+            anchor_date: date,
             end_date: repeatEndDate,
             active: true,
           })

@@ -34,10 +34,7 @@ export interface RecurringTransaction {
   category_id: string
   description: string | null
   frequency: RecurringFrequency
-  day_of_week: number | null
-  day_of_month: number | null
-  month_of_year: number | null
-  start_date: string | null
+  anchor_date: string | null
   end_date: string | null
   active: boolean
   created_at: string
@@ -70,99 +67,98 @@ function clampDay(day: number, year: number, month: number) {
   return Math.min(Math.max(day, 1), daysInMonth)
 }
 
+function getLegacyAnchorDate(raw: any, frequency: RecurringFrequency) {
+  const baseDateStr = raw.start_date || raw.created_at?.slice?.(0, 10) || toDateString(new Date())
+  const baseDate = parseLocalDate(baseDateStr)
+
+  if (frequency === 'weekly') {
+    const targetWeekday = typeof raw.day_of_week === 'number' ? raw.day_of_week : baseDate.getDay()
+    const diff = (targetWeekday - baseDate.getDay() + 7) % 7
+    baseDate.setDate(baseDate.getDate() + diff)
+    return toDateString(baseDate)
+  }
+
+  if (frequency === 'yearly') {
+    const month = typeof raw.month_of_year === 'number' ? raw.month_of_year : baseDate.getMonth() + 1
+    const day = typeof raw.day_of_month === 'number' ? raw.day_of_month : baseDate.getDate()
+    return `${baseDate.getFullYear()}-${String(month).padStart(2, '0')}-${String(clampDay(day, baseDate.getFullYear(), month)).padStart(2, '0')}`
+  }
+
+  const day = typeof raw.day_of_month === 'number' ? raw.day_of_month : baseDate.getDate()
+  return `${baseDate.getFullYear()}-${String(baseDate.getMonth() + 1).padStart(2, '0')}-${String(clampDay(day, baseDate.getFullYear(), baseDate.getMonth() + 1)).padStart(2, '0')}`
+}
+
 function normalizeRecurringTransaction(raw: any): RecurringTransaction {
   const frequency = (raw.frequency || 'monthly') as RecurringFrequency
-  const startDate = raw.start_date || null
-  const fallbackDayOfMonth = typeof raw.day_of_month === 'number'
-    ? raw.day_of_month
-    : startDate
-      ? parseLocalDate(startDate).getDate()
-      : null
-  const fallbackMonthOfYear = raw.month_of_year ?? (startDate ? parseLocalDate(startDate).getMonth() + 1 : null)
-  const fallbackDayOfWeek = raw.day_of_week ?? (frequency === 'weekly' && startDate ? parseLocalDate(startDate).getDay() : null)
+  const anchorDate = raw.anchor_date || getLegacyAnchorDate(raw, frequency)
 
   return {
     ...raw,
     frequency,
-    day_of_week: fallbackDayOfWeek,
-    day_of_month: fallbackDayOfMonth,
-    month_of_year: fallbackMonthOfYear,
-    start_date: startDate,
+    anchor_date: anchorDate,
     end_date: raw.end_date || null,
   }
 }
 
 function normalizeRecurringPayload(tx: Record<string, unknown>) {
   const frequency = (tx.frequency || 'monthly') as RecurringFrequency
-  const normalized: Record<string, unknown> = {
+  const anchorDate = typeof tx.anchor_date === 'string' && tx.anchor_date
+    ? tx.anchor_date
+    : getLegacyAnchorDate(tx, frequency)
+
+  return {
     ...tx,
     frequency,
+    anchor_date: anchorDate,
+    end_date: tx.end_date ?? null,
   }
-
-  if (!('month_of_year' in normalized)) normalized.month_of_year = null
-  if (!('day_of_week' in normalized)) normalized.day_of_week = null
-  if (!('day_of_month' in normalized)) normalized.day_of_month = null
-  if (!('start_date' in normalized)) normalized.start_date = null
-  if (!('end_date' in normalized)) normalized.end_date = null
-
-  if (frequency === 'weekly') {
-    normalized.day_of_week = typeof normalized.day_of_week === 'number' ? normalized.day_of_week : null
-    normalized.day_of_month = null
-    normalized.month_of_year = null
-  } else if (frequency === 'monthly') {
-    normalized.day_of_month = typeof normalized.day_of_month === 'number' ? normalized.day_of_month : null
-    normalized.day_of_week = null
-    normalized.month_of_year = null
-  } else {
-    normalized.day_of_month = typeof normalized.day_of_month === 'number' ? normalized.day_of_month : null
-    normalized.month_of_year = typeof normalized.month_of_year === 'number' ? normalized.month_of_year : null
-    normalized.day_of_week = null
-  }
-
-  return normalized
 }
 
-function isDateInRange(dateStr: string, startDate: string | null, endDate: string | null) {
-  if (startDate && dateStr < startDate) return false
+function isDateInRange(dateStr: string, anchorDate: string | null, endDate: string | null) {
+  if (anchorDate && dateStr < anchorDate) return false
   if (endDate && dateStr > endDate) return false
   return true
 }
 
 function getRecurringDatesForMonth(recurring: RecurringTransaction, year: number, month: number) {
   const dates: string[] = []
+  if (!recurring.anchor_date) return dates
+
+  const anchor = parseLocalDate(recurring.anchor_date)
   const daysInMonth = new Date(year, month, 0).getDate()
 
   if (recurring.frequency === 'weekly') {
-    if (recurring.day_of_week == null) return dates
+    const anchorWeekday = anchor.getDay()
     for (let day = 1; day <= daysInMonth; day += 1) {
       const date = new Date(year, month - 1, day)
-      if (date.getDay() !== recurring.day_of_week) continue
+      if (date.getDay() !== anchorWeekday) continue
       const dateStr = toDateString(date)
-      if (isDateInRange(dateStr, recurring.start_date, recurring.end_date)) dates.push(dateStr)
+      if (isDateInRange(dateStr, recurring.anchor_date, recurring.end_date)) dates.push(dateStr)
     }
     return dates
   }
 
   if (recurring.frequency === 'monthly') {
-    if (recurring.day_of_month == null) return dates
-    const day = clampDay(recurring.day_of_month, year, month)
+    const day = clampDay(anchor.getDate(), year, month)
     const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    if (isDateInRange(dateStr, recurring.start_date, recurring.end_date)) dates.push(dateStr)
+    if (isDateInRange(dateStr, recurring.anchor_date, recurring.end_date)) dates.push(dateStr)
     return dates
   }
 
-  if (recurring.month_of_year !== month || recurring.day_of_month == null) return dates
-  const day = clampDay(recurring.day_of_month, year, month)
+  if (anchor.getMonth() + 1 !== month) return dates
+  const day = clampDay(anchor.getDate(), year, month)
   const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-  if (isDateInRange(dateStr, recurring.start_date, recurring.end_date)) dates.push(dateStr)
+  if (isDateInRange(dateStr, recurring.anchor_date, recurring.end_date)) dates.push(dateStr)
   return dates
 }
 
 function getRecurringLabel(recurring: RecurringTransaction) {
+  if (!recurring.anchor_date) return '반복 거래'
+  const anchor = parseLocalDate(recurring.anchor_date)
   const weekdayNames = ['일', '월', '화', '수', '목', '금', '토']
-  if (recurring.frequency === 'weekly') return `매주 ${weekdayNames[recurring.day_of_week ?? 0]}요일`
-  if (recurring.frequency === 'yearly') return `매년 ${recurring.month_of_year}월 ${recurring.day_of_month}일`
-  return `매월 ${recurring.day_of_month}일`
+  if (recurring.frequency === 'weekly') return `매주 ${weekdayNames[anchor.getDay()]}요일`
+  if (recurring.frequency === 'yearly') return `매년 ${anchor.getMonth() + 1}월 ${anchor.getDate()}일`
+  return `매월 ${anchor.getDate()}일`
 }
 
 // 카테고리
@@ -254,9 +250,7 @@ export async function getRecurringTransactions(): Promise<RecurringTransaction[]
     .from('recurring_transactions')
     .select('*, category:categories(*)')
     .order('frequency')
-    .order('month_of_year', { ascending: true, nullsFirst: false })
-    .order('day_of_week', { ascending: true, nullsFirst: false })
-    .order('day_of_month', { ascending: true, nullsFirst: false })
+    .order('anchor_date', { ascending: true, nullsFirst: false })
   if (error) throw error
   return (data || []).map(normalizeRecurringTransaction)
 }
