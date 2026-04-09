@@ -183,18 +183,21 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       if (editTransaction) {
         await updateTransaction(editTransaction.id, payload)
       } else {
-        const saved = await addTransaction(payload)
-        // 반복 설정이 있으면 recurring_transactions에도 등록
-        // 현재 recurring 엔진은 day_of_month 기반 monthly 스키마만 안정적으로 지원함
+        await addTransaction(payload)
         if (repeatFrequency !== 'none') {
           const { addRecurringTransaction } = await import('@/lib/api')
-          const dayVal = new Date(date + 'T00:00:00').getDate()
+          const sourceDate = new Date(date + 'T00:00:00')
           await addRecurringTransaction({
             type: dbType,
             amount: numAmount,
             category_id: categoryId,
             description: memo || null,
-            day_of_month: dayVal,
+            frequency: repeatFrequency,
+            day_of_week: repeatFrequency === 'weekly' ? sourceDate.getDay() : null,
+            day_of_month: repeatFrequency === 'weekly' ? null : sourceDate.getDate(),
+            month_of_year: repeatFrequency === 'yearly' ? sourceDate.getMonth() + 1 : null,
+            start_date: date,
+            end_date: repeatEndDate,
             active: true,
           })
         }
@@ -208,6 +211,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setEndDate('')
       setEndAmount('')
       setRepeatFrequency('none')
+      const d = new Date(); d.setMonth(d.getMonth() + 1)
+      setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
       setKeypadActive(false)
       onClose()
     } catch (e: unknown) {

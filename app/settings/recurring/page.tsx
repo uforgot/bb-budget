@@ -1,6 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  addRecurringTransaction,
+  deleteRecurringTransaction,
+  getRecurringTransactions,
+  type RecurringFrequency,
+  type RecurringTransaction,
+  updateRecurringTransaction,
+} from '@/lib/api'
+import { CategoryPicker } from '@/components/category-picker'
 
 function formatKoreanAmount(raw: string) {
   const n = parseInt(raw || '0')
@@ -14,9 +24,19 @@ function formatKoreanAmount(raw: string) {
   if (rest) result += `${rest.toLocaleString()}`
   return result.trim() + '원'
 }
-import { useRouter } from 'next/navigation'
-import { getRecurringTransactions, addRecurringTransaction, deleteRecurringTransaction, getCategories, type RecurringTransaction, type Category } from '@/lib/api'
-import { CategoryPicker } from '@/components/category-picker'
+
+const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
+
+function getDefaultYearDate() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+function getFrequencyDescription(item: RecurringTransaction) {
+  if (item.frequency === 'weekly') return `매주 ${WEEKDAY_LABELS[item.day_of_week ?? 0]}요일`
+  if (item.frequency === 'yearly') return `매년 ${item.month_of_year}월 ${item.day_of_month}일`
+  return `매월 ${item.day_of_month}일`
+}
 
 export default function RecurringPage() {
   const router = useRouter()
@@ -24,13 +44,12 @@ export default function RecurringPage() {
   const [adding, setAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [amount, setAmount] = useState('')
-  const [frequency, setFrequency] = useState<'weekly' | 'monthly' | 'yearly'>('monthly')
+  const [frequency, setFrequency] = useState<RecurringFrequency>('monthly')
   const [dayOfMonth, setDayOfMonth] = useState('10')
-  const [dayOfWeek, setDayOfWeek] = useState('1') // 0=일, 1=월...
-  const [yearDate, setYearDate] = useState(() => {
-    const now = new Date()
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-  })
+  const [dayOfWeek, setDayOfWeek] = useState('1')
+  const [yearDate, setYearDate] = useState(getDefaultYearDate())
+  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [endDate, setEndDate] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [categoryLabel, setCategoryLabel] = useState('')
   const [description, setDescription] = useState('')
@@ -38,10 +57,24 @@ export default function RecurringPage() {
   const [saving, setSaving] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null)
 
+  const resetForm = () => {
+    setAmount('')
+    setFrequency('monthly')
+    setDayOfMonth('10')
+    setDayOfWeek('1')
+    setYearDate(getDefaultYearDate())
+    setStartDate(new Date().toISOString().slice(0, 10))
+    setEndDate('')
+    setCategoryId('')
+    setCategoryLabel('')
+    setDescription('')
+    setCategoryPickerOpen(false)
+    setEditingId(null)
+  }
+
   const loadData = async () => {
     try {
-      const data = await getRecurringTransactions()
-      setItems(data)
+      setItems(await getRecurringTransactions())
     } catch (e) {
       console.error(e)
     }
@@ -51,38 +84,43 @@ export default function RecurringPage() {
 
   const handleAdd = async () => {
     const numAmount = parseInt(amount, 10)
-    if (!numAmount || !categoryId || !dayOfMonth) {
-      alert('금액, 카테고리, 날짜를 입력해주세요')
+    if (!numAmount || !categoryId) {
+      alert('금액과 카테고리를 입력해주세요')
       return
     }
+
+    const payload = {
+      type: 'expense',
+      amount: numAmount,
+      category_id: categoryId,
+      description: description || null,
+      frequency,
+      day_of_week: frequency === 'weekly' ? parseInt(dayOfWeek, 10) : null,
+      day_of_month: frequency === 'weekly' ? null : frequency === 'yearly' ? parseInt(yearDate.split('-')[2], 10) : parseInt(dayOfMonth, 10),
+      month_of_year: frequency === 'yearly' ? parseInt(yearDate.split('-')[1], 10) : null,
+      start_date: startDate || null,
+      end_date: endDate || null,
+      active: true,
+    }
+
+    if (frequency === 'monthly' && !payload.day_of_month) {
+      alert('매월 날짜를 입력해주세요')
+      return
+    }
+
     setSaving(true)
     try {
-      const dayVal = frequency === 'weekly' ? parseInt(dayOfWeek, 10)
-        : frequency === 'monthly' ? parseInt(dayOfMonth, 10)
-        : parseInt(yearDate.split('-')[2], 10)
-      const payload = {
-        type: 'expense',
-        amount: numAmount,
-        category_id: categoryId,
-        description: description || null,
-        day_of_month: dayVal,
-      }
       if (editingId) {
-        const { updateRecurringTransaction } = await import('@/lib/api')
         await updateRecurringTransaction(editingId, payload)
       } else {
         await addRecurringTransaction(payload)
       }
-      setAmount('')
-      setDayOfMonth('10')
-      setCategoryId('')
-      setCategoryLabel('')
-      setDescription('')
+      resetForm()
       setAdding(false)
-      setEditingId(null)
       loadData()
     } catch (e) {
-      alert('추가 실패')
+      console.error(e)
+      alert('저장 실패')
     } finally {
       setSaving(false)
     }
@@ -90,17 +128,18 @@ export default function RecurringPage() {
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
     try {
-      const { updateRecurringTransaction } = await import('@/lib/api')
       await updateRecurringTransaction(id, { active: !currentActive })
       loadData()
-    } catch { alert('변경 실패') }
+    } catch {
+      alert('변경 실패')
+    }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await deleteRecurringTransaction(id)
       loadData()
-    } catch (e) {
+    } catch {
       alert('삭제 실패')
     }
   }
@@ -121,17 +160,15 @@ export default function RecurringPage() {
       </header>
 
       <div className={`px-5 pt-6 ${adding ? 'pb-36' : ''}`}>
-        {/* 추가 버튼 (상단) */}
         {!adding && (
           <button
-            onClick={() => { setAdding(true); setEditingId(null); setAmount(''); setDayOfMonth('10'); setCategoryId(''); setCategoryLabel(''); setDescription('') }}
+            onClick={() => { resetForm(); setAdding(true) }}
             className="w-full mb-4 py-3.5 rounded-[22px] bg-accent-blue text-[16px] font-semibold text-white"
           >
             반복 지출 추가하기
           </button>
         )}
 
-        {/* 기존 반복 지출 목록 */}
         {items.length === 0 && !adding && (
           <p className="text-sm text-muted-foreground text-center py-8">등록된 반복 지출이 없어요</p>
         )}
@@ -140,19 +177,21 @@ export default function RecurringPage() {
           {items.map(item => {
             const cat = item.category as any
             const catName = cat?.name || '미분류'
-            const parentCat = cat?.parent_id ? items.find(() => false) : null // simplified
             return (
               <div
                 key={item.id}
                 onClick={() => {
                   setEditingId(item.id)
                   setAmount(String(item.amount))
-                  setDayOfMonth(String(item.day_of_month))
                   setDescription(item.description || '')
                   setCategoryId(item.category_id)
-                  const cat2 = item.category as any
-                  setCategoryLabel(cat2?.name || '')
-                  setFrequency('monthly')
+                  setCategoryLabel(catName)
+                  setFrequency(item.frequency)
+                  setDayOfMonth(String(item.day_of_month ?? 10))
+                  setDayOfWeek(String(item.day_of_week ?? 1))
+                  setYearDate(`${new Date().getFullYear()}-${String(item.month_of_year ?? 1).padStart(2, '0')}-${String(item.day_of_month ?? 1).padStart(2, '0')}`)
+                  setStartDate(item.start_date || new Date().toISOString().slice(0, 10))
+                  setEndDate(item.end_date || '')
                   setAdding(true)
                 }}
                 className={`bg-surface rounded-[22px] px-5 py-4 cursor-pointer active:bg-muted/30 ${!item.active ? 'opacity-40' : ''}`}
@@ -160,7 +199,11 @@ export default function RecurringPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-sm font-semibold ${!item.active ? 'line-through' : ''}`}>{item.description || catName}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">매월 {item.day_of_month}일 · {catName}{!item.active ? ' · 일시정지' : ''}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {getFrequencyDescription(item)} · {catName}
+                      {item.end_date ? ` · ${item.end_date}까지` : ''}
+                      {!item.active ? ' · 일시정지' : ''}
+                    </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className={`text-sm font-semibold tabular-nums text-accent-coral ${!item.active ? 'line-through' : ''}`}>₩{item.amount.toLocaleString()}</span>
@@ -185,7 +228,6 @@ export default function RecurringPage() {
           })}
         </div>
 
-        {/* 추가 폼 */}
         {adding ? (
           <>
             <div className="mt-4 bg-surface rounded-[22px] overflow-visible">
@@ -211,7 +253,7 @@ export default function RecurringPage() {
                 <div className="flex items-center justify-between px-4 py-3">
                   <span className="text-[16px]">요일</span>
                   <div className="flex gap-1.5">
-                    {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
+                    {WEEKDAY_LABELS.map((d, i) => (
                       <button
                         key={i}
                         onClick={() => setDayOfWeek(String(i))}
@@ -250,10 +292,10 @@ export default function RecurringPage() {
                   <span className="text-[16px]">날짜</span>
                   <label className="relative cursor-pointer">
                     <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
-                      {yearDate ? (() => {
+                      {(() => {
                         const d = new Date(yearDate + 'T00:00:00')
                         return `${d.getMonth() + 1}월 ${d.getDate()}일`
-                      })() : '선택'}
+                      })()}
                     </span>
                     <input
                       type="date"
@@ -265,6 +307,30 @@ export default function RecurringPage() {
                   </label>
                 </div>
               )}
+
+              <div className="border-t border-border mx-5" />
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-[16px]">시작일</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="bg-transparent text-right"
+                  style={{ fontSize: '16px' }}
+                />
+              </div>
+
+              <div className="border-t border-border mx-5" />
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-[16px]">종료일</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="bg-transparent text-right"
+                  style={{ fontSize: '16px' }}
+                />
+              </div>
 
               <div className="border-t border-border mx-5" />
               <div className="flex items-center justify-between px-4 py-3.5">
@@ -334,7 +400,7 @@ export default function RecurringPage() {
                   {saving ? '저장 중...' : editingId ? '수정하기' : '저장하기'}
                 </button>
                 <button
-                  onClick={() => { setAdding(false); setEditingId(null); setCategoryPickerOpen(false) }}
+                  onClick={() => { setAdding(false); resetForm() }}
                   className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-semibold text-muted-foreground"
                 >
                   취소하기
@@ -345,7 +411,6 @@ export default function RecurringPage() {
         ) : null}
       </div>
 
-      {/* 삭제 확인 모달 */}
       {deleteConfirm && (
         <>
           <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
