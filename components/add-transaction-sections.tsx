@@ -300,69 +300,47 @@ export function TransactionRepeatSection({
 export function RecoverySection({
   recoverDate,
   recoverAmount,
-  saving,
   formatDateDisplay,
   onChangeDate,
   onChangeAmount,
-  onApply,
-  onClose,
 }: {
   recoverDate: string
   recoverAmount: string
-  saving: boolean
   formatDateDisplay: (dateStr: string) => string
   onChangeDate: (value: string) => void
   onChangeAmount: (value: string) => void
-  onApply: () => void
-  onClose: () => void
 }) {
   return (
-    <div className="w-full max-w-md mx-auto px-4 pt-3 pb-2 bg-background">
-      <div className="bg-surface rounded-[22px] px-4 py-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[16px] font-semibold">저축 회수</h3>
-          <button onClick={onClose} className="text-sm text-muted-foreground">닫기</button>
-        </div>
+    <div className="bg-surface rounded-[22px] px-4 py-2">
+      <div className="flex items-center justify-between py-3 border-b border-border">
+        <span className="text-[15px] text-muted-foreground">회수일</span>
+        <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
+          <span>{recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <input
+            type="date"
+            value={recoverDate}
+            onChange={(e) => e.target.value && onChangeDate(e.target.value)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            style={{ fontSize: '16px' }}
+          />
+        </label>
+      </div>
 
-        <div className="flex items-center justify-between py-3 border-b border-border">
-          <span className="text-[15px] text-muted-foreground">회수일</span>
-          <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
-            <span>{recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-            <input
-              type="date"
-              value={recoverDate}
-              onChange={(e) => e.target.value && onChangeDate(e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              style={{ fontSize: '16px' }}
-            />
-          </label>
-        </div>
-
-        <div className="flex items-center justify-between py-3 border-b border-border">
-          <span className="text-[15px] text-muted-foreground">회수 금액</span>
-          <div className="flex items-baseline gap-1">
-            <span className="text-[15px] text-muted-foreground">₩</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              value={recoverAmount ? parseInt(recoverAmount).toLocaleString() : ''}
-              onChange={(e) => onChangeAmount(e.target.value.replace(/[^0-9]/g, ''))}
-              className="text-[15px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-32"
-              style={{ fontSize: '16px' }}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-3 mt-4">
-          <button onClick={onApply} className="flex-1 py-3.5 rounded-[22px] bg-[#14b8a6] text-white text-[16px] font-semibold">
-            {saving ? '처리 중...' : '적용하기'}
-          </button>
-          <button onClick={onClose} className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-semibold text-muted-foreground">
-            취소하기
-          </button>
+      <div className="flex items-center justify-between py-3">
+        <span className="text-[15px] text-muted-foreground">회수 금액</span>
+        <div className="flex items-baseline gap-1">
+          <span className="text-[16px] font-semibold tabular-nums text-foreground">₩</span>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={recoverAmount ? parseInt(recoverAmount).toLocaleString() : ''}
+            onChange={(e) => onChangeAmount(e.target.value.replace(/[^0-9]/g, ''))}
+            className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-32 text-foreground"
+            style={{ fontSize: '16px' }}
+          />
         </div>
       </div>
     </div>

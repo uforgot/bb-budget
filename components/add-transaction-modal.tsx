@@ -416,40 +416,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
 
           {recoverOpen && editTransaction && (
-            <div className="px-4 pt-3">
+            <div className="px-4 pt-1 pb-1">
               <RecoverySection
                 recoverDate={recoverDate}
                 recoverAmount={recoverAmount}
-                saving={saving}
                 formatDateDisplay={formatDateDisplay}
                 onChangeDate={setRecoverDate}
                 onChangeAmount={setRecoverAmount}
-                onApply={async () => {
-                  const amount = parseInt(recoverAmount, 10)
-                  if (!amount) { alert('금액을 입력해주세요'); return }
-                  const { addTransaction, updateTransaction } = await import('@/lib/api')
-                  setSaving(true)
-                  try {
-                    const catName = (editTransaction.category as any)?.name || '저축'
-                    await addTransaction({
-                      type: 'income',
-                      amount,
-                      category_id: editTransaction.category_id,
-                      description: `${catName} 회수`,
-                      date: recoverDate,
-                    })
-                    await updateTransaction(editTransaction.id, { end_date: recoverDate })
-                    setRawAmount(''); setMemo(''); setEditDate(null)
-                    setRecoverOpen(false)
-                    onClose()
-                  } catch (e: unknown) {
-                    const msg = e instanceof Error ? e.message : JSON.stringify(e)
-                    alert(`회수 실패: ${msg}`)
-                  } finally {
-                    setSaving(false)
-                  }
-                }}
-                onClose={() => setRecoverOpen(false)}
               />
             </div>
           )}
