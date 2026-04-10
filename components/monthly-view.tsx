@@ -299,7 +299,7 @@ const WeekDayCard = memo(function WeekDayCard({
                     {memoText && <span className="truncate text-[10px] text-muted-foreground">{memoText}</span>}
                   </div>
                 </div>
-                <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">₩{tx.amount.toLocaleString()}</span>
+                <span className="flex-shrink-0 text-[14px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">₩{tx.amount.toLocaleString()}</span>
               </button>
             )
           })}
@@ -324,7 +324,7 @@ const WeekDayCard = memo(function WeekDayCard({
                   {r.description && <span className="truncate text-[10px] text-muted-foreground">{r.description}</span>}
                 </div>
               </div>
-              <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">₩{r.amount.toLocaleString()}</span>
+              <span className="flex-shrink-0 text-[14px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">₩{r.amount.toLocaleString()}</span>
             </button>
           ))}
         </div>
