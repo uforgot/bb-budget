@@ -10,6 +10,7 @@ import { getTransactions, getCategories, getRecurringPreview, type Transaction, 
 import { HistoryMonthSelector, HistorySearchPanel, HistoryTopBar } from '@/components/history-sections'
 import { HistoryLoadingSkeleton } from '@/components/page-loading-skeletons'
 import { getMonthOffsetForYearMonth, resolveYearMonthFromOffset } from '@/lib/date'
+import { getRecurringPreviewTarget, searchTransactions } from '@/lib/history'
 
 export default function History() {
   const router = useRouter()
@@ -46,7 +47,7 @@ export default function History() {
 
   // 미래 달 반복 지출 예정
   useEffect(() => {
-    const isFuture = currentYear > now.getFullYear() || (currentYear === now.getFullYear() && currentMonth > now.getMonth() + 1)
+    const { isFuture } = getRecurringPreviewTarget(currentYear, currentMonth, now)
     if (!isFuture) { setRecurringItems([]); return }
     getRecurringPreview(currentYear, currentMonth).then(setRecurringItems).catch(() => setRecurringItems([]))
   }, [currentYear, currentMonth])
@@ -54,13 +55,7 @@ export default function History() {
   // 검색
   useEffect(() => {
     if (!searchMode || !searchQuery.trim()) { setSearchResults([]); return }
-    const q = searchQuery.toLowerCase()
-    setSearchResults(transactions.filter(tx => {
-      const cat = tx.category as any
-      const catName = cat?.name?.toLowerCase() || ''
-      const parentName = cat?.parent_id ? categories.find((c: any) => c.id === cat.parent_id)?.name?.toLowerCase() || '' : ''
-      return catName.includes(q) || parentName.includes(q) || (tx.description || '').toLowerCase().includes(q) || tx.amount.toString().includes(q)
-    }))
+    setSearchResults(searchTransactions(transactions, categories, searchQuery))
   }, [searchMode, searchQuery, transactions, categories])
 
   const toggleCalendarView = () => {
