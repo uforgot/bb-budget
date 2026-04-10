@@ -400,6 +400,7 @@ export function MonthlyView({
   const [selectedDay, setSelectedDay] = useState(defaultDay)
   const dayRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const weekDayButtonRefs = useRef<Record<number, HTMLButtonElement | null>>({})
+  const weekTabsScrollRef = useRef<HTMLDivElement | null>(null)
   const stickyRef = useRef<HTMLDivElement | null>(null)
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
   const lastMonthKeyRef = useRef(`${targetYear}-${actualMonth}`)
@@ -416,6 +417,7 @@ export function MonthlyView({
     setSelectedWeek(currentWeekNum)
     setSelectedDay(defaultDay)
     setHighlightedDate(null)
+    weekTabsScrollRef.current?.scrollTo({ left: 0, behavior: 'auto' })
   }, [targetYear, actualMonth, currentWeekNum, defaultDay, forceCalendarView])
 
   useEffect(() => {
@@ -565,7 +567,7 @@ export function MonthlyView({
 
       <div ref={stickyRef} className={`bg-background ${viewMode === 'week' ? 'sticky top-14 z-20 pb-2' : ''}`}>
         {viewMode !== 'calendar' && (
-          <div className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
+          <div ref={weekTabsScrollRef} className="overflow-x-auto scrollbar-hide px-5 mb-4 pt-1">
             <div className="flex gap-2" style={{ width: 'max-content' }}>
               {Array.from({ length: totalWeeks }, (_, i) => i + 1).map(week => (
                 <button
