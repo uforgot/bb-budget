@@ -315,7 +315,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         {editTransaction ? (
           <button
             onClick={async () => {
-              if (!confirm('삭제할까요?')) return
+              if (!confirm('이 반복 지출을 삭제하면 이후 예정된 내역이 모두 삭제됩니다. 삭제할까요?')) return
               const { deleteTransactionWithRecurringCascade } = await import('@/lib/api')
               await deleteTransactionWithRecurringCascade(editTransaction)
               setRawAmount(''); setMemo(''); setEditDate(null)

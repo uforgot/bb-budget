@@ -153,6 +153,33 @@ function getRecurringDatesForMonth(recurring: RecurringTransaction, year: number
   return dates
 }
 
+async function findOrphanedRecurringIds(recurring: RecurringTransaction[]) {
+  const anchorDates = Array.from(new Set(recurring.map(item => item.anchor_date).filter(Boolean))) as string[]
+  if (anchorDates.length === 0) return new Set<string>()
+
+  const { data: anchorTxs, error } = await (getSupabase() as any)
+    .from('transactions')
+    .select('type, amount, category_id, description, date')
+    .in('date', anchorDates)
+
+  if (error) throw error
+
+  const anchorKeys = new Set((anchorTxs || []).map((tx: any) => {
+    const normalizedDescription = (tx.description || '').replace(/\s*\(반복\)$/, '') || null
+    return `${tx.type}::${tx.amount}::${tx.category_id}::${tx.date}::${normalizedDescription ?? ''}`
+  }))
+
+  return new Set(
+    recurring
+      .filter(item => {
+        const normalizedDescription = (item.description || '') || null
+        const key = `${item.type}::${item.amount}::${item.category_id}::${item.anchor_date}::${normalizedDescription ?? ''}`
+        return !anchorKeys.has(key)
+      })
+      .map(item => item.id)
+  )
+}
+
 function getRecurringLabel(recurring: RecurringTransaction) {
   if (!recurring.anchor_date) return '반복 거래'
   const anchor = parseLocalDate(recurring.anchor_date)
@@ -353,9 +380,13 @@ export async function getRecurringPreview(year: number, month: number): Promise<
   const active = recurring.filter(r => r.active)
   if (active.length === 0) return []
 
+  const orphanedIds = await findOrphanedRecurringIds(active)
+  const validActive = active.filter(r => !orphanedIds.has(r.id))
+  if (validActive.length === 0) return []
+
   const monthTxs = await getTransactions({ year, month })
 
-  return active
+  return validActive
     .flatMap(r => getRecurringDatesForMonth(r, year, month).map(date => ({ recurring: r, date })))
     .filter(({ recurring: r, date }) => {
       return !monthTxs.some(t => t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === date)
