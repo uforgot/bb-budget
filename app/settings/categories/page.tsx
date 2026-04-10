@@ -32,6 +32,7 @@ export default function CategoriesSettings() {
   const [editMode, setEditMode] = useState(false)
   const [editingParent, setEditingParent] = useState<Category | null>(null)
   const [editName, setEditName] = useState('')
+  const [draftChildren, setDraftChildren] = useState<Category[]>([])
   const [newSubCat, setNewSubCat] = useState('')
   const [addingSubCat, setAddingSubCat] = useState(false)
   const [addingRoot, setAddingRoot] = useState(false)
@@ -195,30 +196,20 @@ export default function CategoriesSettings() {
     return true
   }
 
-  const handleRenameSave = async () => {
-    if (!editingParent || !editName.trim()) return
-    await supabase.from('categories').update({ name: editName.trim() }).eq('id', editingParent.id)
-    setEditingParent({ ...editingParent, name: editName.trim() })
-    loadCategories()
-  }
-
   const [savingSub, setSavingSub] = useState(false)
   const handleAddSubCat = async () => {
     if (!editingParent || !newSubCat.trim() || savingSub) return
-    setSavingSub(true)
-    try {
-      await supabase.from('categories').insert({
-        name: newSubCat.trim(),
-        type,
-        parent_id: editingParent.id,
-        sort_order: childrenOf(editingParent.id).length + 1,
-      })
-      setNewSubCat('')
-      setAddingSubCat(false)
-      await loadCategories()
-    } finally {
-      setSavingSub(false)
-    }
+    setDraftChildren(prev => [...prev, {
+      id: `draft-${Date.now()}`,
+      name: newSubCat.trim(),
+      type,
+      sort_order: prev.length + 1,
+      parent_id: editingParent.id,
+      created_at: new Date().toISOString(),
+      icon: null,
+    } as Category])
+    setNewSubCat('')
+    setAddingSubCat(false)
   }
 
   const [savingRoot, setSavingRoot] = useState(false)
@@ -236,11 +227,11 @@ export default function CategoriesSettings() {
   }
 
   if (editingParent) {
-    const children = childrenOf(editingParent.id)
+    const children = draftChildren
     return (
       <div className="min-h-dvh bg-background">
         <header className="relative flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14">
-          <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10">
+          <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
@@ -273,9 +264,7 @@ export default function CategoriesSettings() {
           <EmojiPicker
             open={emojiPickerOpen}
             onSelect={async (emoji) => {
-              await supabase.from('categories').update({ icon: emoji }).eq('id', editingParent.id)
               setEditingParent({ ...editingParent, icon: emoji } as any)
-              loadCategories()
             }}
             onClose={() => setEmojiPickerOpen(false)}
           />
@@ -286,7 +275,6 @@ export default function CategoriesSettings() {
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              onBlur={handleRenameSave}
               style={{ fontSize: '16px' }}
               className="flex-1 bg-transparent outline-none"
             />
@@ -299,7 +287,13 @@ export default function CategoriesSettings() {
                 {children.map((child) => (
                   <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
                     {child.name}
-                    <button onClick={async () => { await confirmDelete({ id: child.id, name: child.name, type: 'child' }) }} className="text-muted-foreground hover:text-foreground">
+                    <button onClick={async () => {
+                      if (child.id.startsWith('draft-')) {
+                        setDraftChildren(prev => prev.filter(item => item.id !== child.id))
+                        return
+                      }
+                      setDraftChildren(prev => prev.filter(item => item.id !== child.id))
+                    }} className="text-muted-foreground hover:text-foreground">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
                       </svg>
@@ -335,7 +329,37 @@ export default function CategoriesSettings() {
 
           <div className="mt-10">
             <button
-              onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); loadCategories() }}
+              onClick={async () => {
+                if (!editingParent) return
+
+                const nextName = editName.trim() || editingParent.name
+                await supabase.from('categories').update({
+                  name: nextName,
+                  icon: (editingParent as any).icon || null,
+                }).eq('id', editingParent.id)
+
+                const currentChildren = childrenOf(editingParent.id)
+                const currentIds = new Set(currentChildren.map(child => child.id))
+                const draftIds = new Set(draftChildren.filter(child => !child.id.startsWith('draft-')).map(child => child.id))
+
+                for (const child of currentChildren) {
+                  if (!draftIds.has(child.id)) {
+                    await handleDeleteChild(child.id)
+                  }
+                }
+
+                const newDrafts = draftChildren.filter(child => child.id.startsWith('draft-'))
+                for (const child of newDrafts) {
+                  await supabase.from('categories').insert({
+                    name: child.name,
+                    type,
+                    parent_id: editingParent.id,
+                    sort_order: currentChildren.length + 1,
+                  })
+                }
+
+                setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories()
+              }}
               className="w-full py-3 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue"
             >
               수정 완료
@@ -441,6 +465,7 @@ export default function CategoriesSettings() {
                 if (editMode || draggingId || suppressClickRef.current) return
                 setEditingParent(parent)
                 setEditName(parent.name)
+                setDraftChildren(childrenOf(parent.id))
                 setAddingSubCat(false)
                 setNewSubCat('')
               }}
