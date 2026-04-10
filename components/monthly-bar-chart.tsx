@@ -58,7 +58,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
             const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
             return (
               <p className="text-[14px] font-semibold mt-1 text-foreground/70 dark:text-white/70 whitespace-nowrap">
-                {avgLabel} {toMan(avgValue)} 대비 {isOver ? '↑' : '↓'} {toMan(Math.abs(diff))}
+                {avgLabel} {toMan(avgValue)} 대비 {isOver ? '↑' : '↓'}{toMan(Math.abs(diff))}
               </p>
             )
           })()}
