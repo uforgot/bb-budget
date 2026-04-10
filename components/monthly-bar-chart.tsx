@@ -37,13 +37,13 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
     <div className={`bg-surface rounded-[22px] px-4 pt-5 pb-6 mb-4 ${className}`}>
       {/* 헤더 */}
       <div className="mb-5">
-        <div className="flex items-start justify-between gap-3 mb-0.5">
+        <div className="flex items-start justify-between gap-3 mb-0">
           <p className="text-[14px] font-semibold text-foreground mb-0">
             {selectedData ? `${selectedData.month}월 ${label}` : label}
           </p>
           {headerRight}
         </div>
-        <p className="text-[24px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
+        <p className="text-[24px] font-bold tabular-nums leading-tight mt-0" style={{ letterSpacing: '-1px', color }}>
           {selectedData && !selectedData.isFuture && selectedData.value > 0
             ? `₩${selectedData.value.toLocaleString()}`
             : '—'}
