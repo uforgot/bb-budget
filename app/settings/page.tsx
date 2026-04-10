@@ -65,15 +65,6 @@ export default function Settings() {
               <path d="m9 18 6-6-6-6" />
             </svg>
           </Link>
-          <Link
-            href="/settings/recurring"
-            className="flex items-center justify-between px-4 py-4"
-          >
-            <span className="text-[16px]">반복 지출 관리</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </Link>
         </div>
       </main>
     </div>
