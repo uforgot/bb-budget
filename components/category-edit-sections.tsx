@@ -1,0 +1,127 @@
+import type { Category } from '@/lib/api'
+import { EmojiPicker } from '@/components/emoji-picker'
+
+export function CategoryEmojiCard({
+  emoji,
+  emojiPickerOpen,
+  onOpen,
+  onSelect,
+  onClose,
+}: {
+  emoji: string
+  emojiPickerOpen: boolean
+  onOpen: () => void
+  onSelect: (emoji: string) => void
+  onClose: () => void
+}) {
+  return (
+    <>
+      <div className="flex justify-center mb-8">
+        <button
+          onClick={onOpen}
+          className="w-36 h-36 bg-surface rounded-[22px] flex flex-col items-center justify-center border border-border/50 relative"
+        >
+          <span style={{ fontSize: '64px' }}>{emoji}</span>
+          <span className="text-xs text-muted-foreground mt-3">변경</span>
+        </button>
+      </div>
+      <EmojiPicker open={emojiPickerOpen} onSelect={onSelect} onClose={onClose} />
+    </>
+  )
+}
+
+export function CategoryNameRow({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <div className="flex items-center gap-3 py-4 border-b border-border">
+      <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0">카테고리명</span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ fontSize: '16px' }}
+        className="flex-1 bg-transparent outline-none"
+      />
+    </div>
+  )
+}
+
+export function CategoryChildrenEditor({
+  children,
+  addingSubCat,
+  newSubCat,
+  onChangeNewSubCat,
+  onSubmit,
+  onStartAdd,
+  onRemove,
+}: {
+  children: Category[]
+  addingSubCat: boolean
+  newSubCat: string
+  onChangeNewSubCat: (value: string) => void
+  onSubmit: () => void
+  onStartAdd: () => void
+  onRemove: (child: Category) => void
+}) {
+  return (
+    <div className="flex items-start gap-3 py-4 border-b border-border">
+      <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
+      <div className="flex-1">
+        <div className="flex flex-wrap gap-2">
+          {children.map((child) => (
+            <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
+              {child.name}
+              <button onClick={() => onRemove(child)} className="text-muted-foreground hover:text-foreground">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+                </svg>
+              </button>
+            </span>
+          ))}
+
+          {addingSubCat ? (
+            <span className="inline-flex items-center gap-1">
+              <input
+                type="text"
+                value={newSubCat}
+                onChange={(e) => onChangeNewSubCat(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
+                autoFocus
+                placeholder="이름"
+                style={{ fontSize: '16px' }}
+                className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
+              />
+              <button onClick={onSubmit} className="text-xs text-accent-blue">확인</button>
+            </span>
+          ) : (
+            <button
+              onClick={onStartAdd}
+              className="inline-flex items-center bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
+            >
+              추가
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function CategoryEditSubmitBar({
+  onSubmit,
+}: {
+  onSubmit: () => void
+}) {
+  return (
+    <div className="mt-10">
+      <button onClick={onSubmit} className="w-full py-3 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue">
+        수정 완료
+      </button>
+    </div>
+  )
+}

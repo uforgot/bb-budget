@@ -5,8 +5,8 @@ import { ArrowUpDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
-import { EmojiPicker } from '@/components/emoji-picker'
 import { AddRootCategoryRow, CategoryGrid, CategorySettingsHeader, CategoryTypeTabs, DragGhost } from '@/components/category-settings-sections'
+import { CategoryChildrenEditor, CategoryEditSubmitBar, CategoryEmojiCard, CategoryNameRow } from '@/components/category-edit-sections'
 
 type TypeTab = 'expense' | 'income' | 'savings'
 const EMOJI_MAP: Record<string, string> = {
@@ -245,119 +245,62 @@ export default function CategoriesSettings() {
         />
 
         <div className="max-w-lg mx-auto px-5 pt-6">
-          <div className="flex justify-center mb-8">
-            <button
-              onClick={() => setEmojiPickerOpen(true)}
-              className="w-36 h-36 bg-surface rounded-[22px] flex flex-col items-center justify-center border border-border/50 relative"
-            >
-              <span style={{ fontSize: '64px' }}>{getEmoji(editingParent)}</span>
-              <span className="text-xs text-muted-foreground mt-3">변경</span>
-            </button>
-          </div>
-          <EmojiPicker
-            open={emojiPickerOpen}
+          <CategoryEmojiCard
+            emoji={getEmoji(editingParent)}
+            emojiPickerOpen={emojiPickerOpen}
+            onOpen={() => setEmojiPickerOpen(true)}
             onSelect={async (emoji) => {
               setEditingParent({ ...editingParent, icon: emoji } as any)
             }}
             onClose={() => setEmojiPickerOpen(false)}
           />
 
-          <div className="flex items-center gap-3 py-4 border-b border-border">
-            <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0">카테고리명</span>
-            <input
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              style={{ fontSize: '16px' }}
-              className="flex-1 bg-transparent outline-none"
-            />
-          </div>
+          <CategoryNameRow value={editName} onChange={setEditName} />
 
-          <div className="flex items-start gap-3 py-4 border-b border-border">
-            <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
-            <div className="flex-1">
-              <div className="flex flex-wrap gap-2">
-                {children.map((child) => (
-                  <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
-                    {child.name}
-                    <button onClick={async () => {
-                      if (child.id.startsWith('draft-')) {
-                        setDraftChildren(prev => prev.filter(item => item.id !== child.id))
-                        return
-                      }
-                      setDraftChildren(prev => prev.filter(item => item.id !== child.id))
-                    }} className="text-muted-foreground hover:text-foreground">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
-                      </svg>
-                    </button>
-                  </span>
-                ))}
+          <CategoryChildrenEditor
+            children={children}
+            addingSubCat={addingSubCat}
+            newSubCat={newSubCat}
+            onChangeNewSubCat={setNewSubCat}
+            onSubmit={handleAddSubCat}
+            onStartAdd={() => setAddingSubCat(true)}
+            onRemove={(child) => {
+              setDraftChildren(prev => prev.filter(item => item.id !== child.id))
+            }}
+          />
 
-                {addingSubCat ? (
-                  <span className="inline-flex items-center gap-1">
-                    <input
-                      type="text"
-                      value={newSubCat}
-                      onChange={(e) => setNewSubCat(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleAddSubCat()}
-                      autoFocus
-                      placeholder="이름"
-                      style={{ fontSize: '16px' }}
-                      className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
-                    />
-                    <button onClick={handleAddSubCat} className="text-xs text-accent-blue">확인</button>
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => setAddingSubCat(true)}
-                    className="inline-flex items-center bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
-                  >
-                    추가
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <CategoryEditSubmitBar
+            onSubmit={async () => {
+              if (!editingParent) return
 
-          <div className="mt-10">
-            <button
-              onClick={async () => {
-                if (!editingParent) return
+              const nextName = editName.trim() || editingParent.name
+              await supabase.from('categories').update({
+                name: nextName,
+                icon: (editingParent as any).icon || null,
+              }).eq('id', editingParent.id)
 
-                const nextName = editName.trim() || editingParent.name
-                await supabase.from('categories').update({
-                  name: nextName,
-                  icon: (editingParent as any).icon || null,
-                }).eq('id', editingParent.id)
+              const currentChildren = childrenOf(editingParent.id)
+              const draftIds = new Set(draftChildren.filter(child => !child.id.startsWith('draft-')).map(child => child.id))
 
-                const currentChildren = childrenOf(editingParent.id)
-                const currentIds = new Set(currentChildren.map(child => child.id))
-                const draftIds = new Set(draftChildren.filter(child => !child.id.startsWith('draft-')).map(child => child.id))
-
-                for (const child of currentChildren) {
-                  if (!draftIds.has(child.id)) {
-                    await handleDeleteChild(child.id)
-                  }
+              for (const child of currentChildren) {
+                if (!draftIds.has(child.id)) {
+                  await handleDeleteChild(child.id)
                 }
+              }
 
-                const newDrafts = draftChildren.filter(child => child.id.startsWith('draft-'))
-                for (const child of newDrafts) {
-                  await supabase.from('categories').insert({
-                    name: child.name,
-                    type,
-                    parent_id: editingParent.id,
-                    sort_order: currentChildren.length + 1,
-                  })
-                }
+              const newDrafts = draftChildren.filter(child => child.id.startsWith('draft-'))
+              for (const child of newDrafts) {
+                await supabase.from('categories').insert({
+                  name: child.name,
+                  type,
+                  parent_id: editingParent.id,
+                  sort_order: currentChildren.length + 1,
+                })
+              }
 
-                setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories()
-              }}
-              className="w-full py-3 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue"
-            >
-              수정 완료
-            </button>
-          </div>
+              setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories()
+            }}
+          />
         </div>
 
       </div>
