@@ -15,9 +15,11 @@ interface MonthlyBarChartProps {
   color?: string
   avgValue?: number
   avgLabel?: string
+  headerRight?: React.ReactNode
+  className?: string
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균' }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, className = '' }: MonthlyBarChartProps) {
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
@@ -32,12 +34,15 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   const selectedData = data.find(d => d.month === selectedMonth)
 
   return (
-    <div className="bg-surface rounded-[22px] px-4 pt-5 pb-6 mb-4">
+    <div className={`bg-surface rounded-[22px] px-4 pt-5 pb-6 mb-4 ${className}`}>
       {/* 헤더 */}
       <div className="mb-5">
-        <p className="text-[14px] font-semibold text-foreground mb-0.5">
-          {selectedData ? `${selectedData.month}월 ${label}` : label}
-        </p>
+        <div className="flex items-start justify-between gap-3 mb-0.5">
+          <p className="text-[14px] font-semibold text-foreground mb-0">
+            {selectedData ? `${selectedData.month}월 ${label}` : label}
+          </p>
+          {headerRight}
+        </div>
         <p className="text-[24px] font-bold tabular-nums leading-tight" style={{ letterSpacing: '-1px', color }}>
           {selectedData && !selectedData.isFuture && selectedData.value > 0
             ? `₩${selectedData.value.toLocaleString()}`

@@ -188,38 +188,39 @@ export default function Yearly() {
             yearMode
           />
           <div className="px-5">
-            <div className="bg-surface rounded-[22px] px-4 pt-4 pb-2 mb-4">
-              <div className="flex items-center justify-end gap-1 mb-2">
-                <button
-                  onClick={() => setYearlyChartMode('expense')}
-                  className={`px-3 py-1.5 rounded-full text-[13px] font-semibold ${yearlyChartMode === 'expense' ? 'bg-accent-blue text-white' : 'bg-background text-muted-foreground'}`}
-                >
-                  지출
-                </button>
-                <button
-                  onClick={() => setYearlyChartMode('income')}
-                  className={`px-3 py-1.5 rounded-full text-[13px] font-semibold ${yearlyChartMode === 'income' ? 'bg-[#14b8a6] text-white' : 'bg-background text-muted-foreground'}`}
-                >
-                  수입
-                </button>
-              </div>
-              <MonthlyBarChart
-                label={yearlyChartMode === 'expense' ? '쓴 지출' : '번 수입'}
-                color={yearlyChartMode === 'expense' ? '#5865F2' : '#14b8a6'}
-                avgValue={yearlyChartMode === 'expense' ? avgExpense : avgIncome}
-                data={Array.from({ length: 12 }, (_, i) => {
-                  const m = i + 1
-                  const ms = monthSummaries[i]
-                  const isFuture = targetYear > today.getFullYear() ||
-                    (targetYear === today.getFullYear() && m > today.getMonth() + 1)
-                  return {
-                    month: m,
-                    value: yearlyChartMode === 'expense' ? ms.expense : ms.income,
-                    isFuture,
-                  }
-                })}
-              />
-            </div>
+            <MonthlyBarChart
+              className="mb-4"
+              headerRight={(
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setYearlyChartMode('expense')}
+                    className={`px-3 py-1.5 rounded-full text-[13px] font-semibold ${yearlyChartMode === 'expense' ? 'bg-accent-blue text-white' : 'bg-background text-muted-foreground'}`}
+                  >
+                    지출
+                  </button>
+                  <button
+                    onClick={() => setYearlyChartMode('income')}
+                    className={`px-3 py-1.5 rounded-full text-[13px] font-semibold ${yearlyChartMode === 'income' ? 'bg-[#14b8a6] text-white' : 'bg-background text-muted-foreground'}`}
+                  >
+                    수입
+                  </button>
+                </div>
+              )}
+              label={yearlyChartMode === 'expense' ? '쓴 지출' : '번 수입'}
+              color={yearlyChartMode === 'expense' ? '#5865F2' : '#14b8a6'}
+              avgValue={yearlyChartMode === 'expense' ? avgExpense : avgIncome}
+              data={Array.from({ length: 12 }, (_, i) => {
+                const m = i + 1
+                const ms = monthSummaries[i]
+                const isFuture = targetYear > today.getFullYear() ||
+                  (targetYear === today.getFullYear() && m > today.getMonth() + 1)
+                return {
+                  month: m,
+                  value: yearlyChartMode === 'expense' ? ms.expense : ms.income,
+                  isFuture,
+                }
+              })}
+            />
           </div>
         </>
       )}
