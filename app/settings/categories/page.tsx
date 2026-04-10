@@ -187,11 +187,12 @@ export default function CategoriesSettings() {
     loadCategories()
   }
 
-  const confirmDelete = () => {
-    if (!deleteConfirm) return
-    if (deleteConfirm.type === 'parent') handleDeleteParent(deleteConfirm.id)
-    else handleDeleteChild(deleteConfirm.id)
+  const confirmDelete = async (target: { id: string; name: string; type: 'parent' | 'child' }) => {
+    if (!confirm("카테고리를 삭제하면 적용된 항목이 '미분류'로 변경돼요. 계속할까요?")) return false
+    if (target.type === 'parent') await handleDeleteParent(target.id)
+    else await handleDeleteChild(target.id)
     setDeleteConfirm(null)
+    return true
   }
 
   const handleRenameSave = async () => {
@@ -287,7 +288,7 @@ export default function CategoriesSettings() {
                 {children.map((child) => (
                   <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
                     {child.name}
-                    <button onClick={() => setDeleteConfirm({ id: child.id, name: child.name, type: 'child' })} className="text-muted-foreground hover:text-foreground">
+                    <button onClick={async () => { await confirmDelete({ id: child.id, name: child.name, type: 'child' }) }} className="text-muted-foreground hover:text-foreground">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
                       </svg>
@@ -323,7 +324,10 @@ export default function CategoriesSettings() {
 
           <div className="mt-10">
             <button
-              onClick={() => setDeleteConfirm({ id: editingParent.id, name: editingParent.name, type: 'parent' })}
+              onClick={async () => {
+                const deleted = await confirmDelete({ id: editingParent.id, name: editingParent.name, type: 'parent' })
+                if (deleted) setEditingParent(null)
+              }}
               className="w-full py-3 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue"
             >
               카테고리 삭제
@@ -331,21 +335,6 @@ export default function CategoriesSettings() {
           </div>
         </div>
 
-        {deleteConfirm && (
-          <>
-            <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
-            <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
-              <div className="bg-card rounded-[22px] px-6 py-5 w-full max-w-sm">
-                <p className="text-sm font-semibold mb-2">{deleteConfirm.name} 카테고리를 정말 삭제하시겠습니까?</p>
-                <p className="text-xs text-muted-foreground mb-4">삭제하면 해당 카테고리의 내역이 미분류로 변경됩니다.</p>
-                <div className="flex gap-3">
-                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-[22px] bg-background text-[16px] font-medium text-muted-foreground">취소하기</button>
-                  <button onClick={() => { const isParent = deleteConfirm.type === 'parent'; confirmDelete(); if (isParent) setEditingParent(null) }} className="flex-1 py-3.5 rounded-[22px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold">삭제하기</button>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
       </div>
     )
   }
@@ -523,35 +512,7 @@ export default function CategoriesSettings() {
         ) : null
       })()}
 
-      {deleteConfirm && (
-        <>
-          <div className="fixed inset-0 bg-black/50 z-[70]" onClick={() => setDeleteConfirm(null)} />
-          <div className="fixed inset-0 z-[80] flex items-center justify-center px-8">
-            <div className="bg-card rounded-[22px] px-6 py-5 w-full max-w-sm">
-              <p className="text-sm font-semibold mb-2">{deleteConfirm.name} 카테고리를 정말 삭제하시겠습니까?</p>
-              <p className="text-xs text-muted-foreground mb-4">삭제하면 해당 카테고리의 내역이 미분류로 변경됩니다.</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setDeleteConfirm(null)}
-                  className="flex-1 py-3.5 rounded-[22px] bg-surface text-sm font-medium text-muted-foreground"
-                >
-                  취소하기
-                </button>
-                <button
-                  onClick={() => {
-                    const isParent = deleteConfirm?.type === 'parent'
-                    confirmDelete()
-                    if (isParent) setEditingParent(null)
-                  }}
-                  className="flex-1 py-3.5 rounded-[22px] bg-accent-coral/10 text-accent-coral text-[16px] font-semibold"
-                >
-                  삭제하기
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      {deleteConfirm && null}
     </div>
   )
 }
