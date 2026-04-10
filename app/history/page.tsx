@@ -9,6 +9,7 @@ import { MonthlyView } from '@/components/monthly-view'
 import { getTransactions, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
 import { HistoryMonthSelector, HistorySearchPanel, HistoryTopBar } from '@/components/history-sections'
 import { HistoryLoadingSkeleton } from '@/components/page-loading-skeletons'
+import { getMonthOffsetForYearMonth, resolveYearMonthFromOffset } from '@/lib/date'
 
 export default function History() {
   const router = useRouter()
@@ -27,9 +28,7 @@ export default function History() {
 
   // 현재 연월 (select 기준)
   const now = new Date()
-  const tm = now.getMonth() + 1 + monthOffset
-  const currentYear = now.getFullYear() + Math.floor((tm - 1) / 12)
-  const currentMonth = ((tm - 1) % 12 + 12) % 12 + 1
+  const { currentYear, currentMonth } = resolveYearMonthFromOffset(monthOffset, now)
 
   const loadData = useCallback(async () => {
     try {
@@ -83,8 +82,8 @@ export default function History() {
         currentMonth={currentMonth}
         years={Array.from({ length: 20 }, (_, i) => now.getFullYear() - 5 + i)}
         months={Array.from({ length: 12 }, (_, i) => i + 1)}
-        onChangeYear={(year) => setMonthOffset((year - now.getFullYear()) * 12 + (currentMonth - (now.getMonth() + 1)))}
-        onChangeMonth={(month) => setMonthOffset((currentYear - now.getFullYear()) * 12 + (month - (now.getMonth() + 1)))}
+        onChangeYear={(year) => setMonthOffset(getMonthOffsetForYearMonth(year, currentMonth, now))}
+        onChangeMonth={(month) => setMonthOffset(getMonthOffsetForYearMonth(currentYear, month, now))}
         onResetToday={() => {
           setMonthOffset(0)
           setForceCalendarView(false)

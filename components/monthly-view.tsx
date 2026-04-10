@@ -5,6 +5,8 @@ import { type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { TxRow } from '@/components/tx-row'
 import { semanticColors } from '@/components/ui-colors'
+import { formatCompactAmount } from '@/lib/format'
+import { resolveYearMonthFromOffset } from '@/lib/date'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 const WEEKDAYS_MON = ['월', '화', '수', '목', '금', '토', '일']
@@ -35,13 +37,6 @@ function formatDateKey(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
 
-function formatAmount(amount: number): string {
-  if (amount >= 10000) {
-    const man = Math.floor(amount / 10000)
-    return `${man}만`
-  }
-  return amount.toLocaleString()
-}
 
 interface RecurringItem {
   day: number
@@ -139,12 +134,12 @@ const MonthlyGridView = memo(function MonthlyGridView({
                 <div className="flex flex-col items-center gap-0 mt-0">
                   {(dayData?.expense ?? 0) > 0 && (
                     <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: semanticColors.expense, letterSpacing: '-0.0625em' }}>
-                      {formatAmount(dayData!.expense)}
+                      {formatCompactAmount(dayData!.expense)}
                     </span>
                   )}
                   {(dayData?.income ?? 0) > 0 && (
                     <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: '#14b8a6', letterSpacing: '-0.0625em' }}>
-                      {formatAmount(dayData!.income)}
+                      {formatCompactAmount(dayData!.income)}
                     </span>
                   )}
                 </div>
@@ -352,9 +347,7 @@ export function MonthlyView({
 }: MonthlyViewProps) {
   const now = new Date()
   const today = new Date()
-  const targetMonth = now.getMonth() + 1 + monthOffset
-  const targetYear = now.getFullYear() + Math.floor((targetMonth - 1) / 12)
-  const actualMonth = ((targetMonth - 1) % 12 + 12) % 12 + 1
+  const { currentYear: targetYear, currentMonth: actualMonth } = resolveYearMonthFromOffset(monthOffset, now)
   const isFutureMonth = targetYear > today.getFullYear() || (targetYear === today.getFullYear() && actualMonth > today.getMonth() + 1)
   const daysInMonth = new Date(targetYear, actualMonth, 0).getDate()
   const monthEndDate = `${targetYear}-${String(actualMonth).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { getCategories, addTransaction, updateTransaction, type Category, type Transaction } from '@/lib/api'
+import { formatDateDisplay, formatDateInputValue, formatKoreanWon } from '@/lib/format'
 import { AddTransactionHeader, RecoverySection, TransactionAmountRow, TransactionCategorySection, TransactionDateRow, TransactionMemoRow, TransactionRepeatSection } from './add-transaction-sections'
 
 type TransactionType = '수입' | '지출' | '저축'
@@ -24,37 +25,12 @@ interface AddTransactionModalProps {
 
 const REVERSE_TYPE_MAP: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
 
-function getToday() {
-  const now = new Date()
-  const y = now.getFullYear()
-  const m = String(now.getMonth() + 1).padStart(2, '0')
-  const d = String(now.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
-}
-
-function formatDateDisplay(dateStr: string) {
-  const d = new Date(dateStr + 'T00:00:00')
-  const days = ['일', '월', '화', '수', '목', '금', '토']
-  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}. (${days[d.getDay()]})`
-}
 
 function formatAmount(raw: string) {
   if (!raw) return '0'
   return parseInt(raw).toLocaleString()
 }
 
-function formatKorean(raw: string) {
-  const n = parseInt(raw || '0')
-  if (!n) return '0원'
-  const eok = Math.floor(n / 100000000)
-  const man = Math.floor((n % 100000000) / 10000)
-  const rest = n % 10000
-  let result = ''
-  if (eok) result += `${eok}억 `
-  if (man) result += `${man}만 `
-  if (rest) result += `${rest.toLocaleString()}`
-  return result.trim() + '원'
-}
 
 export function AddTransactionModal({ open, initialDate, editTransaction, onClose, onSave }: AddTransactionModalProps) {
   const [type, setType] = useState<TransactionType | null>(null)
@@ -189,7 +165,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     return () => document.removeEventListener('mousedown', handler)
   }, [repeatDropdownOpen])
 
-  const date = editDate || initialDate || getToday()
+  const date = editDate || initialDate || formatDateInputValue()
 
   const handleSave = async () => {
     const numAmount = parseInt(rawAmount, 10)
@@ -353,7 +329,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <TransactionAmountRow
               rawAmount={rawAmount}
               amountInputRef={amountInputRef}
-              formatKorean={formatKorean}
+              formatKorean={formatKoreanWon}
               onChange={setRawAmount}
             />
             <div className="border-t border-border mx-4" />
@@ -420,7 +396,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 recoverDate={recoverDate}
                 recoverAmount={recoverAmount}
                 formatDateDisplay={formatDateDisplay}
-                formatKorean={formatKorean}
+                formatKorean={formatKoreanWon}
                 onChangeDate={setRecoverDate}
                 onChangeAmount={setRecoverAmount}
               />
