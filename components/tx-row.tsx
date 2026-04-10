@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteTransaction, type Transaction, type Category } from '@/lib/api'
+import { deleteTransactionWithRecurringCascade, type Transaction, type Category } from '@/lib/api'
 import { SwipeToDelete } from '@/components/swipe-to-delete'
 import { typography, semanticColors } from '@/components/ui-colors'
 
@@ -25,7 +25,7 @@ export function TxRow({ tx, categories, showDate, dateLabel, showDescription = t
   const d = new Date(tx.date)
 
   return (
-    <SwipeToDelete onDelete={async () => { await deleteTransaction(tx.id); onDeleted() }}>
+    <SwipeToDelete onDelete={async () => { await deleteTransactionWithRecurringCascade(tx); onDeleted() }}>
       <div
         onClick={() => onEdit(tx)}
         className={`px-5 py-2 cursor-pointer active:bg-muted/30 ${tx.end_date ? 'opacity-40' : ''}`}

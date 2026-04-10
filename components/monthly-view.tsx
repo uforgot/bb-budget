@@ -50,6 +50,7 @@ interface RecurringItem {
   category_id: string
   description: string
   categoryName?: string
+  anchor_date?: string
 }
 
 interface MonthlyViewProps {
@@ -304,7 +305,15 @@ const WeekDayCard = memo(function WeekDayCard({
           })}
 
           {recurring.map((r, ri) => (
-            <div key={`${day}-recurring-${ri}`} className="flex items-center justify-between gap-3 opacity-40 italic">
+            <button
+              key={`${day}-recurring-${ri}`}
+              type="button"
+              onClick={() => {
+                const anchor = r.anchor_date ? new Date(`${r.anchor_date}T00:00:00`) : new Date(date)
+                alert(`${anchor.getMonth() + 1}월 ${anchor.getDate()}일 반복 지출의 첫 내역에서 항목을 수정하세요.`)
+              }}
+              className="flex w-full items-center justify-between gap-3 opacity-40 italic text-left"
+            >
               <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
                 <span
                   className="size-2.5 flex-shrink-0 rounded-full"
@@ -316,7 +325,7 @@ const WeekDayCard = memo(function WeekDayCard({
                 </div>
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">₩{r.amount.toLocaleString()}</span>
-            </div>
+            </button>
           ))}
         </div>
 

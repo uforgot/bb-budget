@@ -49,6 +49,7 @@ export interface RecurringPreviewItem {
   category_id: string
   description: string
   categoryName?: string
+  anchor_date?: string
 }
 
 function toDateString(date: Date) {
@@ -243,6 +244,32 @@ export async function deleteTransaction(id: string) {
   if (error) throw error
 }
 
+export async function deleteTransactionWithRecurringCascade(tx: Transaction) {
+  const supabase = getSupabase() as any
+  const { data: recurringMatches, error: recurringError } = await supabase
+    .from('recurring_transactions')
+    .select('id')
+    .eq('type', tx.type)
+    .eq('amount', tx.amount)
+    .eq('category_id', tx.category_id)
+    .eq('anchor_date', tx.date)
+
+  if (recurringError) throw recurringError
+
+  const recurringIds = (recurringMatches || []).map((item: { id: string }) => item.id)
+
+  if (recurringIds.length > 0) {
+    const { error: recurringDeleteError } = await supabase
+      .from('recurring_transactions')
+      .delete()
+      .in('id', recurringIds)
+    if (recurringDeleteError) throw recurringDeleteError
+  }
+
+  const { error: txDeleteError } = await supabase.from('transactions').delete().eq('id', tx.id)
+  if (txDeleteError) throw txDeleteError
+}
+
 // ─── 반복 지출 ─────────────────────────────────────────
 
 export async function getRecurringTransactions(): Promise<RecurringTransaction[]> {
@@ -334,6 +361,7 @@ export async function getRecurringPreview(year: number, month: number): Promise<
       category_id: r.category_id,
       description: r.description ? `${r.description} (예정)` : `${getRecurringLabel(r)} (예정)`,
       categoryName: r.category?.name || '',
+      anchor_date: r.anchor_date || undefined,
     }))
 }
 
