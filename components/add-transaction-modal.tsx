@@ -415,32 +415,110 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           )}
           </div>
 
+          {recoverOpen && editTransaction && (
+            <div className="px-4 pt-3">
+              <RecoverySection
+                recoverDate={recoverDate}
+                recoverAmount={recoverAmount}
+                saving={saving}
+                formatDateDisplay={formatDateDisplay}
+                onChangeDate={setRecoverDate}
+                onChangeAmount={setRecoverAmount}
+                onApply={async () => {
+                  const amount = parseInt(recoverAmount, 10)
+                  if (!amount) { alert('금액을 입력해주세요'); return }
+                  const { addTransaction, updateTransaction } = await import('@/lib/api')
+                  setSaving(true)
+                  try {
+                    const catName = (editTransaction.category as any)?.name || '저축'
+                    await addTransaction({
+                      type: 'income',
+                      amount,
+                      category_id: editTransaction.category_id,
+                      description: `${catName} 회수`,
+                      date: recoverDate,
+                    })
+                    await updateTransaction(editTransaction.id, { end_date: recoverDate })
+                    setRawAmount(''); setMemo(''); setEditDate(null)
+                    setRecoverOpen(false)
+                    onClose()
+                  } catch (e: unknown) {
+                    const msg = e instanceof Error ? e.message : JSON.stringify(e)
+                    alert(`회수 실패: ${msg}`)
+                  } finally {
+                    setSaving(false)
+                  }
+                }}
+                onClose={() => setRecoverOpen(false)}
+              />
+            </div>
+          )}
         </div>
       </div>
 
       {/* 하단 버튼 영역 */}
       <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
         {editTransaction ? (
-          /* 수정 모드 */
-          <div className="flex gap-2 mb-2">
-            <button onClick={handleSave} className="flex-1 bg-accent-blue text-white rounded-[22px] py-3.5 text-[16px] font-semibold">
-              {saving ? '저장 중...' : '수정하기'}
-            </button>
-            {editTransaction.type === 'savings' && (
+          recoverOpen ? (
+            <div className="flex gap-3 mb-2">
               <button
-                onClick={() => setRecoverOpen(prev => !prev)}
+                onClick={async () => {
+                  const amount = parseInt(recoverAmount, 10)
+                  if (!amount) { alert('금액을 입력해주세요'); return }
+                  const { addTransaction, updateTransaction } = await import('@/lib/api')
+                  setSaving(true)
+                  try {
+                    const catName = (editTransaction.category as any)?.name || '저축'
+                    await addTransaction({
+                      type: 'income',
+                      amount,
+                      category_id: editTransaction.category_id,
+                      description: `${catName} 회수`,
+                      date: recoverDate,
+                    })
+                    await updateTransaction(editTransaction.id, { end_date: recoverDate })
+                    setRawAmount(''); setMemo(''); setEditDate(null)
+                    setRecoverOpen(false)
+                    onClose()
+                  } catch (e: unknown) {
+                    const msg = e instanceof Error ? e.message : JSON.stringify(e)
+                    alert(`회수 실패: ${msg}`)
+                  } finally {
+                    setSaving(false)
+                  }
+                }}
                 className="flex-1 bg-[#14b8a6] text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
-                회수하기
+                {saving ? '처리 중...' : '적용하기'}
               </button>
-            )}
-            <button
-              onClick={handleClose}
-              className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
-            >
-              취소하기
-            </button>
-          </div>
+              <button
+                onClick={() => setRecoverOpen(false)}
+                className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+              >
+                취소하기
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2 mb-2">
+              <button onClick={handleSave} className="flex-1 bg-accent-blue text-white rounded-[22px] py-3.5 text-[16px] font-semibold">
+                {saving ? '저장 중...' : '수정하기'}
+              </button>
+              {editTransaction.type === 'savings' && (
+                <button
+                  onClick={() => setRecoverOpen(true)}
+                  className="flex-1 bg-[#14b8a6] text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
+                >
+                  회수하기
+                </button>
+              )}
+              <button
+                onClick={handleClose}
+                className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+              >
+                취소하기
+              </button>
+            </div>
+          )
         ) : (
           /* 기록 모드 */
           <div className="flex gap-3 mb-2">
@@ -451,42 +529,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               취소하기
             </button>
           </div>
-        )}
-        {recoverOpen && editTransaction && (
-          <RecoverySection
-            recoverDate={recoverDate}
-            recoverAmount={recoverAmount}
-            saving={saving}
-            formatDateDisplay={formatDateDisplay}
-            onChangeDate={setRecoverDate}
-            onChangeAmount={setRecoverAmount}
-            onApply={async () => {
-              const amount = parseInt(recoverAmount, 10)
-              if (!amount) { alert('금액을 입력해주세요'); return }
-              const { addTransaction, updateTransaction } = await import('@/lib/api')
-              setSaving(true)
-              try {
-                const catName = (editTransaction.category as any)?.name || '저축'
-                await addTransaction({
-                  type: 'income',
-                  amount,
-                  category_id: editTransaction.category_id,
-                  description: `${catName} 회수`,
-                  date: recoverDate,
-                })
-                await updateTransaction(editTransaction.id, { end_date: recoverDate })
-                setRawAmount(''); setMemo(''); setEditDate(null)
-                setRecoverOpen(false)
-                onClose()
-              } catch (e: unknown) {
-                const msg = e instanceof Error ? e.message : JSON.stringify(e)
-                alert(`회수 실패: ${msg}`)
-              } finally {
-                setSaving(false)
-              }
-            }}
-            onClose={() => setRecoverOpen(false)}
-          />
         )}
       </div>
     </div>

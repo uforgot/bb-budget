@@ -17,7 +17,7 @@ function diffText(diff: number | null, type: 'income' | 'expense' | 'savings' | 
   if (type === 'income') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 벌었어요` : `${prevLabel}보다 ${f} 원 덜 벌었어요`
   if (type === 'expense') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 썼어요` : `${prevLabel}보다 ${f} 원 덜 썼어요`
   if (type === 'savings') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 저축했어요` : `${prevLabel}보다 ${f} 원 줄었어요`
-  return diff > 0 ? `${prevLabel}보다 ${f} 원 늘었어요.` : `${prevLabel}보다 ${f} 원 줄었어요`
+  return diff > 0 ? `${prevLabel}보다 ${f} 원 늘었어요` : `${prevLabel}보다 ${f} 원 줄었어요`
 }
 
 interface SummaryCardSliderProps {
