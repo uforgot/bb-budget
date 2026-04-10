@@ -24,19 +24,18 @@
 | 카드 (다크) | surface | #141c28 |
 | 버튼/pill (다크) | muted | #1f2937 |
 
-## 페이지 구조 (2026-04-02)
+## 페이지 구조 (updated 2026-04-10)
 
 ### 탭바
-- **일간** (`/`) — 달력 + 일별 거래 내역
-- **월간** (`/history`) — 요약 카드 슬라이더 + 주차별 아코디언
-- **연간** (`/yearly`) — 연간 요약 + 월별 카드
+- **홈(`/`)** → `/history` redirect
+- **월간** (`/history`) — 주간/달력 전환 중심 메인 화면
+- **연간** (`/yearly`) — 연간 요약 + 월별 그래프
 - **+** 버튼 — 거래 추가 모달
 
-### 상단 바 (3페이지 공통)
-- 좌: 대시보드 아이콘
-- 우: 검색 아이콘 + 설정 아이콘
-- 타이틀: `<select>` 네이티브 연/월 선택 + 꺽쇠 아이콘
-- 오늘/금월/금년 버튼
+### 상단 바
+- 월간: 좌측 달력 토글 아이콘, 우측 검색/설정, 타이틀 옆 오늘 버튼
+- 연간: 우측 검색/설정, 연도 선택 + 오늘 버튼
+- 대시보드 페이지는 제거되고 `/dashboard`는 `/history`로 redirect
 
 ### 일간 (app/page.tsx)
 - 달력: MonthlyCalendar 컴포넌트 (세로 터치 슬라이더, anchor date 기반)
@@ -45,29 +44,30 @@
 - 달력 위 = `bg-background`, 달력 아래 = `bg-surface`
 - 날짜 헤더 + 금액 + 꺽쇠 토글 → 거래 내역
 
-### 월간 (app/history/page.tsx → 201줄)
-- **요약 카드 슬라이더**: 수입/지출/저축/잔액 4장 (각 컬러 배경 + 3D 이미지)
-  - KIA ControlSlider 패턴 터치 구현 (수직/수평 방향 감지 분리)
-  - 전월 대비 멘트 ("N-1월보다 OOO만 원 더 벌었어요")
-  - 도트 인디케이터
-- **주차별 아코디언**: WeekAccordion 컴포넌트
-- **리팩토링 완료**: MonthlyView / WeekAccordion / TxRow 컴포넌트 분리
+### 월간 (app/history/page.tsx)
+- **요약 카드 슬라이더**: 수입/지출/저축/잔액 4장
+- **주간 뷰**: 주간 스트립 + 주간 수입/지출 카드 + 날짜별 상세 카드
+- **달력 모드**: 월간 달력 + 선택 날짜 상세
+- 좌상단 달력 아이콘으로 주간/달력 토글
+- 우상단 `오늘` 버튼으로 현재 월/현재 주/오늘 날짜 복귀
+- 미래 날짜도 주간 스트립에서 선택 가능
 
 ### 연간 (app/yearly/page.tsx)
 - 연간 수입/지출/저축/잔액 요약 카드
-- 월별 카드 (클릭 → 월간으로 이동)
-- 연도 `<select>` 선택
+- 지출/수입 단일 월별 그래프 박스 + 우상단 토글
+- 비교 문구: `월 평균 NNN만 원 대비 ↑/↓ NNN만 원`
+- 연도 `<select>` 선택 + 오늘 버튼
 
 ### 대시보드 (app/dashboard/page.tsx)
-- BalanceCard: 분할 바 + 전월/금월 잔액
-- MonthlySummaryCard: 바 차트 요약
-- 하단 "리포트 (임시)" 버튼
+- 제거됨. 현재는 `/history`로 redirect.
 
 ### 기록하기/수정하기 (components/add-transaction-modal.tsx)
 - 금액/날짜/카테고리/메모/반복 입력
 - 최근 카테고리 chip (TOP 5)
-- CategoryPicker: 수정 모드 진입 시 선택된 카테고리 부모 자동 펼침
-- 저축 회수 바텀시트
+- 반복 거래 생성 가능 (`frequency + anchor_date + end_date`)
+- 반복 원본 거래 수정 시 반복 설정 변경 가능
+- 반복 원본 거래 삭제 시 이후 예정 반복도 같이 제거되도록 cascade 처리
+- 저축 회수는 인라인 UI
 
 ### 리포트 (app/report/page.tsx)
 - 4개 카드 아코디언 (총자산, 수입·지출 추이, 지출/수입 카테고리 분석)
@@ -105,7 +105,7 @@
 - id, name, type, parent_id, icon, sort_order, created_at
 
 ### public.recurring_transactions
-- id, type, amount, category_id, description, day_of_month, active, created_at
+- id, type, amount, category_id, description, frequency, anchor_date, end_date, active, created_at
 
 ### RLS
 - 3개 테이블 모두 RLS 활성화 + `allow all` policy (인증 없이 사용하는 앱)
@@ -128,29 +128,25 @@
 | 저축 | #2dd4bf | /card-saving.png |
 | 잔액 | #2C2C2E | /card-balance.png |
 
-## Recent UX Changes (2026-04-07 ~ 2026-04-08)
+## Recent UX Changes (2026-04-10)
 
 ### History / Monthly page
-- History default entry now opens the current week instead of the old daily/home flow.
-- Home route (`/`) now redirects to `/history`.
-- Bottom nav daily tab was removed. Monthly/history is now the primary detailed browsing surface.
-- Header right action changed from text button to icon toggle:
-  - monthly/week mode shows a calendar icon
-  - calendar mode shows a list icon
-- Calendar mode was restructured:
-  - summary slider hidden
-  - week tab strip hidden
-  - calendar is shown directly under the year/month header
-  - clicking a day opens the daily detail card below
+- Home route (`/`) redirects to `/history`.
+- Dashboard route is retired and redirects to `/history`.
+- Header left dashboard button was replaced by a calendar toggle icon.
+- Header right calendar-mode button was replaced by a `오늘` pill button.
+- `오늘` resets monthly view to current month, current week, and current day.
+- Calendar typography was retuned:
+  - date numbers medium by default
+  - today uses bluple text + semibold
+  - amount labels use tighter letter spacing
+- Week strip date numbers changed to medium.
+- Future dates in week strip are selectable even when no transactions exist.
 
 ### Weekly history view
 - Week strip redesigned as weekday+date pills.
-- Inactive week pills now use muted text with opacity instead of a hardcoded color.
-- Weekly summary card copy updated to `N주 차 지출` / `N주 차 수입`.
-- Weekly summary cards and daily detail cards were restyled toward an iOS Settings-like spacing system:
-  - outer spacing ~20px
-  - card inner padding ~16px
-- Day jump scroll logic was iterated many times; current baseline is the simpler sticky-aware version restored around commit history after multiple experiments.
+- Weekly summary amount letter spacing tightened.
+- Day jump behavior updated so tapping `오늘` or week-strip dates properly selects the intended day.
 
 ### Daily detail cards
 - Daily detail is now shown as rounded cards grouped by date.
@@ -161,9 +157,11 @@
   - amounts: 14px semibold
 - Additional spacing was added between the date header and the first row.
 
-### Shared summary cards
-- Monthly/yearly summary slider internal padding and typography were tightened slightly.
-- Yearly chart section title color was aligned with history page title tone.
+### Shared summary cards / yearly charts
+- Yearly expense/income charts were merged into a single box with top-right toggle.
+- Toggle and title layout was decoupled so the text block keeps its own spacing.
+- Yearly chart title/amount spacing was tuned multiple times.
+- Comparison copy shortened to `월 평균 NNN만 원 대비 ↑/↓ NNN만 원`.
 
 ### Theme / polish
 - Initial light-mode dark flash was reduced by removing default SSR `dark` class and letting the inline theme script add `dark` only when saved theme is dark.
@@ -174,7 +172,6 @@
 ### Phase 2 — 뷰 개선 + 분석 ✅
 ### Phase 3 — 확장
 - [ ] PWA 아이콘 추가
-- [ ] 반복 지출 frequency DB 컬럼
 - [ ] 카드 결제 SMS 자동 파싱
 - [ ] 예산 설정 + 잔여 예산 표시
 - [ ] 2인 공유 (형주 + 유리님)
@@ -182,8 +179,6 @@
 ## 남은 이슈
 
 1. PWA 아이콘 — icon-192.png, icon-512.png 없음
-2. 반복 지출 frequency DB 컬럼 (매주/매년 구분)
-3. 반복 지출 start_date/end_date 컬럼 추가
-4. 라이트 모드 세부 조정 미완
-5. Pull to refresh 스피너 — Tailwind v4 animate-spin 미동작, 인라인 animation 우회 중
-6. 미사용 컴포넌트 정리 (date-picker-inline.tsx, date-picker-sheet.tsx, date-picker-modal.tsx, monthly-calendar.old.tsx)
+2. 라이트 모드 세부 조정 미완
+3. Pull to refresh 스피너 — Tailwind v4 animate-spin 미동작, 인라인 animation 우회 중
+4. 미사용 컴포넌트 정리 (date-picker-inline.tsx, monthly-calendar.old.tsx)
