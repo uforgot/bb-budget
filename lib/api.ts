@@ -273,9 +273,8 @@ export async function deleteTransaction(id: string) {
 
 export async function deleteTransactionWithRecurringCascade(tx: Transaction) {
   const supabase = getSupabase() as any
-  const normalizedDescription = (tx.description || '').replace(/\s*\(반복\)$/, '') || null
 
-  let recurringQuery = supabase
+  const { data: recurringMatches, error: recurringError } = await supabase
     .from('recurring_transactions')
     .select('id')
     .eq('type', tx.type)
@@ -283,11 +282,6 @@ export async function deleteTransactionWithRecurringCascade(tx: Transaction) {
     .eq('category_id', tx.category_id)
     .eq('anchor_date', tx.date)
 
-  recurringQuery = normalizedDescription === null
-    ? recurringQuery.is('description', null)
-    : recurringQuery.eq('description', normalizedDescription)
-
-  const { data: recurringMatches, error: recurringError } = await recurringQuery
   if (recurringError) throw recurringError
 
   const recurringIds = (recurringMatches || []).map((item: { id: string }) => item.id)
