@@ -246,7 +246,18 @@ export default function CategoriesSettings() {
             </svg>
           </button>
           <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold text-center">카테고리 편집</h1>
-          <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); loadCategories() }} className="text-[14px] text-accent-blue font-medium z-10">완료</button>
+          <button
+            onClick={async () => {
+              const deleted = await confirmDelete({ id: editingParent.id, name: editingParent.name, type: 'parent' })
+              if (deleted) setEditingParent(null)
+            }}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-coral/10 text-accent-coral z-10"
+            aria-label="삭제"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
+            </svg>
+          </button>
         </header>
 
         <div className="max-w-lg mx-auto px-5 pt-6">
@@ -324,13 +335,10 @@ export default function CategoriesSettings() {
 
           <div className="mt-10">
             <button
-              onClick={async () => {
-                const deleted = await confirmDelete({ id: editingParent.id, name: editingParent.name, type: 'parent' })
-                if (deleted) setEditingParent(null)
-              }}
+              onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); loadCategories() }}
               className="w-full py-3 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue"
             >
-              카테고리 삭제
+              수정 완료
             </button>
           </div>
         </div>
