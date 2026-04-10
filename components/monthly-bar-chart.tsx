@@ -36,29 +36,33 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   return (
     <div className={`bg-surface rounded-[22px] px-4 pt-5 pb-6 mb-4 ${className}`}>
       {/* 헤더 */}
-      <div className="mb-5">
-        <div className="flex items-start justify-between gap-3 mb-0">
+      <div className="relative mb-5">
+        {headerRight ? (
+          <div className="absolute top-0 right-0 z-10">
+            {headerRight}
+          </div>
+        ) : null}
+        <div className={headerRight ? 'pr-28' : ''}>
           <p className="text-[14px] font-semibold text-foreground mb-0">
             {selectedData ? `${selectedData.month}월 ${label}` : label}
           </p>
-          {headerRight}
+          <p className="text-[24px] font-bold tabular-nums leading-tight mt-0" style={{ letterSpacing: '-1px', color }}>
+            {selectedData && !selectedData.isFuture && selectedData.value > 0
+              ? `₩${selectedData.value.toLocaleString()}`
+              : '—'}
+          </p>
+          {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgValue != null && avgValue > 0 && (() => {
+            const diff = selectedData.value - avgValue
+            if (diff === 0) return null
+            const isOver = diff > 0
+            const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
+            return (
+              <p className="text-[14px] font-semibold mt-1 text-foreground/70 dark:text-white/70">
+                {avgLabel} {toMan(avgValue)}보다 {toMan(Math.abs(diff))} {isOver ? '더' : '덜'} {label.includes('수입') ? '벌었어요' : '썼어요'}
+              </p>
+            )
+          })()}
         </div>
-        <p className="text-[24px] font-bold tabular-nums leading-tight mt-0" style={{ letterSpacing: '-1px', color }}>
-          {selectedData && !selectedData.isFuture && selectedData.value > 0
-            ? `₩${selectedData.value.toLocaleString()}`
-            : '—'}
-        </p>
-        {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgValue != null && avgValue > 0 && (() => {
-          const diff = selectedData.value - avgValue
-          if (diff === 0) return null
-          const isOver = diff > 0
-          const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
-          return (
-            <p className="text-[14px] font-semibold mt-1 text-foreground/70 dark:text-white/70">
-              {avgLabel} {toMan(avgValue)}보다 {toMan(Math.abs(diff))} {isOver ? '더' : '덜'} {label.includes('수입') ? '벌었어요' : '썼어요'}
-            </p>
-          )
-        })()}
       </div>
 
       {/* 바 그래프 */}
