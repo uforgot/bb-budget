@@ -114,8 +114,8 @@ export function SummaryCardSlider({
     if (!isDragging.current) return
     isDragging.current = false
     setDragging(false)
-    if (dragX < -w * 0.25) setCurrent(c => (c + 1) % total)
-    else if (dragX > w * 0.25) setCurrent(c => (c - 1 + total) % total)
+    if (dragX < -w * 0.25 && current < total - 1) setCurrent(c => c + 1)
+    else if (dragX > w * 0.25 && current > 0) setCurrent(c => c - 1)
     setDragX(0)
     dragDirection.current = null
   }
