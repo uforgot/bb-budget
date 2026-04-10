@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, getCategories, type Transaction, type Category } from '@/lib/api'
 import { AnalysisEmptyState, AnalysisFilters, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
+import { AnalysisLoadingSkeleton } from '@/components/page-loading-skeletons'
 
 export default function AnalysisPage() {
   const router = useRouter()
@@ -15,6 +16,7 @@ export default function AnalysisPage() {
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [initialLoading, setInitialLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState<'expense' | 'income' | 'savings'>('expense')
   const [parentCategoryId, setParentCategoryId] = useState('')
   const [selectedYear, setSelectedYear] = useState(today.getFullYear())
@@ -28,6 +30,7 @@ export default function AnalysisPage() {
         return dateDiff !== 0 ? dateDiff : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       }))
     } catch {}
+    finally { setInitialLoading(false) }
   }, [])
 
   useEffect(() => { loadData() }, [loadData])
@@ -124,7 +127,9 @@ export default function AnalysisPage() {
           />
 
           <div className="space-y-3 pb-4">
-            {rows.length === 0 ? (
+            {initialLoading ? (
+              <AnalysisLoadingSkeleton />
+            ) : rows.length === 0 ? (
               <AnalysisEmptyState />
             ) : (
               rows.map(row => (

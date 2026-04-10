@@ -8,6 +8,7 @@ import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { MonthlyView } from '@/components/monthly-view'
 import { getTransactions, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
 import { HistoryMonthSelector, HistorySearchPanel, HistoryTopBar } from '@/components/history-sections'
+import { HistoryLoadingSkeleton } from '@/components/page-loading-skeletons'
 
 export default function History() {
   const router = useRouter()
@@ -20,6 +21,7 @@ export default function History() {
   const [forceCalendarView, setForceCalendarView] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [initialLoading, setInitialLoading] = useState(true)
   const [recurringItems, setRecurringItems] = useState<{ day: number; type: string; amount: number; category_id: string; description: string; categoryName?: string }[]>([])
   const [todayResetToken, setTodayResetToken] = useState(0)
 
@@ -38,6 +40,7 @@ export default function History() {
         return dateDiff !== 0 ? dateDiff : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       }))
     } catch {}
+    finally { setInitialLoading(false) }
   }, [])
 
   useEffect(() => { loadData() }, [loadData])
@@ -104,16 +107,20 @@ export default function History() {
 
       {/* 월간 뷰 */}
       {!searchMode && (
-        <MonthlyView
-          monthOffset={monthOffset}
-          transactions={transactions}
-          categories={categories}
-          recurringItems={recurringItems}
-          forceCalendarView={forceCalendarView}
-          todayResetToken={todayResetToken}
-          onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
-          onDeleted={loadData}
-        />
+        initialLoading ? (
+          <HistoryLoadingSkeleton />
+        ) : (
+          <MonthlyView
+            monthOffset={monthOffset}
+            transactions={transactions}
+            categories={categories}
+            recurringItems={recurringItems}
+            forceCalendarView={forceCalendarView}
+            todayResetToken={todayResetToken}
+            onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
+            onDeleted={loadData}
+          />
+        )
       )}
 
       <AddTransactionModal
