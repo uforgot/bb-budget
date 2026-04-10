@@ -484,6 +484,7 @@ export function MonthlyView({
     for (const tx of weekTxs) {
       const list = groups.get(tx.date) ?? []
       list.push(tx)
+      list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       groups.set(tx.date, list)
     }
     return groups
@@ -500,12 +501,10 @@ export function MonthlyView({
     return groups
   }, [weekRecurring, targetYear, actualMonth])
 
-  const weekSectionDays = useMemo(() => weekDays
-    .filter(day => {
-      const key = formatDateKey(targetYear, actualMonth, day)
-      return (groupedWeekTxs.get(key)?.length ?? 0) > 0 || (groupedWeekRecurring.get(key)?.length ?? 0) > 0
-    })
-    .reverse(), [weekDays, groupedWeekTxs, groupedWeekRecurring, targetYear, actualMonth])
+  const weekSectionDays = useMemo(() => weekDays.filter(day => {
+    const key = formatDateKey(targetYear, actualMonth, day)
+    return (groupedWeekTxs.get(key)?.length ?? 0) > 0 || (groupedWeekRecurring.get(key)?.length ?? 0) > 0
+  }), [weekDays, groupedWeekTxs, groupedWeekRecurring, targetYear, actualMonth])
 
   const handleWeekTabClick = (week: number) => {
     setViewMode('week')
