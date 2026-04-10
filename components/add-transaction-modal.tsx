@@ -159,13 +159,24 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         } catch {}
       })()
     } else if (!editTransaction && open) {
+      setType(null)
+      setRawAmount('')
+      setCategoryId('')
+      setCategoryLabel('카테고리 선택')
+      setMemo('')
+      setEditDate(initialDate || null)
+      setEndDate('')
+      setEndAmount('')
+      setRecoverAmount('')
+      setRecoverOpen(false)
+      setCategoryPickerOpen(false)
       setLinkedRecurringId(null)
       setRepeatFrequency('none')
       setRepeatDropdownOpen(false)
       const d = new Date(); d.setMonth(d.getMonth() + 1)
       setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
     }
-  }, [editTransaction, open])
+  }, [editTransaction, open, initialDate])
 
   // 반복 드롭다운 바깥 클릭 시 닫기
   useEffect(() => {
@@ -262,8 +273,22 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   }
 
   const handleClose = () => {
+    setType(null)
     setRawAmount('')
+    setCategoryId('')
+    setCategoryLabel('카테고리 선택')
     setMemo('')
+    setEditDate(initialDate || null)
+    setEndDate('')
+    setEndAmount('')
+    setRecoverAmount('')
+    setRecoverOpen(false)
+    setCategoryPickerOpen(false)
+    setLinkedRecurringId(null)
+    setRepeatFrequency('none')
+    setRepeatDropdownOpen(false)
+    const d = new Date(); d.setMonth(d.getMonth() + 1)
+    setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
     onClose()
   }
 
