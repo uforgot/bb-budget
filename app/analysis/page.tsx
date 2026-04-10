@@ -90,10 +90,17 @@ export default function AnalysisPage() {
 
   const childCategories = useMemo(() => {
     const children = categories.filter(cat => cat.parent_id === parentCategoryId)
-    if (children.length > 0) return children
     const parent = categories.find(cat => cat.id === parentCategoryId)
-    return parent ? [parent] : []
-  }, [categories, parentCategoryId])
+    const hasDirectParentTx = transactions.some(tx => {
+      const txCategory = tx.category as Category | undefined
+      return txCategory?.id === parentCategoryId
+    })
+
+    if (!parent) return children
+    if (children.length === 0) return [parent]
+    if (hasDirectParentTx) return [parent, ...children]
+    return children
+  }, [categories, parentCategoryId, transactions])
 
   const availableYears = useMemo(() => {
     const years = Array.from(new Set(transactions.map(tx => new Date(tx.date).getFullYear()))).sort((a, b) => b - a)
@@ -111,8 +118,6 @@ export default function AnalysisPage() {
       const txYear = new Date(tx.date).getFullYear()
       const txCategory = tx.category as Category | undefined
       if (txYear !== selectedYear || !txCategory) return false
-      const hasChildren = categories.some(cat => cat.parent_id === category.id)
-      if (!category.parent_id && !hasChildren) return txCategory.id === category.id
       return txCategory.id === category.id
     })
 
