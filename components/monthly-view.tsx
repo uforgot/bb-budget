@@ -128,9 +128,8 @@ const MonthlyGridView = memo(function MonthlyGridView({
                 style={selected ? { backgroundColor: 'var(--calendar-selected-day)' } : {}}
               >
                 <span className="relative flex items-center justify-center size-6 flex-shrink-0">
-                  {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_4px_rgba(59,130,246,0.22)]" />}
                   <span
-                    className={`relative text-[16px] font-medium tabular-nums leading-none ${isToday ? 'text-white' : 'text-foreground'}`}
+                    className={`relative text-[16px] font-medium tabular-nums leading-none ${isToday ? 'text-accent-blue' : 'text-foreground'}`}
                     style={{ letterSpacing: '-0.0625em' }}
                   >
                     {day}
