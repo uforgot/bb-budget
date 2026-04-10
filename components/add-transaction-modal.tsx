@@ -316,8 +316,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           <button
             onClick={async () => {
               if (!confirm('삭제할까요?')) return
-              const { deleteTransaction } = await import('@/lib/api')
-              await deleteTransaction(editTransaction.id)
+              const { deleteTransactionWithRecurringCascade } = await import('@/lib/api')
+              await deleteTransactionWithRecurringCascade(editTransaction)
               setRawAmount(''); setMemo(''); setEditDate(null)
               onClose()
             }}
