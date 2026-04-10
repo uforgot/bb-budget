@@ -37,14 +37,15 @@ function DrumCol({
     el.scrollTo({ top: idx * ITEM_H, behavior: smooth ? 'smooth' : 'instant' })
   }
 
-  // 외부 selected 변경 시만 스크롤 동기
+  // 외부 selected 변경 시 스크롤 동기
   useEffect(() => {
-    if (selected !== localSelected && !isScrollingRef.current) {
+    if (selected !== localSelected) {
+      isScrollingRef.current = false
       setLocalSelected(selected)
       const idx = items.indexOf(selected)
       if (idx >= 0) scrollToIndex(idx, false)
     }
-  }, [selected])
+  }, [selected, localSelected, items])
 
   // 최초 마운트
   useEffect(() => {
