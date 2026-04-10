@@ -6,14 +6,9 @@ import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
 import { EmojiPicker } from '@/components/emoji-picker'
+import { AddRootCategoryRow, CategoryGrid, CategorySettingsHeader, CategoryTypeTabs, DragGhost } from '@/components/category-settings-sections'
 
 type TypeTab = 'expense' | 'income' | 'savings'
-const TYPE_LABELS: { key: TypeTab; label: string }[] = [
-  { key: 'income', label: '수입' },
-  { key: 'expense', label: '지출' },
-  { key: 'savings', label: '저축' },
-]
-
 const EMOJI_MAP: Record<string, string> = {
   '식비': '🍽️', '생활': '🏠', '주거': '🏢', '교통': '🚗', '쇼핑': '🛍️',
   '건강': '💊', '여가': '🎬', '자녀': '👶', '반려동물': '🐾', '경조사': '💐',
@@ -230,26 +225,24 @@ export default function CategoriesSettings() {
     const children = draftChildren
     return (
       <div className="min-h-dvh bg-background">
-        <header className="relative flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14">
-          <button onClick={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories() }} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-          </button>
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold text-center">카테고리 편집</h1>
-          <button
-            onClick={async () => {
-              const deleted = await confirmDelete({ id: editingParent.id, name: editingParent.name, type: 'parent' })
-              if (deleted) setEditingParent(null)
-            }}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-coral/10 text-accent-coral z-10"
-            aria-label="삭제"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
-            </svg>
-          </button>
-        </header>
+        <CategorySettingsHeader
+          title="카테고리 편집"
+          onBack={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories() }}
+          right={
+            <button
+              onClick={async () => {
+                const deleted = await confirmDelete({ id: editingParent.id, name: editingParent.name, type: 'parent' })
+                if (deleted) setEditingParent(null)
+              }}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-coral/10 text-accent-coral z-10"
+              aria-label="삭제"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
+              </svg>
+            </button>
+          }
+        />
 
         <div className="max-w-lg mx-auto px-5 pt-6">
           <div className="flex justify-center mb-8">
@@ -373,53 +366,33 @@ export default function CategoriesSettings() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="relative flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14">
-        <button onClick={() => router.back()} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold pointer-events-none">카테고리 관리</h1>
-        <button
-          onClick={() => {
-            setAddingRoot(prev => !prev)
-            setEditMode(false)
-            pendingDragIdRef.current = null
-            activeDragIdRef.current = null
-            touchStartRef.current = null
-            if (addingRoot) setNewRootName('')
-          }}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10"
-          aria-label="카테고리 추가"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14" />
-            <path d="M5 12h14" />
-          </svg>
-        </button>
-      </header>
+      <CategorySettingsHeader
+        title="카테고리 관리"
+        onBack={() => router.back()}
+        right={
+          <button
+            onClick={() => {
+              setAddingRoot(prev => !prev)
+              setEditMode(false)
+              pendingDragIdRef.current = null
+              activeDragIdRef.current = null
+              touchStartRef.current = null
+              if (addingRoot) setNewRootName('')
+            }}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10"
+            aria-label="카테고리 추가"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14" />
+              <path d="M5 12h14" />
+            </svg>
+          </button>
+        }
+      />
 
       <div className="max-w-lg mx-auto px-5 pt-6">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <div className="flex flex-wrap gap-2">
-            {TYPE_LABELS.map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setType(key)}
-                className={`px-4 py-2 rounded-[18px] text-[14px] font-medium transition-colors ${
-                  type === key
-                    ? key === 'income'
-                      ? 'bg-[#14b8a6] text-white'
-                      : key === 'expense'
-                        ? 'bg-[#5865F2] text-white'
-                        : 'bg-accent-purple text-white'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <CategoryTypeTabs type={type} onChange={setType} />
 
           <button
             onClick={() => {
@@ -440,75 +413,54 @@ export default function CategoriesSettings() {
         </div>
 
         {addingRoot && (
-          <div className="flex items-center gap-2 mb-6">
-            <input
-              type="text"
-              placeholder="새 카테고리명"
-              value={newRootName}
-              onChange={(e) => setNewRootName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddRoot()}
-              autoFocus
-              style={{ fontSize: '16px' }}
-              className="flex-1 bg-card border border-border rounded-[18px] px-4 py-2.5"
-            />
-            <button onClick={handleAddRoot} className="px-4 py-2.5 rounded-[18px] bg-surface text-[14px] font-medium text-foreground">추가</button>
-            <button onClick={() => { setAddingRoot(false); setNewRootName('') }} className="px-4 py-2.5 rounded-[18px] bg-surface text-[14px] font-medium text-muted-foreground">취소</button>
-          </div>
+          <AddRootCategoryRow
+            value={newRootName}
+            onChange={setNewRootName}
+            onSubmit={handleAddRoot}
+            onCancel={() => { setAddingRoot(false); setNewRootName('') }}
+          />
         )}
 
-        <div className="grid grid-cols-4 gap-2">
-          {orderedParents.map((parent) => (
-            <button
-              key={parent.id}
-              data-category-id={parent.id}
-              onClick={() => {
-                if (editMode || draggingId || suppressClickRef.current) return
-                setEditingParent(parent)
-                setEditName(parent.name)
-                setDraftChildren(childrenOf(parent.id))
-                setAddingSubCat(false)
-                setNewSubCat('')
-              }}
-              onTouchStart={(event) => {
-                if (!editMode) return
-                clearDragTimer()
-                const touch = event.touches[0]
-                if (!touch) return
-                pendingDragIdRef.current = parent.id
-                touchStartRef.current = { x: touch.clientX, y: touch.clientY, id: parent.id }
-                dragTimerRef.current = setTimeout(() => {
-                  if (pendingDragIdRef.current !== parent.id || !touchStartRef.current) return
-                  activeDragIdRef.current = parent.id
-                  setDraggingId(parent.id)
-                  setDragPosition({ x: touchStartRef.current.x, y: touchStartRef.current.y })
-                }, 350)
-              }}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={() => {
-                if (!editMode) return
-                if (!activeDragIdRef.current) {
-                  clearDragTimer()
-                  pendingDragIdRef.current = null
-                  touchStartRef.current = null
-                  return
-                }
-                finishDrag()
-              }}
-              onTouchCancel={cancelDrag}
-              className={`relative flex flex-col items-center gap-1 py-3 rounded-[22px] transition-all duration-200 ease-out select-none touch-none ${
-                draggingId === parent.id ? 'bg-background ring-1 ring-border opacity-35' : 'bg-muted'
-              }`}
-            >
-              {editMode && (
-                <span className="absolute top-1.5 right-1.5 scale-90 text-muted-foreground/40">
-                  <ArrowUpDown size={10} strokeWidth={2} />
-                </span>
-              )}
-              <span className={`text-xl ${editMode ? 'animate-pulse' : ''}`}>{getEmoji(parent)}</span>
-              <span className="text-[12px] font-medium text-muted-foreground">{parent.name}</span>
-            </button>
-          ))}
-        </div>
+        <CategoryGrid
+          parents={orderedParents}
+          editMode={editMode}
+          draggingId={draggingId}
+          suppressClick={suppressClickRef.current}
+          getEmoji={getEmoji}
+          onSelect={(parent) => {
+            setEditingParent(parent)
+            setEditName(parent.name)
+            setDraftChildren(childrenOf(parent.id))
+            setAddingSubCat(false)
+            setNewSubCat('')
+          }}
+          onTouchStart={(parent, event) => {
+            if (!editMode) return
+            clearDragTimer()
+            const touch = event.touches[0]
+            if (!touch) return
+            pendingDragIdRef.current = parent.id
+            touchStartRef.current = { x: touch.clientX, y: touch.clientY, id: parent.id }
+            dragTimerRef.current = setTimeout(() => {
+              if (pendingDragIdRef.current !== parent.id || !touchStartRef.current) return
+              activeDragIdRef.current = parent.id
+              setDraggingId(parent.id)
+              setDragPosition({ x: touchStartRef.current.x, y: touchStartRef.current.y })
+            }, 350)
+          }}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => {
+            if (!editMode) return
+            if (!activeDragIdRef.current) {
+              clearDragTimer()
+              pendingDragIdRef.current = null
+              touchStartRef.current = null
+              return
+            }
+            finishDrag()
+          }}
+          onTouchCancel={cancelDrag}
+        />
 
         {editMode && (
           <div className="flex mt-8 pb-10">
@@ -530,20 +482,11 @@ export default function CategoriesSettings() {
         )}
       </div>
 
-      {draggingId && dragPosition && (() => {
-        const active = orderedParents.find(parent => parent.id === draggingId) || parents.find(parent => parent.id === draggingId)
-        return active ? (
-          <div
-            className="fixed pointer-events-none z-[90] -translate-x-1/2 -translate-y-1/2"
-            style={{ left: dragPosition.x, top: dragPosition.y }}
-          >
-            <div className="flex flex-col items-center gap-1 py-3 px-4 rounded-[22px] bg-surface shadow-[0_12px_28px_rgba(0,0,0,0.18)] ring-1 ring-border opacity-95">
-              <span className="text-xl">{getEmoji(active)}</span>
-              <span className="text-[12px] font-medium text-muted-foreground">{active.name}</span>
-            </div>
-          </div>
-        ) : null
-      })()}
+      <DragGhost
+        active={orderedParents.find(parent => parent.id === draggingId) || parents.find(parent => parent.id === draggingId) || null}
+        dragPosition={dragPosition}
+        getEmoji={getEmoji}
+      />
 
       {deleteConfirm && null}
     </div>
