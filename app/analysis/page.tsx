@@ -133,12 +133,6 @@ export default function AnalysisPage() {
   }).filter(row => row.total > 0).sort((a, b) => b.total - a.total), [childCategories, transactions, selectedYear])
 
   const maxTotal = rows[0]?.total ?? 0
-  const parentCategory = categories.find(cat => cat.id === parentCategoryId)
-  const accentColor = parentCategory?.type === 'income'
-    ? '#5865F2'
-    : parentCategory?.type === 'savings'
-      ? '#A855F7'
-      : '#CF6679'
 
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData} disabled>
@@ -215,7 +209,7 @@ export default function AnalysisPage() {
                   total={row.total}
                   months={row.months}
                   maxTotal={maxTotal}
-                  color={accentColor}
+                  color={row.type === 'income' ? '#5865F2' : row.type === 'savings' ? '#A855F7' : '#CF6679'}
                 />
               ))
             )}
