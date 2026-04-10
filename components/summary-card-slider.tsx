@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { typography, semanticColors } from '@/components/ui-colors'
 
 function fmt(n: number) {
@@ -44,6 +44,7 @@ export function SummaryCardSlider({
   const [current, setCurrent] = useState(0)
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
+  const [animating, setAnimating] = useState(false)
   const isDragging = useRef(false)
   const startX = useRef(0)
   const startY = useRef(0)
@@ -67,6 +68,13 @@ export function SummaryCardSlider({
     { label: `${month}${unit} 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: balance >= 0 ? '#2C2C2E' : semanticColors.balanceNegative, img: '/card-balance.png' },
   ]
   const total = cards.length
+  const loopCards = useMemo(() => [...cards, ...cards, ...cards], [cards])
+  const baseIndex = total
+  const virtualCurrent = current + baseIndex
+
+  useEffect(() => {
+    setAnimating(false)
+  }, [])
 
   const isInteractiveTarget = (target: EventTarget | null) => {
     if (!(target instanceof HTMLElement)) return false
@@ -114,14 +122,26 @@ export function SummaryCardSlider({
     if (!isDragging.current) return
     isDragging.current = false
     setDragging(false)
-    if (dragX < -w * 0.25 && current < total - 1) setCurrent(c => c + 1)
-    else if (dragX > w * 0.25 && current > 0) setCurrent(c => c - 1)
+    if (dragX < -w * 0.25) {
+      setAnimating(true)
+      setCurrent(c => c + 1)
+    } else if (dragX > w * 0.25) {
+      setAnimating(true)
+      setCurrent(c => c - 1)
+    }
     setDragX(0)
     dragDirection.current = null
   }
 
+  const handleTransitionEnd = () => {
+    if (!animating) return
+    setAnimating(false)
+    if (current < 0) setCurrent(total - 1)
+    else if (current >= total) setCurrent(0)
+  }
+
   const w = containerWidth || 1
-  const translateX = -(current * 100) + (dragX / w) * 100
+  const translateX = -(virtualCurrent * 100) + (dragX / w) * 100
 
   return (
     <div className="mb-4 overflow-hidden" ref={containerRef}>
@@ -130,18 +150,19 @@ export function SummaryCardSlider({
         className="flex"
         style={{
           transform: `translateX(${translateX}%)`,
-          transition: dragging ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
+          transition: dragging || !animating ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
           willChange: 'transform',
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
+        onTransitionEnd={handleTransitionEnd}
       >
-        {cards.map((card, idx) => {
+        {loopCards.map((card, idx) => {
           const dt = diffText(card.diff, card.type, prevLabel)
           return (
             <div
-              key={card.label}
+              key={`${card.label}-${idx}`}
               className="flex-shrink-0 w-full"
               style={{ padding: '0 20px' }}
             >
