@@ -515,10 +515,11 @@ export function MonthlyView({
   const jumpToDay = (day: number) => {
     const key = formatDateKey(targetYear, actualMonth, day)
     const node = dayRefs.current[key]
-    if (!node || !stickyRef.current) return
 
     setSelectedDay(day)
     setHighlightedDate(key)
+
+    if (!node || !stickyRef.current) return
 
     const stickyRect = stickyRef.current.getBoundingClientRect()
     const isSticky = stickyRect.top === 0
