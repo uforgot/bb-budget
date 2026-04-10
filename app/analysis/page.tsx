@@ -63,6 +63,7 @@ export default function AnalysisPage() {
   const [editTx, setEditTx] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [typeFilter, setTypeFilter] = useState<'expense' | 'income' | 'savings'>('expense')
   const [parentCategoryId, setParentCategoryId] = useState('')
   const [selectedYear, setSelectedYear] = useState(today.getFullYear())
 
@@ -79,7 +80,7 @@ export default function AnalysisPage() {
 
   useEffect(() => { loadData() }, [loadData])
 
-  const parentCategories = useMemo(() => categories.filter(cat => !cat.parent_id), [categories])
+  const parentCategories = useMemo(() => categories.filter(cat => cat.type === typeFilter && !cat.parent_id), [categories, typeFilter])
 
   useEffect(() => {
     if (parentCategories.length === 0) return
@@ -150,6 +151,20 @@ export default function AnalysisPage() {
 
         <div className="px-5">
           <div className="flex items-center gap-3 mt-1 mb-4 overflow-x-auto scrollbar-hide">
+            <label className="flex items-center gap-1 cursor-pointer shrink-0">
+              <select
+                value={typeFilter}
+                onChange={e => setTypeFilter(e.target.value as 'expense' | 'income' | 'savings')}
+                className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
+                style={{ letterSpacing: '-1px' }}
+              >
+                <option value="expense">지출</option>
+                <option value="income">수입</option>
+                <option value="savings">저축</option>
+              </select>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+            </label>
+
             <label className="flex items-center gap-1 cursor-pointer min-w-0">
               <select
                 value={parentCategoryId}
