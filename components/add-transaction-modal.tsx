@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { getCategories, addTransaction, updateTransaction, type Category, type Transaction } from '@/lib/api'
-import { AddTransactionHeader, TransactionAmountRow, TransactionCategorySection, TransactionDateRow } from './add-transaction-sections'
+import { AddTransactionHeader, RecoverySection, TransactionAmountRow, TransactionCategorySection, TransactionDateRow, TransactionMemoRow, TransactionRepeatSection } from './add-transaction-sections'
 
 type TransactionType = '수입' | '지출' | '저축'
 
@@ -390,89 +390,27 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onClosePicker={() => setCategoryPickerOpen(false)}
             />
             <div className="border-t border-border mx-4" />
-            <div className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-[16px]">메모</span>
-              <input
-                type="text"
-                placeholder="입력"
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                onBlur={() => setKeypadActive(false)}
-                onFocus={() => setKeypadActive(false)}
-                style={{ fontSize: '16px', textAlign: 'right' }}
-                className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
-              />
-            </div>
+            <TransactionMemoRow
+              memo={memo}
+              onChange={setMemo}
+              onBlur={() => setKeypadActive(false)}
+              onFocus={() => setKeypadActive(false)}
+            />
           {(!editTransaction || linkedRecurringId) && (
             <>
               <div className="border-t border-border mx-4" />
-              <div ref={repeatDropdownRef}>
-              {/* 반복 행 */}
-              <div className="relative">
-                <button
-                  onClick={() => { setKeypadActive(false); setRepeatDropdownOpen(prev => !prev) }}
-                  className="w-full flex items-center justify-between px-4 py-3.5"
-                >
-                  <span className="text-[16px]">반복</span>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <span className="text-[16px]">
-                      {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
-                    </span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m6 9 6 6 6-6" />
-                    </svg>
-                  </div>
-                </button>
-                {repeatDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-[22px] overflow-hidden z-20 shadow-lg">
-                    {(['none', 'weekly', 'monthly', 'yearly'] as const).map((opt, i) => (
-                      <button
-                        key={opt}
-                        onClick={() => {
-                          setRepeatFrequency(opt)
-                          setRepeatDropdownOpen(false)
-                        }}
-                        className={`w-full px-4 py-3.5 text-[16px] flex items-center justify-between transition-colors ${
-                          i > 0 ? 'border-t border-border' : ''
-                        } active:bg-muted`}
-                      >
-                        <span>{{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}</span>
-                        {repeatFrequency === opt && (
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{color:"#14b8a6"}}>
-                            <path d="M20 6 9 17l-5-5" />
-                          </svg>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* 종료일 행 (반복 선택 시) */}
-              {repeatFrequency !== 'none' && (
-                <>
-                  <div className="border-t border-border mx-4" />
-                  <div className="flex items-center justify-between px-4 py-3.5">
-                    <span className="text-[16px]">종료일</span>
-                    <label className="relative cursor-pointer">
-                      <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
-                        {(() => {
-                          const d = new Date(repeatEndDate + 'T00:00:00')
-                          return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
-                        })()}
-                      </span>
-                      <input
-                        type="date"
-                        value={repeatEndDate}
-                        onChange={(e) => e.target.value && setRepeatEndDate(e.target.value)}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        style={{ fontSize: '16px' }}
-                      />
-                    </label>
-                  </div>
-                </>
-              )}
-              </div>
+              <TransactionRepeatSection
+                repeatDropdownRef={repeatDropdownRef}
+                repeatFrequency={repeatFrequency}
+                repeatDropdownOpen={repeatDropdownOpen}
+                repeatEndDate={repeatEndDate}
+                onToggleDropdown={() => { setKeypadActive(false); setRepeatDropdownOpen(prev => !prev) }}
+                onSelectFrequency={(value) => {
+                  setRepeatFrequency(value)
+                  setRepeatDropdownOpen(false)
+                }}
+                onChangeEndDate={setRepeatEndDate}
+              />
             </>
           )}
           </div>
@@ -515,90 +453,40 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
         )}
         {recoverOpen && editTransaction && (
-          <div className="w-full max-w-md mx-auto px-4 pt-3 pb-2 bg-background">
-            <div className="bg-surface rounded-[22px] px-4 py-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[16px] font-semibold">저축 회수</h3>
-                <button
-                  onClick={() => setRecoverOpen(false)}
-                  className="text-sm text-muted-foreground"
-                >
-                  닫기
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between py-3 border-b border-border">
-                <span className="text-[15px] text-muted-foreground">회수일</span>
-                <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
-                  <span>{recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                  <input
-                    type="date"
-                    value={recoverDate}
-                    onChange={(e) => e.target.value && setRecoverDate(e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    style={{ fontSize: '16px' }}
-                  />
-                </label>
-              </div>
-
-              <div className="flex items-center justify-between py-3 border-b border-border">
-                <span className="text-[15px] text-muted-foreground">회수 금액</span>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-[15px] text-muted-foreground">₩</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={recoverAmount ? parseInt(recoverAmount).toLocaleString() : ''}
-                    onChange={(e) => setRecoverAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="text-[15px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-32"
-                    style={{ fontSize: '16px' }}
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={async () => {
-                    const amount = parseInt(recoverAmount, 10)
-                    if (!amount) { alert('금액을 입력해주세요'); return }
-                    const { addTransaction, updateTransaction } = await import('@/lib/api')
-                    setSaving(true)
-                    try {
-                      const catName = (editTransaction.category as any)?.name || '저축'
-                      await addTransaction({
-                        type: 'income',
-                        amount,
-                        category_id: editTransaction.category_id,
-                        description: `${catName} 회수`,
-                        date: recoverDate,
-                      })
-                      await updateTransaction(editTransaction.id, { end_date: recoverDate })
-                      setRawAmount(''); setMemo(''); setEditDate(null)
-                      setRecoverOpen(false)
-                      onClose()
-                    } catch (e: unknown) {
-                      const msg = e instanceof Error ? e.message : JSON.stringify(e)
-                      alert(`회수 실패: ${msg}`)
-                    } finally {
-                      setSaving(false)
-                    }
-                  }}
-                  className="flex-1 py-3.5 rounded-[22px] bg-[#14b8a6] text-white text-[16px] font-semibold"
-                >
-                  {saving ? '처리 중...' : '적용하기'}
-                </button>
-                <button
-                  onClick={() => setRecoverOpen(false)}
-                  className="flex-1 py-3.5 rounded-[22px] bg-surface text-[16px] font-semibold text-muted-foreground"
-                >
-                  취소하기
-                </button>
-              </div>
-            </div>
-          </div>
+          <RecoverySection
+            recoverDate={recoverDate}
+            recoverAmount={recoverAmount}
+            saving={saving}
+            formatDateDisplay={formatDateDisplay}
+            onChangeDate={setRecoverDate}
+            onChangeAmount={setRecoverAmount}
+            onApply={async () => {
+              const amount = parseInt(recoverAmount, 10)
+              if (!amount) { alert('금액을 입력해주세요'); return }
+              const { addTransaction, updateTransaction } = await import('@/lib/api')
+              setSaving(true)
+              try {
+                const catName = (editTransaction.category as any)?.name || '저축'
+                await addTransaction({
+                  type: 'income',
+                  amount,
+                  category_id: editTransaction.category_id,
+                  description: `${catName} 회수`,
+                  date: recoverDate,
+                })
+                await updateTransaction(editTransaction.id, { end_date: recoverDate })
+                setRawAmount(''); setMemo(''); setEditDate(null)
+                setRecoverOpen(false)
+                onClose()
+              } catch (e: unknown) {
+                const msg = e instanceof Error ? e.message : JSON.stringify(e)
+                alert(`회수 실패: ${msg}`)
+              } finally {
+                setSaving(false)
+              }
+            }}
+            onClose={() => setRecoverOpen(false)}
+          />
         )}
       </div>
     </div>
