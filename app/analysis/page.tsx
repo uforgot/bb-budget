@@ -88,7 +88,12 @@ export default function AnalysisPage() {
     setParentCategoryId(parentCategories[0].id)
   }, [parentCategories, parentCategoryId])
 
-  const childCategories = useMemo(() => categories.filter(cat => cat.parent_id === parentCategoryId), [categories, parentCategoryId])
+  const childCategories = useMemo(() => {
+    const children = categories.filter(cat => cat.parent_id === parentCategoryId)
+    if (children.length > 0) return children
+    const parent = categories.find(cat => cat.id === parentCategoryId)
+    return parent ? [parent] : []
+  }, [categories, parentCategoryId])
 
   const availableYears = useMemo(() => {
     const years = Array.from(new Set(transactions.map(tx => new Date(tx.date).getFullYear()))).sort((a, b) => b - a)
