@@ -362,75 +362,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </label>
             </div>
             <div className="border-t border-border mx-4" />
-            {/* 카테고리 */}
-            {/* 타입 선택 행 */}
-            <div className="flex items-center justify-between px-4 py-3">
-              <span className="text-[16px]">카테고리</span>
-              <div className="flex gap-1.5">
-                {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => {
-                      setKeypadActive(false)
-                      if (type === t) {
-                        // 재클릭 → 선택 해제
-                        setType(null)
-                        setCategoryId('')
-                        setCategoryLabel('카테고리 선택')
-                        setCategoryPickerOpen(false)
-                      } else {
-                        setCategoryId('')
-                        setCategoryLabel('카테고리 선택')
-                        setType(t)
-                        setCategoryPickerOpen(true)
-                      }
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                      type === t ? typeColors[t].active : 'bg-[#f5f5f7] dark:bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* 선택된 카테고리 표시 (타입 선택 후, 그리드 닫혔을 때) */}
-            {type && categoryId && !categoryPickerOpen && (
-              <>
-                <div className="border-t border-border mx-4" />
-                <button
-                  onClick={() => {
-                    setKeypadActive(false)
-                    setCategoryPickerOpen(true)
-                  }}
-                  className="w-full flex items-center justify-between px-4 py-3.5"
-                >
-                  <span className="text-[16px]">{categoryLabel}</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="m9 18 6-6-6-6" />
-                  </svg>
-                </button>
-              </>
-            )}
-
-            {/* 인라인 카테고리 그리드 */}
-            {categoryPickerOpen && type !== null && (
-              <div className="px-3 pb-3">
-                <CategoryPicker
-                  open={categoryPickerOpen && type !== null}
-                  inline
-                  type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
-                  selected={categoryId}
-                  onSelect={(id, label) => {
-                    setCategoryId(id)
-                    setCategoryLabel(label)
-                    setCategoryPickerOpen(false)
-                  }}
-                  onClose={() => setCategoryPickerOpen(false)}
-                />
-              </div>
-            )}
-            <div className="border-t border-border mx-4" />
             <div className="flex items-center justify-between px-4 py-3.5" onClick={() => amountInputRef.current?.focus()}>
               <span className="text-[16px]">금액</span>
               <div className="flex flex-col items-end">
@@ -456,6 +387,72 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 ) : null}
               </div>
             </div>
+            <div className="border-t border-border mx-4" />
+            {/* 카테고리 */}
+            {/* 타입 선택 행 */}
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-[16px]">카테고리</span>
+              <div className="flex gap-1.5">
+                {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => {
+                      setKeypadActive(false)
+                      if (type === t) {
+                        setType(null)
+                        setCategoryId('')
+                        setCategoryLabel('카테고리 선택')
+                        setCategoryPickerOpen(false)
+                      } else {
+                        setCategoryId('')
+                        setCategoryLabel('카테고리 선택')
+                        setType(t)
+                        setCategoryPickerOpen(true)
+                      }
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
+                      type === t ? typeColors[t].active : 'bg-[#f5f5f7] dark:bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {type && categoryId && !categoryPickerOpen && (
+              <>
+                <div className="border-t border-border mx-4" />
+                <button
+                  onClick={() => {
+                    setKeypadActive(false)
+                    setCategoryPickerOpen(true)
+                  }}
+                  className="w-full flex items-center justify-between px-4 py-3.5"
+                >
+                  <span className="text-[16px]">{categoryLabel}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </button>
+              </>
+            )}
+
+            {categoryPickerOpen && type !== null && (
+              <div className="px-3 pb-3">
+                <CategoryPicker
+                  open={categoryPickerOpen && type !== null}
+                  inline
+                  type={type ? TYPE_MAP[type] as 'income' | 'expense' | 'savings' : 'expense'}
+                  selected={categoryId}
+                  onSelect={(id, label) => {
+                    setCategoryId(id)
+                    setCategoryLabel(label)
+                    setCategoryPickerOpen(false)
+                  }}
+                  onClose={() => setCategoryPickerOpen(false)}
+                />
+              </div>
+            )}
             <div className="border-t border-border mx-4" />
             <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-[16px]">메모</span>
