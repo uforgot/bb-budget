@@ -110,7 +110,10 @@ export default function AnalysisPage() {
     const categoryTxs = transactions.filter(tx => {
       const txYear = new Date(tx.date).getFullYear()
       const txCategory = tx.category as Category | undefined
-      return txYear === selectedYear && txCategory?.id === category.id
+      if (txYear !== selectedYear || !txCategory) return false
+      const hasChildren = categories.some(cat => cat.parent_id === category.id)
+      if (!category.parent_id && !hasChildren) return txCategory.id === category.id
+      return txCategory.id === category.id
     })
 
     const months = Array.from({ length: 12 }, (_, i) => {
@@ -130,7 +133,7 @@ export default function AnalysisPage() {
       months,
       type: category.type,
     }
-  }).filter(row => row.total > 0).sort((a, b) => b.total - a.total), [childCategories, transactions, selectedYear])
+  }).filter(row => row.total > 0).sort((a, b) => b.total - a.total), [childCategories, categories, transactions, selectedYear])
 
   const maxTotal = rows[0]?.total ?? 0
 
