@@ -7,6 +7,7 @@ import { getCategories, addCategory, reorderParentCategories, type Category } fr
 import { createClient } from '@/lib/supabase'
 import { AddRootCategoryRow, CategoryGrid, CategorySettingsHeader, CategoryTypeTabs, DragGhost } from '@/components/category-settings-sections'
 import { CategoryChildrenEditor, CategoryEditSubmitBar, CategoryEmojiCard, CategoryNameRow } from '@/components/category-edit-sections'
+import { createDraftChild, removeDraftChild, resetCategoryEditDraft, splitDraftChildren } from '@/lib/categories'
 
 type TypeTab = 'expense' | 'income' | 'savings'
 const EMOJI_MAP: Record<string, string> = {
@@ -194,15 +195,7 @@ export default function CategoriesSettings() {
   const [savingSub, setSavingSub] = useState(false)
   const handleAddSubCat = async () => {
     if (!editingParent || !newSubCat.trim() || savingSub) return
-    setDraftChildren(prev => [...prev, {
-      id: `draft-${Date.now()}`,
-      name: newSubCat.trim(),
-      type,
-      sort_order: prev.length + 1,
-      parent_id: editingParent.id,
-      created_at: new Date().toISOString(),
-      icon: null,
-    } as Category])
+    setDraftChildren(prev => [...prev, createDraftChild(newSubCat, type, editingParent.id, prev.length + 1)])
     setNewSubCat('')
     setAddingSubCat(false)
   }
@@ -227,7 +220,15 @@ export default function CategoriesSettings() {
       <div className="min-h-dvh bg-background">
         <CategorySettingsHeader
           title="카테고리 편집"
-          onBack={() => { setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories() }}
+          onBack={() => {
+            const reset = resetCategoryEditDraft()
+            setEditingParent(null)
+            setAddingSubCat(reset.addingSubCat)
+            setNewSubCat(reset.newSubCat)
+            setEditName(reset.editName)
+            setDraftChildren(reset.draftChildren)
+            loadCategories()
+          }}
           right={
             <button
               onClick={async () => {
@@ -265,7 +266,7 @@ export default function CategoriesSettings() {
             onSubmit={handleAddSubCat}
             onStartAdd={() => setAddingSubCat(true)}
             onRemove={(child) => {
-              setDraftChildren(prev => prev.filter(item => item.id !== child.id))
+              setDraftChildren(prev => removeDraftChild(prev, child.id))
             }}
           />
 
@@ -280,15 +281,14 @@ export default function CategoriesSettings() {
               }).eq('id', editingParent.id)
 
               const currentChildren = childrenOf(editingParent.id)
-              const draftIds = new Set(draftChildren.filter(child => !child.id.startsWith('draft-')).map(child => child.id))
+              const { persistedIds, newDrafts } = splitDraftChildren(draftChildren)
 
               for (const child of currentChildren) {
-                if (!draftIds.has(child.id)) {
+                if (!persistedIds.has(child.id)) {
                   await handleDeleteChild(child.id)
                 }
               }
 
-              const newDrafts = draftChildren.filter(child => child.id.startsWith('draft-'))
               for (const child of newDrafts) {
                 await supabase.from('categories').insert({
                   name: child.name,
@@ -298,7 +298,13 @@ export default function CategoriesSettings() {
                 })
               }
 
-              setEditingParent(null); setAddingSubCat(false); setNewSubCat(''); setEditName(''); setDraftChildren([]); loadCategories()
+              const reset = resetCategoryEditDraft()
+              setEditingParent(null)
+              setAddingSubCat(reset.addingSubCat)
+              setNewSubCat(reset.newSubCat)
+              setEditName(reset.editName)
+              setDraftChildren(reset.draftChildren)
+              loadCategories()
             }}
           />
         </div>
