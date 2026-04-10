@@ -391,8 +391,9 @@ export function MonthlyView({
   const prevBalance = prevCumInc - prevCumExp - prevSavingsAmt
 
   const totalWeeks = getWeekNum(targetYear, actualMonth, daysInMonth)
-  const currentWeekNum = 1
-  const defaultDay = 1
+  const isCurrentMonth = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1
+  const currentWeekNum = isCurrentMonth ? getWeekNum(targetYear, actualMonth, today.getDate()) : 1
+  const defaultDay = isCurrentMonth ? today.getDate() : 1
 
   const [viewMode, setViewMode] = useState<ViewMode>('week')
   const [selectedWeek, setSelectedWeek] = useState(currentWeekNum)
