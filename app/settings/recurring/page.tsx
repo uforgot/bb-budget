@@ -27,16 +27,15 @@ function formatKoreanAmount(raw: string) {
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
-function toDateString(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+function getDefaultYearDate() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
 function getFrequencyDescription(item: RecurringTransaction) {
-  if (!item.anchor_date) return '반복 일정 미설정'
-  const anchor = new Date(`${item.anchor_date}T00:00:00`)
-  if (item.frequency === 'weekly') return `매주 ${WEEKDAY_LABELS[anchor.getDay()]}요일`
-  if (item.frequency === 'yearly') return `매년 ${anchor.getMonth() + 1}월 ${anchor.getDate()}일`
-  return `매월 ${anchor.getDate()}일`
+  if (item.frequency === 'weekly') return `매주 ${WEEKDAY_LABELS[item.day_of_week ?? 0]}요일`
+  if (item.frequency === 'yearly') return `매년 ${item.month_of_year}월 ${item.day_of_month}일`
+  return `매월 ${item.day_of_month}일`
 }
 
 export default function RecurringPage() {
@@ -46,7 +45,10 @@ export default function RecurringPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [amount, setAmount] = useState('')
   const [frequency, setFrequency] = useState<RecurringFrequency>('monthly')
-  const [anchorDate, setAnchorDate] = useState(() => toDateString(new Date()))
+  const [dayOfMonth, setDayOfMonth] = useState('10')
+  const [dayOfWeek, setDayOfWeek] = useState('1')
+  const [yearDate, setYearDate] = useState(getDefaultYearDate())
+  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [endDate, setEndDate] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [categoryLabel, setCategoryLabel] = useState('')
@@ -58,7 +60,10 @@ export default function RecurringPage() {
   const resetForm = () => {
     setAmount('')
     setFrequency('monthly')
-    setAnchorDate(toDateString(new Date()))
+    setDayOfMonth('10')
+    setDayOfWeek('1')
+    setYearDate(getDefaultYearDate())
+    setStartDate(new Date().toISOString().slice(0, 10))
     setEndDate('')
     setCategoryId('')
     setCategoryLabel('')
@@ -84,20 +89,23 @@ export default function RecurringPage() {
       return
     }
 
-    if (!anchorDate) {
-      alert('기준 날짜를 입력해주세요')
-      return
-    }
-
     const payload = {
       type: 'expense',
       amount: numAmount,
       category_id: categoryId,
       description: description || null,
       frequency,
-      anchor_date: anchorDate,
+      day_of_week: frequency === 'weekly' ? parseInt(dayOfWeek, 10) : null,
+      day_of_month: frequency === 'weekly' ? null : frequency === 'yearly' ? parseInt(yearDate.split('-')[2], 10) : parseInt(dayOfMonth, 10),
+      month_of_year: frequency === 'yearly' ? parseInt(yearDate.split('-')[1], 10) : null,
+      start_date: startDate || null,
       end_date: endDate || null,
       active: true,
+    }
+
+    if (frequency === 'monthly' && !payload.day_of_month) {
+      alert('매월 날짜를 입력해주세요')
+      return
     }
 
     setSaving(true)
@@ -179,7 +187,10 @@ export default function RecurringPage() {
                   setCategoryId(item.category_id)
                   setCategoryLabel(catName)
                   setFrequency(item.frequency)
-                  setAnchorDate(item.anchor_date || toDateString(new Date()))
+                  setDayOfMonth(String(item.day_of_month ?? 10))
+                  setDayOfWeek(String(item.day_of_week ?? 1))
+                  setYearDate(`${new Date().getFullYear()}-${String(item.month_of_year ?? 1).padStart(2, '0')}-${String(item.day_of_month ?? 1).padStart(2, '0')}`)
+                  setStartDate(item.start_date || new Date().toISOString().slice(0, 10))
                   setEndDate(item.end_date || '')
                   setAdding(true)
                 }}
@@ -238,25 +249,75 @@ export default function RecurringPage() {
               </div>
 
               <div className="border-t border-border mx-5" />
+              {frequency === 'weekly' && (
+                <div className="flex items-center justify-between px-4 py-3">
+                  <span className="text-[16px]">요일</span>
+                  <div className="flex gap-1.5">
+                    {WEEKDAY_LABELS.map((d, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setDayOfWeek(String(i))}
+                        className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
+                          dayOfWeek === String(i) ? 'bg-accent-blue text-white' : 'bg-[#f5f5f7] dark:bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {frequency === 'monthly' && (
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <span className="text-[16px]">매월</span>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={dayOfMonth}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^0-9]/g, '')
+                        if (v === '' || (parseInt(v) >= 1 && parseInt(v) <= 31)) setDayOfMonth(v)
+                      }}
+                      className="text-[16px] font-semibold bg-transparent border-none outline-none text-right w-10"
+                      style={{ fontSize: '16px' }}
+                    />
+                    <span className="text-[16px] text-muted-foreground">일</span>
+                  </div>
+                </div>
+              )}
+              {frequency === 'yearly' && (
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <span className="text-[16px]">날짜</span>
+                  <label className="relative cursor-pointer">
+                    <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+                      {(() => {
+                        const d = new Date(yearDate + 'T00:00:00')
+                        return `${d.getMonth() + 1}월 ${d.getDate()}일`
+                      })()}
+                    </span>
+                    <input
+                      type="date"
+                      value={yearDate}
+                      onChange={(e) => e.target.value && setYearDate(e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      style={{ fontSize: '16px' }}
+                    />
+                  </label>
+                </div>
+              )}
+
+              <div className="border-t border-border mx-5" />
               <div className="flex items-center justify-between px-4 py-3.5">
-                <span className="text-[16px]">기준 날짜</span>
-                <label className="relative cursor-pointer">
-                  <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
-                    {(() => {
-                      const d = new Date(anchorDate + 'T00:00:00')
-                      if (frequency === 'weekly') return `${WEEKDAY_LABELS[d.getDay()]}요일 기준`
-                      if (frequency === 'yearly') return `${d.getMonth() + 1}월 ${d.getDate()}일`
-                      return `${d.getDate()}일 기준`
-                    })()}
-                  </span>
-                  <input
-                    type="date"
-                    value={anchorDate}
-                    onChange={(e) => e.target.value && setAnchorDate(e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    style={{ fontSize: '16px' }}
-                  />
-                </label>
+                <span className="text-[16px]">시작일</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="bg-transparent text-right"
+                  style={{ fontSize: '16px' }}
+                />
               </div>
 
               <div className="border-t border-border mx-5" />
