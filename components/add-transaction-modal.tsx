@@ -1,13 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { getCategories, addTransaction, updateTransaction, type Category, type Transaction } from '@/lib/api'
+import { getCategories, type Category, type Transaction } from '@/lib/api'
 import { formatDateDisplay, formatDateInputValue, formatKoreanWon } from '@/lib/format'
 import { AddTransactionHeader, RecoverySection, TransactionAmountRow, TransactionCategorySection, TransactionDateRow, TransactionMemoRow, TransactionRepeatSection } from './add-transaction-sections'
+import { applySavingsRecovery, buildTransactionPayload, REVERSE_TYPE_MAP, saveTransactionWithRecurring, type TransactionTypeKo } from '@/lib/transaction-modal'
 
-type TransactionType = '수입' | '지출' | '저축'
-
-const TYPE_MAP: Record<TransactionType, string> = { '수입': 'income', '지출': 'expense', '저축': 'savings' }
+type TransactionType = TransactionTypeKo
 
 interface AddTransactionModalProps {
   open: boolean
@@ -22,8 +21,6 @@ interface AddTransactionModalProps {
     memo: string
   }) => void
 }
-
-const REVERSE_TYPE_MAP: Record<string, TransactionType> = { income: '수입', expense: '지출', savings: '저축' }
 
 
 function formatAmount(raw: string) {
@@ -176,55 +173,24 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       else if (!categoryId) alert('카테고리를 선택해주세요')
       return
     }
-    const dbType = TYPE_MAP[type!]
-    const payload: Record<string, unknown> = {
-      type: dbType,
+    const { payload } = buildTransactionPayload({
+      type: type!,
       amount: numAmount,
-      category_id: categoryId,
-      description: memo || '',
+      categoryId,
+      memo,
       date,
-    }
-    if (dbType === 'savings') {
-      if (endDate) payload.end_date = endDate
-      if (endAmount) payload.end_amount = parseInt(endAmount.replace(/[^0-9]/g, ''))
-    }
+      endDate,
+      endAmount,
+    })
     setSaving(true)
     try {
-      if (editTransaction) {
-        await updateTransaction(editTransaction.id, payload)
-        if (linkedRecurringId) {
-          const { updateRecurringTransaction, deleteRecurringTransaction } = await import('@/lib/api')
-          if (repeatFrequency === 'none') {
-            await deleteRecurringTransaction(linkedRecurringId)
-          } else {
-            await updateRecurringTransaction(linkedRecurringId, {
-              type: dbType,
-              amount: numAmount,
-              category_id: categoryId,
-              description: memo || null,
-              frequency: repeatFrequency,
-              anchor_date: date,
-              end_date: repeatEndDate,
-              active: true,
-            })
-          }
-        }
-      } else {
-        await addTransaction(payload)
-        if (repeatFrequency !== 'none') {
-          const { addRecurringTransaction } = await import('@/lib/api')
-          await addRecurringTransaction({
-            type: dbType,
-            amount: numAmount,
-            category_id: categoryId,
-            description: memo || null,
-            frequency: repeatFrequency,
-            anchor_date: date,
-            end_date: repeatEndDate,
-            active: true,
-          })
-        }
-      }
+      await saveTransactionWithRecurring({
+        editTransaction,
+        payload,
+        linkedRecurringId,
+        repeatFrequency,
+        repeatEndDate,
+      })
       onSave({ date, type: type!, amount: numAmount, category: categoryLabel, memo })
       setRawAmount('')
       setMemo('')
@@ -412,20 +378,13 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <div className="flex gap-3 mb-2">
               <button
                 onClick={async () => {
-                  const amount = parseInt(recoverAmount, 10)
-                  if (!amount) { alert('금액을 입력해주세요'); return }
-                  const { addTransaction, updateTransaction } = await import('@/lib/api')
                   setSaving(true)
                   try {
-                    const catName = (editTransaction.category as any)?.name || '저축'
-                    await addTransaction({
-                      type: 'income',
-                      amount,
-                      category_id: editTransaction.category_id,
-                      description: `${catName} 회수`,
-                      date: recoverDate,
+                    await applySavingsRecovery({
+                      editTransaction,
+                      recoverAmount,
+                      recoverDate,
                     })
-                    await updateTransaction(editTransaction.id, { end_date: recoverDate })
                     setRawAmount(''); setMemo(''); setEditDate(null)
                     setRecoverOpen(false)
                     onClose()
