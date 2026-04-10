@@ -43,10 +43,10 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
           </div>
         ) : null}
         <div className={headerRight ? 'pr-28' : ''}>
-          <p className="text-[14px] font-semibold text-foreground mb-[-2px]">
+          <p className="text-[14px] font-semibold text-foreground mb-[-1px]">
             {selectedData ? `${selectedData.month}월 ${label}` : label}
           </p>
-          <p className="text-[24px] font-bold tabular-nums leading-none mt-0" style={{ letterSpacing: '-1px', color }}>
+          <p className="text-[24px] font-bold tabular-nums leading-tight mt-0" style={{ letterSpacing: '-1px', color }}>
             {selectedData && !selectedData.isFuture && selectedData.value > 0
               ? `₩${selectedData.value.toLocaleString()}`
               : '—'}
