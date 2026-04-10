@@ -45,10 +45,15 @@ function formatAmount(amount: number): string {
 
 interface RecurringItem {
   day: number
+  date?: string
   type: string
   amount: number
   category_id: string
   description: string
+  recurring_transaction_id?: string
+  source_transaction_id?: string | null
+  occurrence_date?: string
+  target_transaction_id?: string | null
   categoryName?: string
 }
 
@@ -59,6 +64,7 @@ interface MonthlyViewProps {
   recurringItems: RecurringItem[]
   forceCalendarView?: boolean
   onEdit: (tx: Transaction) => void
+  onEditRecurring?: (item: RecurringItem) => void
   onDeleted: () => void
 }
 
@@ -209,6 +215,7 @@ const CalendarDayDetail = memo(function CalendarDayDetail({
   calendarDayRecurring,
   categories,
   onEdit,
+  onEditRecurring,
   onDeleted,
 }: {
   selectedDay: number
@@ -218,6 +225,7 @@ const CalendarDayDetail = memo(function CalendarDayDetail({
   calendarDayRecurring: RecurringItem[]
   categories: Category[]
   onEdit: (tx: Transaction) => void
+  onEditRecurring?: (item: RecurringItem) => void
   onDeleted: () => void
 }) {
   if (calendarDayTxs.length === 0 && calendarDayRecurring.length === 0) {
@@ -234,6 +242,7 @@ const CalendarDayDetail = memo(function CalendarDayDetail({
         categories={categories}
         highlighted={false}
         onEdit={onEdit}
+        onEditRecurring={onEditRecurring}
         onDeleted={onDeleted}
         registerRef={() => {}}
       />
@@ -249,6 +258,7 @@ const WeekDayCard = memo(function WeekDayCard({
   categories,
   highlighted,
   onEdit,
+  onEditRecurring,
   onDeleted,
   registerRef,
 }: {
@@ -259,6 +269,7 @@ const WeekDayCard = memo(function WeekDayCard({
   categories: Category[]
   highlighted: boolean
   onEdit: (tx: Transaction) => void
+  onEditRecurring?: (item: RecurringItem) => void
   onDeleted: () => void
   registerRef: (node: HTMLDivElement | null) => void
 }) {
@@ -304,7 +315,7 @@ const WeekDayCard = memo(function WeekDayCard({
           })}
 
           {recurring.map((r, ri) => (
-            <div key={`${day}-recurring-${ri}`} className="flex items-center justify-between gap-3 opacity-40 italic">
+            <button key={`${day}-recurring-${ri}`} onClick={() => onEditRecurring?.(r)} className="flex w-full items-center justify-between gap-3 opacity-40 italic text-left">
               <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
                 <span
                   className="size-2.5 flex-shrink-0 rounded-full"
@@ -316,7 +327,7 @@ const WeekDayCard = memo(function WeekDayCard({
                 </div>
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">₩{r.amount.toLocaleString()}</span>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -338,7 +349,7 @@ const WeekDayCard = memo(function WeekDayCard({
 export function MonthlyView({
   monthOffset, transactions, categories, recurringItems,
   forceCalendarView = false,
-  onEdit, onDeleted,
+  onEdit, onEditRecurring, onDeleted,
 }: MonthlyViewProps) {
   const now = new Date()
   const today = new Date()
@@ -579,6 +590,7 @@ export function MonthlyView({
             calendarDayRecurring={calendarDayRecurring}
             categories={categories}
             onEdit={onEdit}
+            onEditRecurring={onEditRecurring}
             onDeleted={onDeleted}
           />
         </div>
@@ -628,6 +640,7 @@ export function MonthlyView({
                     categories={categories}
                     highlighted={highlightedDate === key}
                     onEdit={onEdit}
+                    onEditRecurring={onEditRecurring}
                     onDeleted={onDeleted}
                     registerRef={node => { dayRefs.current[key] = node }}
                   />

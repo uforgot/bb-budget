@@ -22,6 +22,8 @@ export interface Transaction {
   date: string
   created_at: string
   end_date?: string | null
+  recurring_transaction_id?: string | null
+  recurring_occurrence_date?: string | null
   category?: Category
 }
 
@@ -38,6 +40,7 @@ export interface RecurringTransaction {
   end_date: string | null
   active: boolean
   created_at: string
+  source_transaction_id?: string | null
   category?: Category
 }
 
@@ -48,6 +51,10 @@ export interface RecurringPreviewItem {
   amount: number
   category_id: string
   description: string
+  recurring_transaction_id: string
+  source_transaction_id: string | null
+  occurrence_date: string
+  target_transaction_id?: string | null
   categoryName?: string
 }
 
@@ -256,10 +263,13 @@ export async function getRecurringTransactions(): Promise<RecurringTransaction[]
 }
 
 export async function addRecurringTransaction(tx: Record<string, unknown>) {
-  const { error } = await (getSupabase() as any)
+  const { data, error } = await (getSupabase() as any)
     .from('recurring_transactions')
     .insert(normalizeRecurringPayload(tx))
+    .select()
+    .single()
   if (error) throw error
+  return normalizeRecurringTransaction(data)
 }
 
 export async function updateRecurringTransaction(id: string, tx: Record<string, unknown>) {
@@ -294,9 +304,12 @@ export async function confirmRecurringTransactions(year: number, month: number) 
       .filter(dateStr => dateStr <= today)
 
     for (const dateStr of dates) {
-      const alreadyExists = monthTxs.some(
-        t => t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === dateStr
-      )
+      const alreadyExists = monthTxs.some(t => {
+        if (t.recurring_transaction_id && t.recurring_occurrence_date) {
+          return t.recurring_transaction_id === r.id && t.recurring_occurrence_date === dateStr
+        }
+        return t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === dateStr
+      })
       if (alreadyExists) continue
 
       const desc = r.description ? `${r.description} (반복)` : `${getRecurringLabel(r)} (반복)`
@@ -306,8 +319,11 @@ export async function confirmRecurringTransactions(year: number, month: number) 
         category_id: r.category_id,
         description: desc,
         date: dateStr,
+        recurring_transaction_id: r.id,
+        recurring_occurrence_date: dateStr,
       })
       created.push(tx)
+      monthTxs.push(tx)
     }
   }
 
@@ -323,9 +339,21 @@ export async function getRecurringPreview(year: number, month: number): Promise<
 
   return active
     .flatMap(r => getRecurringDatesForMonth(r, year, month).map(date => ({ recurring: r, date })))
-    .filter(({ recurring: r, date }) => {
-      return !monthTxs.some(t => t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === date)
+    .map(({ recurring: r, date }) => {
+      const matchedTx = monthTxs.find(t => {
+        if (t.recurring_transaction_id && t.recurring_occurrence_date) {
+          return t.recurring_transaction_id === r.id && t.recurring_occurrence_date === date
+        }
+        return t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === date
+      })
+
+      return {
+        recurring: r,
+        date,
+        matchedTx,
+      }
     })
+    .filter(({ matchedTx }) => !matchedTx)
     .map(({ recurring: r, date }) => ({
       day: Number(date.slice(-2)),
       date,
@@ -333,6 +361,10 @@ export async function getRecurringPreview(year: number, month: number): Promise<
       amount: r.amount,
       category_id: r.category_id,
       description: r.description ? `${r.description} (예정)` : `${getRecurringLabel(r)} (예정)`,
+      recurring_transaction_id: r.id,
+      source_transaction_id: r.source_transaction_id || null,
+      occurrence_date: date,
+      target_transaction_id: r.source_transaction_id && r.anchor_date === date ? r.source_transaction_id : null,
       categoryName: r.category?.name || '',
     }))
 }
