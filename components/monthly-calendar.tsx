@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { getMonthlySummary, getRecurringPreview, type Transaction, type RecurringPreviewItem } from '@/lib/api'
+import { getMonthlySummary, getRecurringPreview, type Transaction } from '@/lib/api'
 import { surfaces, typography, semanticColors } from '@/components/ui-colors'
 
 // ─── Types ────────────────────────────────────────────────────
@@ -20,7 +20,6 @@ interface DayItem {
   description: string
   amount: number
   isRecurring?: boolean
-  recurringPreviewItem?: RecurringPreviewItem
 }
 
 interface CachedMonth {
@@ -170,7 +169,6 @@ export interface MonthlyCalendarProps {
   onMonthChange?: (year: number, month: number, income: number, expense: number) => void
   onDaySelect?: (year: number, month: number, day: number) => void
   onTransactionClick?: (transaction: Transaction) => void
-  onRecurringPreviewClick?: (item: RecurringPreviewItem) => void
   refreshKey?: number
   showHeader?: boolean
   showDayDetail?: boolean
@@ -178,7 +176,7 @@ export interface MonthlyCalendarProps {
   targetMonth?: number // 1-indexed (key 변경 시만 적용)
 }
 
-export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, onRecurringPreviewClick, refreshKey = 0, showHeader = true, showDayDetail = true, targetYear, targetMonth }: MonthlyCalendarProps) {
+export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick, refreshKey = 0, showHeader = true, showDayDetail = true, targetYear, targetMonth }: MonthlyCalendarProps) {
   const anchor = targetYear && targetMonth ? new Date(targetYear, targetMonth - 1, 1) : new Date()
   const [months, setMonths] = useState<MonthEntry[]>(() => buildInitialMonths(anchor))
   const [focusedMonthIndex, setFocusedMonthIndex] = useState(INITIAL_RANGE)
@@ -289,7 +287,6 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
             description: p.description,
             amount: p.amount,
             isRecurring: true,
-            recurringPreviewItem: p,
           } as any)
         }
       }
@@ -460,11 +457,8 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                   return (
                     <div
                       key={i}
-                      onClick={() => {
-                        if (item.isRecurring && item.recurringPreviewItem) onRecurringPreviewClick?.(item.recurringPreviewItem)
-                        else handleItemClick(selectedDay.day, i)
-                      }}
-                      className={`flex items-center justify-between py-2 ${item.isRecurring ? 'cursor-pointer opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
+                      onClick={() => !item.isRecurring && handleItemClick(selectedDay.day, i)}
+                      className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? semanticColors.expense : item.type === 'income' ? semanticColors.income : semanticColors.savings }}>

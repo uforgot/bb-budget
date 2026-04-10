@@ -22,8 +22,6 @@ export interface Transaction {
   date: string
   created_at: string
   end_date?: string | null
-  recurring_transaction_id?: string | null
-  recurring_occurrence_date?: string | null
   category?: Category
 }
 
@@ -31,7 +29,6 @@ export type RecurringFrequency = 'weekly' | 'monthly' | 'yearly'
 
 export interface RecurringTransaction {
   id: string
-  source_transaction_id: string | null
   type: string
   amount: number
   category_id: string
@@ -45,10 +42,6 @@ export interface RecurringTransaction {
 }
 
 export interface RecurringPreviewItem {
-  recurring_transaction_id: string
-  source_transaction_id: string | null
-  occurrence_date: string
-  generated_transaction_id?: string | null
   day: number
   date: string
   type: string
@@ -238,16 +231,6 @@ export async function addTransaction(tx: Record<string, unknown>) {
   return data as Transaction
 }
 
-export async function getTransaction(id: string) {
-  const { data, error } = await getSupabase()
-    .from('transactions')
-    .select('*, category:categories(*)')
-    .eq('id', id)
-    .single()
-  if (error) throw error
-  return data as Transaction
-}
-
 export async function updateTransaction(id: string, tx: Record<string, unknown>) {
   const supabase = getSupabase() as any
   const { error } = await supabase.from('transactions').update(tx).eq('id', id)
@@ -270,26 +253,6 @@ export async function getRecurringTransactions(): Promise<RecurringTransaction[]
     .order('anchor_date', { ascending: true, nullsFirst: false })
   if (error) throw error
   return (data || []).map(normalizeRecurringTransaction)
-}
-
-export async function getRecurringTransaction(id: string) {
-  const { data, error } = await (getSupabase() as any)
-    .from('recurring_transactions')
-    .select('*, category:categories(*)')
-    .eq('id', id)
-    .maybeSingle()
-  if (error) throw error
-  return data ? normalizeRecurringTransaction(data) : null
-}
-
-export async function getRecurringTransactionBySourceTransactionId(sourceTransactionId: string) {
-  const { data, error } = await (getSupabase() as any)
-    .from('recurring_transactions')
-    .select('*, category:categories(*)')
-    .eq('source_transaction_id', sourceTransactionId)
-    .maybeSingle()
-  if (error) throw error
-  return data ? normalizeRecurringTransaction(data) : null
 }
 
 export async function addRecurringTransaction(tx: Record<string, unknown>) {
@@ -331,9 +294,8 @@ export async function confirmRecurringTransactions(year: number, month: number) 
       .filter(dateStr => dateStr <= today)
 
     for (const dateStr of dates) {
-      const alreadyExists = monthTxs.some(t =>
-        (t.recurring_transaction_id === r.id && (t.recurring_occurrence_date || t.date) === dateStr)
-        || (t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === dateStr)
+      const alreadyExists = monthTxs.some(
+        t => t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === dateStr
       )
       if (alreadyExists) continue
 
@@ -344,8 +306,6 @@ export async function confirmRecurringTransactions(year: number, month: number) 
         category_id: r.category_id,
         description: desc,
         date: dateStr,
-        recurring_transaction_id: r.id,
-        recurring_occurrence_date: dateStr,
       })
       created.push(tx)
     }
@@ -364,16 +324,9 @@ export async function getRecurringPreview(year: number, month: number): Promise<
   return active
     .flatMap(r => getRecurringDatesForMonth(r, year, month).map(date => ({ recurring: r, date })))
     .filter(({ recurring: r, date }) => {
-      return !monthTxs.some(t =>
-        (t.recurring_transaction_id === r.id && (t.recurring_occurrence_date || t.date) === date)
-        || (t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === date)
-      )
+      return !monthTxs.some(t => t.category_id === r.category_id && t.amount === r.amount && t.type === r.type && t.date === date)
     })
     .map(({ recurring: r, date }) => ({
-      recurring_transaction_id: r.id,
-      source_transaction_id: r.source_transaction_id,
-      occurrence_date: date,
-      generated_transaction_id: monthTxs.find(t => t.recurring_transaction_id === r.id && (t.recurring_occurrence_date || t.date) === date)?.id || null,
       day: Number(date.slice(-2)),
       date,
       type: r.type,
