@@ -70,8 +70,9 @@ export default function History() {
       {/* 상단 바 */}
       <div className="sticky top-0 z-30 bg-background px-5">
         <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-          <button onClick={() => router.push('/dashboard')} className="flex items-center justify-center w-8 h-8 rounded-lg" aria-label="대시보드">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+          <button onClick={toggleCalendarView} className="relative flex items-center justify-center w-8 h-8" aria-label={forceCalendarView ? '내역 보기' : '달력 보기'}>
+            {forceCalendarView && <span className="absolute inset-0 rounded-full bg-accent-blue" />}
+            <CalendarDays size={18} className={`relative ${forceCalendarView ? 'text-white' : 'text-foreground'}`} />
           </button>
           <div className="flex items-center gap-1">
             <button onClick={() => { setSearchMode(v => !v); setSearchQuery('') }} className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground">
@@ -111,8 +112,11 @@ export default function History() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0 -ml-1.5"><path d="m6 9 6 6 6-6"/></svg>
             </label>
           </div>
-          <button onClick={toggleCalendarView} className="flex items-center justify-center w-10 h-10 rounded-full bg-accent-blue text-white" aria-label={forceCalendarView ? '월간 보기' : '달력 보기'}>
-            {forceCalendarView ? <List size={18} /> : <CalendarDays size={18} />}
+          <button onClick={() => {
+            setMonthOffset(0)
+            setForceCalendarView(false)
+          }} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold" aria-label="오늘">
+            오늘
           </button>
         </div>
       </div>
