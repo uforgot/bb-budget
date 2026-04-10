@@ -1,7 +1,7 @@
 'use client'
 
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import { type Transaction, type Category } from '@/lib/api'
+import { type Transaction, type Category, type RecurringPreviewItem } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { TxRow } from '@/components/tx-row'
 import { semanticColors } from '@/components/ui-colors'
@@ -43,14 +43,7 @@ function formatAmount(amount: number): string {
   return amount.toLocaleString()
 }
 
-interface RecurringItem {
-  day: number
-  type: string
-  amount: number
-  category_id: string
-  description: string
-  categoryName?: string
-}
+type RecurringItem = RecurringPreviewItem
 
 interface MonthlyViewProps {
   monthOffset: number
@@ -59,6 +52,7 @@ interface MonthlyViewProps {
   recurringItems: RecurringItem[]
   forceCalendarView?: boolean
   onEdit: (tx: Transaction) => void
+  onOpenRecurringPreview: (item: RecurringItem) => void
   onDeleted: () => void
 }
 
@@ -209,6 +203,7 @@ const CalendarDayDetail = memo(function CalendarDayDetail({
   calendarDayRecurring,
   categories,
   onEdit,
+  onOpenRecurringPreview,
   onDeleted,
 }: {
   selectedDay: number
@@ -218,6 +213,7 @@ const CalendarDayDetail = memo(function CalendarDayDetail({
   calendarDayRecurring: RecurringItem[]
   categories: Category[]
   onEdit: (tx: Transaction) => void
+  onOpenRecurringPreview: (item: RecurringItem) => void
   onDeleted: () => void
 }) {
   if (calendarDayTxs.length === 0 && calendarDayRecurring.length === 0) {
@@ -234,6 +230,7 @@ const CalendarDayDetail = memo(function CalendarDayDetail({
         categories={categories}
         highlighted={false}
         onEdit={onEdit}
+        onOpenRecurringPreview={onOpenRecurringPreview}
         onDeleted={onDeleted}
         registerRef={() => {}}
       />
@@ -249,6 +246,7 @@ const WeekDayCard = memo(function WeekDayCard({
   categories,
   highlighted,
   onEdit,
+  onOpenRecurringPreview,
   onDeleted,
   registerRef,
 }: {
@@ -259,6 +257,7 @@ const WeekDayCard = memo(function WeekDayCard({
   categories: Category[]
   highlighted: boolean
   onEdit: (tx: Transaction) => void
+  onOpenRecurringPreview: (item: RecurringItem) => void
   onDeleted: () => void
   registerRef: (node: HTMLDivElement | null) => void
 }) {
@@ -304,7 +303,7 @@ const WeekDayCard = memo(function WeekDayCard({
           })}
 
           {recurring.map((r, ri) => (
-            <div key={`${day}-recurring-${ri}`} className="flex items-center justify-between gap-3 opacity-40 italic">
+            <button key={`${day}-recurring-${ri}`} onClick={() => onOpenRecurringPreview(r)} className="flex w-full items-center justify-between gap-3 text-left opacity-40 italic">
               <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
                 <span
                   className="size-2.5 flex-shrink-0 rounded-full"
@@ -316,7 +315,7 @@ const WeekDayCard = memo(function WeekDayCard({
                 </div>
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground">₩{r.amount.toLocaleString()}</span>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -338,7 +337,7 @@ const WeekDayCard = memo(function WeekDayCard({
 export function MonthlyView({
   monthOffset, transactions, categories, recurringItems,
   forceCalendarView = false,
-  onEdit, onDeleted,
+  onEdit, onOpenRecurringPreview, onDeleted,
 }: MonthlyViewProps) {
   const now = new Date()
   const today = new Date()
@@ -579,6 +578,7 @@ export function MonthlyView({
             calendarDayRecurring={calendarDayRecurring}
             categories={categories}
             onEdit={onEdit}
+            onOpenRecurringPreview={onOpenRecurringPreview}
             onDeleted={onDeleted}
           />
         </div>
@@ -628,6 +628,7 @@ export function MonthlyView({
                     categories={categories}
                     highlighted={highlightedDate === key}
                     onEdit={onEdit}
+                    onOpenRecurringPreview={onOpenRecurringPreview}
                     onDeleted={onDeleted}
                     registerRef={node => { dayRefs.current[key] = node }}
                   />

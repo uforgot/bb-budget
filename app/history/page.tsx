@@ -7,7 +7,16 @@ import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { MonthlyView } from '@/components/monthly-view'
-import { getTransactions, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
+import {
+  getTransactions,
+  getCategories,
+  getRecurringPreview,
+  getTransaction,
+  getRecurringTransactionBySourceTransactionId,
+  type Transaction,
+  type Category,
+  type RecurringPreviewItem,
+} from '@/lib/api'
 
 export default function History() {
   const router = useRouter()
@@ -20,7 +29,7 @@ export default function History() {
   const [forceCalendarView, setForceCalendarView] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [recurringItems, setRecurringItems] = useState<{ day: number; type: string; amount: number; category_id: string; description: string; categoryName?: string }[]>([])
+  const [recurringItems, setRecurringItems] = useState<RecurringPreviewItem[]>([])
 
   // 현재 연월 (select 기준)
   const now = new Date()
@@ -63,6 +72,28 @@ export default function History() {
   const toggleCalendarView = () => {
     setForceCalendarView(v => !v)
   }
+
+  const handleRecurringPreviewOpen = useCallback(async (item: RecurringPreviewItem) => {
+    try {
+      if (item.generated_transaction_id) {
+        setEditTx(await getTransaction(item.generated_transaction_id))
+        setModalOpen(true)
+        return
+      }
+
+      if (item.source_transaction_id) {
+        setEditTx(await getTransaction(item.source_transaction_id))
+        setModalOpen(true)
+        return
+      }
+
+      const recurring = await getRecurringTransactionBySourceTransactionId(item.source_transaction_id || '')
+      if (recurring?.source_transaction_id) {
+        setEditTx(await getTransaction(recurring.source_transaction_id))
+        setModalOpen(true)
+      }
+    } catch {}
+  }, [])
 
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData} disabled>
@@ -175,6 +206,7 @@ export default function History() {
           recurringItems={recurringItems}
           forceCalendarView={forceCalendarView}
           onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
+          onOpenRecurringPreview={handleRecurringPreviewOpen}
           onDeleted={loadData}
         />
       )}

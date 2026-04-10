@@ -2,7 +2,19 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { CategoryPicker } from './category-picker'
-import { getCategories, addTransaction, updateTransaction, type Category, type Transaction } from '@/lib/api'
+import {
+  getCategories,
+  addTransaction,
+  updateTransaction,
+  type Category,
+  type Transaction,
+  type RecurringTransaction,
+  getRecurringTransaction,
+  getRecurringTransactionBySourceTransactionId,
+  addRecurringTransaction,
+  updateRecurringTransaction,
+  deleteRecurringTransaction,
+} from '@/lib/api'
 
 type TransactionType = '수입' | '지출' | '저축'
 
@@ -73,6 +85,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [recentCategories, setRecentCategories] = useState<Array<{ id: string; label: string; type: string }>>([])
   const [repeatFrequency, setRepeatFrequency] = useState<'none' | 'weekly' | 'monthly' | 'yearly'>('none')
   const [repeatDropdownOpen, setRepeatDropdownOpen] = useState(false)
+  const [linkedRecurringId, setLinkedRecurringId] = useState<string | null>(null)
+  const [linkedRecurringSourceId, setLinkedRecurringSourceId] = useState<string | null>(null)
   const [repeatEndDate, setRepeatEndDate] = useState(() => {
     const d = new Date(); d.setMonth(d.getMonth() + 1)
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -124,7 +138,22 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setRecoverAmount(String(editTransaction.amount))
       setRecoverOpen(false)
       setCategoryPickerOpen(false)
-      // parent > child 라벨 구성
+      setRepeatDropdownOpen(false)
+
+      const applyRecurringRule = (rule: RecurringTransaction | null) => {
+        if (rule) {
+          setLinkedRecurringId(rule.id)
+          setLinkedRecurringSourceId(rule.source_transaction_id)
+          setRepeatFrequency(rule.frequency)
+          setRepeatEndDate(rule.end_date || '')
+        } else {
+          setLinkedRecurringId(null)
+          setLinkedRecurringSourceId(null)
+          setRepeatFrequency('none')
+          setRepeatEndDate('')
+        }
+      }
+
       const dbType = editTransaction.type
       getCategories(dbType).then(cats => {
         const cat = cats.find(c => c.id === editTransaction.category_id)
@@ -135,7 +164,21 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           setCategoryLabel(cat.name)
         }
       })
+
+      ;(async () => {
+        try {
+          if (editTransaction.recurring_transaction_id) {
+            applyRecurringRule(await getRecurringTransaction(editTransaction.recurring_transaction_id))
+            return
+          }
+          applyRecurringRule(await getRecurringTransactionBySourceTransactionId(editTransaction.id))
+        } catch {
+          applyRecurringRule(null)
+        }
+      })()
     } else if (!editTransaction && open) {
+      setLinkedRecurringId(null)
+      setLinkedRecurringSourceId(null)
       setRepeatFrequency('none')
       setRepeatDropdownOpen(false)
       const d = new Date(); d.setMonth(d.getMonth() + 1)
@@ -182,18 +225,45 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     try {
       if (editTransaction) {
         await updateTransaction(editTransaction.id, payload)
-      } else {
-        await addTransaction(payload)
-        if (repeatFrequency !== 'none') {
-          const { addRecurringTransaction } = await import('@/lib/api')
+
+        if (linkedRecurringId && repeatFrequency !== 'none') {
+          await updateRecurringTransaction(linkedRecurringId, {
+            type: dbType,
+            amount: numAmount,
+            category_id: categoryId,
+            description: memo || null,
+            frequency: repeatFrequency,
+            anchor_date: linkedRecurringSourceId === editTransaction.id ? date : undefined,
+            end_date: repeatEndDate || null,
+            active: true,
+          })
+        } else if (linkedRecurringId && repeatFrequency === 'none') {
+          await deleteRecurringTransaction(linkedRecurringId)
+        } else if (!linkedRecurringId && repeatFrequency !== 'none') {
           await addRecurringTransaction({
+            source_transaction_id: editTransaction.id,
             type: dbType,
             amount: numAmount,
             category_id: categoryId,
             description: memo || null,
             frequency: repeatFrequency,
             anchor_date: date,
-            end_date: repeatEndDate,
+            end_date: repeatEndDate || null,
+            active: true,
+          })
+        }
+      } else {
+        const createdTx = await addTransaction(payload)
+        if (repeatFrequency !== 'none') {
+          await addRecurringTransaction({
+            source_transaction_id: createdTx.id,
+            type: dbType,
+            amount: numAmount,
+            category_id: categoryId,
+            description: memo || null,
+            frequency: repeatFrequency,
+            anchor_date: date,
+            end_date: repeatEndDate || null,
             active: true,
           })
         }
@@ -426,7 +496,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
               />
             </div>
-          {!editTransaction && (
+          {(
             <>
               <div className="border-t border-border mx-4" />
               <div ref={repeatDropdownRef}>
@@ -436,7 +506,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   onClick={() => { setKeypadActive(false); setRepeatDropdownOpen(prev => !prev) }}
                   className="w-full flex items-center justify-between px-4 py-3.5"
                 >
-                  <span className="text-[16px]">반복</span>
+                  <span className="text-[16px]">반복{editTransaction && linkedRecurringId ? ' 설정' : ''}</span>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <span className="text-[16px]">
                       {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
@@ -479,10 +549,12 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     <span className="text-[16px]">종료일</span>
                     <label className="relative cursor-pointer">
                       <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
-                        {(() => {
-                          const d = new Date(repeatEndDate + 'T00:00:00')
-                          return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
-                        })()}
+                        {repeatEndDate
+                          ? (() => {
+                              const d = new Date(repeatEndDate + 'T00:00:00')
+                              return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
+                            })()
+                          : '없음'}
                       </span>
                       <input
                         type="date"
