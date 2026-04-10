@@ -310,7 +310,7 @@ const WeekDayCard = memo(function WeekDayCard({
               type="button"
               onClick={() => {
                 const anchor = r.anchor_date ? new Date(`${r.anchor_date}T00:00:00`) : new Date(date)
-                alert(`${anchor.getMonth() + 1}월 ${anchor.getDate()}일 반복 지출의 첫 내역에서 항목을 수정하세요.`)
+                alert(`${anchor.getFullYear()}년 ${anchor.getMonth() + 1}월 ${anchor.getDate()}일 반복 지출의 첫 내역에서 항목을 수정하세요.`)
               }}
               className="flex w-full items-center justify-between gap-3 opacity-40 italic text-left"
             >
