@@ -59,6 +59,7 @@ interface MonthlyViewProps {
   categories: Category[]
   recurringItems: RecurringItem[]
   forceCalendarView?: boolean
+  todayResetToken?: number
   onEdit: (tx: Transaction) => void
   onDeleted: () => void
 }
@@ -346,6 +347,7 @@ const WeekDayCard = memo(function WeekDayCard({
 export function MonthlyView({
   monthOffset, transactions, categories, recurringItems,
   forceCalendarView = false,
+  todayResetToken = 0,
   onEdit, onDeleted,
 }: MonthlyViewProps) {
   const now = new Date()
@@ -414,6 +416,18 @@ export function MonthlyView({
     setSelectedDay(defaultDay)
     setHighlightedDate(null)
   }, [targetYear, actualMonth, currentWeekNum, defaultDay, forceCalendarView])
+
+  useEffect(() => {
+    if (todayResetToken === 0) return
+    const today = new Date()
+    const isCurrentMonth = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1
+    const nextDay = isCurrentMonth ? today.getDate() : 1
+    const nextWeek = isCurrentMonth ? getWeekNum(targetYear, actualMonth, nextDay) : 1
+    setViewMode('week')
+    setSelectedWeek(nextWeek)
+    setSelectedDay(nextDay)
+    setHighlightedDate(null)
+  }, [todayResetToken, targetYear, actualMonth])
 
   const monthRecurring = useMemo(() => isFutureMonth ? recurringItems : [], [isFutureMonth, recurringItems])
 

@@ -21,6 +21,7 @@ export default function History() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [recurringItems, setRecurringItems] = useState<{ day: number; type: string; amount: number; category_id: string; description: string; categoryName?: string }[]>([])
+  const [todayResetToken, setTodayResetToken] = useState(0)
 
   // 현재 연월 (select 기준)
   const now = new Date()
@@ -115,6 +116,7 @@ export default function History() {
           <button onClick={() => {
             setMonthOffset(0)
             setForceCalendarView(false)
+            setTodayResetToken(v => v + 1)
           }} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold" aria-label="오늘">
             오늘
           </button>
@@ -178,6 +180,7 @@ export default function History() {
           categories={categories}
           recurringItems={recurringItems}
           forceCalendarView={forceCalendarView}
+          todayResetToken={todayResetToken}
           onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
           onDeleted={loadData}
         />
