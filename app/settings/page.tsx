@@ -58,7 +58,7 @@ export default function Settings() {
         <div className="mx-5 rounded-[22px] bg-surface">
           <Link
             href="/settings/categories"
-            className="flex items-center justify-between px-4 py-4 border-b border-border"
+            className="flex items-center justify-between px-4 py-4"
           >
             <span className="text-[16px]">카테고리 관리</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
