@@ -9,20 +9,6 @@ import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { MonthlyView } from '@/components/monthly-view'
 import { getTransactions, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
 
-type RecurringPreviewRow = {
-  day: number
-  date?: string
-  type: string
-  amount: number
-  category_id: string
-  description: string
-  recurring_transaction_id?: string
-  source_transaction_id?: string | null
-  occurrence_date?: string
-  target_transaction_id?: string | null
-  categoryName?: string
-}
-
 export default function History() {
   const router = useRouter()
   const [monthOffset, setMonthOffset] = useState(0)
@@ -34,7 +20,7 @@ export default function History() {
   const [forceCalendarView, setForceCalendarView] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [recurringItems, setRecurringItems] = useState<RecurringPreviewRow[]>([])
+  const [recurringItems, setRecurringItems] = useState<{ day: number; type: string; amount: number; category_id: string; description: string; categoryName?: string }[]>([])
 
   // 현재 연월 (select 기준)
   const now = new Date()
@@ -76,15 +62,6 @@ export default function History() {
 
   const toggleCalendarView = () => {
     setForceCalendarView(v => !v)
-  }
-
-  const handleRecurringEdit = (item: RecurringPreviewRow) => {
-    const targetId = item.target_transaction_id || item.source_transaction_id
-    if (!targetId) return
-    const targetTx = transactions.find(tx => tx.id === targetId)
-    if (!targetTx) return
-    setEditTx(targetTx)
-    setModalOpen(true)
   }
 
   return (
@@ -198,7 +175,6 @@ export default function History() {
           recurringItems={recurringItems}
           forceCalendarView={forceCalendarView}
           onEdit={tx => { setEditTx(tx); setModalOpen(true) }}
-          onEditRecurring={handleRecurringEdit}
           onDeleted={loadData}
         />
       )}

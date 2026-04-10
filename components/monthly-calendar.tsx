@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { getMonthlySummary, getRecurringPreview, getTransactions, type Transaction } from '@/lib/api'
+import { getMonthlySummary, getRecurringPreview, type Transaction } from '@/lib/api'
 import { surfaces, typography, semanticColors } from '@/components/ui-colors'
 
 // ─── Types ────────────────────────────────────────────────────
@@ -20,7 +20,6 @@ interface DayItem {
   description: string
   amount: number
   isRecurring?: boolean
-  targetTransactionId?: string | null
 }
 
 interface CachedMonth {
@@ -288,7 +287,6 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
             description: p.description,
             amount: p.amount,
             isRecurring: true,
-            targetTransactionId: p.target_transaction_id || p.source_transaction_id || null,
           } as any)
         }
       }
@@ -360,21 +358,11 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
     }
   }, [selectedDay, dataCache])
 
-  const handleItemClick = useCallback(async (day: number, itemIndex: number) => {
+  const handleItemClick = useCallback((day: number, itemIndex: number) => {
     if (!selectedDay || !onTransactionClick) return
     const key = monthKey(selectedDay.year, selectedDay.month)
     const cached = dataCache.get(key)
     if (!cached) return
-    const item = cached.daily[day]?.items?.[itemIndex]
-    if (item?.isRecurring) {
-      let targetTx = cached.transactions.find(t => t.id === item.targetTransactionId)
-      if (!targetTx && item.targetTransactionId) {
-        const allTxs = await getTransactions({}).catch(() => [])
-        targetTx = allTxs.find(t => t.id === item.targetTransactionId)
-      }
-      if (targetTx) onTransactionClick(targetTx)
-      return
-    }
     const dayTxs = cached.transactions.filter(t => new Date(t.date).getDate() === day)
     if (dayTxs[itemIndex]) onTransactionClick(dayTxs[itemIndex])
   }, [selectedDay, dataCache, onTransactionClick])
@@ -469,8 +457,8 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
                   return (
                     <div
                       key={i}
-                      onClick={() => handleItemClick(selectedDay.day, i)}
-                      className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border cursor-pointer active:bg-surface' : 'cursor-pointer active:bg-surface'}`}
+                      onClick={() => !item.isRecurring && handleItemClick(selectedDay.day, i)}
+                      className={`flex items-center justify-between py-2 ${item.isRecurring ? 'opacity-40 italic border-dashed border-b border-border' : 'cursor-pointer active:bg-surface'}`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-xs text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: item.type === 'expense' ? semanticColors.expense : item.type === 'income' ? semanticColors.income : semanticColors.savings }}>

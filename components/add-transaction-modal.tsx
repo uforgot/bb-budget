@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { CategoryPicker } from './category-picker'
-import { getCategories, addTransaction, updateTransaction, type Category, type Transaction, type RecurringTransaction } from '@/lib/api'
+import { getCategories, addTransaction, updateTransaction, type Category, type Transaction } from '@/lib/api'
 
 type TransactionType = '수입' | '지출' | '저축'
 
@@ -73,8 +73,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [recentCategories, setRecentCategories] = useState<Array<{ id: string; label: string; type: string }>>([])
   const [repeatFrequency, setRepeatFrequency] = useState<'none' | 'weekly' | 'monthly' | 'yearly'>('none')
   const [repeatDropdownOpen, setRepeatDropdownOpen] = useState(false)
-  const [repeatRecurringId, setRepeatRecurringId] = useState<string | null>(null)
-  const [repeatSourceTransactionId, setRepeatSourceTransactionId] = useState<string | null>(null)
   const [repeatEndDate, setRepeatEndDate] = useState(() => {
     const d = new Date(); d.setMonth(d.getMonth() + 1)
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -113,8 +111,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   })
   const [recoverAmount, setRecoverAmount] = useState('')
 
-  const showRecurringSection = !editTransaction || !!repeatRecurringId || repeatFrequency !== 'none'
-
   // Populate fields when editing
   useEffect(() => {
     if (editTransaction && open) {
@@ -128,9 +124,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setRecoverAmount(String(editTransaction.amount))
       setRecoverOpen(false)
       setCategoryPickerOpen(false)
-      setRepeatRecurringId(null)
-      setRepeatSourceTransactionId(null)
-      setRepeatFrequency('none')
       // parent > child 라벨 구성
       const dbType = editTransaction.type
       getCategories(dbType).then(cats => {
@@ -142,32 +135,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           setCategoryLabel(cat.name)
         }
       })
-
-      ;(async () => {
-        try {
-          const { getRecurringTransactions } = await import('@/lib/api')
-          const recurringItems = await getRecurringTransactions()
-          const linkedRecurring = recurringItems.find(item => (
-            item.id === (editTransaction as any).recurring_transaction_id
-            || item.source_transaction_id === editTransaction.id
-          ))
-
-          if (linkedRecurring) {
-            setRepeatRecurringId(linkedRecurring.id)
-            setRepeatSourceTransactionId(linkedRecurring.source_transaction_id || null)
-            setRepeatFrequency(linkedRecurring.frequency)
-            setRepeatEndDate(linkedRecurring.end_date || '')
-          }
-        } catch {
-          setRepeatRecurringId(null)
-          setRepeatSourceTransactionId(null)
-          setRepeatFrequency('none')
-        }
-      })()
     } else if (!editTransaction && open) {
       setRepeatFrequency('none')
-      setRepeatRecurringId(null)
-      setRepeatSourceTransactionId(null)
       setRepeatDropdownOpen(false)
       const d = new Date(); d.setMonth(d.getMonth() + 1)
       setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
@@ -213,31 +182,11 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     try {
       if (editTransaction) {
         await updateTransaction(editTransaction.id, payload)
-
-        if (repeatRecurringId) {
-          const { updateRecurringTransaction } = await import('@/lib/api')
-          const recurringPayload: Record<string, unknown> = {
-            type: dbType,
-            amount: numAmount,
-            category_id: categoryId,
-            description: memo || null,
-            frequency: repeatFrequency === 'none' ? 'monthly' : repeatFrequency,
-            end_date: repeatEndDate || null,
-            active: repeatFrequency !== 'none',
-          }
-
-          if (repeatSourceTransactionId === editTransaction.id || !repeatSourceTransactionId) {
-            recurringPayload.anchor_date = date
-            recurringPayload.source_transaction_id = editTransaction.id
-          }
-
-          await updateRecurringTransaction(repeatRecurringId, recurringPayload)
-        }
       } else {
-        const createdTx = await addTransaction(payload)
+        await addTransaction(payload)
         if (repeatFrequency !== 'none') {
-          const { addRecurringTransaction, updateTransaction } = await import('@/lib/api')
-          const recurring = await addRecurringTransaction({
+          const { addRecurringTransaction } = await import('@/lib/api')
+          await addRecurringTransaction({
             type: dbType,
             amount: numAmount,
             category_id: categoryId,
@@ -246,11 +195,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             anchor_date: date,
             end_date: repeatEndDate,
             active: true,
-            source_transaction_id: createdTx.id,
-          })
-          await updateTransaction(createdTx.id, {
-            recurring_transaction_id: recurring.id,
-            recurring_occurrence_date: date,
           })
         }
       }
@@ -263,8 +207,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setEndDate('')
       setEndAmount('')
       setRepeatFrequency('none')
-      setRepeatRecurringId(null)
-      setRepeatSourceTransactionId(null)
       const d = new Date(); d.setMonth(d.getMonth() + 1)
       setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
       setKeypadActive(false)
@@ -484,7 +426,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                 className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
               />
             </div>
-          {showRecurringSection && (
+          {!editTransaction && (
             <>
               <div className="border-t border-border mx-4" />
               <div ref={repeatDropdownRef}>
