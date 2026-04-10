@@ -130,20 +130,20 @@ const MonthlyGridView = memo(function MonthlyGridView({
                 <span className="relative flex items-center justify-center size-6 flex-shrink-0">
                   {isToday && <span className="absolute inset-0 rounded-full bg-accent-blue shadow-[0_0_4px_rgba(59,130,246,0.22)]" />}
                   <span
-                    className={`relative text-[16px] font-semibold tabular-nums leading-none ${isToday ? 'text-white' : 'text-foreground'}`}
-                    style={isToday ? undefined : { letterSpacing: '-0.0625em' }}
+                    className={`relative text-[16px] font-medium tabular-nums leading-none ${isToday ? 'text-white' : 'text-foreground'}`}
+                    style={{ letterSpacing: '-0.0625em' }}
                   >
                     {day}
                   </span>
                 </span>
                 <div className="flex flex-col items-center gap-0 mt-0">
                   {(dayData?.expense ?? 0) > 0 && (
-                    <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: semanticColors.expense }}>
+                    <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: semanticColors.expense, letterSpacing: '-0.0625em' }}>
                       {formatAmount(dayData!.expense)}
                     </span>
                   )}
                   {(dayData?.income ?? 0) > 0 && (
-                    <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: '#14b8a6' }}>
+                    <span className={`text-[8px] tabular-nums font-semibold dark:font-normal leading-tight ${isFutureMonth ? 'opacity-40' : ''}`} style={{ color: '#14b8a6', letterSpacing: '-0.0625em' }}>
                       {formatAmount(dayData!.income)}
                     </span>
                   )}
