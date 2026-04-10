@@ -301,24 +301,25 @@ export function RecoverySection({
   recoverDate,
   recoverAmount,
   formatDateDisplay,
+  formatKorean,
   onChangeDate,
   onChangeAmount,
 }: {
   recoverDate: string
   recoverAmount: string
   formatDateDisplay: (dateStr: string) => string
+  formatKorean: (raw: string) => string
   onChangeDate: (value: string) => void
   onChangeAmount: (value: string) => void
 }) {
   return (
-    <div className="bg-surface rounded-[22px] px-4 py-2">
-      <div className="flex items-center justify-between py-3 border-b border-border">
-        <span className="text-[15px] text-muted-foreground">회수일</span>
-        <label className="text-[15px] cursor-pointer inline-flex items-center gap-1 relative">
-          <span>{recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
+    <div className="bg-surface rounded-[22px] px-4 py-1">
+      <div className="flex items-center justify-between py-3.5 border-b border-border">
+        <span className="text-[16px]">회수일</span>
+        <label className="relative cursor-pointer">
+          <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+            {recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}
+          </span>
           <input
             type="date"
             value={recoverDate}
@@ -329,18 +330,23 @@ export function RecoverySection({
         </label>
       </div>
 
-      <div className="flex items-center justify-between py-3">
-        <span className="text-[15px] text-muted-foreground">회수 금액</span>
-        <div className="flex items-baseline gap-1">
-          <span className="text-[16px] font-semibold tabular-nums text-foreground">₩</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={recoverAmount ? parseInt(recoverAmount).toLocaleString() : ''}
-            onChange={(e) => onChangeAmount(e.target.value.replace(/[^0-9]/g, ''))}
-            className="text-[16px] font-semibold tabular-nums bg-transparent border-none outline-none text-right w-32 text-foreground"
-            style={{ fontSize: '16px' }}
-          />
+      <div className="flex items-center justify-between py-3.5">
+        <span className="text-[16px]">회수 금액</span>
+        <div className="flex flex-col items-end">
+          <div className="flex items-baseline justify-end">
+            <span className="text-[16px] font-semibold tabular-nums text-foreground">₩{recoverAmount ? parseInt(recoverAmount).toLocaleString() : '0'}</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={recoverAmount}
+              onChange={(e) => onChangeAmount(e.target.value.replace(/[^0-9]/g, ''))}
+              className="sr-only"
+              style={{ fontSize: '16px' }}
+            />
+          </div>
+          {recoverAmount ? (
+            <span className="text-[12px] text-muted-foreground">{formatKorean(recoverAmount)}</span>
+          ) : null}
         </div>
       </div>
     </div>

@@ -416,11 +416,12 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           </div>
 
           {recoverOpen && editTransaction && (
-            <div className="px-4 pt-1 pb-1">
+            <div className="px-0 pt-1 pb-1">
               <RecoverySection
                 recoverDate={recoverDate}
                 recoverAmount={recoverAmount}
                 formatDateDisplay={formatDateDisplay}
+                formatKorean={formatKorean}
                 onChangeDate={setRecoverDate}
                 onChangeAmount={setRecoverAmount}
               />
