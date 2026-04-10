@@ -8,6 +8,7 @@ import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, getCategories, type Transaction, type Category } from '@/lib/api'
 import { AnalysisEmptyState, AnalysisFilters, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
 import { AnalysisLoadingSkeleton } from '@/components/page-loading-skeletons'
+import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getParentCategoriesByType } from '@/lib/analysis'
 
 export default function AnalysisPage() {
   const router = useRouter()
@@ -35,7 +36,7 @@ export default function AnalysisPage() {
 
   useEffect(() => { loadData() }, [loadData])
 
-  const parentCategories = useMemo(() => categories.filter(cat => cat.type === typeFilter && !cat.parent_id), [categories, typeFilter])
+  const parentCategories = useMemo(() => getParentCategoriesByType(categories, typeFilter), [categories, typeFilter])
 
   useEffect(() => {
     if (parentCategories.length === 0) return
@@ -43,24 +44,9 @@ export default function AnalysisPage() {
     setParentCategoryId(parentCategories[0].id)
   }, [parentCategories, parentCategoryId])
 
-  const childCategories = useMemo(() => {
-    const children = categories.filter(cat => cat.parent_id === parentCategoryId)
-    const parent = categories.find(cat => cat.id === parentCategoryId)
-    const hasDirectParentTx = transactions.some(tx => {
-      const txCategory = tx.category as Category | undefined
-      return txCategory?.id === parentCategoryId
-    })
+  const childCategories = useMemo(() => getChildCategoriesForParent(categories, transactions, parentCategoryId), [categories, parentCategoryId, transactions])
 
-    if (!parent) return children
-    if (children.length === 0) return [parent]
-    if (hasDirectParentTx) return [parent, ...children]
-    return children
-  }, [categories, parentCategoryId, transactions])
-
-  const availableYears = useMemo(() => {
-    const years = Array.from(new Set(transactions.map(tx => new Date(tx.date).getFullYear()))).sort((a, b) => b - a)
-    return years
-  }, [transactions])
+  const availableYears = useMemo(() => getAvailableTransactionYears(transactions), [transactions])
 
   useEffect(() => {
     if (availableYears.length === 0) return
@@ -68,32 +54,7 @@ export default function AnalysisPage() {
     setSelectedYear(availableYears[0])
   }, [availableYears, selectedYear])
 
-  const rows = useMemo(() => childCategories.map(category => {
-    const categoryTxs = transactions.filter(tx => {
-      const txYear = new Date(tx.date).getFullYear()
-      const txCategory = tx.category as Category | undefined
-      if (txYear !== selectedYear || !txCategory) return false
-      return txCategory.id === category.id
-    })
-
-    const months = Array.from({ length: 12 }, (_, i) => {
-      const month = i + 1
-      const amount = categoryTxs
-        .filter(tx => new Date(tx.date).getMonth() + 1 === month)
-        .reduce((sum, tx) => sum + tx.amount, 0)
-      return { month, amount }
-    })
-
-    const total = months.reduce((sum, item) => sum + item.amount, 0)
-
-    return {
-      id: category.id,
-      label: category.name,
-      total,
-      months,
-      type: category.type,
-    }
-  }).filter(row => row.total > 0).sort((a, b) => b.total - a.total), [childCategories, categories, transactions, selectedYear])
+  const rows = useMemo(() => getAnalysisRows(childCategories, transactions, selectedYear), [childCategories, transactions, selectedYear])
 
   const maxTotal = rows[0]?.total ?? 0
 
