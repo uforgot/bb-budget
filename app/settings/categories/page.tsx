@@ -10,6 +10,7 @@ import { CategoryChildrenEditor, CategoryEditSubmitBar, CategoryEmojiCard, Categ
 import { createDraftChild, removeDraftChild, resetCategoryEditDraft, splitDraftChildren } from '@/lib/categories'
 
 type TypeTab = 'expense' | 'income' | 'savings'
+type CategoryWithIcon = Category & { icon?: string | null }
 const EMOJI_MAP: Record<string, string> = {
   '식비': '🍽️', '생활': '🏠', '주거': '🏢', '교통': '🚗', '쇼핑': '🛍️',
   '건강': '💊', '여가': '🎬', '자녀': '👶', '반려동물': '🐾', '경조사': '💐',
@@ -17,8 +18,8 @@ const EMOJI_MAP: Record<string, string> = {
   '예적금': '🏦', '투자': '📈',
 }
 
-function getEmoji(cat: Category) {
-  return (cat as any).icon || EMOJI_MAP[cat.name] || '📁'
+function getEmoji(cat: CategoryWithIcon) {
+  return cat.icon || EMOJI_MAP[cat.name] || '📁'
 }
 
 export default function CategoriesSettings() {
@@ -251,7 +252,7 @@ export default function CategoriesSettings() {
             emojiPickerOpen={emojiPickerOpen}
             onOpen={() => setEmojiPickerOpen(true)}
             onSelect={async (emoji) => {
-              setEditingParent({ ...editingParent, icon: emoji } as any)
+              setEditingParent({ ...editingParent, icon: emoji } as CategoryWithIcon)
             }}
             onClose={() => setEmojiPickerOpen(false)}
           />
@@ -277,7 +278,7 @@ export default function CategoriesSettings() {
               const nextName = editName.trim() || editingParent.name
               await supabase.from('categories').update({
                 name: nextName,
-                icon: (editingParent as any).icon || null,
+                icon: (editingParent as CategoryWithIcon).icon || null,
               }).eq('id', editingParent.id)
 
               const currentChildren = childrenOf(editingParent.id)

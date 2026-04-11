@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
-import { getTransactions, type Transaction } from '@/lib/api'
+import { getTransactions, type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { MonthlyBarChart } from '@/components/monthly-bar-chart'
 
@@ -69,8 +69,7 @@ export default function Yearly() {
 
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const cat = t.category as any
+        const cat = t.category as Category | undefined
         const q = searchQuery.toLowerCase()
         return (cat?.name || '').toLowerCase().includes(q) ||
           (t.description || '').toLowerCase().includes(q) ||
@@ -148,8 +147,7 @@ export default function Yearly() {
                 <p className="text-sm text-muted-foreground text-center py-8">검색 결과가 없어요</p>
               )}
               {searchResults.map(tx => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const cat = tx.category as any
+                const cat = tx.category as Category | undefined
                 const catName = cat?.name || ''
                 const d = new Date(tx.date)
                 return (
