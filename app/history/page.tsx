@@ -80,8 +80,9 @@ export default function History() {
         onChangeYear={(year) => setMonthOffset(getMonthOffsetForYearMonth(year, currentMonth, now))}
         onChangeMonth={(month) => setMonthOffset(getMonthOffsetForYearMonth(currentYear, month, now))}
         onResetToday={() => {
-          setMonthOffset(0)
-          setForceCalendarView(false)
+          const today = new Date()
+          const nextOffset = getMonthOffsetForYearMonth(today.getFullYear(), today.getMonth() + 1, now)
+          setMonthOffset(nextOffset)
           setTodayResetToken(v => v + 1)
         }}
       />
