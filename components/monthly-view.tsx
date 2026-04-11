@@ -273,7 +273,9 @@ const WeekDayCard = memo(function WeekDayCard({
         </div>
       </div>
 
-      <div className="px-4 pb-5">
+      <div className="mx-4 border-t border-border" />
+
+      <div className="px-4 pb-5 pt-4">
         <div className="space-y-4">
           {txs.map(tx => {
             const label = getCategoryLabel(tx, categories)
