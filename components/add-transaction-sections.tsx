@@ -162,10 +162,13 @@ export function TransactionCategorySection({
             onClick={onOpenPicker}
             className="w-full flex items-center justify-between px-4 py-3.5"
           >
-            <span className="text-[16px]">{categoryLabel}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
+            <span className="text-[16px]">소분류</span>
+            <div className="flex items-center gap-2 min-w-0 ml-4">
+              <span className="text-[16px] text-right truncate">{categoryLabel}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
           </button>
         </>
       )}
