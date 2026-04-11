@@ -419,7 +419,6 @@ export function MonthlyView({
     const isCurrentMonth = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1
     const nextDay = isCurrentMonth ? today.getDate() : 1
     const nextWeek = isCurrentMonth ? getWeekNum(targetYear, actualMonth, nextDay) : 1
-    setViewMode('week')
     setSelectedWeek(nextWeek)
     setSelectedDay(nextDay)
     setHighlightedDate(null)
