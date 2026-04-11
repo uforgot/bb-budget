@@ -267,7 +267,7 @@ const WeekDayCard = memo(function WeekDayCard({
       ref={registerRef}
       className={`mx-5 mb-3 rounded-[22px] bg-surface transition-colors ${highlighted ? 'ring-1 ring-accent-blue/40' : ''}`}
     >
-      <div className="px-4 pt-4 pb-4">
+      <div className="px-4 pt-4 pb-5">
         <div className="flex items-baseline gap-2">
           <span className="text-[14px] font-semibold tabular-nums text-foreground">{date.getMonth() + 1}월 {day}일 {DAY_NAMES[date.getDay()]}요일</span>
         </div>
@@ -275,7 +275,7 @@ const WeekDayCard = memo(function WeekDayCard({
 
       <div className="mx-4 border-t border-border" />
 
-      <div className="px-4 pb-5 pt-4">
+      <div className="px-4 pb-5 pt-5">
         <div className="space-y-4">
           {txs.map(tx => {
             const label = getCategoryLabel(tx, categories)
