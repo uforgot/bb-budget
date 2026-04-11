@@ -326,7 +326,7 @@ const WeekDayCard = memo(function WeekDayCard({
           ))}
         </div>
 
-        <div className="mt-4 border-t border-border pt-3 space-y-2">
+        <div className="mt-3 border-t border-border pt-3 space-y-2">
           <div className="flex items-center justify-between text-[14px] text-muted-foreground">
             <span className="font-medium text-muted-foreground">수입</span>
             <span className="font-semibold tracking-[-0.02em] tabular-nums text-muted-foreground">₩{dayIncome.toLocaleString()}</span>
