@@ -188,7 +188,7 @@ const WeekStripView = memo(function WeekStripView({
               className={`flex h-[64px] flex-col items-center justify-center rounded-[22px] transition-colors ${selected ? 'bg-accent-blue text-white' : 'bg-background text-foreground'}`}
             >
               <span className={`text-[10px] font-medium ${selected ? 'text-white/80' : 'text-muted-foreground'}`}>{weekdayLabel}</span>
-              <span className="mt-0.5 text-[16px] font-medium tracking-[-0.0625em] tabular-nums">{day}</span>
+              <span className="mt-1 text-[16px] font-medium tracking-[-0.0625em] tabular-nums">{day}</span>
             </button>
           )
         })}
@@ -617,7 +617,7 @@ export function MonthlyView({
 
       {viewMode === 'week' && (
         <>
-          <div className="mx-5 mb-3 mt-4 flex gap-3">
+          <div className="mx-5 mb-3 mt-2 flex gap-3">
             <div className="flex-1 bg-surface rounded-[22px] px-4 pt-4 pb-3">
               <p className="text-[14px] font-semibold text-foreground mb-0">주간 지출</p>
               <p className="text-[20px] font-bold tracking-[-0.03em] tabular-nums" style={{ color: semanticColors.expense }}>₩{weekExpense.toLocaleString()}</p>
