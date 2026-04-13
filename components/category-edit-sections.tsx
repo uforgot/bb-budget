@@ -20,11 +20,11 @@ export function CategoryEmojiCard({
       <div className="flex justify-center mb-8">
         <button
           onClick={onOpen}
-          className="w-36 h-36 bg-surface rounded-[22px] flex flex-col items-center justify-center border border-border/50 relative"
+          className="w-36 h-36 bg-surface rounded-[22px] flex items-center justify-center border border-border/50 relative"
         >
           <span style={{ fontSize: '64px' }}>{emoji}</span>
-          <span className="mt-3 inline-flex items-center justify-center size-7 rounded-full bg-muted text-muted-foreground">
-            <SquarePen size={12} />
+          <span className="absolute top-3 right-3 text-muted-foreground">
+            <SquarePen size={14} />
           </span>
         </button>
       </div>
