@@ -23,7 +23,9 @@ export function CategoryEmojiCard({
           className="w-36 h-36 bg-surface rounded-[22px] flex flex-col items-center justify-center border border-border/50 relative"
         >
           <span style={{ fontSize: '64px' }}>{emoji}</span>
-          <span className="text-xs text-muted-foreground mt-3">변경</span>
+          <span className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
+            <SquarePen size={12} />
+          </span>
         </button>
       </div>
       <EmojiPicker open={emojiPickerOpen} onSelect={onSelect} onClose={onClose} />
