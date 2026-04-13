@@ -4,8 +4,8 @@ import type { Category } from '@/lib/api'
 type TypeTab = 'expense' | 'income' | 'savings'
 
 const TYPE_LABELS: { key: TypeTab; label: string }[] = [
-  { key: 'income', label: '수입' },
   { key: 'expense', label: '지출' },
+  { key: 'income', label: '수입' },
   { key: 'savings', label: '저축' },
 ]
 

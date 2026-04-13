@@ -1,8 +1,8 @@
 import { CategoryPicker } from './category-picker'
 
-type TransactionType = '수입' | '지출' | '저축'
+type TransactionType = '지출' | '수입' | '저축'
 
-const TYPE_MAP: Record<TransactionType, string> = { '수입': 'income', '지출': 'expense', '저축': 'savings' }
+const TYPE_MAP: Record<TransactionType, string> = { '지출': 'expense', '수입': 'income', '저축': 'savings' }
 
 export function AddTransactionHeader({
   title,
@@ -141,7 +141,7 @@ export function TransactionCategorySection({
       <div className="flex items-center justify-between px-4 py-3">
         <span className="text-[16px]">카테고리</span>
         <div className="flex gap-1.5">
-          {(['수입', '지출', '저축'] as TransactionType[]).map((t) => (
+          {(['지출', '수입', '저축'] as TransactionType[]).map((t) => (
             <button
               key={t}
               onClick={() => onTypeClick(t)}
