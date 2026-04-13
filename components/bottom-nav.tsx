@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CalendarDays, CalendarRange, ChartColumn } from 'lucide-react'
+import { Calendar1, Calendars, ChartColumn } from 'lucide-react'
 
 const tabs = [
-  { href: '/history', label: '월간', icon: CalendarDays },
-  { href: '/yearly', label: '연간', icon: CalendarRange },
+  { href: '/history', label: '월간', icon: Calendar1 },
+  { href: '/yearly', label: '연간', icon: Calendars },
   { href: '/analysis', label: '분석', icon: ChartColumn },
 ]
 

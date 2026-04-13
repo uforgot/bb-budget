@@ -1,5 +1,5 @@
 import type { Category, Transaction } from '@/lib/api'
-import { CalendarDays } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 
 export function HistoryTopBar({
   forceCalendarView,
@@ -17,7 +17,7 @@ export function HistoryTopBar({
       <div className="flex items-center justify-between h-14" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <button onClick={onToggleCalendarView} className="relative flex items-center justify-center w-8 h-8" aria-label={forceCalendarView ? '내역 보기' : '달력 보기'}>
           {forceCalendarView && <span className="absolute inset-0 rounded-full bg-accent-blue" />}
-          <CalendarDays size={18} className={`relative ${forceCalendarView ? 'text-white' : 'text-foreground'}`} />
+          <Calendar size={18} className={`relative ${forceCalendarView ? 'text-white' : 'text-foreground'}`} />
         </button>
         <div className="flex items-center gap-1">
           <button onClick={onToggleSearch} className="flex items-center justify-center w-8 h-8 rounded-lg text-foreground">
