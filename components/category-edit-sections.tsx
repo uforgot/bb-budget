@@ -41,7 +41,7 @@ export function CategoryNameRow({
   onChange: (value: string) => void
 }) {
   return (
-    <div className="flex items-center gap-3 py-4 border-b border-border">
+    <div className="flex items-center gap-3 px-4 py-4">
       <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0">카테고리명</span>
       <input
         type="text"
@@ -84,12 +84,10 @@ export function CategoryChildrenEditor({
   onRemove: (child: Category) => void
 }) {
   return (
-    <div className="py-4 border-b border-border">
-      <div className="rounded-[22px] bg-surface border border-border/50 px-4 py-4">
-        <div className="flex items-start gap-3">
-          <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
-          <div className="flex-1">
-            <div className="flex flex-wrap gap-2">
+    <div className="flex items-start gap-3 px-4 py-4 border-t border-border/50">
+      <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
+      <div className="flex-1">
+        <div className="flex flex-wrap gap-2">
           {children.map((child) => {
             const isEditing = editingChildId === child.id
             return isEditing ? (
@@ -147,8 +145,6 @@ export function CategoryChildrenEditor({
             )}
             </div>
           </div>
-        </div>
-      </div>
     </div>
   )
 }

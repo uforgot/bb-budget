@@ -261,40 +261,42 @@ export default function CategoriesSettings() {
             onClose={() => setEmojiPickerOpen(false)}
           />
 
-          <CategoryNameRow value={editName} onChange={setEditName} />
+          <div className="rounded-[22px] bg-surface border border-border/50 overflow-hidden">
+            <CategoryNameRow value={editName} onChange={setEditName} />
 
-          <CategoryChildrenEditor
-            children={children}
-            addingSubCat={addingSubCat}
-            newSubCat={newSubCat}
-            editingChildId={editingChildId}
-            editingChildName={editingChildName}
-            onChangeNewSubCat={setNewSubCat}
-            onChangeEditingChildName={setEditingChildName}
-            onSubmit={handleAddSubCat}
-            onStartAdd={() => setAddingSubCat(true)}
-            onStartEdit={(child) => {
-              setEditingChildId(child.id)
-              setEditingChildName(child.name)
-            }}
-            onCancelEdit={() => {
-              setEditingChildId(null)
-              setEditingChildName('')
-            }}
-            onSaveEdit={() => {
-              if (!editingChildId || !editingChildName.trim()) return
-              setDraftChildren(prev => renameDraftChild(prev, editingChildId, editingChildName.trim()))
-              setEditingChildId(null)
-              setEditingChildName('')
-            }}
-            onRemove={(child) => {
-              setDraftChildren(prev => removeDraftChild(prev, child.id))
-              if (editingChildId === child.id) {
+            <CategoryChildrenEditor
+              children={children}
+              addingSubCat={addingSubCat}
+              newSubCat={newSubCat}
+              editingChildId={editingChildId}
+              editingChildName={editingChildName}
+              onChangeNewSubCat={setNewSubCat}
+              onChangeEditingChildName={setEditingChildName}
+              onSubmit={handleAddSubCat}
+              onStartAdd={() => setAddingSubCat(true)}
+              onStartEdit={(child) => {
+                setEditingChildId(child.id)
+                setEditingChildName(child.name)
+              }}
+              onCancelEdit={() => {
                 setEditingChildId(null)
                 setEditingChildName('')
-              }
-            }}
-          />
+              }}
+              onSaveEdit={() => {
+                if (!editingChildId || !editingChildName.trim()) return
+                setDraftChildren(prev => renameDraftChild(prev, editingChildId, editingChildName.trim()))
+                setEditingChildId(null)
+                setEditingChildName('')
+              }}
+              onRemove={(child) => {
+                setDraftChildren(prev => removeDraftChild(prev, child.id))
+                if (editingChildId === child.id) {
+                  setEditingChildId(null)
+                  setEditingChildName('')
+                }
+              }}
+            />
+          </div>
 
           <CategoryEditSubmitBar
             onSubmit={async () => {
