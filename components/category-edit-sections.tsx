@@ -99,7 +99,7 @@ export function CategoryChildrenEditor({
                   onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
                   autoFocus
                   style={{ fontSize: '16px' }}
-                  className="bg-transparent px-1 py-0.5 rounded-full text-sm w-20 outline-none"
+                  className="bg-transparent px-1 py-0.5 rounded-full text-sm w-28 outline-none"
                 />
                 <button onClick={onSaveEdit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="확인">
                   <Check size={14} />
