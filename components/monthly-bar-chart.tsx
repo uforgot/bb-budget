@@ -18,9 +18,10 @@ interface MonthlyBarChartProps {
   headerRight?: React.ReactNode
   className?: string
   maxHeight?: number
+  comparisonText?: (selectedValue: number) => string | null
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, className = '', maxHeight = 120 }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
@@ -52,7 +53,12 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               ? `₩${selectedData.value.toLocaleString()}`
               : '—'}
           </p>
-          {selectedData && !selectedData.isFuture && selectedData.value > 0 && avgValue != null && avgValue > 0 && (() => {
+          {selectedData && !selectedData.isFuture && selectedData.value > 0 && comparisonText && (
+            <p className="text-[14px] font-semibold mt-1 text-foreground/70 dark:text-white/70 whitespace-nowrap">
+              {comparisonText(selectedData.value)}
+            </p>
+          )}
+          {selectedData && !selectedData.isFuture && selectedData.value > 0 && !comparisonText && avgValue != null && avgValue > 0 && (() => {
             const diff = selectedData.value - avgValue
             if (diff === 0) return null
             const isOver = diff > 0

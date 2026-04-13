@@ -71,6 +71,7 @@ export default function Yearly() {
   const avgSavings = completedMonths.length > 0
     ? Math.round(completedMonths.reduce((s, m) => s + m.savings, 0) / completedMonths.length)
     : 0
+  const startSavings = monthSummaries[0]?.savings || 0
 
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
@@ -234,6 +235,12 @@ export default function Yearly() {
               label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
               color={yearlyChartMode === 'expense' ? '#5865F2' : yearlyChartMode === 'income' ? '#14b8a6' : '#A855F7'}
               avgValue={yearlyChartMode === 'expense' ? avgExpense : yearlyChartMode === 'income' ? avgIncome : avgSavings}
+              comparisonText={yearlyChartMode === 'savings' ? ((selectedValue) => {
+                const diff = selectedValue - startSavings
+                const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
+                if (diff === 0) return `연초 ${toMan(startSavings)} 대비 동일`
+                return `연초 ${toMan(startSavings)} 대비 ${diff > 0 ? '↑' : '↓'}${toMan(Math.abs(diff))}`
+              }) : undefined}
               maxHeight={136}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
