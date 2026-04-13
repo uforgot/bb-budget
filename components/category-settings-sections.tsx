@@ -132,7 +132,7 @@ export function CategoryGrid({
           }`}
         >
           {editMode && (
-            <span className="absolute top-1.5 right-1.5 scale-90 text-muted-foreground/40">
+            <span className="absolute top-2.5 right-2.5 scale-90 text-muted-foreground/40">
               <ArrowUpDown size={10} strokeWidth={2} />
             </span>
           )}
