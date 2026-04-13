@@ -1,4 +1,5 @@
 import type { Category } from '@/lib/api'
+import { Check, SquarePen, Trash2, X } from 'lucide-react'
 import { EmojiPicker } from '@/components/emoji-picker'
 
 export function CategoryEmojiCard({
@@ -98,18 +99,22 @@ export function CategoryChildrenEditor({
                   style={{ fontSize: '16px' }}
                   className="bg-transparent px-1 py-0.5 rounded-full text-sm w-20 outline-none"
                 />
-                <button onClick={onSaveEdit} className="text-xs text-accent-blue">확인</button>
-                <button onClick={() => onRemove(child)} className="text-muted-foreground hover:text-foreground" aria-label="삭제">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
-                  </svg>
+                <button onClick={onSaveEdit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="확인">
+                  <Check size={14} />
                 </button>
-                <button onClick={onCancelEdit} className="text-xs text-muted-foreground">취소</button>
+                <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60 hover:text-foreground" aria-label="삭제">
+                  <Trash2 size={14} />
+                </button>
+                <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60" aria-label="취소">
+                  <X size={14} />
+                </button>
               </span>
             ) : (
               <span key={child.id} className="inline-flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full text-sm">
                 {child.name}
-                <button onClick={() => onStartEdit(child)} className="text-xs text-muted-foreground hover:text-foreground">편집</button>
+                <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-6 rounded-full text-muted-foreground hover:text-foreground" aria-label="편집">
+                  <SquarePen size={13} />
+                </button>
               </span>
             )
           })}
