@@ -85,79 +85,62 @@ export function CategoryChildrenEditor({
 }) {
   return (
     <div className="flex items-start gap-3 py-4 border-b border-border">
-      <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-3">소분류</span>
+      <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
       <div className="flex-1">
-        <div className="rounded-[22px] bg-surface border border-border/50 overflow-hidden">
-          {children.map((child, index) => {
+        <div className="flex flex-wrap gap-2">
+          {children.map((child) => {
             const isEditing = editingChildId === child.id
-            return (
-              <div key={child.id} className={`${index !== 0 ? 'border-t border-border/50' : ''} px-4 py-3`}>
-                <div className="flex items-center justify-between gap-3">
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editingChildName}
-                      onChange={(e) => onChangeEditingChildName(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
-                      autoFocus
-                      style={{ fontSize: '16px' }}
-                      className="flex-1 bg-transparent outline-none"
-                    />
-                  ) : (
-                    <span className="text-[16px]">{child.name}</span>
-                  )}
-
-                  <div className="flex items-center gap-1">
-                    {isEditing ? (
-                      <>
-                        <button onClick={onSaveEdit} className="flex items-center justify-center size-8 rounded-full text-accent-blue hover:bg-muted" aria-label="확인">
-                          <Check size={16} />
-                        </button>
-                        <button onClick={() => onRemove(child)} className="flex items-center justify-center size-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="삭제">
-                          <Trash2 size={16} />
-                        </button>
-                        <button onClick={onCancelEdit} className="flex items-center justify-center size-8 rounded-full text-muted-foreground hover:bg-muted" aria-label="취소">
-                          <X size={16} />
-                        </button>
-                      </>
-                    ) : (
-                      <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="편집">
-                        <SquarePen size={15} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
+            return isEditing ? (
+              <span key={child.id} className="inline-flex items-center gap-1.5 bg-muted px-2 py-1 rounded-full text-sm">
+                <input
+                  type="text"
+                  value={editingChildName}
+                  onChange={(e) => onChangeEditingChildName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
+                  autoFocus
+                  style={{ fontSize: '16px' }}
+                  className="bg-transparent px-1 py-0.5 rounded-full text-sm w-20 outline-none"
+                />
+                <button onClick={onSaveEdit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="확인">
+                  <Check size={14} />
+                </button>
+                <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60 hover:text-foreground" aria-label="삭제">
+                  <Trash2 size={14} />
+                </button>
+                <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60" aria-label="취소">
+                  <X size={14} />
+                </button>
+              </span>
+            ) : (
+              <span key={child.id} className="inline-flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full text-sm">
+                {child.name}
+                <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-6 rounded-full text-muted-foreground hover:text-foreground" aria-label="편집">
+                  <SquarePen size={13} />
+                </button>
+              </span>
             )
           })}
 
           {addingSubCat ? (
-            <div className={`${children.length ? 'border-t border-border/50' : ''} px-4 py-3`}>
-              <div className="flex items-center justify-between gap-3">
-                <input
-                  type="text"
-                  value={newSubCat}
-                  onChange={(e) => onChangeNewSubCat(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-                  autoFocus
-                  placeholder="이름"
-                  style={{ fontSize: '16px' }}
-                  className="flex-1 bg-transparent outline-none"
-                />
-                <button onClick={onSubmit} className="flex items-center justify-center size-8 rounded-full text-accent-blue hover:bg-muted" aria-label="확인">
-                  <Check size={16} />
-                </button>
-              </div>
-            </div>
+            <span className="inline-flex items-center gap-1">
+              <input
+                type="text"
+                value={newSubCat}
+                onChange={(e) => onChangeNewSubCat(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
+                autoFocus
+                placeholder="이름"
+                style={{ fontSize: '16px' }}
+                className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
+              />
+              <button onClick={onSubmit} className="text-xs text-accent-blue">확인</button>
+            </span>
           ) : (
             <button
               onClick={onStartAdd}
-              className={`${children.length ? 'border-t border-border/50' : ''} flex w-full items-center justify-between px-4 py-3 text-left`}
+              className="inline-flex items-center bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
             >
-              <span className="text-[16px] text-muted-foreground">소분류 추가</span>
-              <span className="flex items-center justify-center size-8 rounded-full text-muted-foreground">
-                <SquarePen size={15} />
-              </span>
+              추가
             </button>
           )}
         </div>
