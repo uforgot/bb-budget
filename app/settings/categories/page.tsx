@@ -250,7 +250,7 @@ export default function CategoriesSettings() {
           }
         />
 
-        <div className="max-w-lg mx-auto px-5 pt-6">
+        <div className="max-w-lg mx-auto px-5 pt-6 pb-32">
           <CategoryEmojiCard
             emoji={getEmoji(editingParent)}
             emojiPickerOpen={emojiPickerOpen}

@@ -155,10 +155,12 @@ export function CategoryEditSubmitBar({
   onSubmit: () => void
 }) {
   return (
-    <div className="mt-10">
-      <button onClick={onSubmit} className="w-full py-3 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue">
-        수정 완료
-      </button>
+    <div className="fixed bottom-0 left-0 right-0 z-30 bg-background">
+      <div className="w-full max-w-lg mx-auto px-5 pt-3" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+        <button onClick={onSubmit} className="w-full py-3.5 text-white text-[16px] font-semibold rounded-[22px] bg-accent-blue">
+          수정 완료
+        </button>
+      </div>
     </div>
   )
 }
