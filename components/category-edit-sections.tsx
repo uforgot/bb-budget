@@ -84,10 +84,12 @@ export function CategoryChildrenEditor({
   onRemove: (child: Category) => void
 }) {
   return (
-    <div className="flex items-start gap-3 py-4 border-b border-border">
-      <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
-      <div className="flex-1">
-        <div className="flex flex-wrap gap-2">
+    <div className="py-4 border-b border-border">
+      <div className="rounded-[22px] bg-surface border border-border/50 px-4 py-4">
+        <div className="flex items-start gap-3">
+          <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
+          <div className="flex-1">
+            <div className="flex flex-wrap gap-2">
           {children.map((child) => {
             const isEditing = editingChildId === child.id
             return isEditing ? (
@@ -122,27 +124,29 @@ export function CategoryChildrenEditor({
           })}
 
           {addingSubCat ? (
-            <span className="inline-flex items-center gap-1">
-              <input
-                type="text"
-                value={newSubCat}
-                onChange={(e) => onChangeNewSubCat(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-                autoFocus
-                placeholder="이름"
-                style={{ fontSize: '16px' }}
-                className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
-              />
-              <button onClick={onSubmit} className="text-xs text-accent-blue">확인</button>
-            </span>
-          ) : (
-            <button
-              onClick={onStartAdd}
-              className="inline-flex items-center bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
-            >
-              추가
-            </button>
-          )}
+              <span className="inline-flex items-center gap-1">
+                <input
+                  type="text"
+                  value={newSubCat}
+                  onChange={(e) => onChangeNewSubCat(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
+                  autoFocus
+                  placeholder="이름"
+                  style={{ fontSize: '16px' }}
+                  className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
+                />
+                <button onClick={onSubmit} className="text-xs text-accent-blue">확인</button>
+              </span>
+            ) : (
+              <button
+                onClick={onStartAdd}
+                className="inline-flex items-center bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
+              >
+                추가
+              </button>
+            )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
