@@ -7,7 +7,7 @@ import { getCategories, addCategory, reorderParentCategories, type Category } fr
 import { createClient } from '@/lib/supabase'
 import { AddRootCategoryRow, CategoryGrid, CategorySettingsHeader, CategoryTypeTabs, DragGhost } from '@/components/category-settings-sections'
 import { CategoryChildrenEditor, CategoryEditSubmitBar, CategoryEmojiCard, CategoryNameRow } from '@/components/category-edit-sections'
-import { createDraftChild, removeDraftChild, resetCategoryEditDraft, splitDraftChildren } from '@/lib/categories'
+import { createDraftChild, removeDraftChild, renameDraftChild, resetCategoryEditDraft, splitDraftChildren } from '@/lib/categories'
 
 type TypeTab = 'expense' | 'income' | 'savings'
 type CategoryWithIcon = Category & { icon?: string | null }
@@ -32,6 +32,8 @@ export default function CategoriesSettings() {
   const [draftChildren, setDraftChildren] = useState<Category[]>([])
   const [newSubCat, setNewSubCat] = useState('')
   const [addingSubCat, setAddingSubCat] = useState(false)
+  const [editingChildId, setEditingChildId] = useState<string | null>(null)
+  const [editingChildName, setEditingChildName] = useState('')
   const [addingRoot, setAddingRoot] = useState(false)
   const [newRootName, setNewRootName] = useState('')
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
@@ -228,6 +230,8 @@ export default function CategoriesSettings() {
             setNewSubCat(reset.newSubCat)
             setEditName(reset.editName)
             setDraftChildren(reset.draftChildren)
+            setEditingChildId(null)
+            setEditingChildName('')
             loadCategories()
           }}
           right={
@@ -263,11 +267,32 @@ export default function CategoriesSettings() {
             children={children}
             addingSubCat={addingSubCat}
             newSubCat={newSubCat}
+            editingChildId={editingChildId}
+            editingChildName={editingChildName}
             onChangeNewSubCat={setNewSubCat}
+            onChangeEditingChildName={setEditingChildName}
             onSubmit={handleAddSubCat}
             onStartAdd={() => setAddingSubCat(true)}
+            onStartEdit={(child) => {
+              setEditingChildId(child.id)
+              setEditingChildName(child.name)
+            }}
+            onCancelEdit={() => {
+              setEditingChildId(null)
+              setEditingChildName('')
+            }}
+            onSaveEdit={() => {
+              if (!editingChildId || !editingChildName.trim()) return
+              setDraftChildren(prev => renameDraftChild(prev, editingChildId, editingChildName.trim()))
+              setEditingChildId(null)
+              setEditingChildName('')
+            }}
             onRemove={(child) => {
               setDraftChildren(prev => removeDraftChild(prev, child.id))
+              if (editingChildId === child.id) {
+                setEditingChildId(null)
+                setEditingChildName('')
+              }
             }}
           />
 
@@ -305,6 +330,8 @@ export default function CategoriesSettings() {
               setNewSubCat(reset.newSubCat)
               setEditName(reset.editName)
               setDraftChildren(reset.draftChildren)
+              setEditingChildId(null)
+              setEditingChildName('')
               loadCategories()
             }}
           />

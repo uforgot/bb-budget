@@ -55,17 +55,29 @@ export function CategoryChildrenEditor({
   children,
   addingSubCat,
   newSubCat,
+  editingChildId,
+  editingChildName,
   onChangeNewSubCat,
+  onChangeEditingChildName,
   onSubmit,
   onStartAdd,
+  onStartEdit,
+  onCancelEdit,
+  onSaveEdit,
   onRemove,
 }: {
   children: Category[]
   addingSubCat: boolean
   newSubCat: string
+  editingChildId: string | null
+  editingChildName: string
   onChangeNewSubCat: (value: string) => void
+  onChangeEditingChildName: (value: string) => void
   onSubmit: () => void
   onStartAdd: () => void
+  onStartEdit: (child: Category) => void
+  onCancelEdit: () => void
+  onSaveEdit: () => void
   onRemove: (child: Category) => void
 }) {
   return (
@@ -73,16 +85,34 @@ export function CategoryChildrenEditor({
       <span className="text-[14px] text-muted-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
       <div className="flex-1">
         <div className="flex flex-wrap gap-2">
-          {children.map((child) => (
-            <span key={child.id} className="inline-flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full text-sm">
-              {child.name}
-              <button onClick={() => onRemove(child)} className="text-muted-foreground hover:text-foreground">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
-                </svg>
-              </button>
-            </span>
-          ))}
+          {children.map((child) => {
+            const isEditing = editingChildId === child.id
+            return isEditing ? (
+              <span key={child.id} className="inline-flex items-center gap-1.5 bg-muted px-2 py-1 rounded-full text-sm">
+                <input
+                  type="text"
+                  value={editingChildName}
+                  onChange={(e) => onChangeEditingChildName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
+                  autoFocus
+                  style={{ fontSize: '16px' }}
+                  className="bg-transparent px-1 py-0.5 rounded-full text-sm w-20 outline-none"
+                />
+                <button onClick={onSaveEdit} className="text-xs text-accent-blue">확인</button>
+                <button onClick={() => onRemove(child)} className="text-muted-foreground hover:text-foreground" aria-label="삭제">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+                  </svg>
+                </button>
+                <button onClick={onCancelEdit} className="text-xs text-muted-foreground">취소</button>
+              </span>
+            ) : (
+              <span key={child.id} className="inline-flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full text-sm">
+                {child.name}
+                <button onClick={() => onStartEdit(child)} className="text-xs text-muted-foreground hover:text-foreground">편집</button>
+              </span>
+            )
+          })}
 
           {addingSubCat ? (
             <span className="inline-flex items-center gap-1">

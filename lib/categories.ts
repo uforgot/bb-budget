@@ -16,6 +16,10 @@ export function removeDraftChild(children: Category[], childId: string) {
   return children.filter(item => item.id !== childId)
 }
 
+export function renameDraftChild(children: Category[], childId: string, name: string) {
+  return children.map(item => item.id === childId ? { ...item, name } : item)
+}
+
 export function splitDraftChildren(draftChildren: Category[]) {
   const persistedIds = new Set(draftChildren.filter(child => !child.id.startsWith('draft-')).map(child => child.id))
   const newDrafts = draftChildren.filter(child => child.id.startsWith('draft-'))
