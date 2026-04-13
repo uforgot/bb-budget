@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
@@ -18,7 +19,8 @@ export default function Yearly() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [yearlyChartMode, setYearlyChartMode] = useState<'expense' | 'income'>('expense')
+  const [yearlyChartMode, setYearlyChartMode] = useState<'expense' | 'income' | 'savings'>('expense')
+  const [chartDropdownOpen, setChartDropdownOpen] = useState(false)
 
   const loadData = useCallback(async () => {
     try {
@@ -65,6 +67,9 @@ export default function Yearly() {
     : 0
   const avgIncome = completedMonths.length > 0
     ? Math.round(completedMonths.reduce((s, m) => s + m.income, 0) / completedMonths.length)
+    : 0
+  const avgSavings = completedMonths.length > 0
+    ? Math.round(completedMonths.reduce((s, m) => s + m.savings, 0) / completedMonths.length)
     : 0
 
   const searchResults = searchQuery.trim()
@@ -196,24 +201,40 @@ export default function Yearly() {
             <MonthlyBarChart
               className="mb-4"
               headerRight={(
-                <div className="flex items-center gap-1">
+                <div className="relative">
                   <button
-                    onClick={() => setYearlyChartMode('expense')}
-                    className={`px-3 py-1.5 rounded-full text-[13px] font-semibold ${yearlyChartMode === 'expense' ? 'bg-accent-blue text-white' : 'bg-background text-muted-foreground'}`}
+                    onClick={() => setChartDropdownOpen(v => !v)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-background text-foreground"
                   >
-                    지출
+                    <span>{yearlyChartMode === 'expense' ? '지출' : yearlyChartMode === 'income' ? '수입' : '저축'}</span>
+                    <ChevronDown size={14} className={`transition-transform ${chartDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  <button
-                    onClick={() => setYearlyChartMode('income')}
-                    className={`px-3 py-1.5 rounded-full text-[13px] font-semibold ${yearlyChartMode === 'income' ? 'bg-[#14b8a6] text-white' : 'bg-background text-muted-foreground'}`}
-                  >
-                    수입
-                  </button>
+                  {chartDropdownOpen && (
+                    <div className="absolute right-0 top-full mt-2 min-w-[88px] rounded-[18px] border border-border/50 bg-surface p-1 shadow-lg z-20">
+                      {([
+                        ['expense', '지출'],
+                        ['income', '수입'],
+                        ['savings', '저축'],
+                      ] as const).map(([key, label]) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            setYearlyChartMode(key)
+                            setChartDropdownOpen(false)
+                          }}
+                          className={`w-full px-3 py-2 rounded-[14px] text-left text-[13px] font-semibold ${yearlyChartMode === key ? 'bg-muted text-foreground' : 'text-muted-foreground'}`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
-              label={yearlyChartMode === 'expense' ? '쓴 지출' : '번 수입'}
-              color={yearlyChartMode === 'expense' ? '#5865F2' : '#14b8a6'}
-              avgValue={yearlyChartMode === 'expense' ? avgExpense : avgIncome}
+              label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
+              color={yearlyChartMode === 'expense' ? '#5865F2' : yearlyChartMode === 'income' ? '#14b8a6' : '#A855F7'}
+              avgValue={yearlyChartMode === 'expense' ? avgExpense : yearlyChartMode === 'income' ? avgIncome : avgSavings}
+              maxHeight={136}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
                 const ms = monthSummaries[i]
@@ -221,7 +242,7 @@ export default function Yearly() {
                   (targetYear === today.getFullYear() && m > today.getMonth() + 1)
                 return {
                   month: m,
-                  value: yearlyChartMode === 'expense' ? ms.expense : ms.income,
+                  value: yearlyChartMode === 'expense' ? ms.expense : yearlyChartMode === 'income' ? ms.income : ms.savings,
                   isFuture,
                 }
               })}

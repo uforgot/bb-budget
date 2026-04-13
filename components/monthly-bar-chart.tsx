@@ -17,16 +17,17 @@ interface MonthlyBarChartProps {
   avgLabel?: string
   headerRight?: React.ReactNode
   className?: string
+  maxHeight?: number
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, className = '' }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, className = '', maxHeight = 120 }: MonthlyBarChartProps) {
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
   const BAR_W = 28
   const BAR_GAP = 16
   const ITEM_W = BAR_W + BAR_GAP
-  const MAX_H = 120
+  const MAX_H = maxHeight
   const LABEL_H = 24
   const TOP_PAD = 8 // border-radius 잘림 방지용 상단 여백
 
