@@ -436,7 +436,7 @@ export default function CategoriesSettings() {
                   setDragPosition(null)
                 }}
                 addRow={addingRoot && addingRootType === sectionType ? (
-                  <div className="px-4 py-2">
+                  <div className="px-4">
                     <AddRootCategoryRow
                       value={newRootName}
                       onChange={setNewRootName}
