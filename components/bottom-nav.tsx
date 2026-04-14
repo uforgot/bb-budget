@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Calendar1, Calendars, ChartColumn } from 'lucide-react'
+import { Calendar1, Calendars, ChartColumn, Plus } from 'lucide-react'
 
 const tabs = [
   { href: '/history', label: '월간', icon: Calendar1 },
@@ -48,9 +48,7 @@ export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
           className="size-[60px] bg-white/80 dark:bg-[#2C2C2E] backdrop-blur-md text-accent-blue rounded-full shadow-lg flex items-center justify-center flex-shrink-0 border border-border/30 dark:border-white/10"
           aria-label="내역 추가"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14" /><path d="M5 12h14" />
-          </svg>
+          <Plus size={22} strokeWidth={2.5} />
         </button>
       )}
     </div>

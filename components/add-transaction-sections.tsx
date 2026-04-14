@@ -1,4 +1,4 @@
-import { ChevronRight, Trash } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
 import { CategoryPicker } from './category-picker'
 
 type TransactionType = '지출' | '수입' | '저축'
@@ -21,9 +21,7 @@ export function AddTransactionHeader({
         className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
         aria-label="취소"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m15 18-6-6 6-6" />
-        </svg>
+        <ChevronLeft size={20} strokeWidth={2} />
       </button>
       <h1 className="text-[17px] font-semibold">{title}</h1>
       {onDelete ? (
@@ -243,9 +241,7 @@ export function TransactionRepeatSection({
             <span className="text-[16px]">
               {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
             </span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
+            <ChevronDown size={14} strokeWidth={2} />
           </div>
         </button>
         {repeatDropdownOpen && (
@@ -260,9 +256,7 @@ export function TransactionRepeatSection({
               >
                 <span>{{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}</span>
                 {repeatFrequency === opt && (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#14b8a6' }}>
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg>
+                  <Check size={16} strokeWidth={2.5} style={{ color: '#14b8a6' }} />
                 )}
               </button>
             ))}

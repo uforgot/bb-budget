@@ -1,5 +1,6 @@
 'use client'
 
+import { X } from 'lucide-react'
 import { useState } from 'react'
 
 interface EmojiPickerProps {
@@ -63,9 +64,7 @@ export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
         <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
           <h3 className="text-base font-semibold">이모지 선택</h3>
           <button onClick={onClose} className="p-1 text-muted-foreground">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
+            <X size={20} strokeWidth={2} />
           </button>
         </div>
 
