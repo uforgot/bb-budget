@@ -75,7 +75,7 @@ export function AddRootCategoryRow({
   inline?: boolean
 }) {
   const content = (
-    <div className="w-full flex items-center gap-3 px-4 py-3.5">
+    <div className="w-full flex items-center gap-3 px-4 py-4">
       <span className="text-[24px] flex-shrink-0 opacity-0">•</span>
       <input
         type="text"
