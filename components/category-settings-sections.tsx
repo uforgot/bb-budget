@@ -117,8 +117,10 @@ export function CategoryGrid({
 }) {
   return (
     <div className="rounded-[22px] bg-surface border border-border/50 overflow-hidden">
-      {parents.map((parent) => (
-        <button
+      {parents.map((parent, index) => (
+        <>
+          {index > 0 && <div className="mx-4 h-px bg-border/50" />}
+          <button
           key={parent.id}
           data-category-id={parent.id}
           onClick={() => {
@@ -143,7 +145,9 @@ export function CategoryGrid({
             </span>
           )}
         </button>
+        </>
       ))}
+      {onAdd && parents.length > 0 && <div className="mx-4 h-px bg-border/50" />}
       {onAdd && (
         <button
           type="button"
