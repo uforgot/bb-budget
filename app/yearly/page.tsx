@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
@@ -106,7 +106,7 @@ export default function Yearly() {
                 <option key={y} value={y}>{y}년</option>
               ))}
             </select>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+            <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0" />
           </label>
           <button onClick={() => setYearOffset(0)} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
         </div>
@@ -119,9 +119,7 @@ export default function Yearly() {
           <div className="mb-4">
             <div className="flex items-center gap-2">
               <div className="flex flex-1 items-center gap-2 bg-surface rounded-[22px] px-4 py-4">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
-                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-                </svg>
+                <Search size={16} strokeWidth={2} className="text-muted-foreground flex-shrink-0" />
                 <input
                   type="text" placeholder="검색어 입력..." value={searchQuery} autoFocus
                   onChange={e => setSearchQuery(e.target.value)}
@@ -129,7 +127,7 @@ export default function Yearly() {
                 />
                 {searchQuery && (
                   <button onClick={() => setSearchQuery('')} className="text-muted-foreground flex-shrink-0" aria-label="검색어 지우기">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                    <X size={16} strokeWidth={2} />
                   </button>
                 )}
               </div>
@@ -138,7 +136,7 @@ export default function Yearly() {
                 className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground flex-shrink-0"
                 aria-label="검색 닫기"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                <X size={18} strokeWidth={2} />
               </button>
             </div>
             <div className="mt-3">

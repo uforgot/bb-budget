@@ -1,5 +1,5 @@
 import type { Category, Transaction } from '@/lib/api'
-import { Calendar } from 'lucide-react'
+import { Calendar, ChevronDown, Search, X } from 'lucide-react'
 import { TopToolbar } from './top-toolbar'
 
 export function HistoryTopBar({
@@ -57,7 +57,7 @@ export function HistoryMonthSelector({
             >
               {years.map(y => <option key={y} value={y}>{y}년</option>)}
             </select>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+            <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0" />
           </label>
           <label className="flex items-center cursor-pointer">
             <select
@@ -68,7 +68,7 @@ export function HistoryMonthSelector({
             >
               {months.map(m => <option key={m} value={m}>{m}월</option>)}
             </select>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0 -ml-1.5"><path d="m6 9 6 6 6-6"/></svg>
+            <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0 -ml-1.5" />
           </label>
         </div>
         <button onClick={onResetToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold" aria-label="오늘">
@@ -100,9 +100,7 @@ export function HistorySearchPanel({
     <div className="px-4 py-3">
       <div className="flex items-center gap-2">
         <div className="flex flex-1 items-center gap-2 bg-surface rounded-[22px] px-4 py-3">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-          </svg>
+          <Search size={16} strokeWidth={2} className="text-muted-foreground flex-shrink-0" />
           <input
             type="text" placeholder="검색어 입력..." value={searchQuery} autoFocus
             onChange={e => onChangeQuery(e.target.value)}
@@ -110,7 +108,7 @@ export function HistorySearchPanel({
           />
           {searchQuery && (
             <button onClick={onClearQuery} className="text-muted-foreground flex-shrink-0" aria-label="검색어 지우기">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+              <X size={16} strokeWidth={2} />
             </button>
           )}
         </div>
@@ -119,7 +117,7 @@ export function HistorySearchPanel({
           className="flex items-center justify-center w-12 h-12 rounded-full bg-surface text-muted-foreground flex-shrink-0"
           aria-label="검색 닫기"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          <X size={18} strokeWidth={2} />
         </button>
       </div>
       <div className="mt-3">

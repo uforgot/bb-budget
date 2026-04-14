@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import type { Category } from '@/lib/api'
 
@@ -31,7 +32,7 @@ export function AnalysisFilters({
           <option value="income">수입</option>
           <option value="savings">저축</option>
         </select>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+        <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0" />
       </label>
 
       <label className="flex items-center gap-1 cursor-pointer min-w-0">
@@ -45,7 +46,7 @@ export function AnalysisFilters({
             <option key={category.id} value={category.id}>{category.name}</option>
           ))}
         </select>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/60 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+        <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0" />
       </label>
     </div>
   )
@@ -106,7 +107,7 @@ export function AnalysisRow({
           <p className="min-w-0 truncate text-[14px] font-medium text-foreground">{label}</p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-[15px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(total)}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6"/></svg>
+            <ChevronDown size={14} strokeWidth={2} className={`text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
           </div>
         </div>
       </button>
