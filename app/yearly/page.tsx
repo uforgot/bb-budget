@@ -199,7 +199,7 @@ export default function Yearly() {
                     ['savings', '저축'],
                   ] as const).map(([key, label], index) => {
                     const active = yearlyChartMode === key
-                    const edgeClass = index === 0 ? 'rounded-tl-[22px]' : index === 2 ? 'rounded-tr-[22px]' : ''
+                    const edgeClass = index === 0 ? 'rounded-tl-[22px] rounded-tr-[14px]' : index === 2 ? 'rounded-tl-[14px] rounded-tr-[22px]' : 'rounded-t-[14px]'
                     return (
                       <button
                         key={key}
