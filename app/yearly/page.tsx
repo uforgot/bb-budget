@@ -95,7 +95,7 @@ export default function Yearly() {
       {/* 타이틀 */}
       <div className="px-5">
         <div className="flex items-center justify-between mt-1 mb-4">
-          <label className="flex h-10 items-center gap-1 cursor-pointer">
+          <label className="flex items-center gap-1 cursor-pointer">
             <select
               value={targetYear}
               onChange={e => setYearOffset(Number(e.target.value) - today.getFullYear())}
@@ -196,7 +196,7 @@ export default function Yearly() {
                 <div className="relative">
                   <button
                     onClick={() => setChartDropdownOpen(v => !v)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-background text-foreground"
+                    className="flex h-10 items-center gap-1 px-3 rounded-full text-[13px] font-semibold bg-background text-foreground"
                   >
                     <span>{yearlyChartMode === 'expense' ? '지출' : yearlyChartMode === 'income' ? '수입' : '저축'}</span>
                     <ChevronDown size={14} className={`transition-transform ${chartDropdownOpen ? 'rotate-180' : ''}`} />
