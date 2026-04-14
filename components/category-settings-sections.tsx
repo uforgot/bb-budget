@@ -87,7 +87,7 @@ export function AddRootCategoryRow({
         className="flex-1 min-w-0 bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/70 outline-none"
       />
       <div className="ml-auto flex items-center justify-end gap-2 min-w-[88px] flex-shrink-0">
-        <button onClick={onSubmit} className="flex items-center justify-center w-8 h-8 rounded-full text-foreground flex-shrink-0" aria-label="추가">
+        <button onClick={onSubmit} className="flex items-center justify-center w-8 h-8 rounded-full text-[#5865F2] flex-shrink-0" aria-label="추가">
           <Check size={16} />
         </button>
         <button onClick={onCancel} className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground flex-shrink-0" aria-label="취소">
