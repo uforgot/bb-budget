@@ -1,4 +1,4 @@
-import { Check, Plus, TextAlignJustify, X } from 'lucide-react'
+import { Check, GripVertical, Plus, X } from 'lucide-react'
 import type { Category } from '@/lib/api'
 
 type TypeTab = 'expense' | 'income' | 'savings'
@@ -142,18 +142,34 @@ export function CategoryGrid({
             if (editMode || draggingId || suppressClick) return
             onSelect(parent)
           }}
-          onTouchStart={(event) => onTouchStart(parent, event)}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-          onTouchCancel={onTouchCancel}
           className={`relative w-full flex items-center gap-3 px-4 py-2 transition-all duration-200 ease-out select-none ${draggingId === parent.id ? 'bg-background opacity-35' : ''}`}
         >
           <span className={`text-[24px] flex-shrink-0 ${editMode ? 'animate-pulse' : ''}`}>{getEmoji(parent)}</span>
           <span className="flex-1 min-w-0 text-left text-[16px] text-foreground truncate">{parent.name}</span>
           {editMode ? (
-            <span className="flex items-center justify-center w-11 self-stretch -my-1 text-muted-foreground/55 flex-shrink-0">
-              <TextAlignJustify size={18} strokeWidth={2} />
-            </span>
+            <button
+              type="button"
+              onTouchStart={(event) => {
+                event.stopPropagation()
+                onTouchStart(parent, event)
+              }}
+              onTouchMove={(event) => {
+                event.stopPropagation()
+                onTouchMove(event)
+              }}
+              onTouchEnd={(event) => {
+                event.stopPropagation()
+                onTouchEnd()
+              }}
+              onTouchCancel={(event) => {
+                event.stopPropagation()
+                onTouchCancel()
+              }}
+              className="flex items-center justify-center w-11 self-stretch -my-1 text-muted-foreground/55 flex-shrink-0 touch-none"
+              aria-label="순서 변경"
+            >
+              <GripVertical size={16} strokeWidth={2} />
+            </button>
           ) : (
             <span className="text-muted-foreground flex-shrink-0">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
