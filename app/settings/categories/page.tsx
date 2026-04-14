@@ -244,7 +244,7 @@ export default function CategoriesSettings() {
                 const deleted = await confirmDelete({ id: editingParent.id, name: editingParent.name, type: 'parent' })
                 if (deleted) setEditingParent(null)
               }}
-              className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-coral/10 text-accent-coral z-10"
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10"
               aria-label="삭제"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -364,7 +364,7 @@ export default function CategoriesSettings() {
               setDraggingId(null)
               setDragPosition(null)
             }}
-            className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors z-10 ${editMode ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'}`}
+            className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors z-10 ${editMode ? 'bg-muted text-foreground' : 'bg-muted text-muted-foreground'}`}
             aria-label="편집 모드"
           >
             <SquarePen size={18} strokeWidth={2} />
