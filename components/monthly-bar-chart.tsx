@@ -17,12 +17,13 @@ interface MonthlyBarChartProps {
   avgLabel?: string
   headerRight?: React.ReactNode
   topSlot?: React.ReactNode
+  activeTopEdge?: 'left' | 'center' | 'right' | null
   className?: string
   maxHeight?: number
   comparisonText?: (selectedValue: number) => string | null
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, topSlot, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, topSlot, activeTopEdge = null, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
@@ -43,7 +44,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
           {topSlot}
         </div>
       ) : null}
-      <div className="relative z-20 bg-surface rounded-[22px] px-4 pt-5 pb-6">
+      <div className={`relative z-20 bg-surface px-4 pt-5 pb-6 rounded-b-[22px] ${activeTopEdge === 'left' ? 'rounded-tl-none rounded-tr-[22px]' : activeTopEdge === 'right' ? 'rounded-tl-[22px] rounded-tr-none' : activeTopEdge === 'center' ? 'rounded-t-[22px]' : 'rounded-t-[22px]'}`}>
       {/* 헤더 */}
       <div className="relative mb-5">
         {headerRight ? (

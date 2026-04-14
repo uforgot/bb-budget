@@ -191,6 +191,7 @@ export default function Yearly() {
           <div className="px-5">
             <MonthlyBarChart
               className="mb-4"
+              activeTopEdge={yearlyChartMode === 'expense' ? 'left' : yearlyChartMode === 'savings' ? 'right' : 'center'}
               topSlot={(
                 <div className="flex items-end gap-0">
                   {([
