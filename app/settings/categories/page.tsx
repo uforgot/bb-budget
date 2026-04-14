@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { SquarePen, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
@@ -70,6 +70,12 @@ export default function CategoriesSettings() {
     ? orderedParentIds.map(id => parents.find(parent => parent.id === id)).filter(Boolean) as Category[]
     : parents
 
+  const orderedParentIdsByType = useMemo(() => ({
+    expense: orderedParents.filter(parent => parent.type === 'expense').map(parent => parent.id),
+    income: orderedParents.filter(parent => parent.type === 'income').map(parent => parent.id),
+    savings: orderedParents.filter(parent => parent.type === 'savings').map(parent => parent.id),
+  }), [orderedParents])
+
   useEffect(() => {
     setOrderedParentIds(parents.map(parent => parent.id))
   }, [categories])
@@ -86,7 +92,7 @@ export default function CategoriesSettings() {
     }
   }
 
-  const persistOrder = async (nextIds: string[]) => {
+  const persistOrder = async (sectionType: TypeTab, nextIds: string[]) => {
     const prevCategories = categories
     setCategories(prev => {
       const parentMap = new Map(prev.filter(c => !c.parent_id).map(c => [c.id, c]))
@@ -101,7 +107,7 @@ export default function CategoriesSettings() {
     })
 
     try {
-      await reorderParentCategories(type, nextIds)
+      await reorderParentCategories(sectionType, nextIds)
       await loadCategories()
     } catch (error) {
       setCategories(prevCategories)
@@ -129,6 +135,10 @@ export default function CategoriesSettings() {
     const touch = event.touches[0]
     if (!touch) return
 
+    if (activeDragIdRef.current) {
+      event.preventDefault()
+    }
+
     if (!activeDragIdRef.current) {
       const start = touchStartRef.current
       if (!start || !pendingDragIdRef.current) return
@@ -154,7 +164,9 @@ export default function CategoriesSettings() {
     touchStartRef.current = null
     const activeId = activeDragIdRef.current
     if (!activeId) return
-    const nextIds = [...orderedParentIds]
+    const activeParent = parents.find(parent => parent.id === activeId)
+    const sectionType = activeParent?.type as TypeTab | undefined
+    const nextIds = sectionType ? [...orderedParentIdsByType[sectionType]] : []
     activeDragIdRef.current = null
     setDraggingId(null)
     setDragPosition(null)
@@ -162,7 +174,7 @@ export default function CategoriesSettings() {
     setTimeout(() => {
       suppressClickRef.current = false
     }, 250)
-    await persistOrder(nextIds)
+    if (sectionType) await persistOrder(sectionType, nextIds)
   }
 
   const cancelDrag = () => {
@@ -364,7 +376,7 @@ export default function CategoriesSettings() {
               setDraggingId(null)
               setDragPosition(null)
             }}
-            className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors z-10 ${editMode ? 'bg-muted text-foreground' : 'bg-muted text-muted-foreground'}`}
+            className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors z-10 ${editMode ? 'bg-[#5865F2] text-white' : 'bg-muted text-muted-foreground'}`}
             aria-label="편집 모드"
           >
             <SquarePen size={18} strokeWidth={2} />
