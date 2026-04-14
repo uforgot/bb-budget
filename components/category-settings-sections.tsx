@@ -100,7 +100,7 @@ export function AddRootCategoryRow({
 
   if (inline) return content
 
-  return <div className="mb-6 rounded-[22px] bg-surface border border-border/50">{content}</div>
+  return <div className="mb-6 rounded-[22px] bg-surface">{content}</div>
 }
 
 export function CategoryGrid({
@@ -131,7 +131,7 @@ export function CategoryGrid({
   addRow?: React.ReactNode
 }) {
   return (
-    <div className="rounded-[22px] bg-surface border border-border/50 overflow-hidden">
+    <div className="rounded-[22px] bg-surface overflow-hidden">
       {parents.map((parent, index) => (
         <>
           {index > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}

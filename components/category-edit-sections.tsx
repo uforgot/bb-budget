@@ -20,7 +20,7 @@ export function CategoryEmojiCard({
       <div className="flex justify-center mb-8">
         <button
           onClick={onOpen}
-          className="w-36 h-36 bg-surface rounded-[22px] flex items-center justify-center border border-border/50 relative"
+          className="w-36 h-36 bg-surface rounded-[22px] flex items-center justify-center relative"
         >
           <span style={{ fontSize: '64px' }}>{emoji}</span>
           <span className="absolute top-3 right-3 text-muted-foreground">
