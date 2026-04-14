@@ -167,7 +167,7 @@ export function CategoryGrid({
         <button
           type="button"
           onClick={onAdd}
-          className="w-full flex items-center justify-center px-4 py-2 text-muted-foreground"
+          className="w-full flex items-center justify-center px-4 py-4 text-muted-foreground"
         >
           <Plus size={18} strokeWidth={2.2} />
         </button>
