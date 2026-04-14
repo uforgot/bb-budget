@@ -37,14 +37,14 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   const selectedData = data.find(d => d.month === selectedMonth)
 
   return (
-    <div className={`mb-4 ${className}`}>
+    <div className={`mb-4 bg-surface rounded-[22px] ${className}`}>
       {topSlot ? (
-        <div className="relative z-10 mb-[-1px]">
+        <div className="px-4 pt-4">
           {topSlot}
         </div>
       ) : null}
-      <div className="relative z-20 bg-surface rounded-[22px] px-4 pt-5 pb-6">
-      {/* 헤더 */}
+      <div className="px-4 pt-5 pb-6">
+        {/* 헤더 */}
       <div className="relative mb-5">
         {headerRight ? (
           <div className="absolute top-0 right-0 z-10">
@@ -79,8 +79,8 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
         </div>
       </div>
 
-      {/* 바 그래프 */}
-      <div className="overflow-x-auto overflow-y-hidden scrollbar-hide w-full">
+        {/* 바 그래프 */}
+        <div className="overflow-x-auto overflow-y-hidden scrollbar-hide w-full">
         <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: ITEM_W * 12 }}>
           {data.map(d => {
             const isSelected = d.month === selectedMonth
@@ -118,8 +118,8 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
             )
           })}
         </div>
+        </div>
       </div>
-    </div>
     </div>
   )
 }
