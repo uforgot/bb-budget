@@ -84,7 +84,7 @@ export function AddRootCategoryRow({
         onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
         autoFocus
         style={{ fontSize: '16px' }}
-        className="flex-1 bg-card border border-border rounded-[18px] px-4 py-2.5"
+        className="flex-1 bg-card rounded-[18px] px-4 py-2.5"
       />
       <button onClick={onSubmit} className="px-4 py-2.5 rounded-[18px] bg-surface text-[14px] font-medium text-foreground">추가</button>
       <button onClick={onCancel} className="px-4 py-2.5 rounded-[18px] bg-surface text-[14px] font-medium text-muted-foreground">취소</button>
