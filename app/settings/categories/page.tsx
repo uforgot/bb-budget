@@ -373,7 +373,7 @@ export default function CategoriesSettings() {
         }
       />
 
-      <div className="max-w-lg mx-auto px-5 pt-6">
+      <div className="max-w-lg mx-auto px-5 pt-6 pb-10">
         <div className="flex items-center justify-end gap-3 mb-4">
           <button
             onClick={() => {
