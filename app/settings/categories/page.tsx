@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { SquarePen, Trash2 } from 'lucide-react'
+import { SquarePen, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
@@ -261,7 +261,7 @@ export default function CategoriesSettings() {
               className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10"
               aria-label="삭제"
             >
-              <Trash2 size={16} />
+              <Trash size={16} />
             </button>
           }
         />

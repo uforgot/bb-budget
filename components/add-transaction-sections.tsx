@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react'
+import { Trash } from 'lucide-react'
 import { CategoryPicker } from './category-picker'
 
 type TransactionType = '지출' | '수입' | '저축'
@@ -32,7 +32,7 @@ export function AddTransactionHeader({
           className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-coral/10 text-accent-coral"
           aria-label="삭제"
         >
-          <Trash2 size={16} />
+          <Trash size={16} />
         </button>
       ) : (
         <div className="w-8" />

@@ -1,5 +1,5 @@
 import type { Category } from '@/lib/api'
-import { Check, SquarePen, Trash, Trash2, X } from 'lucide-react'
+import { Check, SquarePen, Trash, X } from 'lucide-react'
 import { EmojiPicker } from '@/components/emoji-picker'
 
 export function CategoryEmojiCard({
