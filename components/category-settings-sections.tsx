@@ -75,7 +75,7 @@ export function AddRootCategoryRow({
   inline?: boolean
 }) {
   const content = (
-    <div className="w-full flex items-center gap-3 px-4 py-4">
+    <div className="w-full flex items-center gap-3 px-4 py-2 transition-all duration-200">
       <span className="text-[24px] flex-shrink-0 opacity-0">•</span>
       <input
         type="text"
@@ -87,7 +87,7 @@ export function AddRootCategoryRow({
         style={{ fontSize: '16px' }}
         className="flex-1 min-w-0 bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/70 outline-none"
       />
-      <div className="flex items-center justify-end gap-2 min-w-[88px] flex-shrink-0">
+      <div className="ml-auto flex items-center justify-end gap-2 min-w-[88px] flex-shrink-0">
         <button onClick={onSubmit} className="flex items-center justify-center w-8 h-8 rounded-full text-foreground flex-shrink-0" aria-label="추가">
           <Check size={18} />
         </button>
