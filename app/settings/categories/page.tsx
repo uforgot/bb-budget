@@ -383,7 +383,7 @@ export default function CategoriesSettings() {
               touchStartRef.current = null
               if (addingRoot) setNewRootName('')
             }}
-            className="w-full flex items-center justify-center rounded-[22px] bg-surface border border-border/50 px-4 py-3 text-[16px] font-medium text-foreground"
+            className="w-full flex items-center justify-center rounded-[22px] bg-accent-blue px-4 py-3.5 text-[16px] font-semibold text-white"
           >
             카테고리 추가하기
           </button>
