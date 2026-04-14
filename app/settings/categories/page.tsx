@@ -77,8 +77,14 @@ export default function CategoriesSettings() {
   }), [orderedParents])
 
   useEffect(() => {
-    setOrderedParentIds(parents.map(parent => parent.id))
-  }, [categories])
+    setOrderedParentIds(prev => {
+      if (!prev.length) return parents.map(parent => parent.id)
+      const parentIds = parents.map(parent => parent.id)
+      const kept = prev.filter(id => parentIds.includes(id))
+      const added = parentIds.filter(id => !kept.includes(id))
+      return [...kept, ...added]
+    })
+  }, [parents])
 
   const childrenOf = (parentId: string) =>
     categories.filter(c => c.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order)
@@ -109,6 +115,10 @@ export default function CategoriesSettings() {
     try {
       await reorderParentCategories(sectionType, nextIds)
       await loadCategories()
+      setOrderedParentIds(prev => {
+        const otherIds = prev.filter(id => !nextIds.includes(id))
+        return [...otherIds, ...nextIds]
+      })
     } catch (error) {
       setCategories(prevCategories)
       throw error
