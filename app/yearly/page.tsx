@@ -188,7 +188,7 @@ export default function Yearly() {
             hasPrev={false}
             yearMode
           />
-          <div className="px-5">
+          <div className="px-5 mt-2">
             <MonthlyBarChart
               className="mb-4"
               topSlot={(
