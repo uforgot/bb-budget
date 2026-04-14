@@ -130,7 +130,7 @@ export default function CategoriesSettings() {
     })
   }
 
-  const handleTouchMove = (event: React.TouchEvent<HTMLButtonElement>) => {
+  const handleTouchMove = (event: React.TouchEvent<HTMLElement>) => {
     if (!editMode) return
     const touch = event.touches[0]
     if (!touch) return

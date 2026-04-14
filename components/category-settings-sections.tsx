@@ -123,8 +123,8 @@ export function CategoryGrid({
   suppressClick: boolean
   getEmoji: (parent: Category) => string
   onSelect: (parent: Category) => void
-  onTouchStart: (parent: Category, event: React.TouchEvent<HTMLButtonElement>) => void
-  onTouchMove: (event: React.TouchEvent<HTMLButtonElement>) => void
+  onTouchStart: (parent: Category, event: React.TouchEvent<HTMLElement>) => void
+  onTouchMove: (event: React.TouchEvent<HTMLElement>) => void
   onTouchEnd: () => void
   onTouchCancel: () => void
   onAdd?: () => void
@@ -133,11 +133,9 @@ export function CategoryGrid({
   return (
     <div className="rounded-[22px] bg-surface overflow-hidden">
       {parents.map((parent, index) => (
-        <>
+        <div key={parent.id} data-category-id={parent.id}>
           {index > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}
           <button
-          key={parent.id}
-          data-category-id={parent.id}
           onClick={() => {
             if (editMode || draggingId || suppressClick) return
             onSelect(parent)
@@ -176,7 +174,7 @@ export function CategoryGrid({
             </span>
           )}
         </button>
-        </>
+        </div>
       ))}
       {onAdd && parents.length > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}
       {onAdd && (addRow ?? (
