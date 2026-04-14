@@ -102,19 +102,28 @@ export default function CategoriesSettings() {
     const prevCategories = categories
     setCategories(prev => {
       const parentMap = new Map(prev.filter(c => !c.parent_id).map(c => [c.id, c]))
-      const reorderedParents = nextIds
+      const reorderedSectionParents = nextIds
         .map((id, index) => {
           const parent = parentMap.get(id)
           return parent ? { ...parent, sort_order: index + 1 } : null
         })
         .filter(Boolean) as Category[]
+
+      const untouchedParents = prev
+        .filter(c => !c.parent_id && c.type !== sectionType)
+        .sort((a, b) => a.sort_order - b.sort_order)
+
       const children = prev.filter(c => c.parent_id)
-      return [...reorderedParents, ...children]
+      return [...untouchedParents, ...reorderedSectionParents, ...children]
     })
 
     try {
       await reorderParentCategories(sectionType, nextIds)
-      await loadCategories()
+      const refreshed = await getCategories(sectionType)
+      setCategories(prev => {
+        const otherCategories = prev.filter(c => c.type !== sectionType)
+        return [...otherCategories, ...refreshed]
+      })
       setOrderedParentIds(prev => {
         const otherIds = prev.filter(id => !nextIds.includes(id))
         return [...otherIds, ...nextIds]
