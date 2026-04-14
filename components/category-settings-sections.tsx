@@ -156,9 +156,13 @@ export function CategoryGrid({
         <button
           type="button"
           onClick={onAdd}
-          className="w-full flex items-center justify-center px-4 py-2 text-muted-foreground"
+          className="w-full flex items-center gap-3 px-4 py-2 text-muted-foreground"
         >
-          <Plus size={18} strokeWidth={2.2} />
+          <span className="text-[24px] flex-shrink-0 opacity-0">•</span>
+          <span className="flex-1 min-w-0 text-center">
+            <Plus size={18} strokeWidth={2.2} className="mx-auto" />
+          </span>
+          <span className="w-11 flex-shrink-0 opacity-0">•</span>
         </button>
       ))}
     </div>
