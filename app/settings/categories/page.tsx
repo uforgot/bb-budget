@@ -407,7 +407,7 @@ export default function CategoriesSettings() {
           if (sectionParents.length === 0) return null
           return (
             <div key={sectionType} className="mb-6 last:mb-0">
-              <h2 className="text-[16px] font-semibold mb-3">
+              <h2 className="text-[14px] font-medium text-muted-foreground uppercase mb-3">
                 {sectionType === 'expense' ? '지출' : sectionType === 'income' ? '수입' : '저축'}
               </h2>
               <CategoryGrid
