@@ -352,11 +352,7 @@ export default function CategoriesSettings() {
       <CategorySettingsHeader
         title="카테고리 관리"
         onBack={() => router.back()}
-        right={<div className="w-8" />}
-      />
-
-      <div className="max-w-lg mx-auto px-5 pt-6 pb-10">
-        <div className="flex items-center justify-between gap-3 mb-4">
+        right={
           <button
             onClick={() => {
               setEditMode(prev => !prev)
@@ -368,12 +364,16 @@ export default function CategoriesSettings() {
               setDraggingId(null)
               setDragPosition(null)
             }}
-            className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors flex-shrink-0 ${editMode ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'}`}
+            className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors z-10 ${editMode ? 'bg-accent-blue text-white' : 'bg-muted text-muted-foreground'}`}
             aria-label="편집 모드"
           >
             <SquarePen size={18} strokeWidth={2} />
           </button>
+        }
+      />
 
+      <div className="max-w-lg mx-auto px-5 pt-6 pb-10">
+        <div className="mb-4">
           <button
             onClick={() => {
               setAddingRoot(prev => !prev)
@@ -383,7 +383,7 @@ export default function CategoriesSettings() {
               touchStartRef.current = null
               if (addingRoot) setNewRootName('')
             }}
-            className="flex-1 flex items-center justify-center rounded-[22px] bg-surface border border-border/50 px-4 py-3 text-[16px] font-medium text-foreground"
+            className="w-full flex items-center justify-center rounded-[22px] bg-surface border border-border/50 px-4 py-3 text-[16px] font-medium text-foreground"
           >
             카테고리 추가하기
           </button>
