@@ -95,7 +95,7 @@ export default function Yearly() {
       {/* 타이틀 */}
       <div className="px-5">
         <div className="flex items-center justify-between mt-1 mb-4">
-          <label className="flex items-center gap-1 cursor-pointer">
+          <label className="flex h-10 items-center gap-1 cursor-pointer">
             <select
               value={targetYear}
               onChange={e => setYearOffset(Number(e.target.value) - today.getFullYear())}
