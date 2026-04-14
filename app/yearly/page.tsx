@@ -21,7 +21,6 @@ export default function Yearly() {
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [yearlyChartMode, setYearlyChartMode] = useState<'expense' | 'income' | 'savings'>('expense')
-  const [chartDropdownOpen, setChartDropdownOpen] = useState(false)
 
   const loadData = useCallback(async () => {
     try {
@@ -193,34 +192,23 @@ export default function Yearly() {
             <MonthlyBarChart
               className="mb-4"
               headerRight={(
-                <div className="relative">
-                  <button
-                    onClick={() => setChartDropdownOpen(v => !v)}
-                    className="flex h-10 items-center gap-1 px-3 rounded-full text-[13px] font-semibold bg-background text-foreground"
-                  >
-                    <span>{yearlyChartMode === 'expense' ? '지출' : yearlyChartMode === 'income' ? '수입' : '저축'}</span>
-                    <ChevronDown size={14} className={`transition-transform ${chartDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {chartDropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 min-w-[88px] rounded-[18px] border border-border/50 bg-surface p-1 shadow-lg z-20">
-                      {([
-                        ['expense', '지출'],
-                        ['income', '수입'],
-                        ['savings', '저축'],
-                      ] as const).map(([key, label]) => (
-                        <button
-                          key={key}
-                          onClick={() => {
-                            setYearlyChartMode(key)
-                            setChartDropdownOpen(false)
-                          }}
-                          className={`w-full px-3 py-2 rounded-[14px] text-left text-[13px] font-semibold ${yearlyChartMode === key ? 'bg-muted text-foreground' : 'text-muted-foreground'}`}
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                <div className="flex items-end gap-1.5 -mb-1">
+                  {([
+                    ['expense', '지출'],
+                    ['income', '수입'],
+                    ['savings', '저축'],
+                  ] as const).map(([key, label]) => {
+                    const active = yearlyChartMode === key
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setYearlyChartMode(key)}
+                        className={`px-4 h-10 rounded-t-[18px] text-[13px] font-semibold transition-colors ${active ? 'bg-background text-foreground shadow-sm' : 'bg-background/55 text-muted-foreground'}`}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
                 </div>
               )}
               label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
