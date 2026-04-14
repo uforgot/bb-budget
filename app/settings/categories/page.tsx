@@ -403,7 +403,7 @@ export default function CategoriesSettings() {
         }
       />
 
-      <div className="max-w-lg mx-auto px-5 pt-6 pb-10">
+      <div className="max-w-lg mx-auto px-5 pt-6 pb-32">
         {(['expense', 'income', 'savings'] as TypeTab[]).map(sectionType => {
           const sectionParents = orderedParents.filter(parent => parent.type === sectionType)
           if (sectionParents.length === 0) return null
@@ -481,21 +481,23 @@ export default function CategoriesSettings() {
         })}
 
         {editMode && (
-          <div className="flex mt-8 pb-10">
-            <button
-              onClick={async () => {
-                await Promise.all((['expense', 'income', 'savings'] as TypeTab[]).map(sectionType => persistOrder(sectionType, orderedParentIdsByType[sectionType])))
-                setEditMode(false)
-                activeDragIdRef.current = null
-                pendingDragIdRef.current = null
-                touchStartRef.current = null
-                setDraggingId(null)
-                setDragPosition(null)
-              }}
-              className="flex-1 py-3.5 rounded-[22px] bg-accent-blue text-white text-[16px] font-semibold"
-            >
-              완료
-            </button>
+          <div className="fixed bottom-0 left-0 right-0 z-30 bg-background">
+            <div className="w-full max-w-lg mx-auto px-5 pt-3" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+              <button
+                onClick={async () => {
+                  await Promise.all((['expense', 'income', 'savings'] as TypeTab[]).map(sectionType => persistOrder(sectionType, orderedParentIdsByType[sectionType])))
+                  setEditMode(false)
+                  activeDragIdRef.current = null
+                  pendingDragIdRef.current = null
+                  touchStartRef.current = null
+                  setDraggingId(null)
+                  setDragPosition(null)
+                }}
+                className="w-full py-3.5 rounded-[22px] bg-accent-blue text-white text-[16px] font-semibold"
+              >
+                순서 변경 완료하기
+              </button>
+            </div>
           </div>
         )}
       </div>
