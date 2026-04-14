@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from '@/components/theme-provider'
 
@@ -16,9 +17,7 @@ export default function Settings() {
           onClick={() => router.back()}
           className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
+          <ChevronLeft size={20} strokeWidth={2} />
         </button>
         <h1 className="text-[17px] font-semibold">설정</h1>
         <div className="w-8" />
@@ -61,9 +60,7 @@ export default function Settings() {
             className="flex items-center justify-between px-4 py-4"
           >
             <span className="text-[16px]">카테고리 관리</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
+            <ChevronRight size={16} strokeWidth={2} className="text-muted-foreground" />
           </Link>
         </div>
       </main>
