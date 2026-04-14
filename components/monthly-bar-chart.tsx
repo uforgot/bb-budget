@@ -39,7 +39,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   return (
     <div className={`mb-4 ${className}`}>
       {topSlot ? (
-        <div className="relative z-10 mb-[-8px]">
+        <div className="relative z-10 mb-[-1px]">
           {topSlot}
         </div>
       ) : null}
