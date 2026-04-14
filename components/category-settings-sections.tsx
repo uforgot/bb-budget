@@ -89,10 +89,10 @@ export function AddRootCategoryRow({
       />
       <div className="ml-auto flex items-center justify-end gap-2 min-w-[88px] flex-shrink-0">
         <button onClick={onSubmit} className="flex items-center justify-center w-8 h-8 rounded-full text-foreground flex-shrink-0" aria-label="추가">
-          <Check size={18} />
+          <Check size={16} />
         </button>
         <button onClick={onCancel} className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground flex-shrink-0" aria-label="취소">
-          <X size={18} />
+          <X size={16} />
         </button>
       </div>
     </div>
