@@ -104,7 +104,7 @@ export function HistorySearchPanel({
   return (
     <div className="px-4 py-3">
       <div className="flex items-center gap-2">
-        <div className="flex flex-1 items-center gap-2 bg-surface rounded-[22px] px-4 py-4">
+        <div className="flex flex-1 items-center gap-2 bg-surface rounded-[22px] px-4 py-3">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
           </svg>
@@ -121,7 +121,7 @@ export function HistorySearchPanel({
         </div>
         <button
           onClick={onClose}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground flex-shrink-0"
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-surface text-muted-foreground flex-shrink-0"
           aria-label="검색 닫기"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
@@ -138,17 +138,15 @@ export function HistorySearchPanel({
           const d = new Date(tx.date)
           return (
             <div key={tx.id} onClick={() => onSelectTransaction(tx)}
-              className="flex items-center justify-between px-2 py-2.5 cursor-pointer active:bg-muted/30 rounded-lg">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs bg-muted px-2.5 py-0.5 rounded-full">
-                    {parentCat ? <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName || '미분류'}</span>}
-                  </span>
-                  {tx.description && <span className="text-[10px] text-muted-foreground truncate">{tx.description}</span>}
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{d.getFullYear()}년 {d.getMonth()+1}월 {d.getDate()}일</p>
+              className="flex items-center justify-between gap-3 px-2 py-2.5 cursor-pointer active:bg-muted/30 rounded-lg">
+              <div className="flex flex-1 min-w-0 items-center gap-2 overflow-hidden">
+                <span className="text-xs bg-muted px-2.5 py-0.5 rounded-full flex-shrink-0">
+                  {parentCat ? <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName || '미분류'}</span>}
+                </span>
+                {tx.description && <span className="text-[10px] text-muted-foreground truncate flex-shrink min-w-0">{tx.description}</span>}
+                <span className="text-[10px] text-muted-foreground flex-shrink-0">{d.getFullYear()}년 {d.getMonth()+1}월 {d.getDate()}일</span>
               </div>
-              <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ml-3 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'}`}>
+              <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'}`}>
                 ₩{tx.amount.toLocaleString()}
               </span>
             </div>
