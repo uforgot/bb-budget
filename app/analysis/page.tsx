@@ -8,6 +8,7 @@ import { TopToolbar } from '@/components/top-toolbar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, getCategories, type Transaction, type Category } from '@/lib/api'
 import { AnalysisEmptyState, AnalysisFilters, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
+import { HistorySearchPanel } from '@/components/history-sections'
 import { AnalysisLoadingSkeleton } from '@/components/page-loading-skeletons'
 import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getParentCategoriesByType } from '@/lib/analysis'
 
@@ -22,6 +23,8 @@ export default function AnalysisPage() {
   const [typeFilter, setTypeFilter] = useState<'expense' | 'income' | 'savings'>('expense')
   const [parentCategoryId, setParentCategoryId] = useState('')
   const [selectedYear, setSelectedYear] = useState(today.getFullYear())
+  const [searchMode, setSearchMode] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const loadData = useCallback(async () => {
     try {
@@ -59,14 +62,35 @@ export default function AnalysisPage() {
 
   const maxTotal = rows[0]?.total ?? 0
 
+  const searchResults = searchQuery.trim()
+    ? transactions.filter(t => {
+        const cat = t.category as Category | undefined
+        const q = searchQuery.toLowerCase()
+        return (cat?.name || '').toLowerCase().includes(q) ||
+          (t.description || '').toLowerCase().includes(q) ||
+          t.amount.toString().includes(q)
+      })
+    : []
+
   return (
     <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData} disabled>
       <>
         <TopToolbar
-          onSearch={() => router.push('/history')}
+          onSearch={() => { setSearchMode(v => !v); setSearchQuery('') }}
           onSettings={() => router.push('/settings')}
         />
 
+        {searchMode ? (
+          <HistorySearchPanel
+            searchQuery={searchQuery}
+            searchResults={searchResults}
+            categories={categories}
+            onChangeQuery={setSearchQuery}
+            onClearQuery={() => setSearchQuery('')}
+            onClose={() => { setSearchMode(false); setSearchQuery('') }}
+            onSelectTransaction={(tx) => { setEditTx(tx); setModalOpen(true) }}
+          />
+        ) : (
         <div className="px-5">
           <AnalysisFilters
             typeFilter={typeFilter}
@@ -101,6 +125,7 @@ export default function AnalysisPage() {
             )}
           </div>
         </div>
+        )}
 
         {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
 
