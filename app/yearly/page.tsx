@@ -191,20 +191,20 @@ export default function Yearly() {
           <div className="px-5">
             <MonthlyBarChart
               className="mb-4"
-              activeTopEdge={yearlyChartMode === 'expense' ? 'left' : yearlyChartMode === 'savings' ? 'right' : 'center'}
               topSlot={(
                 <div className="flex items-end gap-0">
                   {([
                     ['expense', '지출'],
                     ['income', '수입'],
                     ['savings', '저축'],
-                  ] as const).map(([key, label]) => {
+                  ] as const).map(([key, label], index) => {
                     const active = yearlyChartMode === key
+                    const edgeClass = index === 0 ? 'rounded-tl-[22px]' : index === 2 ? 'rounded-tr-[22px]' : ''
                     return (
                       <button
                         key={key}
                         onClick={() => setYearlyChartMode(key)}
-                        className={`relative flex-1 h-11 text-[13px] font-semibold transition-colors ${active ? 'z-20 -mb-[1px] rounded-t-[22px] bg-surface text-foreground' : 'z-10 rounded-t-[18px] bg-surface/55 text-muted-foreground'}`}
+                        className={`relative flex-1 h-11 text-[13px] font-semibold transition-colors ${edgeClass} ${active ? 'z-20 -mb-[1px] bg-surface text-foreground' : 'z-10 bg-surface/55 text-muted-foreground'}`}
                       >
                         {label}
                       </button>
