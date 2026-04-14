@@ -43,7 +43,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
           {topSlot}
         </div>
       ) : null}
-      <div className="relative z-20 bg-surface px-4 pt-5 pb-6 rounded-b-[22px]">
+      <div className="relative z-20 bg-surface rounded-[22px] px-4 pt-5 pb-6">
       {/* 헤더 */}
       <div className="relative mb-5">
         {headerRight ? (
