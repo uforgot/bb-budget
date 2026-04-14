@@ -127,7 +127,7 @@ export function CategoryGrid({
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
           onTouchCancel={onTouchCancel}
-          className={`relative w-full flex items-center gap-3 px-4 py-1 transition-all duration-200 ease-out select-none touch-none ${
+          className={`relative w-full flex items-center gap-3 px-4 py-1 transition-all duration-200 ease-out select-none ${
             index !== 0 ? 'border-t border-border/50' : ''
           } ${draggingId === parent.id ? 'bg-background opacity-35' : ''}`}
         >
