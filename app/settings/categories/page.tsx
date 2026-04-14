@@ -373,22 +373,6 @@ export default function CategoriesSettings() {
       />
 
       <div className="max-w-lg mx-auto px-5 pt-6 pb-10">
-        <div className="mb-6">
-          <button
-            onClick={() => {
-              setAddingRoot(prev => !prev)
-              setEditMode(false)
-              pendingDragIdRef.current = null
-              activeDragIdRef.current = null
-              touchStartRef.current = null
-              if (addingRoot) setNewRootName('')
-            }}
-            className="w-full flex items-center justify-center rounded-[22px] bg-accent-blue px-4 py-3.5 text-[16px] font-semibold text-white"
-          >
-            카테고리 추가하기
-          </button>
-        </div>
-
         {addingRoot && (
           <AddRootCategoryRow
             value={newRootName}
@@ -446,6 +430,17 @@ export default function CategoriesSettings() {
                   finishDrag()
                 }}
                 onTouchCancel={cancelDrag}
+                onAdd={() => {
+                  setType(sectionType)
+                  setAddingRoot(true)
+                  setEditMode(false)
+                  setNewRootName('')
+                  pendingDragIdRef.current = null
+                  activeDragIdRef.current = null
+                  touchStartRef.current = null
+                  setDraggingId(null)
+                  setDragPosition(null)
+                }}
               />
             </div>
           )
