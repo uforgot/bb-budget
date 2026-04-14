@@ -131,24 +131,43 @@ export function HistorySearchPanel({
         {searchQuery && searchResults.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">검색 결과가 없어요</p>
         )}
-        {searchResults.map(tx => {
-          const cat = tx.category as any
-          const catName = cat?.name || ''
-          const parentCat = cat?.parent_id ? categories.find((c: any) => c.id === cat.parent_id) : null
-          const d = new Date(tx.date)
+        {Object.entries(searchResults.reduce((acc, tx) => {
+          const key = tx.date
+          if (!acc[key]) acc[key] = []
+          acc[key].push(tx)
+          return acc
+        }, {} as Record<string, Transaction[]>)).map(([dateKey, items]) => {
+          const d = new Date(`${dateKey}T00:00:00`)
+          const dayNames = ['일', '월', '화', '수', '목', '금', '토']
           return (
-            <div key={tx.id} onClick={() => onSelectTransaction(tx)}
-              className="flex items-center justify-between gap-3 px-2 py-2.5 cursor-pointer active:bg-muted/30 rounded-lg">
-              <div className="flex flex-1 min-w-0 items-center gap-2 overflow-hidden">
-                <span className="text-xs bg-muted px-2.5 py-0.5 rounded-full flex-shrink-0">
-                  {parentCat ? <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName || '미분류'}</span>}
-                </span>
-                {tx.description && <span className="text-[10px] text-muted-foreground truncate flex-shrink min-w-0">{tx.description}</span>}
-                <span className="text-[10px] text-muted-foreground flex-shrink-0">{d.getFullYear()}년 {d.getMonth()+1}월 {d.getDate()}일</span>
+            <div key={dateKey} className="mb-5 last:mb-0">
+              <div className="px-2">
+                <p className="text-[14px] font-semibold text-foreground">
+                  {d.getFullYear()}년 {d.getMonth() + 1}월 {d.getDate()}일 {dayNames[d.getDay()]}요일
+                </p>
               </div>
-              <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'}`}>
-                ₩{tx.amount.toLocaleString()}
-              </span>
+              <div className="mt-2 border-t border-border" />
+              <div className="mt-1">
+                {items.map(tx => {
+                  const cat = tx.category as any
+                  const catName = cat?.name || ''
+                  const parentCat = cat?.parent_id ? categories.find((c: any) => c.id === cat.parent_id) : null
+                  return (
+                    <div key={tx.id} onClick={() => onSelectTransaction(tx)}
+                      className="flex items-center justify-between gap-3 px-2 py-3 cursor-pointer active:bg-muted/30 rounded-lg">
+                      <div className="flex flex-1 min-w-0 items-center gap-2 overflow-hidden">
+                        <span className="text-[14px] bg-muted px-2.5 py-1 rounded-full flex-shrink-0">
+                          {parentCat ? <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName || '미분류'}</span>}
+                        </span>
+                        {tx.description && <span className="text-[14px] text-foreground truncate flex-shrink min-w-0">{tx.description}</span>}
+                      </div>
+                      <span className={`text-[14px] font-semibold tabular-nums flex-shrink-0 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'}`}>
+                        ₩{tx.amount.toLocaleString()}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )
         })}
