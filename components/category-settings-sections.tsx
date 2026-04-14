@@ -75,8 +75,7 @@ export function AddRootCategoryRow({
   inline?: boolean
 }) {
   const content = (
-    <div className="w-full flex items-center gap-3 pl-4 py-2 transition-all duration-200">
-      <span className="text-[24px] flex-shrink-0 opacity-0">•</span>
+    <div className="w-full flex items-center gap-3 px-4 py-2 transition-all duration-200">
       <input
         type="text"
         placeholder="새 카테고리명"
