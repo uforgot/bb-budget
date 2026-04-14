@@ -84,7 +84,7 @@ export function CategoryChildrenEditor({
   onRemove: (child: Category) => void
 }) {
   return (
-    <div className="flex items-start gap-3 px-4 py-4">
+    <div className="flex items-start gap-3 px-4 py-4 border-t border-border/50">
       <span className="text-[16px] text-foreground w-24 flex-shrink-0 mt-1.5">소분류</span>
       <div className="flex-1">
         <div className="flex flex-wrap gap-2">
