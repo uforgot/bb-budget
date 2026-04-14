@@ -36,6 +36,7 @@ export default function CategoriesSettings() {
   const [editingChildName, setEditingChildName] = useState('')
   const [addingRoot, setAddingRoot] = useState(false)
   const [newRootName, setNewRootName] = useState('')
+  const [addingRootType, setAddingRootType] = useState<TypeTab | null>(null)
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [orderedParentIds, setOrderedParentIds] = useState<string[]>([])
@@ -209,12 +210,13 @@ export default function CategoriesSettings() {
 
   const [savingRoot, setSavingRoot] = useState(false)
   const handleAddRoot = async () => {
-    if (!newRootName.trim() || savingRoot) return
+    if (!newRootName.trim() || savingRoot || !addingRootType) return
     setSavingRoot(true)
     try {
-      await addCategory(newRootName.trim(), type)
+      await addCategory(newRootName.trim(), addingRootType)
       setNewRootName('')
       setAddingRoot(false)
+      setAddingRootType(null)
       await loadCategories()
     } finally {
       setSavingRoot(false)
@@ -378,7 +380,7 @@ export default function CategoriesSettings() {
             value={newRootName}
             onChange={setNewRootName}
             onSubmit={handleAddRoot}
-            onCancel={() => { setAddingRoot(false); setNewRootName('') }}
+            onCancel={() => { setAddingRoot(false); setNewRootName(''); setAddingRootType(null) }}
           />
         )}
 
@@ -433,6 +435,7 @@ export default function CategoriesSettings() {
                 onAdd={() => {
                   setType(sectionType)
                   setAddingRoot(true)
+                  setAddingRootType(sectionType)
                   setEditMode(false)
                   setNewRootName('')
                   pendingDragIdRef.current = null
@@ -441,6 +444,17 @@ export default function CategoriesSettings() {
                   setDraggingId(null)
                   setDragPosition(null)
                 }}
+                addRow={addingRoot && addingRootType === sectionType ? (
+                  <div className="px-4 py-2">
+                    <AddRootCategoryRow
+                      value={newRootName}
+                      onChange={setNewRootName}
+                      onSubmit={handleAddRoot}
+                      onCancel={() => { setAddingRoot(false); setNewRootName(''); setAddingRootType(null) }}
+                      inline
+                    />
+                  </div>
+                ) : undefined}
               />
             </div>
           )

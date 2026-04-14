@@ -66,14 +66,16 @@ export function AddRootCategoryRow({
   onChange,
   onSubmit,
   onCancel,
+  inline = false,
 }: {
   value: string
   onChange: (value: string) => void
   onSubmit: () => void
   onCancel: () => void
+  inline?: boolean
 }) {
   return (
-    <div className="flex items-center gap-2 mb-6">
+    <div className={`flex items-center gap-2 ${inline ? '' : 'mb-6'}`}>
       <input
         type="text"
         placeholder="새 카테고리명"
@@ -102,6 +104,7 @@ export function CategoryGrid({
   onTouchEnd,
   onTouchCancel,
   onAdd,
+  addRow,
 }: {
   parents: Category[]
   editMode: boolean
@@ -114,12 +117,13 @@ export function CategoryGrid({
   onTouchEnd: () => void
   onTouchCancel: () => void
   onAdd?: () => void
+  addRow?: React.ReactNode
 }) {
   return (
     <div className="rounded-[22px] bg-surface border border-border/50 overflow-hidden">
       {parents.map((parent, index) => (
         <>
-          {index > 0 && <div className="mx-4 h-px bg-border/50" />}
+          {index > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}
           <button
           key={parent.id}
           data-category-id={parent.id}
@@ -147,8 +151,8 @@ export function CategoryGrid({
         </button>
         </>
       ))}
-      {onAdd && parents.length > 0 && <div className="mx-4 h-px bg-border/50" />}
-      {onAdd && (
+      {onAdd && parents.length > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}
+      {onAdd && (addRow ?? (
         <button
           type="button"
           onClick={onAdd}
@@ -156,7 +160,7 @@ export function CategoryGrid({
         >
           <Plus size={18} strokeWidth={2.2} />
         </button>
-      )}
+      ))}
     </div>
   )
 }
