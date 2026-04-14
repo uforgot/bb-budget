@@ -75,7 +75,8 @@ export function AddRootCategoryRow({
   inline?: boolean
 }) {
   return (
-    <div className={`flex items-center gap-2 ${inline ? '' : 'mb-6'}`}>
+    <div className={`flex items-center gap-3 px-4 py-2 ${inline ? '' : 'mb-6 rounded-[22px] bg-surface border border-border/50'}`}>
+      <span className="text-[24px] flex-shrink-0 opacity-0">•</span>
       <input
         type="text"
         placeholder="새 카테고리명"
@@ -84,14 +85,16 @@ export function AddRootCategoryRow({
         onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
         autoFocus
         style={{ fontSize: '16px' }}
-        className="flex-1 bg-card rounded-[18px] px-4 py-2.5"
+        className="flex-1 min-w-0 bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/70 outline-none"
       />
-      <button onClick={onSubmit} className="flex items-center justify-center w-10 h-10 rounded-full bg-surface text-foreground flex-shrink-0" aria-label="추가">
-        <Check size={18} />
-      </button>
-      <button onClick={onCancel} className="flex items-center justify-center w-10 h-10 rounded-full bg-surface text-muted-foreground flex-shrink-0" aria-label="취소">
-        <X size={18} />
-      </button>
+      <div className="flex items-center justify-end gap-2 w-11 flex-shrink-0 overflow-visible">
+        <button onClick={onSubmit} className="flex items-center justify-center w-8 h-8 rounded-full text-foreground flex-shrink-0" aria-label="추가">
+          <Check size={18} />
+        </button>
+        <button onClick={onCancel} className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground flex-shrink-0" aria-label="취소">
+          <X size={18} />
+        </button>
+      </div>
     </div>
   )
 }
