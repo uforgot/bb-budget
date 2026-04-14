@@ -373,7 +373,7 @@ export default function CategoriesSettings() {
       />
 
       <div className="max-w-lg mx-auto px-5 pt-6 pb-10">
-        <div className="mb-4">
+        <div className="mb-6">
           <button
             onClick={() => {
               setAddingRoot(prev => !prev)
