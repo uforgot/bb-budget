@@ -128,6 +128,42 @@
 | 저축 | #2dd4bf | /card-saving.png |
 | 잔액 | #2C2C2E | /card-balance.png |
 
+## Recent UX Changes (2026-04-14)
+
+### Category management / editor polish
+- Category management was reworked into a single-page 3-section layout: `지출 / 수입 / 저축`.
+- Each section now has its own inline `+` add row instead of a global add button flow.
+- Add-row behavior was refined so:
+  - the row keeps the same height before/after click,
+  - only the inner content changes from `+` to text input,
+  - the row is center-aligned and uses the same vertical rhythm as other rows.
+- Parent category rows now use inset dividers that start from the text column instead of full-width lines.
+- Outer borders on rounded category boxes were removed. Only dividers remain.
+- Category edit screen keeps internal divider separation, but outer rounded-box borders were removed.
+- Chevron styles were unified across settings/category management/add transaction flows.
+- Inline add actions were changed from text buttons to icon actions to avoid 2-line wrapping in narrow widths.
+
+### History / today behavior / shared toolbar
+- `오늘` on `/history` now preserves the current view mode.
+  - In calendar mode, it jumps to the current month and selects today.
+  - In monthly detail mode, it keeps monthly detail mode and selects today.
+- The forced switch to week mode caused by `todayResetToken` logic in `components/monthly-view.tsx` was removed.
+- Search/settings actions were extracted into a shared `TopToolbar` and applied across history, yearly, and analysis pages.
+- Analysis search now opens inline inside the tab instead of navigating away.
+
+### Yearly / charts
+- Yearly chart mode was changed from 2 toggle buttons to a single dropdown.
+- Chart types were expanded to `지출 / 수입 / 저축`.
+- `MonthlyBarChart` gained `maxHeight` and customizable `comparisonText`, with special comparison copy for savings.
+
+### Ongoing visual tuning done today
+- Daily detail card spacing and divider spacing were tuned multiple times.
+- Bottom tab/calendar/history icons were normalized (`Calendar`, `Calendar1`, `Calendars`).
+- Category management affordances were adjusted several times:
+  - default row = edit affordance,
+  - edit mode = `Check`, `Trash2`, `X`, drag handle,
+  - hit areas preserved while icons changed.
+
 ## Recent UX Changes (2026-04-10)
 
 ### History / Monthly page
