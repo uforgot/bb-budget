@@ -1,4 +1,4 @@
-import { ArrowUpDown, Ellipsis, TextWrap } from 'lucide-react'
+import { TextAlignJustify } from 'lucide-react'
 import type { Category } from '@/lib/api'
 
 type TypeTab = 'expense' | 'income' | 'savings'
@@ -127,7 +127,7 @@ export function CategoryGrid({
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
           onTouchCancel={onTouchCancel}
-          className={`relative w-full flex items-center gap-3 px-4 py-4 transition-all duration-200 ease-out select-none touch-none ${
+          className={`relative w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 ease-out select-none touch-none ${
             index !== 0 ? 'border-t border-border/50' : ''
           } ${draggingId === parent.id ? 'bg-background opacity-35' : ''}`}
         >
@@ -135,11 +135,8 @@ export function CategoryGrid({
           <span className="flex-1 min-w-0 text-left text-[16px] text-foreground truncate">{parent.name}</span>
           {editMode ? (
             <>
-              <span className="flex items-center justify-center size-8 rounded-full text-muted-foreground/70 flex-shrink-0">
-                <Ellipsis size={18} />
-              </span>
-              <span className="flex items-center justify-center w-12 self-stretch -my-4 border-l border-border/50 text-muted-foreground/55 flex-shrink-0">
-                <TextWrap size={18} strokeWidth={2} />
+              <span className="flex items-center justify-center w-11 self-stretch -my-3 border-l border-border/50 text-muted-foreground/55 flex-shrink-0">
+                <TextAlignJustify size={18} strokeWidth={2} />
               </span>
             </>
           ) : (

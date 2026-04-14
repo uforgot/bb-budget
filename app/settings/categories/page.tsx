@@ -5,7 +5,7 @@ import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
-import { AddRootCategoryRow, CategoryGrid, CategorySettingsHeader, CategoryTypeTabs, DragGhost } from '@/components/category-settings-sections'
+import { AddRootCategoryRow, CategoryGrid, CategorySettingsHeader, DragGhost } from '@/components/category-settings-sections'
 import { CategoryChildrenEditor, CategoryEditSubmitBar, CategoryEmojiCard, CategoryNameRow } from '@/components/category-edit-sections'
 import { createDraftChild, removeDraftChild, renameDraftChild, resetCategoryEditDraft, splitDraftChildren } from '@/lib/categories'
 
@@ -50,15 +50,19 @@ export default function CategoriesSettings() {
   const supabase = createClient() as any
 
   const loadCategories = async () => {
-    const cats = await getCategories(type)
-    setCategories(cats)
+    const [expenseCats, incomeCats, savingsCats] = await Promise.all([
+      getCategories('expense'),
+      getCategories('income'),
+      getCategories('savings'),
+    ])
+    setCategories([...expenseCats, ...incomeCats, ...savingsCats])
   }
 
   useEffect(() => {
     loadCategories()
     setEditingParent(null)
     setEditMode(false)
-  }, [type])
+  }, [])
 
   const parents = categories.filter(c => !c.parent_id).sort((a, b) => a.sort_order - b.sort_order)
   const orderedParents = orderedParentIds.length
@@ -370,9 +374,7 @@ export default function CategoriesSettings() {
       />
 
       <div className="max-w-lg mx-auto px-5 pt-6">
-        <div className="flex items-center justify-between gap-3 mb-4">
-          <CategoryTypeTabs type={type} onChange={setType} />
-
+        <div className="flex items-center justify-end gap-3 mb-4">
           <button
             onClick={() => {
               setEditMode(prev => !prev)
@@ -400,46 +402,58 @@ export default function CategoriesSettings() {
           />
         )}
 
-        <CategoryGrid
-          parents={orderedParents}
-          editMode={editMode}
-          draggingId={draggingId}
-          suppressClick={suppressClickRef.current}
-          getEmoji={getEmoji}
-          onSelect={(parent) => {
-            setEditingParent(parent)
-            setEditName(parent.name)
-            setDraftChildren(childrenOf(parent.id))
-            setAddingSubCat(false)
-            setNewSubCat('')
-          }}
-          onTouchStart={(parent, event) => {
-            if (!editMode) return
-            clearDragTimer()
-            const touch = event.touches[0]
-            if (!touch) return
-            pendingDragIdRef.current = parent.id
-            touchStartRef.current = { x: touch.clientX, y: touch.clientY, id: parent.id }
-            dragTimerRef.current = setTimeout(() => {
-              if (pendingDragIdRef.current !== parent.id || !touchStartRef.current) return
-              activeDragIdRef.current = parent.id
-              setDraggingId(parent.id)
-              setDragPosition({ x: touchStartRef.current.x, y: touchStartRef.current.y })
-            }, 350)
-          }}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={() => {
-            if (!editMode) return
-            if (!activeDragIdRef.current) {
-              clearDragTimer()
-              pendingDragIdRef.current = null
-              touchStartRef.current = null
-              return
-            }
-            finishDrag()
-          }}
-          onTouchCancel={cancelDrag}
-        />
+        {(['expense', 'income', 'savings'] as TypeTab[]).map(sectionType => {
+          const sectionParents = orderedParents.filter(parent => parent.type === sectionType)
+          if (sectionParents.length === 0) return null
+          return (
+            <div key={sectionType} className="mb-6 last:mb-0">
+              <h2 className="text-[16px] font-semibold mb-3">
+                {sectionType === 'expense' ? '지출' : sectionType === 'income' ? '수입' : '저축'}
+              </h2>
+              <CategoryGrid
+                parents={sectionParents}
+                editMode={editMode}
+                draggingId={draggingId}
+                suppressClick={suppressClickRef.current}
+                getEmoji={getEmoji}
+                onSelect={(parent) => {
+                  setType(parent.type as TypeTab)
+                  setEditingParent(parent)
+                  setEditName(parent.name)
+                  setDraftChildren(childrenOf(parent.id))
+                  setAddingSubCat(false)
+                  setNewSubCat('')
+                }}
+                onTouchStart={(parent, event) => {
+                  if (!editMode) return
+                  clearDragTimer()
+                  const touch = event.touches[0]
+                  if (!touch) return
+                  pendingDragIdRef.current = parent.id
+                  touchStartRef.current = { x: touch.clientX, y: touch.clientY, id: parent.id }
+                  dragTimerRef.current = setTimeout(() => {
+                    if (pendingDragIdRef.current !== parent.id || !touchStartRef.current) return
+                    activeDragIdRef.current = parent.id
+                    setDraggingId(parent.id)
+                    setDragPosition({ x: touchStartRef.current.x, y: touchStartRef.current.y })
+                  }, 350)
+                }}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={() => {
+                  if (!editMode) return
+                  if (!activeDragIdRef.current) {
+                    clearDragTimer()
+                    pendingDragIdRef.current = null
+                    touchStartRef.current = null
+                    return
+                  }
+                  finishDrag()
+                }}
+                onTouchCancel={cancelDrag}
+              />
+            </div>
+          )
+        })}
 
         {editMode && (
           <div className="flex mt-8 pb-10">
