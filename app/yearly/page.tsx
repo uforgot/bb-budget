@@ -192,7 +192,7 @@ export default function Yearly() {
             <MonthlyBarChart
               className="mb-4"
               topSlot={(
-                <div className="flex rounded-[18px] bg-surface/80 p-1 gap-1">
+                <div className="flex items-end gap-0 rounded-t-[22px] px-1">
                   {([
                     ['expense', '지출'],
                     ['income', '수입'],
@@ -203,7 +203,7 @@ export default function Yearly() {
                       <button
                         key={key}
                         onClick={() => setYearlyChartMode(key)}
-                        className={`flex-1 h-10 rounded-[14px] text-[13px] font-semibold transition-colors ${active ? 'bg-background text-foreground' : 'text-muted-foreground'}`}
+                        className={`relative flex-1 h-11 text-[13px] font-semibold transition-colors ${active ? 'z-20 -mb-[1px] rounded-t-[18px] bg-surface text-foreground' : 'z-10 rounded-t-[18px] bg-surface/55 text-muted-foreground'}`}
                       >
                         {label}
                       </button>
