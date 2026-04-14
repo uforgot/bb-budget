@@ -375,15 +375,6 @@ export default function CategoriesSettings() {
       />
 
       <div className="max-w-lg mx-auto px-5 pt-6 pb-10">
-        {addingRoot && (
-          <AddRootCategoryRow
-            value={newRootName}
-            onChange={setNewRootName}
-            onSubmit={handleAddRoot}
-            onCancel={() => { setAddingRoot(false); setNewRootName(''); setAddingRootType(null) }}
-          />
-        )}
-
         {(['expense', 'income', 'savings'] as TypeTab[]).map(sectionType => {
           const sectionParents = orderedParents.filter(parent => parent.type === sectionType)
           if (sectionParents.length === 0) return null
