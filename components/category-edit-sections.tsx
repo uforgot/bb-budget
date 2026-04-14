@@ -23,7 +23,7 @@ export function CategoryEmojiCard({
           className="w-36 h-36 bg-surface rounded-[22px] flex items-center justify-center relative"
         >
           <span style={{ fontSize: '64px' }}>{emoji}</span>
-          <span className="absolute top-3 right-3 text-muted-foreground">
+          <span className="absolute left-1/2 bottom-3 -translate-x-1/2 text-muted-foreground">
             <SquarePen size={14} />
           </span>
         </button>
