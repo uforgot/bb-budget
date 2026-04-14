@@ -241,7 +241,7 @@ export default function Yearly() {
                 if (diff === 0) return `연초 ${toMan(startSavings)} 대비 동일`
                 return `연초 ${toMan(startSavings)} 대비 ${diff > 0 ? '↑' : '↓'}${toMan(Math.abs(diff))}`
               }) : undefined}
-              maxHeight={136}
+              maxHeight={148}
               data={Array.from({ length: 12 }, (_, i) => {
                 const m = i + 1
                 const ms = monthSummaries[i]
