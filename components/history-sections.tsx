@@ -161,7 +161,7 @@ export function HistorySearchPanel({
                         </span>
                         {tx.description && <span className="text-[14px] text-foreground truncate flex-shrink min-w-0">{tx.description}</span>}
                       </div>
-                      <span className={`text-[14px] font-semibold tabular-nums flex-shrink-0 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-accent-blue' : 'text-accent-purple'}`}>
+                      <span className={`text-[14px] font-semibold tracking-[-0.04em] tabular-nums flex-shrink-0 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-[#14b8a6]' : 'text-accent-purple'}`}>
                         ₩{tx.amount.toLocaleString()}
                       </span>
                     </div>
