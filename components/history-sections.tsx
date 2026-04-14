@@ -103,26 +103,28 @@ export function HistorySearchPanel({
 }) {
   return (
     <div className="px-4 py-3">
-      <div className="flex items-center gap-2 bg-surface rounded-[22px] px-4 py-4">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
-          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-        </svg>
-        <input
-          type="text" placeholder="검색어 입력..." value={searchQuery} autoFocus
-          onChange={e => onChangeQuery(e.target.value)}
-          className="flex-1 bg-transparent outline-none text-sm" style={{ fontSize: '16px' }}
-        />
-        {searchQuery && (
-          <button onClick={onClearQuery} className="text-muted-foreground">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-          </button>
-        )}
+      <div className="flex items-center gap-2">
+        <div className="flex flex-1 items-center gap-2 bg-surface rounded-[22px] px-4 py-4">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+          </svg>
+          <input
+            type="text" placeholder="검색어 입력..." value={searchQuery} autoFocus
+            onChange={e => onChangeQuery(e.target.value)}
+            className="flex-1 min-w-0 bg-transparent outline-none text-sm" style={{ fontSize: '16px' }}
+          />
+          {searchQuery && (
+            <button onClick={onClearQuery} className="text-muted-foreground flex-shrink-0" aria-label="검색어 지우기">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+            </button>
+          )}
+        </div>
         <button
           onClick={onClose}
-          className="flex items-center justify-center w-7 h-7 rounded-full bg-muted text-muted-foreground flex-shrink-0"
+          className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground flex-shrink-0"
           aria-label="검색 닫기"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
         </button>
       </div>
       <div className="mt-3">
