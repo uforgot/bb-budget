@@ -379,7 +379,7 @@ export default function CategoriesSettings() {
             className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors z-10 ${editMode ? 'bg-[#5865F2] text-white' : 'bg-muted text-muted-foreground'}`}
             aria-label="편집 모드"
           >
-            <SquarePen size={18} strokeWidth={2} />
+            <SquarePen size={16} strokeWidth={2} />
           </button>
         }
       />
