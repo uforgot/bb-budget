@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { SquarePen } from 'lucide-react'
+import { SquarePen, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getCategories, addCategory, reorderParentCategories, type Category } from '@/lib/api'
 import { createClient } from '@/lib/supabase'
@@ -249,9 +249,7 @@ export default function CategoriesSettings() {
               className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10"
               aria-label="삭제"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
-              </svg>
+              <Trash2 size={16} />
             </button>
           }
         />
