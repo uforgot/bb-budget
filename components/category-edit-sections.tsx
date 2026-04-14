@@ -1,5 +1,5 @@
 import type { Category } from '@/lib/api'
-import { Check, SquarePen, Trash2, X } from 'lucide-react'
+import { Check, SquarePen, Trash, Trash2, X } from 'lucide-react'
 import { EmojiPicker } from '@/components/emoji-picker'
 
 export function CategoryEmojiCard({
@@ -105,7 +105,7 @@ export function CategoryChildrenEditor({
                   <Check size={14} />
                 </button>
                 <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60 hover:text-foreground" aria-label="삭제">
-                  <Trash2 size={14} />
+                  <Trash size={14} />
                 </button>
                 <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60" aria-label="취소">
                   <X size={14} />
