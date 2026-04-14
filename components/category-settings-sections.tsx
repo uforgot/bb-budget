@@ -1,4 +1,4 @@
-import { ArrowUpDown } from 'lucide-react'
+import { TextWrap } from 'lucide-react'
 import type { Category } from '@/lib/api'
 
 type TypeTab = 'expense' | 'income' | 'savings'
@@ -133,7 +133,7 @@ export function CategoryGrid({
         >
           {editMode && (
             <span className="absolute top-2.5 right-2.5 scale-90 text-muted-foreground/40">
-              <ArrowUpDown size={10} strokeWidth={2} />
+              <TextWrap size={10} strokeWidth={2} />
             </span>
           )}
           <span className={`text-xl ${editMode ? 'animate-pulse' : ''}`}>{getEmoji(parent)}</span>
