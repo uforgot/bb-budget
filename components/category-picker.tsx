@@ -1,5 +1,6 @@
 'use client'
 
+import { X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCategories, type Category } from '@/lib/api'
@@ -184,9 +185,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
         <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
           <h3 className="text-base font-semibold">카테고리</h3>
           <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground" aria-label="닫기">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
+            <X size={20} strokeWidth={2} />
           </button>
         </div>
         <div className="overflow-y-auto px-5" style={{ paddingBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))' }}>
