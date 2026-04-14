@@ -465,7 +465,7 @@ export default function CategoriesSettings() {
           <div className="flex mt-8 pb-10">
             <button
               onClick={async () => {
-                await persistOrder(orderedParentIds)
+                await Promise.all((['expense', 'income', 'savings'] as TypeTab[]).map(sectionType => persistOrder(sectionType, orderedParentIdsByType[sectionType])))
                 setEditMode(false)
                 activeDragIdRef.current = null
                 pendingDragIdRef.current = null
