@@ -128,6 +128,52 @@
 | 저축 | #2dd4bf | /card-saving.png |
 | 잔액 | #2C2C2E | /card-balance.png |
 
+## 2025 Google Sheets migration work (2026-04-15)
+
+### What was done
+- Read the live 2025 Google Sheets ledger and the current Supabase `categories` table, then built comparison sheets inside the same spreadsheet instead of overwriting the source tabs.
+- Added these working sheets:
+  - `2025-category-mapping` — old 2025 expense categories vs current app category structure
+  - `current-expense-categories` — current app expense category list from Supabase
+  - `2025-category-review` — row-level replacement targets for 2025 detail rows
+  - `2025-ceremony-unmatched` — temporary review sheet for ceremony rows, later reduced to 0 unmatched detail rows
+- Mapped all 2025 detail rows to current categories based on explicit review rules from 유리님.
+- Excluded monthly aggregate rows from migration decisions and only treated detailed entries as source-of-truth.
+
+### Key mapping rules finalized
+- `건강-병원` → `건강-병원비`
+- `건강-약국` → `건강-약국`
+- `기타-샤미` → `반려동물`
+- `기타-서울페이` → `생활-서울페이`
+- `기타-잡비` → `생활-잡비`
+- `꾸밈` → `쇼핑`, `꾸밈-헤어` → `쇼핑-미용`
+- `대출-*` → `주거-대출`
+- `부동산-부동산` → `주거-인테리어`
+- `생활-구독료` → `통신-구독료`
+- `생활-여가` → `여가`
+- `생활-통신비` → `통신-통신비`
+- `생활-학비` → `자녀-학비`
+- `생활용품-기타용품` → `생활-생필품`
+- `생활용품-아이용품` → `자녀-용품`
+- `생활용품-가전/가구` → `생활-(가전/가구)`, decided by memo
+- `차-주유` → `교통-주유비`
+- `차-유지` → `교통-(정비/주차비 등)`, decided by memo
+- `카드-농협카드` → `금융-농협 카드`
+- `카드-기타카드` → `금융-기타 카드`
+- `배유리청약 / 신형주청약` → `금융-청약` with note for owner
+- `신형주적금` → `금융-적금`
+- `배유리/신형주 보험` → `금융-보험`
+- `신민아/신윤아 보험` → `자녀-보험`
+- `배유리용돈 / 신형주용돈` → `생활-용돈` with note for owner
+- `경조사` detailed rows were fully classified into concrete replacement targets such as `생일`, `명절`, `어머니 만남`, `결혼/조의/집들이`, with memo-based fallback handling
+
+### Result
+- Detailed 2025 rows reached **0 unmatched migration rows**.
+- Remaining non-migration rows are monthly aggregate rows that were intentionally ignored.
+- For 2025 import, the temporary conclusion discussed in chat was:
+  - remove the already-entered `2026-01-01` initial asset row (`₩85,351,278`)
+  - use the separately confirmed 2025 opening-asset logic when importing 2025 history
+
 ## Recent UX Changes (2026-04-14)
 
 ### Category management / editor polish
