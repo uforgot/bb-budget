@@ -190,7 +190,7 @@ export default function Yearly() {
           />
           <div className="px-5 mt-5">
             <div className="mb-0">
-              <div className="flex gap-0 overflow-visible">
+              <div className="flex gap-0 overflow-visible px-[1px]">
                 {([
                   ['expense', '지출'],
                   ['income', '수입'],
@@ -205,7 +205,7 @@ export default function Yearly() {
                     <button
                       key={key}
                       onClick={() => setYearlyChartMode(key)}
-                      className={`relative flex-1 h-10 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : 'z-10 text-muted-foreground'}`}
+                      className={`relative -ml-[1px] flex-1 h-10 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors first:ml-0 ${active ? 'z-20 bg-surface text-foreground' : 'z-10 text-muted-foreground'}`}
                       style={active ? undefined : { backgroundColor: 'rgb(39 39 42)' }}
                     >
                       {active ? null : null}
