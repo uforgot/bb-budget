@@ -174,6 +174,19 @@
   - remove the already-entered `2026-01-01` initial asset row (`₩85,351,278`)
   - use the separately confirmed 2025 opening-asset logic when importing 2025 history
 
+### Critical verification rule after 2025 migration work
+- Never decide a mismatch from memo/description text alone.
+- Row verification must use at least this tuple together:
+  - `date`
+  - `amount`
+  - `description`
+  - `category` when available
+- If totals differ, compare both:
+  - monthly total sum
+  - row-level multiset (`date + amount + description`, or stronger)
+- Do **not** delete or overwrite a DB row until the candidate mismatch is proven by amount-aware comparison.
+- A real incident happened on `2026-04-16`: a row was wrongly deleted after comparing mainly by memo text, then had to be restored. Treat this as a hard rule, not a suggestion.
+
 ## Recent UX Changes (2026-04-14)
 
 ### Category management / editor polish
