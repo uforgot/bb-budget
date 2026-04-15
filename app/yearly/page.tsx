@@ -199,11 +199,13 @@ export default function Yearly() {
                   const active = yearlyChartMode === key
                   const isFirst = index === 0
                   const isLast = index === array.length - 1
+                  const activeFill = 'var(--surface)'
+                  const inactiveFill = 'rgb(39 39 42)'
                   return (
                     <button
                       key={key}
                       onClick={() => setYearlyChartMode(key)}
-                      className={`relative flex-1 h-11 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'bg-surface text-foreground' : 'bg-muted/80 text-muted-foreground'}`}
+                      className={`relative flex-1 h-11 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : 'z-10 bg-muted/80 text-muted-foreground'}`}
                     >
                       {active ? (
                         <span className="pointer-events-none absolute -bottom-[1px] left-0 right-0 h-[2px] bg-surface" />
@@ -213,7 +215,7 @@ export default function Yearly() {
                           <svg viewBox="0 0 12 12" className="h-full w-full" aria-hidden="true">
                             <path
                               d="M12 0V12H0C6.5 12 12 6.5 12 0Z"
-                              fill={active ? 'var(--surface)' : 'color-mix(in srgb, var(--muted) 80%, transparent)'}
+                              fill={active ? activeFill : inactiveFill}
                             />
                           </svg>
                         </span>
@@ -223,7 +225,7 @@ export default function Yearly() {
                           <svg viewBox="0 0 12 12" className="h-full w-full" aria-hidden="true">
                             <path
                               d="M0 0V12H12C5.5 12 0 6.5 0 0Z"
-                              fill={active ? 'var(--surface)' : 'color-mix(in srgb, var(--muted) 80%, transparent)'}
+                              fill={active ? activeFill : inactiveFill}
                             />
                           </svg>
                         </span>
