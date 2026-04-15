@@ -89,6 +89,7 @@ export default function Yearly() {
       <TopToolbar
         onSearch={() => { setSearchMode(v => !v); setSearchQuery('') }}
         onSettings={() => router.push('/settings')}
+        versionLabel="v-87622dd"
       />
 
       {/* 타이틀 */}
@@ -203,7 +204,10 @@ export default function Yearly() {
                       onClick={() => setYearlyChartMode(key)}
                       className={`relative flex-1 h-11 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'bg-surface text-foreground' : 'bg-muted/80 text-muted-foreground'}`}
                     >
-                      {label}
+                      {active ? (
+                        <span className="pointer-events-none absolute -bottom-[1px] left-0 right-0 h-[2px] bg-surface" />
+                      ) : null}
+                      <span className="relative z-10">{label}</span>
                     </button>
                   )
                 })}
