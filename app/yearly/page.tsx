@@ -197,11 +197,15 @@ export default function Yearly() {
                   ['savings', '저축'],
                 ] as const).map(([key, label]) => {
                   const active = yearlyChartMode === key
+                  const inactiveIndex = (['expense', 'income', 'savings'] as const)
+                    .filter(tabKey => tabKey !== yearlyChartMode)
+                    .indexOf(key)
+                  const inactiveClass = inactiveIndex === 0 ? 'bg-surface/80 text-foreground/65' : 'bg-surface/60 text-foreground/50'
                   return (
                     <button
                       key={key}
                       onClick={() => setYearlyChartMode(key)}
-                      className={`relative flex-1 h-10 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : 'z-10 bg-surface/55 text-foreground/55'}`}
+                      className={`relative flex-1 h-10 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : `z-10 ${inactiveClass}`}`}
                     >
                       <span className="relative z-10">{label}</span>
                     </button>
