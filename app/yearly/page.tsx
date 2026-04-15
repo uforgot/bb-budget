@@ -11,6 +11,11 @@ import { getTransactions, type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { MonthlyBarChart } from '@/components/monthly-bar-chart'
 
+function parseDateParts(dateStr: string) {
+  const [year, month] = dateStr.split('-').map(Number)
+  return { year, month }
+}
+
 export default function Yearly() {
   const router = useRouter()
   const today = new Date()
@@ -32,11 +37,11 @@ export default function Yearly() {
   useEffect(() => { loadData() }, [loadData])
 
   const targetYear = today.getFullYear() + yearOffset
-  const yearTxs = transactions.filter(t => new Date(t.date).getFullYear() === targetYear)
+  const yearTxs = transactions.filter(t => parseDateParts(t.date).year === targetYear)
 
   const monthSummaries = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1
-    const mTxs = yearTxs.filter(t => new Date(t.date).getMonth() + 1 === month)
+    const mTxs = yearTxs.filter(t => parseDateParts(t.date).month === month)
     const income = mTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
     const expense = mTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
     const mEnd = `${targetYear}-${String(month).padStart(2,'0')}-${String(new Date(targetYear, month, 0).getDate()).padStart(2,'0')}`
@@ -52,7 +57,7 @@ export default function Yearly() {
   const yearSavings = monthSummaries[11]?.savings || 0
   const yearBalance = yearIncome - yearExpense - yearSavings
   const prevYear = targetYear - 1
-  const prevYearTxs = transactions.filter(t => new Date(t.date).getFullYear() === prevYear)
+  const prevYearTxs = transactions.filter(t => parseDateParts(t.date).year === prevYear)
   const prevYearIncome = prevYearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
   const prevYearExpense = prevYearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   const prevYearSavings = prevYearTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)

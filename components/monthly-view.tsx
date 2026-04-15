@@ -19,9 +19,14 @@ function getWeekNum(year: number, month: number, day: number): number {
   return Math.ceil((day + firstMonday) / 7)
 }
 
+function parseDateParts(dateStr: string) {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  return { year, month, day }
+}
+
 function getWeekNumFromDate(dateStr: string): number {
-  const d = new Date(dateStr)
-  return getWeekNum(d.getFullYear(), d.getMonth() + 1, d.getDate())
+  const { year, month, day } = parseDateParts(dateStr)
+  return getWeekNum(year, month, day)
 }
 
 function getWeekDateRange(year: number, month: number, weekNum: number): { startDay: number; endDay: number } {
@@ -355,8 +360,8 @@ export function MonthlyView({
   const monthEndDate = `${targetYear}-${String(actualMonth).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`
 
   const monthTxs = useMemo(() => transactions.filter(t => {
-    const d = new Date(t.date)
-    return d.getFullYear() === targetYear && d.getMonth() + 1 === actualMonth
+    const { year, month } = parseDateParts(t.date)
+    return year === targetYear && month === actualMonth
   }), [transactions, targetYear, actualMonth])
 
   let monthIncome = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
@@ -449,7 +454,7 @@ export function MonthlyView({
   }, [monthTxs, monthRecurring, isFutureMonth])
 
   const calendarDayTxs = useMemo(() => monthTxs
-    .filter(t => new Date(t.date).getDate() === selectedDay)
+    .filter(t => parseDateParts(t.date).day === selectedDay)
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()), [monthTxs, selectedDay])
 
   const calendarDayRecurring = useMemo(() => monthRecurring.filter(r => r.day === selectedDay), [monthRecurring, selectedDay])
