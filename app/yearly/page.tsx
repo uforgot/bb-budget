@@ -209,16 +209,24 @@ export default function Yearly() {
                         <span className="pointer-events-none absolute -bottom-[1px] left-0 right-0 h-[2px] bg-surface" />
                       ) : null}
                       {!isFirst ? (
-                        <span
-                          className={`pointer-events-none absolute -left-3 bottom-0 h-3 w-3 ${active ? 'text-surface' : 'text-muted/80'}`}
-                          style={{ boxShadow: '-6px 0 0 0 currentColor', borderBottomRightRadius: 12 }}
-                        />
+                        <span className="pointer-events-none absolute -left-3 bottom-0 h-3 w-3 overflow-hidden">
+                          <svg viewBox="0 0 12 12" className="h-full w-full" aria-hidden="true">
+                            <path
+                              d="M12 0V12H0C6.5 12 12 6.5 12 0Z"
+                              fill={active ? 'var(--surface)' : 'color-mix(in srgb, var(--muted) 80%, transparent)'}
+                            />
+                          </svg>
+                        </span>
                       ) : null}
                       {!isLast ? (
-                        <span
-                          className={`pointer-events-none absolute -right-3 bottom-0 h-3 w-3 ${active ? 'text-surface' : 'text-muted/80'}`}
-                          style={{ boxShadow: '6px 0 0 0 currentColor', borderBottomLeftRadius: 12 }}
-                        />
+                        <span className="pointer-events-none absolute -right-3 bottom-0 h-3 w-3 overflow-hidden">
+                          <svg viewBox="0 0 12 12" className="h-full w-full" aria-hidden="true">
+                            <path
+                              d="M0 0V12H12C5.5 12 0 6.5 0 0Z"
+                              fill={active ? 'var(--surface)' : 'color-mix(in srgb, var(--muted) 80%, transparent)'}
+                            />
+                          </svg>
+                        </span>
                       ) : null}
                       <span className="relative z-10">{label}</span>
                     </button>
