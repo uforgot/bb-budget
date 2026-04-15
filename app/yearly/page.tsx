@@ -192,23 +192,25 @@ export default function Yearly() {
             <MonthlyBarChart
               className="mb-4"
               topSlot={(
-                <div className="flex gap-2">
-                  {([
-                    ['expense', '지출'],
-                    ['income', '수입'],
-                    ['savings', '저축'],
-                  ] as const).map(([key, label]) => {
-                    const active = yearlyChartMode === key
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setYearlyChartMode(key)}
-                        className={`relative h-10 rounded-full px-4 text-[13px] font-semibold transition-colors ${active ? 'bg-surface text-foreground' : 'bg-muted text-muted-foreground'}`}
-                      >
-                        {label}
-                      </button>
-                    )
-                  })}
+                <div className="rounded-[22px] bg-surface p-2 mb-3">
+                  <div className="flex gap-2">
+                    {([
+                      ['expense', '지출'],
+                      ['income', '수입'],
+                      ['savings', '저축'],
+                    ] as const).map(([key, label]) => {
+                      const active = yearlyChartMode === key
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => setYearlyChartMode(key)}
+                          className={`relative flex-1 h-10 rounded-full text-[13px] font-semibold transition-colors ${active ? 'bg-background text-foreground' : 'bg-muted text-muted-foreground'}`}
+                        >
+                          {label}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
               label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
