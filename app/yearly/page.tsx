@@ -89,7 +89,6 @@ export default function Yearly() {
       <TopToolbar
         onSearch={() => { setSearchMode(v => !v); setSearchQuery('') }}
         onSettings={() => router.push('/settings')}
-        versionLabel="v2"
       />
 
       {/* 타이틀 */}
