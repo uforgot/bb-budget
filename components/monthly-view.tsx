@@ -369,22 +369,29 @@ export function MonthlyView({
 
   useEffect(() => {
     if (targetYear === 2025 && actualMonth === 10) {
+      const monthExpenseTxs = monthTxs.filter(t => t.type === 'expense')
       const rawExpense = transactions
         .filter(t => t.type === 'expense' && t.date.startsWith('2025-10'))
         .reduce((s, t) => s + t.amount, 0)
-      const monthExpenseCheck = monthTxs
-        .filter(t => t.type === 'expense')
+      const monthExpenseCheck = monthExpenseTxs
         .reduce((s, t) => s + t.amount, 0)
       console.log('[MonthlyView debug]', {
         targetYear,
         actualMonth,
         transactionsCount: transactions.length,
         monthTxsCount: monthTxs.length,
+        monthExpenseTxCount: monthExpenseTxs.length,
         rawExpense,
         monthExpenseCheck,
         monthExpense,
         isFutureMonth,
       })
+      console.table(monthExpenseTxs.map(t => ({
+        date: t.date,
+        amount: t.amount,
+        description: t.description || '',
+        category_id: t.category_id,
+      })))
     }
   }, [targetYear, actualMonth, transactions, monthTxs, monthExpense, isFutureMonth])
   if (isFutureMonth) {
@@ -397,6 +404,12 @@ export function MonthlyView({
   const cumExpense = transactions.filter(t => t.type === 'expense' && t.date <= monthEndDate).reduce((s, t) => s + t.amount, 0)
   const cumSavings = transactions.filter(t => t.type === 'savings' && t.date <= monthEndDate && (!t.end_date || t.end_date > monthEndDate)).reduce((s, t) => s + t.amount, 0)
   const monthBalance = cumIncome - cumExpense - cumSavings
+
+  const debugMonthExpenseTxs = targetYear === 2025 && actualMonth === 10
+    ? monthTxs.filter(t => t.type === 'expense')
+    : []
+  const debugRawExpense = debugMonthExpenseTxs.reduce((s, t) => s + t.amount, 0)
+  const debugLastDayExpenseTxs = debugMonthExpenseTxs.filter(t => t.date === '2025-10-31')
 
   const prevM = actualMonth === 1 ? 12 : actualMonth - 1
   const prevY = actualMonth === 1 ? targetYear - 1 : targetYear
@@ -642,6 +655,19 @@ export function MonthlyView({
         </div>
       )}
       </div>
+
+      {targetYear === 2025 && actualMonth === 10 && (
+        <div className="mx-5 mb-3 rounded-[22px] bg-surface px-4 py-4">
+          <p className="text-[14px] font-semibold text-foreground mb-2">디버그</p>
+          <div className="space-y-1 text-[13px] text-muted-foreground">
+            <p>monthExpense: ₩{monthExpense.toLocaleString()}</p>
+            <p>rawExpense: ₩{debugRawExpense.toLocaleString()}</p>
+            <p>monthExpenseTxCount: {debugMonthExpenseTxs.length}</p>
+            <p>10/31 expense count: {debugLastDayExpenseTxs.length}</p>
+            <p>10/31 expense sum: ₩{debugLastDayExpenseTxs.reduce((s, t) => s + t.amount, 0).toLocaleString()}</p>
+          </div>
+        </div>
+      )}
 
       {viewMode === 'week' && (
         <>
