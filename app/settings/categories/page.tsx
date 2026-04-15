@@ -352,6 +352,16 @@ export default function CategoriesSettings() {
                 }
               }
 
+              for (const child of currentChildren) {
+                const draftChild = draftChildren.find(item => item.id === child.id)
+                if (!draftChild) continue
+                if (draftChild.name !== child.name) {
+                  await supabase.from('categories').update({
+                    name: draftChild.name,
+                  }).eq('id', child.id)
+                }
+              }
+
               for (const child of newDrafts) {
                 await supabase.from('categories').insert({
                   name: child.name,
