@@ -195,12 +195,11 @@ export default function Yearly() {
                   ['expense', '지출'],
                   ['income', '수입'],
                   ['savings', '저축'],
-                ] as const).map(([key, label]) => {
+                ] as const).map(([key, label], index, tabs) => {
                   const active = yearlyChartMode === key
-                  const inactiveIndex = (['expense', 'income', 'savings'] as const)
-                    .filter(tabKey => tabKey !== yearlyChartMode)
-                    .indexOf(key)
-                  const inactiveClass = inactiveIndex === 0 ? 'bg-surface/60 text-foreground/50' : 'bg-surface/30 text-foreground/32'
+                  const activeIndex = tabs.findIndex(([tabKey]) => tabKey === yearlyChartMode)
+                  const distance = Math.abs(index - activeIndex)
+                  const inactiveClass = distance === 1 ? 'bg-surface/60 text-foreground/50' : 'bg-surface/30 text-foreground/32'
                   return (
                     <button
                       key={key}
