@@ -89,7 +89,7 @@ export default function Yearly() {
       <TopToolbar
         onSearch={() => { setSearchMode(v => !v); setSearchQuery('') }}
         onSettings={() => router.push('/settings')}
-        versionLabel="v1"
+        versionLabel="v2"
       />
 
       {/* 타이틀 */}
@@ -214,6 +214,7 @@ export default function Yearly() {
               </div>
             </div>
             <MonthlyBarChart
+              flatTop
               className="mb-4 mt-0"
               label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
               color={yearlyChartMode === 'expense' ? '#5865F2' : yearlyChartMode === 'income' ? '#14b8a6' : '#A855F7'}

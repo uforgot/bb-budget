@@ -17,12 +17,13 @@ interface MonthlyBarChartProps {
   avgLabel?: string
   headerRight?: React.ReactNode
   topSlot?: React.ReactNode
+  flatTop?: boolean
   className?: string
   maxHeight?: number
   comparisonText?: (selectedValue: number) => string | null
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, topSlot, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, topSlot, flatTop = false, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
@@ -37,7 +38,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   const selectedData = data.find(d => d.month === selectedMonth)
 
   return (
-    <div className={`mb-4 bg-surface rounded-b-[22px] ${topSlot ? 'rounded-t-none' : 'rounded-t-[22px]'} ${className}`}>
+    <div className={`mb-4 bg-surface rounded-b-[22px] ${flatTop || topSlot ? 'rounded-t-none' : 'rounded-t-[22px]'} ${className}`}>
       {topSlot ? (
         <div className="px-4 pt-4">
           {topSlot}
