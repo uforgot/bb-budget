@@ -189,8 +189,8 @@ export default function Yearly() {
             yearMode
           />
           <div className="px-5 mt-5">
-            <div className="mb-3 rounded-[22px] bg-surface">
-              <div className="flex gap-2 p-0">
+            <div className="mb-0">
+              <div className="flex gap-0">
                 {([
                   ['expense', '지출'],
                   ['income', '수입'],
@@ -201,7 +201,7 @@ export default function Yearly() {
                     <button
                       key={key}
                       onClick={() => setYearlyChartMode(key)}
-                      className={`relative flex-1 h-10 rounded-[22px] text-[13px] font-semibold transition-colors ${active ? 'bg-background text-foreground' : 'bg-muted text-muted-foreground'}`}
+                      className={`relative flex-1 h-11 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'bg-surface text-foreground' : 'bg-muted/80 text-muted-foreground'}`}
                     >
                       {label}
                     </button>
@@ -210,7 +210,7 @@ export default function Yearly() {
               </div>
             </div>
             <MonthlyBarChart
-              className="mb-4"
+              className="mb-4 mt-0"
               label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
               color={yearlyChartMode === 'expense' ? '#5865F2' : yearlyChartMode === 'income' ? '#14b8a6' : '#A855F7'}
               avgValue={yearlyChartMode === 'expense' ? avgExpense : yearlyChartMode === 'income' ? avgIncome : avgSavings}
