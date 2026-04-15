@@ -51,6 +51,13 @@ export default function Yearly() {
   const yearExpense = yearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   const yearSavings = yearTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
   const yearBalance = yearIncome - yearExpense - yearSavings
+  const prevYear = targetYear - 1
+  const prevYearTxs = transactions.filter(t => new Date(t.date).getFullYear() === prevYear)
+  const prevYearIncome = prevYearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+  const prevYearExpense = prevYearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+  const prevYearSavings = prevYearTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+  const prevYearBalance = prevYearIncome - prevYearExpense - prevYearSavings
+  const hasPrevYear = prevYearTxs.length > 0
   const activeMonths = monthSummaries.filter(m => m.hasData).reverse()
 
   // 평균 계산: 말일이 지난 월까지만 (= 현재월 미포함)
@@ -180,12 +187,12 @@ export default function Yearly() {
             expense={yearExpense}
             savings={yearSavings}
             balance={yearBalance}
-            prevMonth={targetYear - 1}
-            prevIncome={0}
-            prevExpense={0}
-            prevSavings={0}
-            prevBalance={0}
-            hasPrev={false}
+            prevMonth={prevYear}
+            prevIncome={prevYearIncome}
+            prevExpense={prevYearExpense}
+            prevSavings={prevYearSavings}
+            prevBalance={prevYearBalance}
+            hasPrev={hasPrevYear}
             yearMode
           />
           <div className="px-5 mt-5">
