@@ -49,7 +49,7 @@ export default function Yearly() {
 
   const yearIncome = yearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
   const yearExpense = yearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-  const yearSavings = yearTxs.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0)
+  const yearSavings = monthSummaries[11]?.savings || 0
   const yearBalance = yearIncome - yearExpense - yearSavings
   const prevYear = targetYear - 1
   const prevYearTxs = transactions.filter(t => new Date(t.date).getFullYear() === prevYear)
