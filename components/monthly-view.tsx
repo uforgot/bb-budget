@@ -436,7 +436,7 @@ export function MonthlyView({
   const dailySummaries = useMemo(() => {
     const map = new Map<number, { income: number; expense: number }>()
     for (const tx of monthTxs) {
-      const day = new Date(tx.date).getDate()
+      const { day } = parseDateParts(tx.date)
       const current = map.get(day) ?? { income: 0, expense: 0 }
       if (tx.type === 'income') current.income += tx.amount
       if (tx.type === 'expense') current.expense += tx.amount
@@ -464,7 +464,9 @@ export function MonthlyView({
   const weekTxs = useMemo(() => monthTxs
     .filter(t => getWeekNumFromDate(t.date) === selectedWeek)
     .sort((a, b) => {
-      const dateDiff = new Date(a.date).getTime() - new Date(b.date).getTime()
+      const aParts = parseDateParts(a.date)
+      const bParts = parseDateParts(b.date)
+      const dateDiff = new Date(aParts.year, aParts.month - 1, aParts.day).getTime() - new Date(bParts.year, bParts.month - 1, bParts.day).getTime()
       return dateDiff !== 0 ? dateDiff : new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     }), [monthTxs, selectedWeek])
 
