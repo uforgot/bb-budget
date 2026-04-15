@@ -366,6 +366,27 @@ export function MonthlyView({
 
   let monthIncome = monthTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
   let monthExpense = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+
+  useEffect(() => {
+    if (targetYear === 2025 && actualMonth === 10) {
+      const rawExpense = transactions
+        .filter(t => t.type === 'expense' && t.date.startsWith('2025-10'))
+        .reduce((s, t) => s + t.amount, 0)
+      const monthExpenseCheck = monthTxs
+        .filter(t => t.type === 'expense')
+        .reduce((s, t) => s + t.amount, 0)
+      console.log('[MonthlyView debug]', {
+        targetYear,
+        actualMonth,
+        transactionsCount: transactions.length,
+        monthTxsCount: monthTxs.length,
+        rawExpense,
+        monthExpenseCheck,
+        monthExpense,
+        isFutureMonth,
+      })
+    }
+  }, [targetYear, actualMonth, transactions, monthTxs, monthExpense, isFutureMonth])
   if (isFutureMonth) {
     monthExpense += recurringItems.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0)
     monthIncome += recurringItems.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0)
