@@ -200,7 +200,7 @@ export default function Yearly() {
                   const inactiveIndex = (['expense', 'income', 'savings'] as const)
                     .filter(tabKey => tabKey !== yearlyChartMode)
                     .indexOf(key)
-                  const inactiveClass = inactiveIndex === 0 ? 'bg-surface/80 text-foreground/65' : 'bg-surface/60 text-foreground/50'
+                  const inactiveClass = inactiveIndex === 0 ? 'bg-surface/60 text-foreground/50' : 'bg-surface/40 text-foreground/38'
                   return (
                     <button
                       key={key}
