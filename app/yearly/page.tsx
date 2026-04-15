@@ -190,13 +190,15 @@ export default function Yearly() {
           />
           <div className="px-5 mt-5">
             <div className="mb-0">
-              <div className="flex gap-0">
+              <div className="flex gap-0 overflow-visible">
                 {([
                   ['expense', '지출'],
                   ['income', '수입'],
                   ['savings', '저축'],
-                ] as const).map(([key, label]) => {
+                ] as const).map(([key, label], index, array) => {
                   const active = yearlyChartMode === key
+                  const isFirst = index === 0
+                  const isLast = index === array.length - 1
                   return (
                     <button
                       key={key}
@@ -205,6 +207,18 @@ export default function Yearly() {
                     >
                       {active ? (
                         <span className="pointer-events-none absolute -bottom-[1px] left-0 right-0 h-[2px] bg-surface" />
+                      ) : null}
+                      {!isFirst ? (
+                        <span
+                          className={`pointer-events-none absolute -left-3 bottom-0 h-3 w-3 ${active ? 'text-surface' : 'text-muted/80'}`}
+                          style={{ boxShadow: '-6px 0 0 0 currentColor', borderBottomRightRadius: 12 }}
+                        />
+                      ) : null}
+                      {!isLast ? (
+                        <span
+                          className={`pointer-events-none absolute -right-3 bottom-0 h-3 w-3 ${active ? 'text-surface' : 'text-muted/80'}`}
+                          style={{ boxShadow: '6px 0 0 0 currentColor', borderBottomLeftRadius: 12 }}
+                        />
                       ) : null}
                       <span className="relative z-10">{label}</span>
                     </button>
