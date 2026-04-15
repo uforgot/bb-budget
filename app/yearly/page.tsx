@@ -192,37 +192,24 @@ export default function Yearly() {
             <MonthlyBarChart
               className="mb-4"
               topSlot={(
-                <div className="flex items-end pl-1">
-                  {(() => {
-                    const tabs = [
-                      { key: 'expense', label: '지출' },
-                      { key: 'income', label: '수입' },
-                      { key: 'savings', label: '저축' },
-                    ] as const
-                    const activeIndex = tabs.findIndex(tab => tab.key === yearlyChartMode)
-                    const order = tabs
-                      .map((tab, index) => ({ ...tab, index }))
-                      .filter(tab => tab.index !== activeIndex)
-                      .concat({ ...tabs[activeIndex], index: activeIndex })
-
-                    return order.map(({ key, label, index }, stackIndex) => {
-                      const active = yearlyChartMode === key
-                      const depth = active ? 0 : index < activeIndex ? activeIndex - index : index - activeIndex
-                      const topOffset = active ? 0 : depth === 1 ? 4 : 8
-                      const zIndex = active ? 30 : depth === 1 ? 20 : 10
-                      const marginLeft = stackIndex === 0 ? 0 : -10
-                      return (
-                        <button
-                          key={key}
-                          onClick={() => setYearlyChartMode(key)}
-                          className={`relative text-[13px] font-semibold transition-all ${active ? 'bg-surface text-foreground rounded-t-[14px] px-5 pt-2 pb-2.5' : 'bg-muted text-muted-foreground rounded-t-[14px] px-4 pt-1.5 pb-2'}`}
-                          style={{ top: topOffset, zIndex, marginLeft }}
-                        >
-                          {label}
-                        </button>
-                      )
-                    })
-                  })()}
+                <div className="flex gap-0">
+                  {([
+                    ['expense', '지출'],
+                    ['income', '수입'],
+                    ['savings', '저축'],
+                  ] as const).map(([key, label], index) => {
+                    const active = yearlyChartMode === key
+                    const edgeClass = index === 0 ? 'rounded-tl-[18px]' : index === 2 ? 'rounded-tr-[18px]' : ''
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setYearlyChartMode(key)}
+                        className={`relative flex-1 h-11 -mb-px border-b-2 pt-0.5 text-[13px] font-semibold transition-colors ${edgeClass} ${active ? 'border-accent-blue bg-surface text-foreground' : 'border-transparent bg-transparent text-muted-foreground'}`}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
                 </div>
               )}
               label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
