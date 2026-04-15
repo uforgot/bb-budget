@@ -205,7 +205,7 @@ export default function Yearly() {
                     <button
                       key={key}
                       onClick={() => setYearlyChartMode(key)}
-                      className={`relative flex-1 h-11 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : 'z-10 text-muted-foreground'}`}
+                      className={`relative flex-1 h-10 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : 'z-10 text-muted-foreground'}`}
                       style={active ? undefined : { backgroundColor: 'rgb(39 39 42)' }}
                     >
                       {active ? (
