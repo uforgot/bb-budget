@@ -37,7 +37,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   const selectedData = data.find(d => d.month === selectedMonth)
 
   return (
-    <div className={`mb-4 bg-surface rounded-[22px] ${className}`}>
+    <div className={`mb-4 bg-surface rounded-b-[22px] ${topSlot ? 'rounded-t-none' : 'rounded-t-[22px]'} ${className}`}>
       {topSlot ? (
         <div className="px-4 pt-4">
           {topSlot}
