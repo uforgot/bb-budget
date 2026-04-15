@@ -212,7 +212,7 @@ export default function Yearly() {
                         <span className="pointer-events-none absolute -bottom-[1px] left-0 right-0 h-[2px] bg-surface" />
                       ) : null}
                       {!isFirst ? (
-                        <span className="pointer-events-none absolute -left-3 bottom-0 h-3 w-3 overflow-hidden">
+                        <span className="pointer-events-none absolute -left-[11px] bottom-0 h-3 w-3 overflow-hidden">
                           <svg viewBox="0 0 12 12" className="h-full w-full" aria-hidden="true">
                             <path
                               d="M12 0V12H0C6.5 12 12 6.5 12 0Z"
@@ -222,7 +222,7 @@ export default function Yearly() {
                         </span>
                       ) : null}
                       {!isLast ? (
-                        <span className="pointer-events-none absolute -right-3 bottom-0 h-3 w-3 overflow-hidden">
+                        <span className="pointer-events-none absolute -right-[11px] bottom-0 h-3 w-3 overflow-hidden">
                           <svg viewBox="0 0 12 12" className="h-full w-full" aria-hidden="true">
                             <path
                               d="M0 0V12H12C5.5 12 0 6.5 0 0Z"
