@@ -225,25 +225,39 @@ export async function reorderParentCategories(type: string, orderedIds: string[]
 
 // 거래 내역
 export async function getTransactions(filters?: { year?: number; month?: number; type?: string }) {
-  let query = getSupabase()
-    .from('transactions')
-    .select('*, category:categories(*)')
-    .order('date', { ascending: false })
-    .order('created_at', { ascending: false })
+  const supabase = getSupabase() as any
+  const pageSize = 1000
+  let from = 0
+  const all: Transaction[] = []
 
-  if (filters?.year && filters?.month) {
-    const start = `${filters.year}-${String(filters.month).padStart(2, '0')}-01`
-    const endMonth = filters.month === 12 ? 1 : filters.month + 1
-    const endYear = filters.month === 12 ? filters.year + 1 : filters.year
-    const end = `${endYear}-${String(endMonth).padStart(2, '0')}-01`
-    query = query.gte('date', start).lt('date', end)
+  while (true) {
+    let query = supabase
+      .from('transactions')
+      .select('*, category:categories(*)')
+      .order('date', { ascending: false })
+      .order('created_at', { ascending: false })
+      .range(from, from + pageSize - 1)
+
+    if (filters?.year && filters?.month) {
+      const start = `${filters.year}-${String(filters.month).padStart(2, '0')}-01`
+      const endMonth = filters.month === 12 ? 1 : filters.month + 1
+      const endYear = filters.month === 12 ? filters.year + 1 : filters.year
+      const end = `${endYear}-${String(endMonth).padStart(2, '0')}-01`
+      query = query.gte('date', start).lt('date', end)
+    }
+
+    if (filters?.type) query = query.eq('type', filters.type)
+
+    const { data, error } = await query
+    if (error) throw error
+
+    const page = (data || []) as Transaction[]
+    all.push(...page)
+    if (page.length < pageSize) break
+    from += pageSize
   }
 
-  if (filters?.type) query = query.eq('type', filters.type)
-
-  const { data, error } = await query
-  if (error) throw error
-  return data as Transaction[]
+  return all
 }
 
 export async function addTransaction(tx: Record<string, unknown>) {
