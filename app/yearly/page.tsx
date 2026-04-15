@@ -199,36 +199,21 @@ export default function Yearly() {
                   const active = yearlyChartMode === key
                   const isFirst = index === 0
                   const isLast = index === array.length - 1
-                  const activeFill = 'var(--surface)'
-                  const inactiveFill = 'rgb(39 39 42)'
+                  const inactiveIndex = ([
+                    'expense',
+                    'income',
+                    'savings',
+                  ] as const).filter(tabKey => tabKey !== yearlyChartMode).indexOf(key)
+                  const inactiveStyle = inactiveIndex === 0
+                    ? { backgroundColor: '#2C2C2E', color: 'rgba(255,255,255,0.68)' }
+                    : { backgroundColor: '#3A3A3C', color: 'rgba(255,255,255,0.58)' }
                   return (
                     <button
                       key={key}
                       onClick={() => setYearlyChartMode(key)}
-                      className={`relative flex-1 h-10 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : 'z-10 text-muted-foreground'}`}
-                      style={active ? undefined : { backgroundColor: 'rgb(39 39 42)' }}
+                      className={`relative flex-1 h-10 rounded-t-[22px] rounded-b-none text-[13px] font-semibold transition-colors ${active ? 'z-20 bg-surface text-foreground' : 'z-10'}`}
+                      style={active ? undefined : inactiveStyle}
                     >
-                      {active ? null : null}
-                      {!isFirst ? (
-                        <span className="pointer-events-none absolute -left-[26px] bottom-0 h-[30px] w-[30px] overflow-hidden">
-                          <svg viewBox="0 0 30 30" className="h-full w-full" aria-hidden="true">
-                            <path
-                              d="M30 0V30H0C17 30 30 17 30 0Z"
-                              fill={active ? activeFill : inactiveFill}
-                            />
-                          </svg>
-                        </span>
-                      ) : null}
-                      {!isLast ? (
-                        <span className="pointer-events-none absolute -right-[26px] bottom-0 h-[30px] w-[30px] overflow-hidden">
-                          <svg viewBox="0 0 30 30" className="h-full w-full" aria-hidden="true">
-                            <path
-                              d="M0 0V30H30C13 30 0 17 0 0Z"
-                              fill={active ? activeFill : inactiveFill}
-                            />
-                          </svg>
-                        </span>
-                      ) : null}
                       <span className="relative z-10">{label}</span>
                     </button>
                   )
