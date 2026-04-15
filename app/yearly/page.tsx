@@ -205,8 +205,8 @@ export default function Yearly() {
                     'savings',
                   ] as const).filter(tabKey => tabKey !== yearlyChartMode).indexOf(key)
                   const inactiveStyle = inactiveIndex === 0
-                    ? { backgroundColor: '#2C2C2E', color: 'rgba(255,255,255,0.68)' }
-                    : { backgroundColor: '#3A3A3C', color: 'rgba(255,255,255,0.58)' }
+                    ? { backgroundColor: '#2C2C2E', color: 'rgba(255,255,255,0.52)' }
+                    : { backgroundColor: '#222225', color: 'rgba(255,255,255,0.42)' }
                   return (
                     <button
                       key={key}
