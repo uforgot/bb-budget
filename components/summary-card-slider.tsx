@@ -10,14 +10,11 @@ function fmt(n: number) {
   return abs.toLocaleString()
 }
 
-function diffText(diff: number | null, type: 'income' | 'expense' | 'savings' | 'balance', prevLabel: string): string {
+function diffText(diff: number | null, _type: 'income' | 'expense' | 'savings' | 'balance', prevLabel: string): string {
   if (diff === null || diff === undefined) return ''
-  if (diff === 0) return '변동이 없어요'
-  const f = fmt(Math.abs(diff))
-  if (type === 'income') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 벌었어요` : `${prevLabel}보다 ${f} 원 덜 벌었어요`
-  if (type === 'expense') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 썼어요` : `${prevLabel}보다 ${f} 원 덜 썼어요`
-  if (type === 'savings') return diff > 0 ? `${prevLabel}보다 ${f} 원 더 저축했어요` : `${prevLabel}보다 ${f} 원 줄었어요`
-  return diff > 0 ? `${prevLabel}보다 ${f} 원 늘었어요` : `${prevLabel}보다 ${f} 원 줄었어요`
+  const f = `${fmt(Math.abs(diff))} 원`
+  if (diff === 0) return `${prevLabel} 대비 동일`
+  return `${prevLabel} 대비 ${diff > 0 ? '↑' : '↓'}${f}`
 }
 
 interface SummaryCardSliderProps {
