@@ -378,6 +378,7 @@ export function MonthlyView({
       console.log('[MonthlyView debug]', {
         targetYear,
         actualMonth,
+        monthOffset,
         transactionsCount: transactions.length,
         monthTxsCount: monthTxs.length,
         monthExpenseTxCount: monthExpenseTxs.length,
@@ -385,6 +386,10 @@ export function MonthlyView({
         monthExpenseCheck,
         monthExpense,
         isFutureMonth,
+        sameRawAndMonthExpense: rawExpense === monthExpense,
+        sameRawAndMonthExpenseCheck: rawExpense === monthExpenseCheck,
+        directFilterCount: transactions.filter(t => t.date?.startsWith('2025-10')).length,
+        directFilterExpense: transactions.filter(t => t.type === 'expense' && t.date?.startsWith('2025-10')).reduce((s, t) => s + t.amount, 0),
       })
       console.table(monthExpenseTxs.map(t => ({
         date: t.date,
