@@ -236,6 +236,7 @@ export async function getTransactions(filters?: { year?: number; month?: number;
       .select('*, category:categories(*)')
       .order('date', { ascending: false })
       .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
       .range(from, from + pageSize - 1)
 
     if (filters?.year && filters?.month) {
@@ -252,12 +253,13 @@ export async function getTransactions(filters?: { year?: number; month?: number;
     if (error) throw error
 
     const page = (data || []) as Transaction[]
+    if (page.length === 0) break
     all.push(...page)
     if (page.length < pageSize) break
     from += pageSize
   }
 
-  return all
+  return Array.from(new Map(all.map(tx => [tx.id, tx])).values())
 }
 
 export async function addTransaction(tx: Record<string, unknown>) {
