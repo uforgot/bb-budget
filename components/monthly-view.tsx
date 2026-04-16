@@ -665,9 +665,16 @@ export function MonthlyView({
         <div className="mx-5 mb-3 rounded-[22px] bg-surface px-4 py-4">
           <p className="text-[14px] font-semibold text-foreground mb-2">디버그</p>
           <div className="space-y-1 text-[13px] text-muted-foreground">
+            <p>targetYear: {targetYear}</p>
+            <p>actualMonth: {actualMonth}</p>
+            <p>monthOffset: {monthOffset}</p>
+            <p>monthTxsCount: {monthTxs.length}</p>
+            <p>directFilterCount: {transactions.filter(t => t.date?.startsWith('2025-10')).length}</p>
             <p>monthExpense: ₩{monthExpense.toLocaleString()}</p>
             <p>rawExpense: ₩{debugRawExpense.toLocaleString()}</p>
             <p>monthExpenseTxCount: {debugMonthExpenseTxs.length}</p>
+            <p>sameRawAndMonthExpense: {String(debugRawExpense === monthExpense)}</p>
+            <p>directFilterExpense: ₩{transactions.filter(t => t.type === 'expense' && t.date?.startsWith('2025-10')).reduce((s, t) => s + t.amount, 0).toLocaleString()}</p>
             <p>10/31 expense count: {debugLastDayExpenseTxs.length}</p>
             <p>10/31 expense sum: ₩{debugLastDayExpenseTxs.reduce((s, t) => s + t.amount, 0).toLocaleString()}</p>
           </div>
