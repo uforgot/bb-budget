@@ -34,8 +34,8 @@ export default function History() {
   const loadData = useCallback(async () => {
     try {
       const [cats, all] = await Promise.all([getCategories(), getTransactions({})])
-      setCategories(cats)
-      setTransactions(all.sort((a, b) => {
+      setCategories([...cats])
+      setTransactions([...all].sort((a, b) => {
         const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime()
         return dateDiff !== 0 ? dateDiff : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       }))
@@ -63,7 +63,7 @@ export default function History() {
   }
 
   return (
-    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData} disabled>
+    <PullToRefresh className="min-h-dvh bg-background pb-32" onRefresh={loadData}>
       <>
       <HistoryTopBar
         forceCalendarView={forceCalendarView}

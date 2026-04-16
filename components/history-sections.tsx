@@ -59,7 +59,7 @@ export function HistoryMonthSelector({
             </select>
             <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0" />
           </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
+          <label className={`flex items-center cursor-pointer ${currentMonth >= 10 ? 'gap-1.5' : 'gap-1'}`}>
             <select
               value={currentMonth}
               onChange={e => onChangeMonth(Number(e.target.value))}
