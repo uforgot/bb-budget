@@ -487,5 +487,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         )}
       </div>
     </div>
+    </div>
   )
 }
