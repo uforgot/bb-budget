@@ -306,7 +306,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`}>
       <div className="absolute inset-0 bg-black/18" onClick={handleClose} />
       <div
-        className="absolute inset-x-0 bottom-0 flex flex-col bg-surface"
+        className="absolute inset-x-0 bottom-0 flex flex-col bg-card"
         style={{
           top: 'max(48px, env(safe-area-inset-top, 0px) + 16px)',
           transform: open ? `translateY(${dragTranslateY}px)` : 'translateY(100%)',
@@ -315,7 +315,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           borderTopRightRadius: 28,
           overflow: 'hidden',
           touchAction: 'none',
-          backgroundColor: '#1C1C1E',
+          backgroundColor: 'var(--card)',
           boxShadow: '0 -8px 28px rgba(0,0,0,0.28)',
         }}
         onTouchStart={handleSheetTouchStart}
@@ -419,7 +419,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       </div>
 
       {/* 하단 버튼 영역 */}
-      <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-surface" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+      <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-card" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
         {editTransaction ? (
           recoverOpen ? (
             <div className="flex gap-3 mb-2">
