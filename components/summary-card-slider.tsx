@@ -31,11 +31,12 @@ interface SummaryCardSliderProps {
   hasPrev: boolean
   yearMode?: boolean
   prevLabelOverride?: string
+  labelPrefixOverride?: string
 }
 
 export function SummaryCardSlider({
   month, income, expense, savings, balance,
-  prevMonth, prevIncome, prevExpense, prevSavings, prevBalance, hasPrev, yearMode, prevLabelOverride,
+  prevMonth, prevIncome, prevExpense, prevSavings, prevBalance, hasPrev, yearMode, prevLabelOverride, labelPrefixOverride,
 }: SummaryCardSliderProps) {
   const unit = yearMode ? '년' : '월'
   const prevLabel = prevLabelOverride || `${prevMonth}${unit}`
@@ -59,11 +60,12 @@ export function SummaryCardSlider({
     return () => ro.disconnect()
   }, [])
 
+  const labelPrefix = labelPrefixOverride || `${month}${unit}`
   const cards = [
-    { label: yearMode ? '올해 쓴 지출' : `${month}${unit} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: semanticColors.expense, img: '/card-expense.png' },
-    { label: yearMode ? '올해 번 수입' : `${month}${unit} 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: semanticColors.income, img: '/card-income.png' },
-    { label: yearMode ? '올해 모은 저축' : `${month}${unit} 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: semanticColors.savings, img: '/card-saving.png' },
-    { label: yearMode ? '올해 남은 잔액' : `${month}${unit} 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: '#2C2C2E', img: '/card-balance.png' },
+    { label: `${labelPrefix} 쓴 지출`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: semanticColors.expense, img: '/card-expense.png' },
+    { label: `${labelPrefix} 번 수입`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: semanticColors.income, img: '/card-income.png' },
+    { label: `${labelPrefix} 모은 저축`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: semanticColors.savings, img: '/card-saving.png' },
+    { label: `${labelPrefix} 남은 잔액`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: '#2C2C2E', img: '/card-balance.png' },
   ]
   const total = cards.length
   const loopCards = useMemo(() => [...cards, ...cards, ...cards], [cards])

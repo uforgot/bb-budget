@@ -356,6 +356,7 @@ export function MonthlyView({
   const today = new Date()
   const { currentYear: targetYear, currentMonth: actualMonth } = resolveYearMonthFromOffset(monthOffset, now)
   const isFutureMonth = targetYear > today.getFullYear() || (targetYear === today.getFullYear() && actualMonth > today.getMonth() + 1)
+  const isCurrentMonthView = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1
   const daysInMonth = new Date(targetYear, actualMonth, 0).getDate()
   const monthEndDate = `${targetYear}-${String(actualMonth).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`
 
@@ -564,6 +565,8 @@ export function MonthlyView({
           prevSavings={prevSavingsAmt}
           prevBalance={prevBalance}
           hasPrev={prevTxs.length > 0}
+          labelPrefixOverride={isCurrentMonthView ? `${actualMonth}월 ${today.getDate()}일까지` : undefined}
+          prevLabelOverride={isCurrentMonthView ? `${prevM}월 ${today.getDate()}일까지` : undefined}
         />
       )}
 

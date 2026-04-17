@@ -208,7 +208,8 @@ export default function Yearly() {
             prevBalance={prevYearBalance}
             hasPrev={hasPrevYear}
             yearMode
-            prevLabelOverride={`작년 ${compareMonth}월`}
+            labelPrefixOverride={targetYear === today.getFullYear() ? `${targetYear}년 ${compareMonth}월까지` : undefined}
+            prevLabelOverride={targetYear === today.getFullYear() ? `${prevYear}년 ${compareMonth}월` : undefined}
           />
           <div className="px-5 mt-5">
             <div className="mb-0">
