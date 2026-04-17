@@ -209,7 +209,6 @@ export default function Yearly() {
             hasPrev={hasPrevYear}
             yearMode
             labelPrefixOverride={targetYear === today.getFullYear() ? `${targetYear}년` : undefined}
-            labelSuffixOverride={targetYear === today.getFullYear() ? ` · ${compareMonth}월까지` : undefined}
             prevLabelOverride={targetYear === today.getFullYear() ? `${prevYear}년 동일 시점` : undefined}
           />
           <div className="px-5 mt-5">

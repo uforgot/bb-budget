@@ -570,7 +570,6 @@ export function MonthlyView({
           prevBalance={prevBalance}
           hasPrev={prevTxs.length > 0}
           labelPrefixOverride={isCurrentMonthView ? `${actualMonth}월` : undefined}
-          labelSuffixOverride={isCurrentMonthView ? ` · ${today.getDate()}일까지` : undefined}
           prevLabelOverride={isCurrentMonthView ? `${prevM}월 동일 시점` : undefined}
         />
       )}
