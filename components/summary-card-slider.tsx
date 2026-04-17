@@ -64,10 +64,10 @@ export function SummaryCardSlider({
   const labelPrefix = labelPrefixOverride || `${month}${unit}`
   const labelSuffix = labelSuffixOverride || ''
   const cards = [
-    { label: `${labelPrefix} 쓴 지출${labelSuffix}`, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: semanticColors.expense, img: '/card-expense.png' },
-    { label: `${labelPrefix} 번 수입${labelSuffix}`, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: semanticColors.income, img: '/card-income.png' },
-    { label: `${labelPrefix} 모은 저축${labelSuffix}`, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: semanticColors.savings, img: '/card-saving.png' },
-    { label: `${labelPrefix} 남은 잔액${labelSuffix}`, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: '#2C2C2E', img: '/card-balance.png' },
+    { labelPrefix: `${labelPrefix} 쓴 지출`, labelSuffix, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: semanticColors.expense, img: '/card-expense.png' },
+    { labelPrefix: `${labelPrefix} 번 수입`, labelSuffix, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: semanticColors.income, img: '/card-income.png' },
+    { labelPrefix: `${labelPrefix} 모은 저축`, labelSuffix, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: semanticColors.savings, img: '/card-saving.png' },
+    { labelPrefix: `${labelPrefix} 남은 잔액`, labelSuffix, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: '#2C2C2E', img: '/card-balance.png' },
   ]
   const total = cards.length
   const loopCards = useMemo(() => [...cards, ...cards, ...cards], [cards])
@@ -164,7 +164,7 @@ export function SummaryCardSlider({
           const dt = diffText(card.diff, card.type, prevLabel)
           return (
             <div
-              key={`${card.label}-${idx}`}
+              key={`${card.labelPrefix}-${idx}`}
               className="flex-shrink-0 w-full"
               style={{ padding: '0 20px' }}
             >
@@ -178,7 +178,10 @@ export function SummaryCardSlider({
                   style={{ transform: 'translateY(-50%) translateX(-5%)' }}
                 />
                 <div>
-                  <p className={`text-[14px] font-medium text-white mb-0`}>{card.label}</p>
+                  <p className={`text-[14px] font-medium text-white mb-0`}>
+                    {card.labelPrefix}
+                    {card.labelSuffix && <span className={` ${typography.cardSubtleInverse}`}>{card.labelSuffix}</span>}
+                  </p>
                   <p className={`text-[24px] font-bold tracking-[-0.0416667em] tabular-nums ${typography.cardBodyInverse} leading-tight`}>
                     ₩{card.amount.toLocaleString()}
                   </p>
