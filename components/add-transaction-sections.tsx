@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronRight, Trash, X } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
 import { CategoryPicker } from './category-picker'
 
 type TransactionType = '지출' | '수입' | '저축'
@@ -19,17 +19,17 @@ export function AddTransactionHeader({
       <button
         onClick={onClose}
         className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-muted-foreground"
-        aria-label="닫기"
+        aria-label="뒤로가기"
       >
-        <X size={22} strokeWidth={2} />
+        <ChevronLeft size={22} strokeWidth={2.4} />
       </button>
       <h1 className="text-[17px] font-semibold">{title}</h1>
       <button
         onClick={onConfirm}
         className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-foreground"
-        aria-label="확인"
+        aria-label="삭제"
       >
-        <Check size={22} strokeWidth={2.4} />
+        <Trash size={20} strokeWidth={2.2} />
       </button>
     </header>
   )
