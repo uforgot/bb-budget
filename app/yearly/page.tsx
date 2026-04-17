@@ -119,7 +119,7 @@ export default function Yearly() {
             <select
               value={targetYear}
               onChange={e => setYearOffset(Number(e.target.value) - today.getFullYear())}
-              className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
+              className="appearance-none bg-transparent text-foreground text-[30px] font-bold outline-none cursor-pointer"
               style={{ letterSpacing: '-1px' }}
             >
               {Array.from({ length: 20 }, (_, i) => today.getFullYear() - 5 + i).map(y => (

@@ -52,7 +52,7 @@ export function HistoryMonthSelector({
             <select
               value={currentYear}
               onChange={e => onChangeYear(Number(e.target.value))}
-              className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
+              className="appearance-none bg-transparent text-foreground text-[30px] font-bold outline-none cursor-pointer"
               style={{ letterSpacing: '-1px' }}
             >
               {years.map(y => <option key={y} value={y}>{y}년</option>)}
@@ -63,7 +63,7 @@ export function HistoryMonthSelector({
             <select
               value={currentMonth}
               onChange={e => onChangeMonth(Number(e.target.value))}
-              className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
+              className="appearance-none bg-transparent text-foreground text-[30px] font-bold outline-none cursor-pointer"
               style={{ letterSpacing: '-1px' }}
             >
               {months.map(m => <option key={m} value={m}>{m}월</option>)}
