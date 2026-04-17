@@ -303,19 +303,23 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   ]
 
   return (
-    <div
-      className={`fixed inset-0 z-50 bg-background flex flex-col ${open ? '' : 'pointer-events-none'}`}
-      style={{
-        transform: open ? `translateY(${dragTranslateY}px)` : 'translateY(100%)',
-        transition: sheetAnimating ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
-        borderTopLeftRadius: 28,
-        borderTopRightRadius: 28,
-        overflow: 'hidden',
-      }}
-      onTouchStart={handleSheetTouchStart}
-      onTouchMove={handleSheetTouchMove}
-      onTouchEnd={handleSheetTouchEnd}
-    >
+    <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`}>
+      <div className="absolute inset-0 bg-black/18" onClick={handleClose} />
+      <div
+        className="absolute inset-x-0 bottom-0 flex flex-col bg-surface"
+        style={{
+          top: 'max(48px, env(safe-area-inset-top, 0px) + 16px)',
+          transform: open ? `translateY(${dragTranslateY}px)` : 'translateY(100%)',
+          transition: sheetAnimating ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
+          overflow: 'hidden',
+          touchAction: 'none',
+        }}
+        onTouchStart={handleSheetTouchStart}
+        onTouchMove={handleSheetTouchMove}
+        onTouchEnd={handleSheetTouchEnd}
+      >
       <AddTransactionHeader
         title={editTransaction ? '수정하기' : '기록하기'}
         onClose={handleClose}
@@ -323,7 +327,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       />
 
       {/* Scrollable content */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
         <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
           <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
