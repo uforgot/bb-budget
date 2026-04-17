@@ -37,6 +37,7 @@ export default function Yearly() {
   useEffect(() => { loadData() }, [loadData])
 
   const targetYear = today.getFullYear() + yearOffset
+  const compareMonth = targetYear === today.getFullYear() ? today.getMonth() + 1 : 12
   const yearTxs = transactions.filter(t => parseDateParts(t.date).year === targetYear)
 
   const monthSummaries = Array.from({ length: 12 }, (_, i) => {
@@ -56,15 +57,17 @@ export default function Yearly() {
   const yearExpense = yearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   const yearSavings = monthSummaries[11]?.savings || 0
   const yearEnd = `${targetYear}-12-31`
+  const compareEnd = `${targetYear}-${String(compareMonth).padStart(2, '0')}-${String(new Date(targetYear, compareMonth, 0).getDate()).padStart(2, '0')}`
   const yearCumIncome = transactions.filter(t => t.type === 'income' && t.date <= yearEnd).reduce((s, t) => s + t.amount, 0)
   const yearCumExpense = transactions.filter(t => t.type === 'expense' && t.date <= yearEnd).reduce((s, t) => s + t.amount, 0)
   const yearBalance = yearCumIncome - yearCumExpense - yearSavings
   const prevYear = targetYear - 1
+  const prevCompareEnd = `${prevYear}-${String(compareMonth).padStart(2, '0')}-${String(new Date(prevYear, compareMonth, 0).getDate()).padStart(2, '0')}`
   const prevYearTxs = transactions.filter(t => parseDateParts(t.date).year === prevYear)
-  const prevYearIncome = prevYearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-  const prevYearExpense = prevYearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+  const prevYearIncome = transactions.filter(t => t.type === 'income' && t.date <= prevCompareEnd && parseDateParts(t.date).year === prevYear).reduce((s, t) => s + t.amount, 0)
+  const prevYearExpense = transactions.filter(t => t.type === 'expense' && t.date <= prevCompareEnd && parseDateParts(t.date).year === prevYear).reduce((s, t) => s + t.amount, 0)
   const prevYearEnd = `${prevYear}-12-31`
-  const prevYearSavings = transactions.filter(t => t.type === 'savings' && t.date <= prevYearEnd && (!t.end_date || t.end_date > prevYearEnd)).reduce((s, t) => s + t.amount, 0)
+  const prevYearSavings = transactions.filter(t => t.type === 'savings' && t.date <= prevCompareEnd && (!t.end_date || t.end_date > prevCompareEnd)).reduce((s, t) => s + t.amount, 0)
   const prevYearCumIncome = transactions.filter(t => t.type === 'income' && t.date <= prevYearEnd).reduce((s, t) => s + t.amount, 0)
   const prevYearCumExpense = transactions.filter(t => t.type === 'expense' && t.date <= prevYearEnd).reduce((s, t) => s + t.amount, 0)
   const prevYearBalance = prevYearCumIncome - prevYearCumExpense - prevYearSavings
@@ -205,6 +208,7 @@ export default function Yearly() {
             prevBalance={prevYearBalance}
             hasPrev={hasPrevYear}
             yearMode
+            prevLabelOverride={`작년 ${compareMonth}월`}
           />
           <div className="px-5 mt-5">
             <div className="mb-0">
