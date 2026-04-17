@@ -385,11 +385,15 @@ export function MonthlyView({
   const prevEnd = `${prevY}-${String(prevM).padStart(2,'0')}-${String(prevDays).padStart(2,'0')}`
   const prevStart = `${prevY}-${String(prevM).padStart(2,'0')}-01`
   const prevTxs = transactions.filter(t => t.date >= prevStart && t.date <= prevEnd)
-  const prevIncome = prevTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-  const prevExpense = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-  const prevSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= prevEnd && (!t.end_date || t.end_date > prevEnd)).reduce((s, t) => s + t.amount, 0)
-  const prevCumInc = transactions.filter(t => t.type === 'income' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
-  const prevCumExp = transactions.filter(t => t.type === 'expense' && t.date <= prevEnd).reduce((s, t) => s + t.amount, 0)
+  const compareDay = Math.min(today.getDate(), prevDays)
+  const prevPartialEnd = `${prevY}-${String(prevM).padStart(2,'0')}-${String(compareDay).padStart(2,'0')}`
+  const prevPartialTxs = transactions.filter(t => t.date >= prevStart && t.date <= prevPartialEnd)
+  const prevIncome = (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? prevPartialTxs : prevTxs).filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+  const prevExpense = (targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? prevPartialTxs : prevTxs).filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+  const prevCompareEndForCard = targetYear === today.getFullYear() && actualMonth === today.getMonth() + 1 ? prevPartialEnd : prevEnd
+  const prevSavingsAmt = transactions.filter(t => t.type === 'savings' && t.date <= prevCompareEndForCard && (!t.end_date || t.end_date > prevCompareEndForCard)).reduce((s, t) => s + t.amount, 0)
+  const prevCumInc = transactions.filter(t => t.type === 'income' && t.date <= prevCompareEndForCard).reduce((s, t) => s + t.amount, 0)
+  const prevCumExp = transactions.filter(t => t.type === 'expense' && t.date <= prevCompareEndForCard).reduce((s, t) => s + t.amount, 0)
   const prevBalance = prevCumInc - prevCumExp - prevSavingsAmt
 
   const totalWeeks = getWeekNum(targetYear, actualMonth, daysInMonth)

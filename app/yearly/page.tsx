@@ -53,11 +53,11 @@ export default function Yearly() {
     return { month, income, expense, savings, balance, hasData: mTxs.length > 0 }
   })
 
-  const yearIncome = yearTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
-  const yearExpense = yearTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
-  const yearSavings = monthSummaries[11]?.savings || 0
   const yearEnd = `${targetYear}-12-31`
   const compareEnd = `${targetYear}-${String(compareMonth).padStart(2, '0')}-${String(new Date(targetYear, compareMonth, 0).getDate()).padStart(2, '0')}`
+  const yearIncome = transactions.filter(t => t.type === 'income' && t.date <= compareEnd && parseDateParts(t.date).year === targetYear).reduce((s, t) => s + t.amount, 0)
+  const yearExpense = transactions.filter(t => t.type === 'expense' && t.date <= compareEnd && parseDateParts(t.date).year === targetYear).reduce((s, t) => s + t.amount, 0)
+  const yearSavings = transactions.filter(t => t.type === 'savings' && t.date <= compareEnd && (!t.end_date || t.end_date > compareEnd)).reduce((s, t) => s + t.amount, 0)
   const yearCumIncome = transactions.filter(t => t.type === 'income' && t.date <= yearEnd).reduce((s, t) => s + t.amount, 0)
   const yearCumExpense = transactions.filter(t => t.type === 'expense' && t.date <= yearEnd).reduce((s, t) => s + t.amount, 0)
   const yearBalance = yearCumIncome - yearCumExpense - yearSavings
