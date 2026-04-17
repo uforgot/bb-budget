@@ -62,7 +62,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               : '—'}
           </p>
           {selectedData && !selectedData.isFuture && selectedData.value > 0 && comparisonText && (
-            <p className={`text-[13px] font-medium ${typography.cardSubtleInverse} mt-1 whitespace-nowrap`}>
+            <p className="text-[13px] font-medium mt-1 whitespace-nowrap" style={{ color: '#9CA3AF' }}>
               {comparisonText(selectedData.value)}
             </p>
           )}
@@ -72,7 +72,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
             const isOver = diff > 0
             const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
             return (
-              <p className={`text-[13px] font-medium ${typography.cardSubtleInverse} mt-1 whitespace-nowrap`}>
+              <p className="text-[13px] font-medium mt-1 whitespace-nowrap" style={{ color: '#9CA3AF' }}>
                 {avgLabel} {toMan(avgValue)} 대비 {isOver ? '↑' : '↓'}{toMan(Math.abs(diff))}
               </p>
             )
