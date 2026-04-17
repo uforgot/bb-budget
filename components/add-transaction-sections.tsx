@@ -15,7 +15,7 @@ export function AddTransactionHeader({
   onConfirm: () => void
 }) {
   return (
-    <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-16 bg-surface flex-shrink-0">
+    <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-16 flex-shrink-0" style={{ backgroundColor: '#1C1C1E' }}>
       <button
         onClick={onClose}
         className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-muted-foreground"

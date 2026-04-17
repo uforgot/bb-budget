@@ -315,6 +315,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           borderTopRightRadius: 28,
           overflow: 'hidden',
           touchAction: 'none',
+          backgroundColor: '#1C1C1E',
+          boxShadow: '0 -8px 28px rgba(0,0,0,0.28)',
         }}
         onTouchStart={handleSheetTouchStart}
         onTouchMove={handleSheetTouchMove}
@@ -330,7 +332,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
         <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
-          <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
+          <div className="mb-3 rounded-[22px] overflow-visible" style={{ backgroundColor: '#2A2A2D' }}>
             <TransactionDateRow
               date={date}
               onFocus={() => setKeypadActive(false)}
@@ -417,7 +419,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       </div>
 
       {/* 하단 버튼 영역 */}
-      <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-background" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+      <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0 bg-surface" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
         {editTransaction ? (
           recoverOpen ? (
             <div className="flex gap-3 mb-2">
