@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, Trash, X } from 'lucide-react'
 import { CategoryPicker } from './category-picker'
 
 type TransactionType = '지출' | '수입' | '저축'
@@ -8,33 +8,29 @@ const TYPE_MAP: Record<TransactionType, string> = { '지출': 'expense', '수입
 export function AddTransactionHeader({
   title,
   onClose,
-  onDelete,
+  onConfirm,
 }: {
   title: string
   onClose: () => void
-  onDelete?: () => void
+  onConfirm: () => void
 }) {
   return (
-    <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14 bg-background flex-shrink-0">
+    <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-16 bg-background flex-shrink-0">
       <button
         onClick={onClose}
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
-        aria-label="취소"
+        className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-muted-foreground"
+        aria-label="닫기"
       >
-        <ChevronLeft size={20} strokeWidth={2} />
+        <X size={22} strokeWidth={2} />
       </button>
       <h1 className="text-[17px] font-semibold">{title}</h1>
-      {onDelete ? (
-        <button
-          onClick={onDelete}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-coral/10 text-accent-coral"
-          aria-label="삭제"
-        >
-          <Trash size={16} />
-        </button>
-      ) : (
-        <div className="w-8" />
-      )}
+      <button
+        onClick={onConfirm}
+        className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-foreground"
+        aria-label="확인"
+      >
+        <Check size={22} strokeWidth={2.4} />
+      </button>
     </header>
   )
 }

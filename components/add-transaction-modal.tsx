@@ -52,6 +52,12 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   })
   const repeatDropdownRef = useRef<HTMLDivElement>(null)
   const amountInputRef = useRef<HTMLInputElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const dragStartYRef = useRef(0)
+  const dragTranslateYRef = useRef(0)
+  const draggingSheetRef = useRef(false)
+  const [dragTranslateY, setDragTranslateY] = useState(0)
+  const [sheetAnimating, setSheetAnimating] = useState(false)
 
   // 최근 사용 카테고리 로드
   useEffect(() => {
@@ -214,23 +220,59 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   }
 
   const handleClose = () => {
-    setType(null)
-    setRawAmount('')
-    setCategoryId('')
-    setCategoryLabel('카테고리 선택')
-    setMemo('')
-    setEditDate(initialDate || null)
-    setEndDate('')
-    setEndAmount('')
-    setRecoverAmount('')
-    setRecoverOpen(false)
-    setCategoryPickerOpen(false)
-    setLinkedRecurringId(null)
-    setRepeatFrequency('none')
-    setRepeatDropdownOpen(false)
-    const d = new Date(); d.setMonth(d.getMonth() + 1)
-    setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
-    onClose()
+    setSheetAnimating(true)
+    setDragTranslateY(window.innerHeight)
+    window.setTimeout(() => {
+      setSheetAnimating(false)
+      setDragTranslateY(0)
+      setType(null)
+      setRawAmount('')
+      setCategoryId('')
+      setCategoryLabel('카테고리 선택')
+      setMemo('')
+      setEditDate(initialDate || null)
+      setEndDate('')
+      setEndAmount('')
+      setRecoverAmount('')
+      setRecoverOpen(false)
+      setCategoryPickerOpen(false)
+      setLinkedRecurringId(null)
+      setRepeatFrequency('none')
+      setRepeatDropdownOpen(false)
+      const d = new Date(); d.setMonth(d.getMonth() + 1)
+      setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
+      onClose()
+    }, 220)
+  }
+
+  const handleSheetTouchStart = (e: React.TouchEvent) => {
+    dragStartYRef.current = e.touches[0].clientY
+    dragTranslateYRef.current = dragTranslateY
+    draggingSheetRef.current = false
+  }
+
+  const handleSheetTouchMove = (e: React.TouchEvent) => {
+    const diff = e.touches[0].clientY - dragStartYRef.current
+    const scrollTop = scrollRef.current?.scrollTop ?? 0
+    if (diff <= 0) return
+    if (scrollTop > 0 && !draggingSheetRef.current) return
+    draggingSheetRef.current = true
+    const next = Math.max(0, diff + dragTranslateYRef.current)
+    setSheetAnimating(false)
+    setDragTranslateY(next)
+    e.preventDefault()
+  }
+
+  const handleSheetTouchEnd = () => {
+    if (!draggingSheetRef.current) return
+    draggingSheetRef.current = false
+    if (dragTranslateY > 140) {
+      handleClose()
+      return
+    }
+    setSheetAnimating(true)
+    setDragTranslateY(0)
+    window.setTimeout(() => setSheetAnimating(false), 220)
   }
 
   const handleKeypad = (key: string) => {
@@ -262,27 +304,26 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-background flex flex-col transition-transform duration-200 ${
-        open ? 'translate-y-0' : 'translate-y-full pointer-events-none'
-      }`}
+      className={`fixed inset-0 z-50 bg-background flex flex-col ${open ? '' : 'pointer-events-none'}`}
+      style={{
+        transform: open ? `translateY(${dragTranslateY}px)` : 'translateY(100%)',
+        transition: sheetAnimating ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        overflow: 'hidden',
+      }}
+      onTouchStart={handleSheetTouchStart}
+      onTouchMove={handleSheetTouchMove}
+      onTouchEnd={handleSheetTouchEnd}
     >
       <AddTransactionHeader
         title={editTransaction ? '수정하기' : '기록하기'}
         onClose={handleClose}
-        onDelete={editTransaction ? async () => {
-          const message = linkedRecurringId
-            ? '이 반복 지출을 삭제하면 이후 예정된 내역이 모두 삭제됩니다. 삭제할까요?'
-            : '삭제 후 복구는 어렵습니다. 그래도 삭제할까요?'
-          if (!confirm(message)) return
-          const { deleteTransactionWithRecurringCascade } = await import('@/lib/api')
-          await deleteTransactionWithRecurringCascade(editTransaction)
-          setRawAmount(''); setMemo(''); setEditDate(null)
-          onClose()
-        } : undefined}
+        onConfirm={handleSave}
       />
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
         <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
           <div className="mb-3 bg-surface rounded-[22px] overflow-visible">
