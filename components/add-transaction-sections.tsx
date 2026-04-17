@@ -23,7 +23,7 @@ export function AddTransactionHeader({
       >
         <X size={22} strokeWidth={2} />
       </button>
-      <h1 className="text-[17px] font-semibold">{title}</h1>
+      <h1 className="text-[17px] font-semibold">★ {title}</h1>
       <button
         onClick={onConfirm}
         className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-foreground"
