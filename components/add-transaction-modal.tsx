@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { getCategories, type Category, type Transaction } from '@/lib/api'
+import { deleteTransactionWithRecurringCascade, getCategories, type Category, type Transaction } from '@/lib/api'
 import { formatDateDisplay, formatDateInputValue, formatKoreanWon } from '@/lib/format'
 import { AddTransactionHeader, RecoverySection, TransactionAmountRow, TransactionCategorySection, TransactionDateRow, TransactionMemoRow, TransactionRepeatSection } from './add-transaction-sections'
 import { applySavingsRecovery, buildTransactionPayload, REVERSE_TYPE_MAP, saveTransactionWithRecurring, type TransactionTypeKo } from '@/lib/transaction-modal'
@@ -245,6 +245,23 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     }, 220)
   }
 
+  const handleDelete = async () => {
+    if (!editTransaction || saving) return
+    const ok = window.confirm('이 기록을 삭제할까요?')
+    if (!ok) return
+
+    setSaving(true)
+    try {
+      await deleteTransactionWithRecurringCascade(editTransaction)
+      handleClose()
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : JSON.stringify(e)
+      console.error('삭제 실패:', msg)
+      alert(`삭제 실패: ${msg}`)
+      setSaving(false)
+    }
+  }
+
   const handleSheetTouchStart = (e: React.TouchEvent) => {
     dragStartYRef.current = e.touches[0].clientY
     dragTranslateYRef.current = dragTranslateY
@@ -325,7 +342,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <AddTransactionHeader
         title={editTransaction ? '수정하기' : '기록하기'}
         onClose={handleClose}
-        onConfirm={handleSave}
+        onConfirm={editTransaction ? handleDelete : handleSave}
       />
 
       {/* Scrollable content */}
