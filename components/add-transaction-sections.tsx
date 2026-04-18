@@ -47,8 +47,8 @@ export function TransactionDateRow({
   return (
     <div className="flex items-center justify-between px-4 py-3.5">
       <span className="text-[16px]">날짜</span>
-      <label className="relative cursor-pointer">
-        <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+      <label className="relative cursor-pointer flex justify-end text-right min-w-0">
+        <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium text-right">
           {(() => {
             const d = new Date(date + 'T00:00:00')
             const days = ['일', '월', '화', '수', '목', '금', '토']
