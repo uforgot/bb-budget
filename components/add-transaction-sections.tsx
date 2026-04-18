@@ -241,21 +241,26 @@ export function TransactionRepeatSection({
           </div>
         </button>
         {repeatDropdownOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-[22px] overflow-hidden z-20 shadow-lg">
-            {(['none', 'weekly', 'monthly', 'yearly'] as const).map((opt, i) => (
-              <button
-                key={opt}
-                onClick={() => onSelectFrequency(opt)}
-                className={`w-full px-4 py-3.5 text-[16px] flex items-center justify-between transition-colors ${
-                  i > 0 ? 'border-t border-border' : ''
-                } active:bg-muted`}
-              >
-                <span>{{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}</span>
-                {repeatFrequency === opt && (
-                  <Check size={16} strokeWidth={2.5} style={{ color: '#14b8a6' }} />
-                )}
-              </button>
-            ))}
+          <div className="fixed inset-0 z-[80]">
+            <div className="absolute inset-0 bg-black/26" onClick={() => onSelectFrequency(repeatFrequency)} />
+            <div className="absolute inset-x-0 bottom-0 px-3 pb-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom, 12px))' }}>
+              <div className="mx-auto w-full max-w-md overflow-hidden rounded-[24px] bg-card shadow-2xl">
+                {(['none', 'weekly', 'monthly', 'yearly'] as const).map((opt, i) => (
+                  <button
+                    key={opt}
+                    onClick={() => onSelectFrequency(opt)}
+                    className={`w-full px-5 py-4 text-[17px] flex items-center justify-between transition-colors ${
+                      i > 0 ? 'border-t border-border' : ''
+                    } active:bg-muted`}
+                  >
+                    <span>{{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}</span>
+                    {repeatFrequency === opt && (
+                      <Check size={17} strokeWidth={2.5} style={{ color: '#14b8a6' }} />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
