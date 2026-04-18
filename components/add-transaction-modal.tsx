@@ -58,6 +58,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const draggingSheetRef = useRef(false)
   const [dragTranslateY, setDragTranslateY] = useState(0)
   const [sheetAnimating, setSheetAnimating] = useState(false)
+  const [sheetVisible, setSheetVisible] = useState(false)
 
   // 최근 사용 카테고리 로드
   useEffect(() => {
@@ -157,13 +158,20 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   }, [editTransaction, open, initialDate])
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+      setSheetVisible(false)
+      return
+    }
+    setSheetVisible(false)
     setSheetAnimating(false)
     setDragTranslateY(window.innerHeight)
     const raf = window.requestAnimationFrame(() => {
       setSheetAnimating(true)
       setDragTranslateY(0)
-      window.setTimeout(() => setSheetAnimating(false), 220)
+      window.setTimeout(() => {
+        setSheetAnimating(false)
+        setSheetVisible(true)
+      }, 220)
     })
     return () => window.cancelAnimationFrame(raf)
   }, [open])
@@ -353,7 +361,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
   return (
     <div className="fixed inset-0 z-50 overscroll-none">
-      <div className="absolute inset-0" onClick={handleClose} />
+      <div className="absolute inset-0" style={{ visibility: sheetVisible ? 'visible' : 'hidden' }} onClick={handleClose} />
       <div
         className="absolute inset-x-0 bottom-0 flex flex-col bg-surface"
         style={{
@@ -366,6 +374,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           touchAction: 'none',
           backgroundColor: 'var(--surface)',
           boxShadow: '0 -8px 28px rgba(0,0,0,0.28)',
+          visibility: sheetVisible || sheetAnimating ? 'visible' : 'hidden',
         }}
         onTouchStart={handleSheetTouchStart}
         onTouchMove={handleSheetTouchMove}
