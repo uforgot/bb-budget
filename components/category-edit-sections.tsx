@@ -91,7 +91,7 @@ export function CategoryChildrenEditor({
           {children.map((child) => {
             const isEditing = editingChildId === child.id
             return isEditing ? (
-              <span key={child.id} className="inline-flex items-center gap-1.5 bg-background px-2 py-1 rounded-full text-[16px]">
+              <span key={child.id} className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-[16px]">
                 <input
                   type="text"
                   value={editingChildName}
@@ -112,7 +112,7 @@ export function CategoryChildrenEditor({
                 </button>
               </span>
             ) : (
-              <span key={child.id} className="inline-flex items-center gap-1.5 bg-background px-3 py-1.5 rounded-full text-[16px]">
+              <span key={child.id} className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-[16px]">
                 {child.name}
                 <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-6 rounded-full text-muted-foreground hover:text-foreground" aria-label="편집">
                   <SquarePen size={13} />
