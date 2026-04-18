@@ -227,43 +227,26 @@ export function TransactionRepeatSection({
 }) {
   return (
     <div ref={repeatDropdownRef}>
-      <div className="relative">
-        <button
-          onClick={onToggleDropdown}
-          className="w-full flex items-center justify-between px-4 py-3.5"
+      <label className="relative w-full flex items-center justify-between px-4 py-3.5 cursor-pointer">
+        <span className="text-[16px]">반복</span>
+        <div className="flex items-center gap-1 text-muted-foreground pointer-events-none">
+          <span className="text-[16px]">
+            {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
+          </span>
+          <ChevronDown size={14} strokeWidth={2} />
+        </div>
+        <select
+          value={repeatFrequency}
+          onChange={(e) => onSelectFrequency(e.target.value as 'none' | 'weekly' | 'monthly' | 'yearly')}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          style={{ fontSize: '16px' }}
         >
-          <span className="text-[16px]">반복</span>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <span className="text-[16px]">
-              {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
-            </span>
-            <ChevronDown size={14} strokeWidth={2} />
-          </div>
-        </button>
-        {repeatDropdownOpen && (
-          <div className="fixed inset-0 z-[80]">
-            <div className="absolute inset-0 bg-black/26" onClick={() => onSelectFrequency(repeatFrequency)} />
-            <div className="absolute inset-x-0 bottom-0 px-3 pb-3" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom, 12px))' }}>
-              <div className="mx-auto w-full max-w-md overflow-hidden rounded-[24px] bg-card shadow-2xl">
-                {(['none', 'weekly', 'monthly', 'yearly'] as const).map((opt, i) => (
-                  <button
-                    key={opt}
-                    onClick={() => onSelectFrequency(opt)}
-                    className={`w-full px-5 py-4 text-[17px] flex items-center justify-between transition-colors ${
-                      i > 0 ? 'border-t border-border' : ''
-                    } active:bg-muted`}
-                  >
-                    <span>{{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[opt]}</span>
-                    {repeatFrequency === opt && (
-                      <Check size={17} strokeWidth={2.5} style={{ color: '#14b8a6' }} />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+          <option value="none">안 함</option>
+          <option value="weekly">매주</option>
+          <option value="monthly">매월</option>
+          <option value="yearly">매년</option>
+        </select>
+      </label>
 
       {repeatFrequency !== 'none' && (
         <>
