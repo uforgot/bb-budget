@@ -1,6 +1,35 @@
 import { createClient } from './supabase'
 
-function getSupabase() {
+type SupabaseClient = ReturnType<typeof createClient>
+type LegacyRecurringBase = {
+  frequency?: string | null
+  anchor_date?: string | null
+  end_date?: string | null
+  start_date?: string | null
+  created_at?: string | null
+  day_of_week?: number | null
+  day_of_month?: number | null
+  month_of_year?: number | null
+}
+type LegacyRecurringRow = Partial<RecurringTransaction> & LegacyRecurringBase & {
+  id: string
+  type: string
+  amount: number
+  category_id: string
+  description: string | null
+  active: boolean
+  created_at: string
+}
+type AnchorTransactionRow = {
+  type: string
+  amount: number
+  category_id: string
+  description: string | null
+  date: string
+}
+type AmountRow = { amount: number }
+
+function getSupabase(): SupabaseClient {
   return createClient()
 }
 
@@ -68,7 +97,7 @@ function clampDay(day: number, year: number, month: number) {
   return Math.min(Math.max(day, 1), daysInMonth)
 }
 
-function getLegacyAnchorDate(raw: any, frequency: RecurringFrequency) {
+function getLegacyAnchorDate(raw: LegacyRecurringBase, frequency: RecurringFrequency) {
   const baseDateStr = raw.start_date || raw.created_at?.slice?.(0, 10) || toDateString(new Date())
   const baseDate = parseLocalDate(baseDateStr)
 
@@ -89,7 +118,7 @@ function getLegacyAnchorDate(raw: any, frequency: RecurringFrequency) {
   return `${baseDate.getFullYear()}-${String(baseDate.getMonth() + 1).padStart(2, '0')}-${String(clampDay(day, baseDate.getFullYear(), baseDate.getMonth() + 1)).padStart(2, '0')}`
 }
 
-function normalizeRecurringTransaction(raw: any): RecurringTransaction {
+function normalizeRecurringTransaction(raw: LegacyRecurringRow): RecurringTransaction {
   const frequency = (raw.frequency || 'monthly') as RecurringFrequency
   const anchorDate = raw.anchor_date || getLegacyAnchorDate(raw, frequency)
 
@@ -157,14 +186,14 @@ async function findOrphanedRecurringIds(recurring: RecurringTransaction[]) {
   const anchorDates = Array.from(new Set(recurring.map(item => item.anchor_date).filter(Boolean))) as string[]
   if (anchorDates.length === 0) return new Set<string>()
 
-  const { data: anchorTxs, error } = await (getSupabase() as any)
+  const { data: anchorTxs, error } = await getSupabase()
     .from('transactions')
     .select('type, amount, category_id, description, date')
     .in('date', anchorDates)
 
   if (error) throw error
 
-  const anchorKeys = new Set((anchorTxs || []).map((tx: any) => {
+  const anchorKeys = new Set((anchorTxs || []).map((tx: AnchorTransactionRow) => {
     const normalizedDescription = (tx.description || '').replace(/\s*\(반복\)$/, '') || null
     return `${tx.type}::${tx.amount}::${tx.category_id}::${tx.date}::${normalizedDescription ?? ''}`
   }))
@@ -203,7 +232,7 @@ export async function addCategory(name: string, type: string) {
   const maxOrder = existing.reduce((max, c) => Math.max(max, c.sort_order), 0)
   const { data, error } = await getSupabase()
     .from('categories')
-    .insert({ name, type, sort_order: maxOrder + 1 } as any)
+    .insert({ name, type, sort_order: maxOrder + 1 })
     .select()
     .single()
   if (error) throw error
@@ -211,7 +240,7 @@ export async function addCategory(name: string, type: string) {
 }
 
 export async function reorderParentCategories(type: string, orderedIds: string[]) {
-  const supabase = getSupabase() as any
+  const supabase = getSupabase()
   for (let i = 0; i < orderedIds.length; i += 1) {
     const { error } = await supabase
       .from('categories')
@@ -225,7 +254,7 @@ export async function reorderParentCategories(type: string, orderedIds: string[]
 
 // 거래 내역
 export async function getTransactions(filters?: { year?: number; month?: number; type?: string }) {
-  const supabase = getSupabase() as any
+  const supabase = getSupabase()
   const pageSize = 1000
   let from = 0
   const all: Transaction[] = []
@@ -265,7 +294,7 @@ export async function getTransactions(filters?: { year?: number; month?: number;
 export async function addTransaction(tx: Record<string, unknown>) {
   const { data, error } = await getSupabase()
     .from('transactions')
-    .insert(tx as any)
+    .insert(tx)
     .select()
     .single()
   if (error) {
@@ -276,19 +305,19 @@ export async function addTransaction(tx: Record<string, unknown>) {
 }
 
 export async function updateTransaction(id: string, tx: Record<string, unknown>) {
-  const supabase = getSupabase() as any
+  const supabase = getSupabase()
   const { error } = await supabase.from('transactions').update(tx).eq('id', id)
   if (error) throw error
 }
 
 export async function deleteTransaction(id: string) {
-  const supabase = getSupabase() as any
+  const supabase = getSupabase()
   const { error } = await supabase.from('transactions').delete().eq('id', id)
   if (error) throw error
 }
 
 export async function deleteTransactionWithRecurringCascade(tx: Transaction) {
-  const supabase = getSupabase() as any
+  const supabase = getSupabase()
 
   const { data: recurringMatches, error: recurringError } = await supabase
     .from('recurring_transactions')
@@ -317,7 +346,7 @@ export async function deleteTransactionWithRecurringCascade(tx: Transaction) {
 // ─── 반복 지출 ─────────────────────────────────────────
 
 export async function getRecurringTransactions(): Promise<RecurringTransaction[]> {
-  const { data, error } = await (getSupabase() as any)
+  const { data, error } = await getSupabase()
     .from('recurring_transactions')
     .select('*, category:categories(*)')
     .order('frequency')
@@ -327,14 +356,14 @@ export async function getRecurringTransactions(): Promise<RecurringTransaction[]
 }
 
 export async function addRecurringTransaction(tx: Record<string, unknown>) {
-  const { error } = await (getSupabase() as any)
+  const { error } = await getSupabase()
     .from('recurring_transactions')
     .insert(normalizeRecurringPayload(tx))
   if (error) throw error
 }
 
 export async function updateRecurringTransaction(id: string, tx: Record<string, unknown>) {
-  const { error } = await (getSupabase() as any)
+  const { error } = await getSupabase()
     .from('recurring_transactions')
     .update(normalizeRecurringPayload(tx))
     .eq('id', id)
@@ -342,7 +371,7 @@ export async function updateRecurringTransaction(id: string, tx: Record<string, 
 }
 
 export async function deleteRecurringTransaction(id: string) {
-  const { error } = await (getSupabase() as any)
+  const { error } = await getSupabase()
     .from('recurring_transactions')
     .delete()
     .eq('id', id)
@@ -424,19 +453,19 @@ export async function getMonthlySummary(year: number, month: number) {
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
   const endOfMonth = `${year}-${String(month).padStart(2, '0')}-${new Date(year, month, 0).getDate()}`
-  const savingsQuery = getSupabase() as any
+  const savingsQuery = getSupabase()
   const { data: savingsTxs } = await savingsQuery
     .from('transactions')
     .select('amount')
     .eq('type', 'savings')
     .lte('date', endOfMonth)
     .eq('is_active', true)
-  const savings = (savingsTxs || []).reduce((sum: number, t: any) => sum + t.amount, 0)
+  const savings = (savingsTxs || []).reduce((sum: number, t: AmountRow) => sum + t.amount, 0)
 
   const allCategories = await getCategories()
   const catMap = Object.fromEntries(allCategories.map(c => [c.id, c]))
 
-  const daily: Record<number, { income: number; expense: number; savings: number; items: { type: 'income' | 'expense' | 'savings'; category: string; parentCategory: string; description: string; amount: number }[] }> = {}
+  const daily: Record<number, { income: number; expense: number; savings: number; items: { type: 'income' | 'expense' | 'savings'; category: string; parentCategory: string; description: string; amount: number; isRecurring?: boolean }[] }> = {}
   for (const t of transactions) {
     const day = new Date(t.date).getDate()
     if (!daily[day]) daily[day] = { income: 0, expense: 0, savings: 0, items: [] }

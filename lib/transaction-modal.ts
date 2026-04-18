@@ -117,7 +117,7 @@ export async function applySavingsRecovery({
   const amount = parseInt(recoverAmount, 10)
   if (!amount) throw new Error('금액을 입력해주세요')
 
-  const catName = (editTransaction.category as any)?.name || '저축'
+  const catName = editTransaction.category?.name || '저축'
   await addTransaction({
     type: 'income',
     amount,

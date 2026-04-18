@@ -284,10 +284,11 @@ export function MonthlyCalendar({ onMonthChange, onDaySelect, onTransactionClick
           daily[p.day].items!.push({
             type: p.type as 'income' | 'expense' | 'savings',
             category: p.categoryName || '',
+            parentCategory: '',
             description: p.description,
             amount: p.amount,
             isRecurring: true,
-          } as any)
+          })
         }
       }
 
