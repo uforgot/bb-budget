@@ -378,7 +378,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
         <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
-          <div className="mb-3 rounded-[22px] overflow-visible bg-white dark:bg-gray-700">
+          <div className="mb-3 rounded-[22px] overflow-visible bg-white dark:bg-gray-800">
             <TransactionDateRow
               date={date}
               onFocus={() => setKeypadActive(false)}
@@ -495,7 +495,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </button>
               <button
                 onClick={() => setRecoverOpen(false)}
-                className="flex-1 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
                 취소하기
               </button>
@@ -515,7 +515,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               )}
               <button
                 onClick={handleClose}
-                className="flex-1 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
                 취소하기
               </button>
@@ -527,7 +527,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <button onClick={handleSave} className="flex-1 bg-accent-blue text-white rounded-[22px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '저장하기'}
             </button>
-            <button onClick={handleClose} className="flex-1 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold">
+            <button onClick={handleClose} className="flex-1 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold">
               취소하기
             </button>
           </div>
