@@ -122,7 +122,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
                       <span className={`text-[12px] font-medium ${
-                        isSelected || isExpanded ? 'text-white' : 'text-muted-foreground'
+                        isSelected || isExpanded ? 'text-white' : 'text-gray-500 dark:text-gray-300'
                       }`}>
                         {parent.name}
                       </span>
@@ -143,7 +143,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         className={`py-2 rounded-lg text-[12px] transition-colors ${
                           selected === child.id
                             ? TYPE_CHILD_COLOR[type] + ' font-medium'
-                            : 'bg-white dark:bg-muted text-foreground'
+                            : 'bg-white dark:bg-muted text-gray-500 dark:text-gray-300'
                         }`}
                       >
                         {child.name}
@@ -161,7 +161,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
           if (!inline) onClose()
           router.push('/settings/categories')
         }}
-        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-[#f3f4f6] dark:bg-surface text-[16px] font-medium text-gray-500 dark:text-gray-500"
+        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-gray-100 dark:bg-gray-700 text-[16px] font-medium text-gray-500 dark:text-gray-500"
       >
         카테고리 관리하기
       </button>

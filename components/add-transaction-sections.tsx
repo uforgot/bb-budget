@@ -139,7 +139,7 @@ export function TransactionCategorySection({
               key={t}
               onClick={() => onTypeClick(t)}
               className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                type === t ? typeColors[t].active : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-500'
+                type === t ? typeColors[t].active : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300'
               }`}
             >
               {t}
@@ -202,7 +202,7 @@ export function TransactionMemoRow({
         onBlur={onBlur}
         onFocus={onFocus}
         style={{ fontSize: '16px', textAlign: 'right' }}
-        className="bg-transparent text-gray-500 dark:text-gray-500 placeholder:text-gray-500/50 dark:placeholder:text-gray-500/50 outline-none w-40"
+        className="bg-transparent text-foreground placeholder:text-gray-500 dark:placeholder:text-gray-500 outline-none w-40"
       />
     </div>
   )
