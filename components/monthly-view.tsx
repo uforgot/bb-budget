@@ -583,7 +583,7 @@ export function MonthlyView({
                   key={week}
                   data-no-swipe="true"
                   onClick={() => handleWeekTabClick(week)}
-                  className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-white dark:bg-gray-900 text-gray-200 dark:text-gray-700'}`}
+                  className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-white dark:bg-gray-900 text-gray-300 dark:text-gray-600'}`}
                 >
                   {week}주 차
                 </button>
