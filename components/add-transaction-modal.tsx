@@ -59,6 +59,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [dragTranslateY, setDragTranslateY] = useState(0)
   const [sheetAnimating, setSheetAnimating] = useState(false)
   const [sheetVisible, setSheetVisible] = useState(false)
+  const [shouldRender, setShouldRender] = useState(false)
 
   // 최근 사용 카테고리 로드
   useEffect(() => {
@@ -158,20 +159,15 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   }, [editTransaction, open, initialDate])
 
   useEffect(() => {
-    if (!open) {
-      setSheetVisible(false)
-      return
-    }
-    setSheetVisible(false)
+    if (!open) return
+    setShouldRender(true)
+    setSheetVisible(true)
     setSheetAnimating(false)
     setDragTranslateY(window.innerHeight)
     const raf = window.requestAnimationFrame(() => {
       setSheetAnimating(true)
       setDragTranslateY(0)
-      window.setTimeout(() => {
-        setSheetAnimating(false)
-        setSheetVisible(true)
-      }, 220)
+      window.setTimeout(() => setSheetAnimating(false), 220)
     })
     return () => window.cancelAnimationFrame(raf)
   }, [open])
@@ -261,6 +257,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     setDragTranslateY(window.innerHeight)
     window.setTimeout(() => {
       setSheetAnimating(false)
+      setSheetVisible(false)
+      setShouldRender(false)
       setDragTranslateY(0)
       setType(null)
       setRawAmount('')
@@ -357,7 +355,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     ['00', '0', 'backspace'],
   ]
 
-  if (!open) return null
+  if (!shouldRender) return null
 
   return (
     <div className="fixed inset-0 z-50 overscroll-none">
@@ -374,7 +372,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           touchAction: 'none',
           backgroundColor: 'var(--surface)',
           boxShadow: '0 -8px 28px rgba(0,0,0,0.28)',
-          visibility: sheetVisible || sheetAnimating ? 'visible' : 'hidden',
+          visibility: sheetVisible ? 'visible' : 'hidden',
         }}
         onTouchStart={handleSheetTouchStart}
         onTouchMove={handleSheetTouchMove}
