@@ -131,14 +131,14 @@ export function CategoryChildrenEditor({
                   autoFocus
                   placeholder="이름"
                   style={{ fontSize: '16px' }}
-                  className="bg-muted px-3 py-1.5 rounded-full text-sm w-20 outline-none"
+                  className="bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-sm w-20 outline-none"
                 />
                 <button onClick={onSubmit} className="text-xs text-accent-blue">확인</button>
               </span>
             ) : (
               <button
                 onClick={onStartAdd}
-                className="inline-flex items-center bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
+                className="inline-flex items-center bg-gray-100 dark:bg-gray-800 text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
               >
                 추가
               </button>
