@@ -230,9 +230,9 @@ export async function getCategories(type?: string) {
 export async function addCategory(name: string, type: string) {
   const existing = await getCategories(type)
   const maxOrder = existing.reduce((max, c) => Math.max(max, c.sort_order), 0)
-  const { data, error } = await getSupabase()
+  const { data, error } = await (getSupabase() as any)
     .from('categories')
-    .insert({ name, type, sort_order: maxOrder + 1 })
+    .insert({ name, type, sort_order: maxOrder + 1 } as any)
     .select()
     .single()
   if (error) throw error
@@ -240,7 +240,7 @@ export async function addCategory(name: string, type: string) {
 }
 
 export async function reorderParentCategories(type: string, orderedIds: string[]) {
-  const supabase = getSupabase()
+  const supabase = getSupabase() as any
   for (let i = 0; i < orderedIds.length; i += 1) {
     const { error } = await supabase
       .from('categories')
@@ -254,7 +254,7 @@ export async function reorderParentCategories(type: string, orderedIds: string[]
 
 // 거래 내역
 export async function getTransactions(filters?: { year?: number; month?: number; type?: string }) {
-  const supabase = getSupabase()
+  const supabase = getSupabase() as any
   const pageSize = 1000
   let from = 0
   const all: Transaction[] = []
@@ -294,7 +294,7 @@ export async function getTransactions(filters?: { year?: number; month?: number;
 export async function addTransaction(tx: Record<string, unknown>) {
   const { data, error } = await getSupabase()
     .from('transactions')
-    .insert(tx)
+    .insert(tx as any)
     .select()
     .single()
   if (error) {
@@ -305,19 +305,19 @@ export async function addTransaction(tx: Record<string, unknown>) {
 }
 
 export async function updateTransaction(id: string, tx: Record<string, unknown>) {
-  const supabase = getSupabase()
+  const supabase = getSupabase() as any
   const { error } = await supabase.from('transactions').update(tx).eq('id', id)
   if (error) throw error
 }
 
 export async function deleteTransaction(id: string) {
-  const supabase = getSupabase()
+  const supabase = getSupabase() as any
   const { error } = await supabase.from('transactions').delete().eq('id', id)
   if (error) throw error
 }
 
 export async function deleteTransactionWithRecurringCascade(tx: Transaction) {
-  const supabase = getSupabase()
+  const supabase = getSupabase() as any
 
   const { data: recurringMatches, error: recurringError } = await supabase
     .from('recurring_transactions')
@@ -346,7 +346,7 @@ export async function deleteTransactionWithRecurringCascade(tx: Transaction) {
 // ─── 반복 지출 ─────────────────────────────────────────
 
 export async function getRecurringTransactions(): Promise<RecurringTransaction[]> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await (getSupabase() as any)
     .from('recurring_transactions')
     .select('*, category:categories(*)')
     .order('frequency')
@@ -356,14 +356,14 @@ export async function getRecurringTransactions(): Promise<RecurringTransaction[]
 }
 
 export async function addRecurringTransaction(tx: Record<string, unknown>) {
-  const { error } = await getSupabase()
+  const { error } = await (getSupabase() as any)
     .from('recurring_transactions')
     .insert(normalizeRecurringPayload(tx))
   if (error) throw error
 }
 
 export async function updateRecurringTransaction(id: string, tx: Record<string, unknown>) {
-  const { error } = await getSupabase()
+  const { error } = await (getSupabase() as any)
     .from('recurring_transactions')
     .update(normalizeRecurringPayload(tx))
     .eq('id', id)
@@ -371,7 +371,7 @@ export async function updateRecurringTransaction(id: string, tx: Record<string, 
 }
 
 export async function deleteRecurringTransaction(id: string) {
-  const { error } = await getSupabase()
+  const { error } = await (getSupabase() as any)
     .from('recurring_transactions')
     .delete()
     .eq('id', id)
@@ -453,7 +453,7 @@ export async function getMonthlySummary(year: number, month: number) {
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
   const endOfMonth = `${year}-${String(month).padStart(2, '0')}-${new Date(year, month, 0).getDate()}`
-  const savingsQuery = getSupabase()
+  const savingsQuery = getSupabase() as any
   const { data: savingsTxs } = await savingsQuery
     .from('transactions')
     .select('amount')
