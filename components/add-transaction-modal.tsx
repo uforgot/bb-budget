@@ -156,6 +156,18 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     }
   }, [editTransaction, open, initialDate])
 
+  useEffect(() => {
+    if (!open) return
+    setSheetAnimating(false)
+    setDragTranslateY(window.innerHeight)
+    const raf = window.requestAnimationFrame(() => {
+      setSheetAnimating(true)
+      setDragTranslateY(0)
+      window.setTimeout(() => setSheetAnimating(false), 220)
+    })
+    return () => window.cancelAnimationFrame(raf)
+  }, [open])
+
   // 반복 드롭다운 바깥 클릭 시 닫기
   useEffect(() => {
     if (!repeatDropdownOpen) return
