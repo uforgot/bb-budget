@@ -131,7 +131,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                 })}
               </div>
               {expandedInRow && expandedChildren.length > 0 && (
-                <div className="bg-gray-100 dark:bg-gray-700 rounded-[22px] p-2 mb-2">
+                <div className="bg-gray-100 dark:bg-gray-700 rounded-[22px] p-2 mb-2 border border-transparent dark:border-gray-700">
                   <div className="grid grid-cols-4 gap-1.5">
                     {expandedChildren.map((child) => (
                       <button
