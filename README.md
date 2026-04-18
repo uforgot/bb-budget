@@ -234,20 +234,32 @@
 - Background dim backdrop was removed from the add-transaction sheet after it caused the underlying page/tab bar to look dark even when the sheet logic was under investigation.
 - Closed transaction sheets now fully unmount instead of staying in the DOM with pointer-events disabled.
 - Opening/closing animation timing was adjusted so the sheet stays rendered through the close animation, then unmounts.
+- Open animation and close animation now have separate visibility timing so the sheet feels native instead of abruptly appearing/disappearing.
 - While the sheet is open, body/document scrolling and overscroll are locked so the monthly page behind it does not move and pull-to-refresh does not fire.
 - Sheet shadow direction was changed to fall downward rather than bleeding upward into the top safe area.
 
 ### Header / actions
 - Header controls were changed back to left back button + right delete button.
 - Delete button in edit mode is now actually wired to delete flow with confirmation instead of incorrectly pointing at save behavior.
+- A missing `Check` icon import introduced during header refactor was fixed.
+
+### Repeat selector
+- Repeat selection was tested as a custom bottom action sheet.
+- Final behavior was changed back to the native system picker/select for consistency with the rest of the app.
 
 ### Light/Dark visual tuning inside transaction sheet
 - Light-mode sheet shell background was tuned separately from the inner card area.
-- Light-mode sheet shell is now `#F9FAFB`.
-- The main inner rounded transaction card was tuned multiple times and currently uses `#f3f4f6` in light mode, with dark mode still using `muted`.
-- Cancel button, inactive type pills, parent category pills, category manage button, and child category pills received separate light-mode color tuning to avoid all-white blending.
-- Inactive child category pills in the transaction picker were ultimately set back to white in light mode.
-- Divider lines inside the main transaction card were tuned separately for light and dark mode; light mode was reverted while dark mode contrast was increased.
+- Light-mode sheet shell is now `light 50`, dark mode sheet shell is `dark 900` via `bg-sheet`.
+- Header left/right circular action buttons use `light 0 / dark 800`.
+- The main inner rounded transaction card and cancel button use `light 0 / dark 800`.
+- Divider lines inside the main transaction card use `light 200 / dark 700`.
+- Inactive transaction type pills use `light 100 / dark 700` with text `light 500 / dark 300`.
+- Parent category inactive pills use `light 100 / dark 700` with text `light 500 / dark 300`.
+- Child-category wrapper box uses `light 100 / dark 700`.
+- Child category inactive pills use `light 0 / dark muted`, with text `light 500 / dark 300`.
+- Category manage button uses background `light 100 / dark 700` and text `light 500 / dark 500`.
+- Memo input now distinguishes placeholder vs typed value: placeholder `입력` uses `light 500 / dark 500`, but typed text renders in normal foreground `black/white`.
+- Divider lines inside the main transaction card were tuned separately for light and dark mode.
 
 ### Category / picker tuning
 - Transaction category picker and category-edit child pills got light-mode-only gray tuning so pills remain distinguishable in bright theme.
