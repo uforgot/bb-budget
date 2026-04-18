@@ -139,7 +139,7 @@ export function TransactionCategorySection({
               key={t}
               onClick={() => onTypeClick(t)}
               className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                type === t ? typeColors[t].active : 'bg-background text-muted-foreground'
+                type === t ? typeColors[t].active : 'bg-surface text-muted-foreground'
               }`}
             >
               {t}
