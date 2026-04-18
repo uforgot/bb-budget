@@ -361,7 +361,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     <div className="fixed inset-0 z-50 overscroll-none">
       <div className="absolute inset-0" style={{ visibility: sheetVisible ? 'visible' : 'hidden' }} onClick={handleClose} />
       <div
-        className="absolute inset-x-0 bottom-0 flex flex-col bg-surface"
+        className="absolute inset-x-0 bottom-0 flex flex-col bg-[#eceff3] dark:bg-surface"
         style={{
           top: 'max(8px, env(safe-area-inset-top, 0px) + 4px)',
           transform: `translateY(${dragTranslateY}px)`,
@@ -370,7 +370,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           borderTopRightRadius: 28,
           overflow: 'hidden',
           touchAction: 'none',
-          backgroundColor: 'var(--surface)',
+          backgroundColor: '',
           boxShadow: '0 12px 28px rgba(0,0,0,0.18)',
           visibility: sheetVisible ? 'visible' : 'hidden',
         }}
@@ -388,7 +388,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
         <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
-          <div className="mb-3 rounded-[22px] overflow-visible bg-[#f3f4f6] dark:bg-muted">
+          <div className="mb-3 rounded-[22px] overflow-visible bg-muted">
             <TransactionDateRow
               date={date}
               onFocus={() => setKeypadActive(false)}
@@ -475,7 +475,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       </div>
 
       {/* 하단 버튼 영역 */}
-      <div className="w-full px-4 pt-3 flex-shrink-0 bg-surface" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+      <div className="w-full px-4 pt-3 flex-shrink-0 bg-[#eceff3] dark:bg-surface" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
         <div className="w-full max-w-md mx-auto">
         {editTransaction ? (
           recoverOpen ? (
