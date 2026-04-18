@@ -117,7 +117,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
-                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-[#f5f5f7] dark:bg-muted'
+                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-background'
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
@@ -131,7 +131,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                 })}
               </div>
               {expandedInRow && expandedChildren.length > 0 && (
-                <div className="bg-white/10 rounded-[22px] p-2 mb-2">
+                <div className="bg-background rounded-[22px] p-2 mb-2">
                   <div className="grid grid-cols-4 gap-1.5">
                     {expandedChildren.map((child) => (
                       <button
@@ -143,7 +143,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         className={`py-2 rounded-lg text-[12px] transition-colors ${
                           selected === child.id
                             ? TYPE_CHILD_COLOR[type] + ' font-medium'
-                            : 'bg-[#f5f5f7] dark:bg-card text-foreground'
+                            : 'bg-surface text-foreground'
                         }`}
                       >
                         {child.name}
@@ -161,7 +161,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
           if (!inline) onClose()
           router.push('/settings/categories')
         }}
-        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-[#f5f5f7] dark:bg-muted text-[16px] font-medium text-muted-foreground"
+        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-background text-[16px] font-medium text-muted-foreground"
       >
         카테고리 관리하기
       </button>
