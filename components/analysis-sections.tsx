@@ -113,7 +113,7 @@ export function AnalysisRow({
       </button>
 
       {open && (
-        <div className="mt-4 border-t border-gray-200 dark:border-gray-800 pt-3 space-y-2">
+        <div className="mt-4 border-t border-black/10 dark:border-white/10 pt-3 space-y-2">
           {months.map(({ month, amount }) => (
             <div key={month} className="flex items-center justify-between gap-3 text-[14px]">
               <span className="text-gray-500 dark:text-gray-500">{month}월</span>

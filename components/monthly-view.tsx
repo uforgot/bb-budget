@@ -278,7 +278,7 @@ const WeekDayCard = memo(function WeekDayCard({
         </div>
       </div>
 
-      <div className="mx-4 border-t border-gray-200 dark:border-gray-800" />
+      <div className="mx-4 border-t border-black/10 dark:border-white/10" />
 
       <div className="px-4 pb-5 pt-3">
         <div className="space-y-4">
@@ -331,7 +331,7 @@ const WeekDayCard = memo(function WeekDayCard({
           ))}
         </div>
 
-        <div className="mt-3 border-t border-gray-200 dark:border-gray-800 pt-3 space-y-2">
+        <div className="mt-3 border-t border-black/10 dark:border-white/10 pt-3 space-y-2">
           <div className="flex items-center justify-between text-[14px] text-gray-500 dark:text-gray-500">
             <span className="font-medium text-gray-500 dark:text-gray-500">수입</span>
             <span className="font-semibold tracking-[-0.02em] tabular-nums text-gray-500 dark:text-gray-500">₩{dayIncome.toLocaleString()}</span>

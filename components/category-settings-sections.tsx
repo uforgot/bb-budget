@@ -135,7 +135,7 @@ export function CategoryGrid({
     <div className="rounded-[22px] bg-surface overflow-hidden">
       {parents.map((parent, index) => (
         <div key={parent.id} data-category-id={parent.id}>
-          {index > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}
+          {index > 0 && <div className="ml-[52px] mr-4 h-px bg-black/10 dark:bg-white/10" />}
           <button
           onClick={() => {
             if (editMode || draggingId || suppressClick) return
@@ -178,7 +178,7 @@ export function CategoryGrid({
         </button>
         </div>
       ))}
-      {onAdd && parents.length > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}
+      {onAdd && parents.length > 0 && <div className="ml-[52px] mr-4 h-px bg-black/10 dark:bg-white/10" />}
       {onAdd && (addRow ?? (
         <button
           type="button"
