@@ -107,7 +107,7 @@ const MonthlyGridView = memo(function MonthlyGridView({
     <div>
       <div className="grid grid-cols-7 pt-3 pb-0 px-0">
         {WEEKDAYS_MON.map(day => (
-          <div key={day} className="text-center text-[10px] font-medium text-gray-500 dark:text-gray-500">{day}</div>
+          <div key={day} className="text-center text-[10px] font-medium text-black/50 dark:text-white/50">{day}</div>
         ))}
       </div>
       <div className="w-full px-0">
@@ -192,7 +192,7 @@ const WeekStripView = memo(function WeekStripView({
               onClick={() => onSelectDay(day)}
               className={`flex h-[64px] flex-col items-center justify-center rounded-[22px] transition-colors ${selected ? 'bg-accent-blue text-white' : 'bg-background text-foreground'}`}
             >
-              <span className={`text-[10px] font-medium ${selected ? 'text-white/80' : 'text-gray-500 dark:text-gray-500'}`}>{weekdayLabel}</span>
+              <span className={`text-[10px] font-medium ${selected ? 'text-white/80' : 'text-black/50 dark:text-white/50'}`}>{weekdayLabel}</span>
               <span className="mt-1 text-[16px] font-medium tracking-[-0.0625em] tabular-nums">{day}</span>
             </button>
           )
@@ -298,7 +298,7 @@ const WeekDayCard = memo(function WeekDayCard({
                   />
                   <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden text-[14px] text-foreground">
                     <span className="flex-shrink-0 font-medium text-foreground">{label}</span>
-                    {memoText && <span className="truncate text-[10px] text-gray-500 dark:text-gray-500">{memoText}</span>}
+                    {memoText && <span className="truncate text-[10px] text-black/50 dark:text-white/50">{memoText}</span>}
                   </div>
                 </div>
                 <span className="flex-shrink-0 text-[14px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">₩{tx.amount.toLocaleString()}</span>
@@ -323,7 +323,7 @@ const WeekDayCard = memo(function WeekDayCard({
                 />
                 <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden text-[14px] text-foreground">
                   <span className="flex-shrink-0 font-medium text-foreground">{r.categoryName || '미분류'}</span>
-                  {r.description && <span className="truncate text-[10px] text-gray-500 dark:text-gray-500">{r.description}</span>}
+                  {r.description && <span className="truncate text-[10px] text-black/50 dark:text-white/50">{r.description}</span>}
                 </div>
               </div>
               <span className="flex-shrink-0 text-[14px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">₩{r.amount.toLocaleString()}</span>
@@ -332,13 +332,13 @@ const WeekDayCard = memo(function WeekDayCard({
         </div>
 
         <div className="mt-3 border-t border-black/10 dark:border-white/10 pt-3 space-y-2">
-          <div className="flex items-center justify-between text-[14px] text-gray-500 dark:text-gray-500">
-            <span className="font-medium text-gray-500 dark:text-gray-500">수입</span>
-            <span className="font-semibold tracking-[-0.02em] tabular-nums text-gray-500 dark:text-gray-500">₩{dayIncome.toLocaleString()}</span>
+          <div className="flex items-center justify-between text-[14px] text-black/50 dark:text-white/50">
+            <span className="font-medium text-black/50 dark:text-white/50">수입</span>
+            <span className="font-semibold tracking-[-0.02em] tabular-nums text-black/50 dark:text-white/50">₩{dayIncome.toLocaleString()}</span>
           </div>
-          <div className="flex items-center justify-between text-[14px] text-gray-500 dark:text-gray-500">
-            <span className="font-medium text-gray-500 dark:text-gray-500">지출</span>
-            <span className="font-semibold tracking-[-0.02em] tabular-nums text-gray-500 dark:text-gray-500">₩{dayExpense.toLocaleString()}</span>
+          <div className="flex items-center justify-between text-[14px] text-black/50 dark:text-white/50">
+            <span className="font-medium text-black/50 dark:text-white/50">지출</span>
+            <span className="font-semibold tracking-[-0.02em] tabular-nums text-black/50 dark:text-white/50">₩{dayExpense.toLocaleString()}</span>
           </div>
         </div>
       </div>
