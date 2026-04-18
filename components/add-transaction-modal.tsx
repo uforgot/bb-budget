@@ -353,7 +353,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
   return (
     <div className="fixed inset-0 z-50 overscroll-none">
-      <div className="absolute inset-0 bg-black/26" onClick={handleClose} />
+      <div className="absolute inset-0" onClick={handleClose} />
       <div
         className="absolute inset-x-0 bottom-0 flex flex-col bg-surface"
         style={{
