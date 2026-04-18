@@ -117,7 +117,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
-                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-[#f3f4f6] dark:bg-surface'
+                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-gray-100 dark:bg-gray-700'
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
@@ -131,7 +131,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                 })}
               </div>
               {expandedInRow && expandedChildren.length > 0 && (
-                <div className="bg-[#f3f4f6] dark:bg-surface rounded-[22px] p-2 mb-2">
+                <div className="bg-gray-100 dark:bg-gray-700 rounded-[22px] p-2 mb-2">
                   <div className="grid grid-cols-4 gap-1.5">
                     {expandedChildren.map((child) => (
                       <button
