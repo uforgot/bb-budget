@@ -110,13 +110,13 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --surface: var(--gray-100);
-  --sheet: var(--gray-50);
+  --sheet: var(--gray-100);
   --bar-muted-color: var(--gray-100);
   --bar-label-color: var(--gray-500);
 }
 
 .dark {
-  --background: var(--gray-950);
+  --background: var(--gray-900);
   --foreground: #f3f4f6;
   --card: #1C1C1E;
   --card-foreground: #f3f4f6;
@@ -136,8 +136,8 @@
   --ring: #6b7280;
   --accent-blue: #5865F2;
   --accent-income: #14b8a6;
-  --surface: var(--gray-900);
-  --sheet: var(--gray-900);
+  --surface: var(--gray-800);
+  --sheet: var(--gray-800);
   --calendar-selected-day: #2C2C2E;
   --bar-muted-color: var(--gray-800);
   --bar-label-color: var(--gray-500);

@@ -21,11 +21,11 @@ export function TopToolbar({
         <div className="flex items-center gap-2">
           {versionLabel ? <span className="text-[10px] text-muted-foreground tabular-nums">{versionLabel}</span> : null}
           {onSearch ? (
-            <button onClick={onSearch} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white" aria-label="검색">
+            <button onClick={onSearch} className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-800 text-black dark:text-white" aria-label="검색">
               <Search size={20} strokeWidth={2.2} />
             </button>
           ) : null}
-          <button onClick={onSettings} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white" aria-label="설정">
+          <button onClick={onSettings} className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-800 text-black dark:text-white" aria-label="설정">
             <Settings size={20} strokeWidth={2.2} />
           </button>
         </div>
