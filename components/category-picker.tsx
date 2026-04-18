@@ -117,7 +117,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
-                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-[#e5e7eb] dark:bg-surface'
+                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-[#f3f4f6] dark:bg-surface'
                       }`}
                     >
                       <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
@@ -161,7 +161,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
           if (!inline) onClose()
           router.push('/settings/categories')
         }}
-        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-[#e5e7eb] dark:bg-surface text-[16px] font-medium text-muted-foreground"
+        className="w-full mt-2 mb-2 py-3.5 rounded-[22px] bg-[#f3f4f6] dark:bg-surface text-[16px] font-medium text-muted-foreground"
       >
         카테고리 관리하기
       </button>
