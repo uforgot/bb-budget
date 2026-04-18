@@ -361,7 +361,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     <div className="fixed inset-0 z-50 overscroll-none">
       <div className="absolute inset-0" style={{ visibility: sheetVisible ? 'visible' : 'hidden' }} onClick={handleClose} />
       <div
-        className="absolute inset-x-0 bottom-0 flex flex-col bg-gray-50 dark:bg-gray-900"
+        className="absolute inset-x-0 bottom-0 flex flex-col bg-sheet"
         style={{
           top: 'max(8px, env(safe-area-inset-top, 0px) + 4px)',
           transform: `translateY(${dragTranslateY}px)`,
@@ -475,7 +475,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       </div>
 
       {/* 하단 버튼 영역 */}
-      <div className="w-full px-4 pt-3 flex-shrink-0 bg-gray-50 dark:bg-gray-900" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+      <div className="w-full px-4 pt-3 flex-shrink-0 bg-sheet" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
         <div className="w-full max-w-md mx-auto">
         {editTransaction ? (
           recoverOpen ? (
