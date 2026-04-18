@@ -133,7 +133,7 @@
   --ring: #6b7280;
   --accent-blue: #5865F2;
   --accent-income: #14b8a6;
-  --surface: #1C1C1E;
+  --surface: var(--gray-900);
   --calendar-selected-day: #2C2C2E;
   --bar-muted-color: #2C2C2E;
   --chart-1: oklch(0.488 0.243 264.376);
