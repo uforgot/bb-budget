@@ -269,6 +269,7 @@ export default function CategoriesSettings() {
             setDraftChildren(reset.draftChildren)
             setEditingChildId(null)
             setEditingChildName('')
+            setEditMode(false)
             loadCategories()
           }}
           right={
