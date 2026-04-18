@@ -371,7 +371,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           overflow: 'hidden',
           touchAction: 'none',
           backgroundColor: 'var(--surface)',
-          boxShadow: '0 -8px 28px rgba(0,0,0,0.28)',
+          boxShadow: '0 12px 28px rgba(0,0,0,0.18)',
           visibility: sheetVisible ? 'visible' : 'hidden',
         }}
         onTouchStart={handleSheetTouchStart}
