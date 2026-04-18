@@ -349,14 +349,16 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     ['00', '0', 'backspace'],
   ]
 
+  if (!open) return null
+
   return (
-    <div className={`fixed inset-0 z-50 overscroll-none ${open ? '' : 'pointer-events-none'}`}>
+    <div className="fixed inset-0 z-50 overscroll-none">
       <div className="absolute inset-0 bg-black/26" onClick={handleClose} />
       <div
         className="absolute inset-x-0 bottom-0 flex flex-col bg-surface"
         style={{
           top: 'max(8px, env(safe-area-inset-top, 0px) + 4px)',
-          transform: open ? `translateY(${dragTranslateY}px)` : 'translateY(100%)',
+          transform: `translateY(${dragTranslateY}px)`,
           transition: sheetAnimating ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
           borderTopLeftRadius: 28,
           borderTopRightRadius: 28,
