@@ -45,10 +45,10 @@ export function TransactionDateRow({
   onChange: (value: string) => void
 }) {
   return (
-    <div className="flex items-center justify-between px-4 py-3.5 gap-3">
-      <span className="text-[16px] flex-shrink-0">날짜</span>
-      <label className="relative cursor-pointer ml-auto w-[196px] flex justify-end">
-        <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium text-right">
+    <div className="flex items-center justify-between px-4 py-3.5">
+      <span className="text-[16px]">날짜</span>
+      <label className="relative cursor-pointer ml-auto mr-0">
+        <span className="block bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium text-right">
           {(() => {
             const d = new Date(date + 'T00:00:00')
             const days = ['일', '월', '화', '수', '목', '금', '토']
