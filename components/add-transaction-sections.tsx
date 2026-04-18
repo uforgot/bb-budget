@@ -150,7 +150,7 @@ export function TransactionCategorySection({
 
       {type && categoryId && !categoryPickerOpen && (
         <>
-          <div className="border-t border-gray-200 dark:border-gray-600 mx-4" />
+          <div className="border-t border-gray-200 dark:border-gray-300 mx-4" />
           <button
             onClick={onOpenPicker}
             className="w-full flex items-center justify-between px-4 py-3.5"
@@ -250,7 +250,7 @@ export function TransactionRepeatSection({
 
       {repeatFrequency !== 'none' && (
         <>
-          <div className="border-t border-gray-200 dark:border-gray-600 mx-4" />
+          <div className="border-t border-gray-200 dark:border-gray-300 mx-4" />
           <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-[16px]">종료일</span>
             <label className="relative cursor-pointer">
@@ -292,7 +292,7 @@ export function RecoverySection({
 }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-[22px] px-4 py-1">
-      <div className="flex items-center justify-between py-3.5 border-b border-gray-200 dark:border-gray-600">
+      <div className="flex items-center justify-between py-3.5 border-b border-gray-200 dark:border-gray-300">
         <span className="text-[16px]">회수일</span>
         <label className="relative cursor-pointer">
           <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
