@@ -222,7 +222,7 @@ export default function Yearly() {
                   const active = yearlyChartMode === key
                   const activeIndex = tabs.findIndex(([tabKey]) => tabKey === yearlyChartMode)
                   const distance = Math.abs(index - activeIndex)
-                  const inactiveClass = distance === 1 ? 'bg-surface/60 text-black/50 dark:text-white/50' : 'bg-surface/30 text-black/50 dark:text-white/50'
+                  const inactiveClass = distance === 1 ? 'bg-surface/60 text-black/20 dark:text-white/20' : 'bg-surface/30 text-black/20 dark:text-white/20'
                   return (
                     <button
                       key={key}
