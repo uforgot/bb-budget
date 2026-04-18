@@ -384,12 +384,14 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onFocus={() => setKeypadActive(false)}
               onChange={setEditDate}
             />
+            <div className="border-t border-gray-200 dark:border-gray-300 mx-4" />
             <TransactionAmountRow
               rawAmount={rawAmount}
               amountInputRef={amountInputRef}
               formatKorean={formatKoreanWon}
               onChange={setRawAmount}
             />
+            <div className="border-t border-gray-200 dark:border-gray-300 mx-4" />
             <TransactionCategorySection
               type={type}
               categoryId={categoryId}
@@ -421,6 +423,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               }}
               onClosePicker={() => setCategoryPickerOpen(false)}
             />
+            <div className="border-t border-gray-200 dark:border-gray-300 mx-4" />
             <TransactionMemoRow
               memo={memo}
               onChange={setMemo}
@@ -429,6 +432,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             />
           {(!editTransaction || linkedRecurringId) && (
             <>
+              <div className="border-t border-gray-200 dark:border-gray-300 mx-4" />
               <TransactionRepeatSection
                 repeatDropdownRef={repeatDropdownRef}
                 repeatFrequency={repeatFrequency}
