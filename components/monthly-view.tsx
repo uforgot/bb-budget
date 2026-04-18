@@ -270,7 +270,7 @@ const WeekDayCard = memo(function WeekDayCard({
   return (
     <div
       ref={registerRef}
-      className={`mx-5 mb-3 rounded-[22px] bg-surface dark:bg-gray-950 transition-colors ${highlighted ? 'ring-1 ring-accent-blue/40' : ''}`}
+      className={`mx-5 mb-3 rounded-[22px] bg-surface transition-colors ${highlighted ? 'ring-1 ring-accent-blue/40' : ''}`}
     >
       <div className="px-4 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
@@ -633,11 +633,11 @@ export function MonthlyView({
       {viewMode === 'week' && (
         <>
           <div className="mx-5 mb-3 mt-2 flex gap-3">
-            <div className="flex-1 bg-surface dark:bg-gray-950 rounded-[22px] px-4 pt-4 pb-3">
+            <div className="flex-1 bg-surface rounded-[22px] px-4 pt-4 pb-3">
               <p className="text-[14px] font-semibold text-foreground mb-0">주간 지출</p>
               <p className="text-[20px] font-bold tracking-[-0.03em] tabular-nums" style={{ color: semanticColors.expense }}>₩{weekExpense.toLocaleString()}</p>
             </div>
-            <div className="flex-1 bg-surface dark:bg-gray-950 rounded-[22px] px-4 pt-4 pb-3">
+            <div className="flex-1 bg-surface rounded-[22px] px-4 pt-4 pb-3">
               <p className="text-[14px] font-semibold text-foreground mb-0">주간 수입</p>
               <p className="text-[20px] font-bold tracking-[-0.03em] tabular-nums" style={{ color: semanticColors.income }}>₩{weekIncome.toLocaleString()}</p>
             </div>
