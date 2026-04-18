@@ -355,14 +355,14 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onFocus={() => setKeypadActive(false)}
               onChange={setEditDate}
             />
-            <div className="border-t border-border mx-4" />
+            <div className="border-t mx-4" style={{ borderColor: 'rgba(255,255,255,0.1)' }} />
             <TransactionAmountRow
               rawAmount={rawAmount}
               amountInputRef={amountInputRef}
               formatKorean={formatKoreanWon}
               onChange={setRawAmount}
             />
-            <div className="border-t border-border mx-4" />
+            <div className="border-t mx-4" style={{ borderColor: 'rgba(255,255,255,0.1)' }} />
             <TransactionCategorySection
               type={type}
               categoryId={categoryId}
@@ -394,7 +394,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               }}
               onClosePicker={() => setCategoryPickerOpen(false)}
             />
-            <div className="border-t border-border mx-4" />
+            <div className="border-t mx-4" style={{ borderColor: 'rgba(255,255,255,0.1)' }} />
             <TransactionMemoRow
               memo={memo}
               onChange={setMemo}
@@ -403,7 +403,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             />
           {(!editTransaction || linkedRecurringId) && (
             <>
-              <div className="border-t border-border mx-4" />
+              <div className="border-t mx-4" style={{ borderColor: 'rgba(255,255,255,0.1)' }} />
               <TransactionRepeatSection
                 repeatDropdownRef={repeatDropdownRef}
                 repeatFrequency={repeatFrequency}
