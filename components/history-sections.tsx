@@ -18,7 +18,7 @@ export function HistoryTopBar({
       left={
         <button
           onClick={onToggleCalendarView}
-          className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-colors ${forceCalendarView ? 'bg-accent-blue text-white' : 'bg-white dark:bg-gray-800 text-black dark:text-white'}`}
+          className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-colors ${forceCalendarView ? 'bg-accent-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-black dark:text-white'}`}
           aria-label={forceCalendarView ? '내역 보기' : '달력 보기'}
         >
           <Calendar size={20} strokeWidth={2.2} className="relative" />
