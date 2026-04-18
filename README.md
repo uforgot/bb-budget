@@ -68,6 +68,10 @@
 - 반복 원본 거래 수정 시 반복 설정 변경 가능
 - 반복 원본 거래 삭제 시 이후 예정 반복도 같이 제거되도록 cascade 처리
 - 저축 회수는 인라인 UI
+- 바텀시트형 거래 입력 UI 사용
+- 닫힘 상태에서는 modal/backdrop DOM 자체를 unmount
+- 열릴 때/닫힐 때 시트 애니메이션 유지 후 visible/unmount 제어
+- 반복 선택은 인라인 드롭다운이 아니라 네이티브 시스템 picker/select 사용
 
 ### 리포트 (app/report/page.tsx)
 - 4개 카드 아코디언 (총자산, 수입·지출 추이, 지출/수입 카테고리 분석)
@@ -222,6 +226,32 @@
   - default row = edit affordance,
   - edit mode = `Check`, `Trash2`, `X`, drag handle,
   - hit areas preserved while icons changed.
+
+## Recent Transaction Sheet Tuning (2026-04-18)
+
+### Bottom sheet / overlay behavior
+- Add transaction UI was refactored into a near-fullscreen bottom sheet with rounded top corners.
+- Background dim backdrop was removed from the add-transaction sheet after it caused the underlying page/tab bar to look dark even when the sheet logic was under investigation.
+- Closed transaction sheets now fully unmount instead of staying in the DOM with pointer-events disabled.
+- Opening/closing animation timing was adjusted so the sheet stays rendered through the close animation, then unmounts.
+- While the sheet is open, body/document scrolling and overscroll are locked so the monthly page behind it does not move and pull-to-refresh does not fire.
+- Sheet shadow direction was changed to fall downward rather than bleeding upward into the top safe area.
+
+### Header / actions
+- Header controls were changed back to left back button + right delete button.
+- Delete button in edit mode is now actually wired to delete flow with confirmation instead of incorrectly pointing at save behavior.
+
+### Light/Dark visual tuning inside transaction sheet
+- Light-mode sheet shell background was tuned separately from the inner card area.
+- Light-mode sheet shell is now `#F9FAFB`.
+- The main inner rounded transaction card was tuned multiple times and currently uses `#f3f4f6` in light mode, with dark mode still using `muted`.
+- Cancel button, inactive type pills, parent category pills, category manage button, and child category pills received separate light-mode color tuning to avoid all-white blending.
+- Inactive child category pills in the transaction picker were ultimately set back to white in light mode.
+- Divider lines inside the main transaction card were tuned separately for light and dark mode; light mode was reverted while dark mode contrast was increased.
+
+### Category / picker tuning
+- Transaction category picker and category-edit child pills got light-mode-only gray tuning so pills remain distinguishable in bright theme.
+- Category edit screen child category pills now use `#f3f4f6` in light mode.
 
 ## Recent UX Changes (2026-04-10)
 
