@@ -192,7 +192,7 @@ const WeekStripView = memo(function WeekStripView({
               onClick={() => onSelectDay(day)}
               className={`flex h-[64px] flex-col items-center justify-center rounded-[22px] transition-colors ${selected ? 'bg-accent-blue text-white' : 'bg-background text-foreground'}`}
             >
-              <span className={`text-[10px] font-medium ${selected ? 'text-white/80' : 'text-muted-foreground'}`}>{weekdayLabel}</span>
+              <span className={`text-[10px] font-medium ${selected ? 'text-white/80' : 'text-gray-500 dark:text-gray-500'}`}>{weekdayLabel}</span>
               <span className="mt-1 text-[16px] font-medium tracking-[-0.0625em] tabular-nums">{day}</span>
             </button>
           )
