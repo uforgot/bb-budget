@@ -168,6 +168,23 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     return () => window.cancelAnimationFrame(raf)
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+    const prevBodyOverflow = document.body.style.overflow
+    const prevBodyOverscroll = document.body.style.overscrollBehavior
+    const prevHtmlOverscroll = document.documentElement.style.overscrollBehavior
+
+    document.body.style.overflow = 'hidden'
+    document.body.style.overscrollBehavior = 'none'
+    document.documentElement.style.overscrollBehavior = 'none'
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow
+      document.body.style.overscrollBehavior = prevBodyOverscroll
+      document.documentElement.style.overscrollBehavior = prevHtmlOverscroll
+    }
+  }, [open])
+
   // 반복 드롭다운 바깥 클릭 시 닫기
   useEffect(() => {
     if (!repeatDropdownOpen) return
@@ -289,6 +306,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     const next = Math.max(0, diff + dragTranslateYRef.current)
     setSheetAnimating(false)
     setDragTranslateY(next)
+    e.stopPropagation()
     e.preventDefault()
   }
 
@@ -332,7 +350,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   ]
 
   return (
-    <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`}>
+    <div className={`fixed inset-0 z-50 overscroll-none ${open ? '' : 'pointer-events-none'}`}>
       <div className="absolute inset-0 bg-black/26" onClick={handleClose} />
       <div
         className="absolute inset-x-0 bottom-0 flex flex-col bg-surface"
