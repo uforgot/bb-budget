@@ -388,7 +388,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
         <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
-          <div className="mb-3 rounded-[22px] overflow-visible bg-[#f3f4f6] dark:bg-muted">
+          <div className="mb-3 rounded-[22px] overflow-visible bg-white/70 dark:bg-muted">
             <TransactionDateRow
               date={date}
               onFocus={() => setKeypadActive(false)}
