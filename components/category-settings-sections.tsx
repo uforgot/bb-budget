@@ -97,7 +97,7 @@ export function AddRootCategoryRow({
 
   if (inline) return content
 
-  return <div className="mb-6 rounded-[22px] bg-surface">{content}</div>
+  return <div className="mb-6 rounded-[22px] bg-surface dark:bg-gray-900">{content}</div>
 }
 
 export function CategoryGrid({
@@ -128,7 +128,7 @@ export function CategoryGrid({
   addRow?: React.ReactNode
 }) {
   return (
-    <div className="rounded-[22px] bg-surface overflow-hidden">
+    <div className="rounded-[22px] bg-surface dark:bg-gray-900 overflow-hidden">
       {parents.map((parent, index) => (
         <div key={parent.id} data-category-id={parent.id}>
           {index > 0 && <div className="ml-[52px] mr-4 h-px bg-border/50" />}
@@ -204,7 +204,7 @@ export function DragGhost({
       className="fixed pointer-events-none z-[90] -translate-x-1/2 -translate-y-1/2"
       style={{ left: dragPosition.x, top: dragPosition.y }}
     >
-      <div className="flex items-center gap-3 py-4 px-4 rounded-[22px] bg-surface shadow-[0_12px_28px_rgba(0,0,0,0.18)] ring-1 ring-border opacity-95 min-w-[220px]">
+      <div className="flex items-center gap-3 py-4 px-4 rounded-[22px] bg-surface dark:bg-gray-900 shadow-[0_12px_28px_rgba(0,0,0,0.18)] ring-1 ring-border opacity-95 min-w-[220px]">
         <span className="text-[24px]">{getEmoji(active)}</span>
         <span className="text-[16px] font-medium text-foreground">{active.name}</span>
       </div>
