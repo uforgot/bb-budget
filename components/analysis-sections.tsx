@@ -98,7 +98,7 @@ export function AnalysisRow({
   const width = maxTotal > 0 ? Math.max((total / maxTotal) * 100, total > 0 ? 8 : 0) : 0
 
   return (
-    <div className="bg-surface dark:bg-gray-900 rounded-[22px] px-4 py-4">
+    <div className="bg-surface rounded-[22px] px-4 py-4">
       <button type="button" onClick={() => setOpen(v => !v)} className="w-full text-left">
         <div className="mb-3 h-2 rounded-full bg-background overflow-hidden">
           <div className="h-full rounded-full transition-all" style={{ width: `${width}%`, backgroundColor: color }} />
@@ -128,7 +128,7 @@ export function AnalysisRow({
 
 export function AnalysisEmptyState() {
   return (
-    <div className="bg-surface dark:bg-gray-900 rounded-[22px] px-4 py-8 text-center text-[14px] text-muted-foreground">
+    <div className="bg-surface rounded-[22px] px-4 py-8 text-center text-[14px] text-muted-foreground">
       아직 표시할 내역이 없어요
     </div>
   )

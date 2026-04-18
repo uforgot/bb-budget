@@ -30,7 +30,7 @@ export default function Settings() {
           <p className="text-[14px] font-medium text-muted-foreground uppercase">보기 설정</p>
         </div>
 
-        <div className="mx-5 rounded-[22px] bg-surface dark:bg-gray-900">
+        <div className="mx-5 rounded-[22px] bg-surface">
           <div className="flex items-center justify-between px-4 py-3">
             <span className="text-[16px]">다크 모드</span>
             <button
@@ -55,7 +55,7 @@ export default function Settings() {
           <p className="text-[14px] font-medium text-muted-foreground uppercase">데이터 관리</p>
         </div>
 
-        <div className="mx-5 rounded-[22px] bg-surface dark:bg-gray-900">
+        <div className="mx-5 rounded-[22px] bg-surface">
           <Link
             href="/settings/categories"
             className="flex items-center justify-between px-4 py-4"

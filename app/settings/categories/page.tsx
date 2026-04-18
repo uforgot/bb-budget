@@ -296,7 +296,7 @@ export default function CategoriesSettings() {
             onClose={() => setEmojiPickerOpen(false)}
           />
 
-          <div className="rounded-[22px] bg-surface dark:bg-gray-900 overflow-hidden">
+          <div className="rounded-[22px] bg-surface overflow-hidden">
             <CategoryNameRow value={editName} onChange={setEditName} />
 
             <CategoryChildrenEditor
