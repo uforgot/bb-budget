@@ -143,7 +143,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         className={`py-2 rounded-lg text-[12px] transition-colors ${
                           selected === child.id
                             ? TYPE_CHILD_COLOR[type] + ' font-medium'
-                            : 'bg-[#f3f4f6] dark:bg-muted text-foreground'
+                            : 'bg-[#f9fafb] dark:bg-muted text-foreground'
                         }`}
                       >
                         {child.name}
