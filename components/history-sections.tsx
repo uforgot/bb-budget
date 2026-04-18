@@ -16,9 +16,12 @@ export function HistoryTopBar({
   return (
     <TopToolbar
       left={
-        <button onClick={onToggleCalendarView} className="relative flex items-center justify-center w-8 h-8" aria-label={forceCalendarView ? '내역 보기' : '달력 보기'}>
-          {forceCalendarView && <span className="absolute inset-0 rounded-full bg-accent-blue" />}
-          <Calendar size={18} className={`relative ${forceCalendarView ? 'text-white' : 'text-foreground'}`} />
+        <button
+          onClick={onToggleCalendarView}
+          className={`relative flex items-center justify-center w-11 h-11 rounded-full transition-colors ${forceCalendarView ? 'bg-accent-blue text-white' : 'bg-white dark:bg-gray-800 text-black dark:text-white'}`}
+          aria-label={forceCalendarView ? '내역 보기' : '달력 보기'}
+        >
+          <Calendar size={20} strokeWidth={2.2} className="relative" />
         </button>
       }
       onSearch={onToggleSearch}
