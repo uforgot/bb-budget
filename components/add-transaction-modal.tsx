@@ -333,9 +333,9 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   }
 
   const typeColors: Record<TransactionType, { active: string; inactive: string }> = {
-    '지출': { active: 'bg-accent-coral text-white', inactive: 'bg-surface text-muted-foreground' },
-    '수입': { active: 'bg-[#14b8a6] text-white', inactive: 'bg-surface text-muted-foreground' },
-    '저축': { active: 'bg-accent-purple text-white', inactive: 'bg-surface text-muted-foreground' },
+    '지출': { active: 'bg-accent-coral text-white', inactive: 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500' },
+    '수입': { active: 'bg-[#14b8a6] text-white', inactive: 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500' },
+    '저축': { active: 'bg-accent-purple text-white', inactive: 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500' },
   }
 
   const keypadKeys = [
@@ -378,20 +378,20 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain">
         <div className="w-full max-w-md mx-auto px-5 pt-6 pb-4">
           {/* 전체 폼 통합 박스 */}
-          <div className="mb-3 rounded-[22px] overflow-visible bg-muted">
+          <div className="mb-3 rounded-[22px] overflow-visible bg-white dark:bg-gray-800">
             <TransactionDateRow
               date={date}
               onFocus={() => setKeypadActive(false)}
               onChange={setEditDate}
             />
-            <div className="border-t border-[#f3f4f6] dark:border-white/12 mx-4" />
+            <div className="border-t border-gray-200 dark:border-gray-700 mx-4" />
             <TransactionAmountRow
               rawAmount={rawAmount}
               amountInputRef={amountInputRef}
               formatKorean={formatKoreanWon}
               onChange={setRawAmount}
             />
-            <div className="border-t border-[#f3f4f6] dark:border-white/12 mx-4" />
+            <div className="border-t border-gray-200 dark:border-gray-700 mx-4" />
             <TransactionCategorySection
               type={type}
               categoryId={categoryId}
@@ -423,7 +423,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               }}
               onClosePicker={() => setCategoryPickerOpen(false)}
             />
-            <div className="border-t border-[#f3f4f6] dark:border-white/12 mx-4" />
+            <div className="border-t border-gray-200 dark:border-gray-700 mx-4" />
             <TransactionMemoRow
               memo={memo}
               onChange={setMemo}
@@ -432,7 +432,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             />
           {(!editTransaction || linkedRecurringId) && (
             <>
-              <div className="border-t border-[#f3f4f6] dark:border-white/12 mx-4" />
+              <div className="border-t border-gray-200 dark:border-gray-700 mx-4" />
               <TransactionRepeatSection
                 repeatDropdownRef={repeatDropdownRef}
                 repeatFrequency={repeatFrequency}
@@ -495,7 +495,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </button>
               <button
                 onClick={() => setRecoverOpen(false)}
-                className="flex-1 bg-[#f3f4f6] dark:bg-muted text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
                 취소하기
               </button>
@@ -515,7 +515,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               )}
               <button
                 onClick={handleClose}
-                className="flex-1 bg-[#f3f4f6] dark:bg-muted text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
                 취소하기
               </button>
@@ -527,7 +527,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <button onClick={handleSave} className="flex-1 bg-accent-blue text-white rounded-[22px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '저장하기'}
             </button>
-            <button onClick={handleClose} className="flex-1 bg-[#f3f4f6] dark:bg-muted text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold">
+            <button onClick={handleClose} className="flex-1 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold">
               취소하기
             </button>
           </div>

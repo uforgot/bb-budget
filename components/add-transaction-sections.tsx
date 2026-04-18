@@ -15,10 +15,10 @@ export function AddTransactionHeader({
   onConfirm: () => void
 }) {
   return (
-    <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-16 bg-[#f9fafb] dark:bg-surface flex-shrink-0">
+    <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-16 bg-sheet flex-shrink-0">
       <button
         onClick={onClose}
-        className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-muted-foreground"
+        className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500"
         aria-label="뒤로가기"
       >
         <ChevronLeft size={22} strokeWidth={2.4} />
@@ -26,7 +26,7 @@ export function AddTransactionHeader({
       <h1 className="text-[17px] font-semibold">{title}</h1>
       <button
         onClick={onConfirm}
-        className="flex items-center justify-center w-11 h-11 rounded-full bg-muted text-foreground"
+        className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500"
         aria-label="삭제"
       >
         <Trash size={20} strokeWidth={2.2} />
@@ -48,7 +48,7 @@ export function TransactionDateRow({
     <div className="flex items-center justify-between px-4 py-3.5">
       <span className="text-[16px]">날짜</span>
       <label className="relative cursor-pointer">
-        <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+        <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
           {(() => {
             const d = new Date(date + 'T00:00:00')
             const days = ['일', '월', '화', '수', '목', '금', '토']
@@ -99,7 +99,7 @@ export function TransactionAmountRow({
           />
         </div>
         {rawAmount ? (
-          <span className="text-[12px] text-muted-foreground">
+          <span className="text-[12px] text-gray-500 dark:text-gray-500">
             {formatKorean(rawAmount)}
           </span>
         ) : null}
@@ -139,7 +139,7 @@ export function TransactionCategorySection({
               key={t}
               onClick={() => onTypeClick(t)}
               className={`px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors ${
-                type === t ? typeColors[t].active : 'bg-[#f3f4f6] dark:bg-surface text-muted-foreground'
+                type === t ? typeColors[t].active : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500'
               }`}
             >
               {t}
@@ -150,7 +150,7 @@ export function TransactionCategorySection({
 
       {type && categoryId && !categoryPickerOpen && (
         <>
-          <div className="border-t border-border mx-4" />
+          <div className="border-t border-gray-200 dark:border-gray-700 mx-4" />
           <button
             onClick={onOpenPicker}
             className="w-full flex items-center justify-between px-4 py-3.5"
@@ -158,7 +158,7 @@ export function TransactionCategorySection({
             <span className="text-[16px]">소분류</span>
             <div className="flex items-center gap-2 min-w-0 ml-4">
               <span className="text-[16px] text-right truncate">{categoryLabel}</span>
-              <ChevronRight size={16} strokeWidth={2} className="text-muted-foreground flex-shrink-0" />
+              <ChevronRight size={16} strokeWidth={2} className="text-gray-500 dark:text-gray-500 flex-shrink-0" />
             </div>
           </button>
         </>
@@ -202,7 +202,7 @@ export function TransactionMemoRow({
         onBlur={onBlur}
         onFocus={onFocus}
         style={{ fontSize: '16px', textAlign: 'right' }}
-        className="bg-transparent text-muted-foreground placeholder:text-muted-foreground/50 outline-none w-40"
+        className="bg-transparent text-gray-500 dark:text-gray-500 placeholder:text-gray-500/50 dark:placeholder:text-gray-500/50 outline-none w-40"
       />
     </div>
   )
@@ -229,7 +229,7 @@ export function TransactionRepeatSection({
     <div ref={repeatDropdownRef}>
       <label className="relative w-full flex items-center justify-between px-4 py-3.5 cursor-pointer">
         <span className="text-[16px]">반복</span>
-        <div className="flex items-center gap-1 text-muted-foreground pointer-events-none">
+        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-500 pointer-events-none">
           <span className="text-[16px]">
             {{ none: '안 함', weekly: '매주', monthly: '매월', yearly: '매년' }[repeatFrequency]}
           </span>
@@ -250,11 +250,11 @@ export function TransactionRepeatSection({
 
       {repeatFrequency !== 'none' && (
         <>
-          <div className="border-t border-border mx-4" />
+          <div className="border-t border-gray-200 dark:border-gray-700 mx-4" />
           <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-[16px]">종료일</span>
             <label className="relative cursor-pointer">
-              <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+              <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
                 {(() => {
                   const d = new Date(repeatEndDate + 'T00:00:00')
                   return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
@@ -291,11 +291,11 @@ export function RecoverySection({
   onChangeAmount: (value: string) => void
 }) {
   return (
-    <div className="bg-surface rounded-[22px] px-4 py-1">
-      <div className="flex items-center justify-between py-3.5 border-b border-border">
+    <div className="bg-white dark:bg-gray-800 rounded-[22px] px-4 py-1">
+      <div className="flex items-center justify-between py-3.5 border-b border-gray-200 dark:border-gray-700">
         <span className="text-[16px]">회수일</span>
         <label className="relative cursor-pointer">
-          <span className="bg-muted text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+          <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
             {recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}
           </span>
           <input
@@ -323,7 +323,7 @@ export function RecoverySection({
             />
           </div>
           {recoverAmount ? (
-            <span className="text-[12px] text-muted-foreground">{formatKorean(recoverAmount)}</span>
+            <span className="text-[12px] text-gray-500 dark:text-gray-500">{formatKorean(recoverAmount)}</span>
           ) : null}
         </div>
       </div>
