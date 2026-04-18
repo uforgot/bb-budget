@@ -466,7 +466,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               </button>
               <button
                 onClick={() => setRecoverOpen(false)}
-                className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+                style={{ backgroundColor: '#2A2A2D' }}
               >
                 취소하기
               </button>
@@ -486,7 +487,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               )}
               <button
                 onClick={handleClose}
-                className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold"
+                style={{ backgroundColor: '#2A2A2D' }}
               >
                 취소하기
               </button>
@@ -498,7 +500,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             <button onClick={handleSave} className="flex-1 bg-accent-blue text-white rounded-[22px] py-3.5 text-[16px] font-semibold">
               {saving ? '저장 중...' : '저장하기'}
             </button>
-            <button onClick={handleClose} className="flex-1 bg-surface text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold">
+            <button onClick={handleClose} className="flex-1 text-muted-foreground rounded-[22px] py-3.5 text-[16px] font-semibold" style={{ backgroundColor: '#2A2A2D' }}>
               취소하기
             </button>
           </div>
