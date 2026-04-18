@@ -12,15 +12,16 @@ export default function Settings() {
   return (
     <div className="min-h-dvh bg-background">
       {/* 헤더 */}
-      <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14 bg-background">
+      <header className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-16 bg-background">
         <button
           onClick={() => router.back()}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground"
+          className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white"
+          aria-label="뒤로가기"
         >
-          <ChevronLeft size={20} strokeWidth={2} />
+          <ChevronLeft size={22} strokeWidth={2.4} />
         </button>
         <h1 className="text-[17px] font-semibold">설정</h1>
-        <div className="w-8" />
+        <div className="w-11" />
       </header>
 
       <main className="max-w-lg mx-auto">

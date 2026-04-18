@@ -19,9 +19,13 @@ export function CategorySettingsHeader({
   right: React.ReactNode
 }) {
   return (
-    <header className="relative flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-14">
-      <button onClick={onBack} className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10">
-        <ChevronLeft size={20} strokeWidth={2} />
+    <header className="relative flex items-center justify-between px-5 pt-[env(safe-area-inset-top,0px)] h-16 bg-background">
+      <button
+        onClick={onBack}
+        className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white z-10"
+        aria-label="뒤로가기"
+      >
+        <ChevronLeft size={22} strokeWidth={2.4} />
       </button>
       <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold text-center pointer-events-none">{title}</h1>
       {right}
@@ -85,11 +89,11 @@ export function AddRootCategoryRow({
         className="flex-1 min-w-0 bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/70 outline-none"
       />
       <div className="ml-auto flex items-center justify-end gap-2 min-w-[88px] flex-shrink-0">
-        <button onClick={onSubmit} className="flex items-center justify-center w-8 h-8 rounded-full text-[#5865F2] flex-shrink-0" aria-label="추가">
-          <Check size={16} />
+        <button onClick={onSubmit} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white flex-shrink-0" aria-label="추가">
+          <Check size={20} strokeWidth={2.2} />
         </button>
-        <button onClick={onCancel} className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground flex-shrink-0" aria-label="취소">
-          <X size={16} />
+        <button onClick={onCancel} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white flex-shrink-0" aria-label="취소">
+          <X size={20} strokeWidth={2.2} />
         </button>
       </div>
     </div>
@@ -181,7 +185,9 @@ export function CategoryGrid({
           onClick={onAdd}
           className="w-full flex items-center justify-center px-4 py-4 text-muted-foreground"
         >
-          <Plus size={18} strokeWidth={2.2} />
+          <span className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white">
+            <Plus size={20} strokeWidth={2.2} />
+          </span>
         </button>
       ))}
     </div>

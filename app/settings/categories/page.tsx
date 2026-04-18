@@ -277,10 +277,10 @@ export default function CategoriesSettings() {
                 const deleted = await confirmDelete({ id: editingParent.id, name: editingParent.name, type: 'parent' })
                 if (deleted) setEditingParent(null)
               }}
-              className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground z-10"
+              className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white z-10"
               aria-label="삭제"
             >
-              <Trash size={16} />
+              <Trash size={20} strokeWidth={2.2} />
             </button>
           }
         />
@@ -405,10 +405,10 @@ export default function CategoriesSettings() {
               setDraggingId(null)
               setDragPosition(null)
             }}
-            className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors z-10 ${editMode ? 'bg-[#5865F2] text-white' : 'bg-muted text-muted-foreground'}`}
+            className={`flex items-center justify-center w-11 h-11 rounded-full transition-colors z-10 ${editMode ? 'bg-[#5865F2] text-white' : 'bg-white dark:bg-gray-800 text-black dark:text-white'}`}
             aria-label="편집 모드"
           >
-            <SquarePen size={16} strokeWidth={2} />
+            <SquarePen size={20} strokeWidth={2.2} />
           </button>
         }
       />
