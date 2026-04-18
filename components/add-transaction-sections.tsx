@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
 import { CategoryPicker } from './category-picker'
 
 type TransactionType = '지출' | '수입' | '저축'
