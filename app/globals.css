@@ -139,7 +139,7 @@
   --surface: var(--gray-900);
   --sheet: var(--gray-900);
   --calendar-selected-day: #2C2C2E;
-  --bar-muted-color: var(--gray-700);
+  --bar-muted-color: var(--gray-800);
   --bar-label-color: var(--gray-500);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
