@@ -278,7 +278,7 @@ const WeekDayCard = memo(function WeekDayCard({
         </div>
       </div>
 
-      <div className="mx-4 border-t border-gray-200 dark:border-gray-800" />
+      <div className="mx-4 border-t border-gray-200 dark:border-gray-700" />
 
       <div className="px-4 pb-5 pt-3">
         <div className="space-y-4">
@@ -331,7 +331,7 @@ const WeekDayCard = memo(function WeekDayCard({
           ))}
         </div>
 
-        <div className="mt-3 border-t border-gray-200 dark:border-gray-800 pt-3 space-y-2">
+        <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
           <div className="flex items-center justify-between text-[14px] text-gray-500 dark:text-gray-500">
             <span className="font-medium text-gray-500 dark:text-gray-500">수입</span>
             <span className="font-semibold tracking-[-0.02em] tabular-nums text-gray-500 dark:text-gray-500">₩{dayIncome.toLocaleString()}</span>
@@ -583,7 +583,7 @@ export function MonthlyView({
                   key={week}
                   data-no-swipe="true"
                   onClick={() => handleWeekTabClick(week)}
-                  className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-white dark:bg-gray-900 text-gray-300 dark:text-gray-600'}`}
+                  className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${viewMode === 'week' && selectedWeek === week ? 'bg-accent-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600'}`}
                 >
                   {week}주 차
                 </button>

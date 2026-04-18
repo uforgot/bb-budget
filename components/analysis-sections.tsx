@@ -71,7 +71,7 @@ export function AnalysisYearPills({
             key={year}
             type="button"
             onClick={() => onSelect(year)}
-            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${selectedYear === year ? 'bg-accent-blue text-white' : 'bg-white dark:bg-gray-900 text-gray-300 dark:text-gray-600'}`}
+            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${selectedYear === year ? 'bg-accent-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600'}`}
           >
             {year}년
           </button>
