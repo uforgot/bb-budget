@@ -138,7 +138,7 @@ export function CategoryChildrenEditor({
             ) : (
               <button
                 onClick={onStartAdd}
-                className="inline-flex items-center bg-gray-100 dark:bg-gray-800 text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
+                className="inline-flex items-center bg-gray-100 dark:bg-gray-700 text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
               >
                 추가
               </button>

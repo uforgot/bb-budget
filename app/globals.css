@@ -111,7 +111,7 @@
   --sidebar-ring: oklch(0.708 0 0);
   --surface: var(--gray-100);
   --sheet: var(--gray-100);
-  --bar-muted-color: var(--gray-100);
+  --bar-muted-color: var(--gray-200);
   --bar-label-color: var(--gray-500);
 }
 
@@ -137,9 +137,9 @@
   --accent-blue: #5865F2;
   --accent-income: #14b8a6;
   --surface: var(--gray-800);
-  --sheet: var(--gray-100);
+  --sheet: var(--gray-800);
   --calendar-selected-day: #2C2C2E;
-  --bar-muted-color: var(--gray-800);
+  --bar-muted-color: var(--gray-700);
   --bar-label-color: var(--gray-500);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
