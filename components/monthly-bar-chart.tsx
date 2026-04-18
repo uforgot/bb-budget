@@ -108,7 +108,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
                 <span style={{
                   fontSize: 10,
                   fontWeight: isSelected ? 600 : 400,
-                  color: isSelected ? 'var(--foreground)' : '#9CA3AF',
+                  color: isSelected ? 'var(--foreground)' : 'var(--bar-label-color)',
                   height: LABEL_H,
                   display: 'flex',
                   alignItems: 'center',

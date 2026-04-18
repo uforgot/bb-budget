@@ -111,7 +111,8 @@
   --sidebar-ring: oklch(0.708 0 0);
   --surface: #ffffff;
   --sheet: var(--gray-50);
-  --bar-muted-color: #E5E7EB;
+  --bar-muted-color: var(--gray-100);
+  --bar-label-color: var(--gray-500);
 }
 
 .dark {
@@ -138,7 +139,8 @@
   --surface: var(--gray-900);
   --sheet: var(--gray-900);
   --calendar-selected-day: #2C2C2E;
-  --bar-muted-color: #2C2C2E;
+  --bar-muted-color: var(--gray-800);
+  --bar-label-color: var(--gray-500);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
