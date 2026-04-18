@@ -116,7 +116,7 @@ export function AnalysisRow({
         <div className="mt-4 border-t border-black/10 dark:border-white/10 pt-3 space-y-2">
           {months.map(({ month, amount }) => (
             <div key={month} className="flex items-center justify-between gap-3 text-[14px]">
-              <span className="text-gray-500 dark:text-gray-500">{month}월</span>
+              <span className="text-black/50 dark:text-white/50">{month}월</span>
               <span className="font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(amount)}</span>
             </div>
           ))}
