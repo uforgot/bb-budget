@@ -71,7 +71,7 @@ export function AnalysisYearPills({
             key={year}
             type="button"
             onClick={() => onSelect(year)}
-            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${selectedYear === year ? 'bg-accent-blue text-white' : 'bg-surface text-muted-foreground opacity-70'}`}
+            className={`px-6 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${selectedYear === year ? 'bg-accent-blue text-white' : 'bg-white dark:bg-gray-900 text-gray-300 dark:text-gray-600'}`}
           >
             {year}년
           </button>
@@ -107,16 +107,16 @@ export function AnalysisRow({
           <p className="min-w-0 truncate text-[14px] font-medium text-foreground">{label}</p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-[15px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(total)}</span>
-            <ChevronDown size={14} strokeWidth={2} className={`text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
+            <ChevronDown size={14} strokeWidth={2} className={`text-gray-500 dark:text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} />
           </div>
         </div>
       </button>
 
       {open && (
-        <div className="mt-4 border-t border-border pt-3 space-y-2">
+        <div className="mt-4 border-t border-gray-200 dark:border-gray-800 pt-3 space-y-2">
           {months.map(({ month, amount }) => (
             <div key={month} className="flex items-center justify-between gap-3 text-[14px]">
-              <span className="text-muted-foreground">{month}월</span>
+              <span className="text-gray-500 dark:text-gray-500">{month}월</span>
               <span className="font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(amount)}</span>
             </div>
           ))}
