@@ -419,7 +419,8 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       </div>
 
       {/* 하단 버튼 영역 */}
-      <div className="w-full max-w-md mx-auto px-4 pt-3 flex-shrink-0" style={{ backgroundColor: 'var(--surface)', paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+      <div className="w-full px-4 pt-3 flex-shrink-0 bg-surface" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+        <div className="w-full max-w-md mx-auto">
         {editTransaction ? (
           recoverOpen ? (
             <div className="flex gap-3 mb-2">
@@ -485,6 +486,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
     </div>
