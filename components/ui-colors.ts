@@ -4,7 +4,7 @@ export const typography = {
   cardBodyInverse: 'text-white',
   cardSubtle: 'text-muted-foreground',
   cardSubtleStrong: 'text-foreground/70 dark:text-white/70',
-  cardSubtleInverse: 'text-black/50 dark:text-white/50',
+  cardSubtleInverse: 'text-black/70 dark:text-white/70',
   badgeText: 'text-white',
   iconStrong: 'text-foreground',
   iconToolbar: 'text-foreground',
