@@ -138,25 +138,25 @@ export default function Yearly() {
         {searchMode && (
           <div className="mb-4">
             <div className="flex items-center gap-2">
-              <div className="flex flex-1 items-center gap-2 bg-surface rounded-[22px] px-4 py-4">
-                <Search size={16} strokeWidth={2} className="text-muted-foreground flex-shrink-0" />
+              <div className="flex h-11 flex-1 items-center gap-2 bg-white dark:bg-gray-800 rounded-[22px] px-4">
+                <Search size={20} strokeWidth={2.2} className="text-black dark:text-white flex-shrink-0" />
                 <input
                   type="text" placeholder="검색어 입력..." value={searchQuery} autoFocus
                   onChange={e => setSearchQuery(e.target.value)}
                   className="flex-1 min-w-0 bg-transparent outline-none text-sm" style={{ fontSize: '16px' }}
                 />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="text-muted-foreground flex-shrink-0" aria-label="검색어 지우기">
-                    <X size={16} strokeWidth={2} />
+                  <button onClick={() => setSearchQuery('')} className="text-black dark:text-white flex-shrink-0" aria-label="검색어 지우기">
+                    <X size={20} strokeWidth={2.2} />
                   </button>
                 )}
               </div>
               <button
                 onClick={() => { setSearchMode(false); setSearchQuery('') }}
-                className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground flex-shrink-0"
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white flex-shrink-0"
                 aria-label="검색 닫기"
               >
-                <X size={18} strokeWidth={2} />
+                <X size={20} strokeWidth={2.2} />
               </button>
             </div>
             <div className="mt-3">
