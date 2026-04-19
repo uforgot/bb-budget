@@ -136,31 +136,37 @@ export function HistorySearchPanel({
           const d = new Date(`${dateKey}T00:00:00`)
           const dayNames = ['일', '월', '화', '수', '목', '금', '토']
           return (
-            <div key={dateKey} className="mb-5 last:mb-0">
-              <div className="px-2">
+            <div key={dateKey} className="mb-3 rounded-[22px] bg-surface">
+              <div className="px-4 pt-4 pb-3">
                 <p className="text-[14px] font-semibold text-foreground">
                   {d.getFullYear()}년 {d.getMonth() + 1}월 {d.getDate()}일 {dayNames[d.getDay()]}요일
                 </p>
               </div>
-              <div className="mt-2 border-t border-border" />
-              <div className="mt-1">
+              <div className="mx-4 border-t border-black/10 dark:border-white/10" />
+              <div className="px-4 pb-5 pt-3 space-y-4">
                 {items.map(tx => {
                   const cat = tx.category as any
                   const catName = cat?.name || ''
                   const parentCat = cat?.parent_id ? categories.find((c: any) => c.id === cat.parent_id) : null
                   return (
-                    <div key={tx.id} onClick={() => onSelectTransaction(tx)}
-                      className="flex items-center justify-between gap-3 px-2 py-3 cursor-pointer active:bg-muted/30 rounded-lg">
-                      <div className="flex flex-1 min-w-0 items-center gap-2 overflow-hidden">
-                        <span className="text-[14px] bg-muted px-2.5 py-1 rounded-full flex-shrink-0">
-                          {parentCat ? <><span className="text-foreground">{parentCat.name}</span><span className="text-muted-foreground"> · {catName}</span></> : <span className="text-foreground">{catName || '미분류'}</span>}
-                        </span>
-                        {tx.description && <span className="text-[14px] text-foreground truncate flex-shrink min-w-0">{tx.description}</span>}
+                    <button
+                      key={tx.id}
+                      onClick={() => onSelectTransaction(tx)}
+                      className="flex w-full items-center justify-between gap-3 text-left"
+                    >
+                      <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden">
+                        <span className="size-2.5 flex-shrink-0 rounded-full bg-accent-blue" />
+                        <div className="min-w-0 flex flex-1 items-center gap-3 overflow-hidden text-[14px] text-foreground">
+                          <span className="flex-shrink-0 font-medium text-foreground">
+                            {parentCat ? `${parentCat.name} · ${catName}` : (catName || '미분류')}
+                          </span>
+                          {tx.description && <span className="truncate text-[10px] text-black/50 dark:text-white/50">{tx.description}</span>}
+                        </div>
                       </div>
-                      <span className={`text-[14px] font-semibold tracking-[-0.04em] tabular-nums flex-shrink-0 ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-[#14b8a6]' : 'text-accent-purple'}`}>
+                      <span className={`flex-shrink-0 text-[14px] font-semibold tracking-[-0.02em] tabular-nums ${tx.type === 'expense' ? 'text-accent-coral' : tx.type === 'income' ? 'text-[#14b8a6]' : 'text-accent-purple'}`}>
                         ₩{tx.amount.toLocaleString()}
                       </span>
-                    </div>
+                    </button>
                   )
                 })}
               </div>
