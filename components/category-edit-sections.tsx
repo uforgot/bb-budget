@@ -115,8 +115,8 @@ export function CategoryChildrenEditor({
             ) : (
               <span key={child.id} className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-[16px]">
                 {child.name}
-                <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-6 rounded-full text-black/50 dark:text-white/50 hover:text-foreground" aria-label="편집">
-                  <SquarePen size={13} />
+                <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-6 rounded-full text-gray-500 dark:text-gray-500 hover:text-foreground" aria-label="편집">
+                  <SquarePen size={13} strokeWidth={2.2} />
                 </button>
               </span>
             )
