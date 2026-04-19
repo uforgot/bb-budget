@@ -105,10 +105,10 @@ export function CategoryChildrenEditor({
                 <button onClick={onSaveEdit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="확인">
                   <Check size={14} />
                 </button>
-                <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-black/50 dark:text-white/50 hover:bg-background/60 hover:text-foreground" aria-label="삭제">
+                <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-black dark:text-white hover:bg-background/60 hover:text-foreground" aria-label="삭제">
                   <Trash size={14} />
                 </button>
-                <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-black/50 dark:text-white/50 hover:bg-background/60" aria-label="취소">
+                <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-black dark:text-white hover:bg-background/60" aria-label="취소">
                   <X size={14} />
                 </button>
               </span>
