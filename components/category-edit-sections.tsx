@@ -92,21 +92,22 @@ export function CategoryChildrenEditor({
           {children.map((child) => {
             const isEditing = editingChildId === child.id
             return isEditing ? (
-              <span key={child.id} className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-[16px]">
+              <span key={child.id} className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-[16px] max-w-full">
                 <input
                   type="text"
                   value={editingChildName}
                   onChange={(e) => onChangeEditingChildName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
                   autoFocus
+                  size={Math.max(editingChildName.length || child.name.length || 1, 1)}
                   style={{ fontSize: '16px' }}
-                  className="bg-transparent px-1 py-0.5 rounded-full text-sm w-28 outline-none"
+                  className="min-w-[1ch] w-auto bg-transparent px-0 py-0 rounded-full text-[16px] outline-none"
                 />
-                <button onClick={onSaveEdit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="확인">
-                  <Check size={14} />
+                <button onClick={onSaveEdit} className="flex items-center justify-center text-black dark:text-white hover:text-foreground" aria-label="확인">
+                  <Check size={14} strokeWidth={2.2} />
                 </button>
-                <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-gray-500 dark:text-gray-500 hover:bg-background/60 hover:text-foreground" aria-label="삭제">
-                  <Trash size={14} />
+                <button onClick={() => onRemove(child)} className="flex items-center justify-center text-black dark:text-white hover:text-foreground" aria-label="삭제">
+                  <Trash size={14} strokeWidth={2.2} />
                 </button>
               </span>
             ) : (
@@ -131,8 +132,8 @@ export function CategoryChildrenEditor({
                   style={{ fontSize: '16px' }}
                   className="bg-transparent px-1 py-0.5 rounded-full text-sm w-20 outline-none"
                 />
-                <button onClick={onSubmit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="추가 확인">
-                  <Check size={14} />
+                <button onClick={onSubmit} className="flex items-center justify-center text-black dark:text-white hover:text-foreground" aria-label="추가 확인">
+                  <Check size={14} strokeWidth={2.2} />
                 </button>
               </span>
             ) : (
