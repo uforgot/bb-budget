@@ -32,7 +32,7 @@ export function AnalysisFilters({
           <option value="income">수입</option>
           <option value="savings">저축</option>
         </select>
-        <ChevronDown size={16} strokeWidth={2.5} className="text-black/50 dark:text-white/50 flex-shrink-0" />
+        <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
 
       <label className="flex items-center gap-1 cursor-pointer min-w-0">
@@ -46,7 +46,7 @@ export function AnalysisFilters({
             <option key={category.id} value={category.id}>{category.name}</option>
           ))}
         </select>
-        <ChevronDown size={16} strokeWidth={2.5} className="text-black/50 dark:text-white/50 flex-shrink-0" />
+        <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
     </div>
   )
@@ -107,7 +107,7 @@ export function AnalysisRow({
           <p className="min-w-0 truncate text-[14px] font-medium text-foreground">{label}</p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-[15px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(total)}</span>
-            <ChevronDown size={14} strokeWidth={2} className={`text-black/50 dark:text-white/50 transition-transform ${open ? 'rotate-180' : ''}`} />
+            <ChevronDown size={14} strokeWidth={2} className={`text-black/20 dark:text-white/20 transition-transform ${open ? 'rotate-180' : ''}`} />
           </div>
         </div>
       </button>
