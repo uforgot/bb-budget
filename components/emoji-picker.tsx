@@ -1,7 +1,7 @@
 'use client'
 
 import { X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface EmojiPickerProps {
   open: boolean
@@ -53,23 +53,95 @@ const EMOJI_SECTIONS: { label: string; emojis: string[] }[] = [
 ]
 
 export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
-  if (!open) return null
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const dragStartYRef = useRef(0)
+  const dragTranslateYRef = useRef(0)
+  const draggingSheetRef = useRef(false)
+  const [dragTranslateY, setDragTranslateY] = useState(0)
+  const [sheetAnimating, setSheetAnimating] = useState(false)
+  const [sheetVisible, setSheetVisible] = useState(false)
+  const [shouldRender, setShouldRender] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    setShouldRender(true)
+    setSheetVisible(true)
+    setDragTranslateY(window.innerHeight)
+    setSheetAnimating(true)
+    const raf = requestAnimationFrame(() => setDragTranslateY(0))
+    const t = window.setTimeout(() => setSheetAnimating(false), 220)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearTimeout(t)
+    }
+  }, [open])
+
+  const handleClose = () => {
+    setSheetAnimating(true)
+    setDragTranslateY(window.innerHeight)
+    window.setTimeout(() => {
+      setSheetAnimating(false)
+      setSheetVisible(false)
+      setShouldRender(false)
+      setDragTranslateY(0)
+      onClose()
+    }, 220)
+  }
+
+  const handleSheetTouchStart = (e: React.TouchEvent) => {
+    dragStartYRef.current = e.touches[0].clientY
+    dragTranslateYRef.current = dragTranslateY
+    draggingSheetRef.current = false
+  }
+
+  const handleSheetTouchMove = (e: React.TouchEvent) => {
+    const diff = e.touches[0].clientY - dragStartYRef.current
+    const scrollTop = scrollRef.current?.scrollTop ?? 0
+    if (diff <= 0) return
+    if (scrollTop > 0) return
+    draggingSheetRef.current = true
+    const next = Math.max(0, diff + dragTranslateYRef.current)
+    setDragTranslateY(next)
+  }
+
+  const handleSheetTouchEnd = () => {
+    if (!draggingSheetRef.current) return
+    draggingSheetRef.current = false
+    if (dragTranslateY > 140) {
+      handleClose()
+      return
+    }
+    setSheetAnimating(true)
+    setDragTranslateY(0)
+    window.setTimeout(() => setSheetAnimating(false), 220)
+  }
+
+  if (!open && !shouldRender) return null
 
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" style={{ visibility: sheetVisible ? 'visible' : 'hidden' }} onClick={handleClose} />
 
-      <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '60dvh' }}>
-        {/* Header */}
+      <div
+        className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col"
+        style={{
+          maxHeight: '60dvh',
+          transform: `translateY(${dragTranslateY}px)`,
+          transition: sheetAnimating ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
+          visibility: sheetVisible ? 'visible' : 'hidden',
+        }}
+        onTouchStart={handleSheetTouchStart}
+        onTouchMove={handleSheetTouchMove}
+        onTouchEnd={handleSheetTouchEnd}
+      >
         <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
           <h3 className="text-base font-semibold">이모지 선택</h3>
-          <button onClick={onClose} className="p-1 text-muted-foreground">
-            <X size={20} strokeWidth={2} />
+          <button onClick={handleClose} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white">
+            <X size={20} strokeWidth={2.2} />
           </button>
         </div>
 
-        {/* Emoji grid */}
-        <div className="overflow-y-auto px-5 pb-24">
+        <div ref={scrollRef} className="overflow-y-auto px-5 pb-24">
           {EMOJI_SECTIONS.map((section) => (
             <div key={section.label} className="mb-4">
               <p className="text-[11px] text-muted-foreground mb-2 font-medium">{section.label}</p>
@@ -77,7 +149,7 @@ export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
                 {section.emojis.map((emoji, i) => (
                   <button
                     key={i}
-                    onClick={() => { onSelect(emoji); onClose() }}
+                    onClick={() => { onSelect(emoji); handleClose() }}
                     className="text-2xl p-1.5 rounded-lg active:bg-muted transition-colors text-center"
                   >
                     {emoji}
