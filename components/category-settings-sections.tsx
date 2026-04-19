@@ -171,7 +171,7 @@ export function CategoryGrid({
               <GripVertical size={16} strokeWidth={2} />
             </button>
           ) : (
-            <span className="w-4 flex items-center justify-center text-muted-foreground flex-shrink-0">
+            <span className="w-4 flex items-center justify-center text-black/20 dark:text-white/20 flex-shrink-0">
               <ChevronRight size={16} strokeWidth={2} />
             </span>
           )}

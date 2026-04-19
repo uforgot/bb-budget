@@ -126,7 +126,7 @@ export default function Yearly() {
                 <option key={y} value={y}>{y}년</option>
               ))}
             </select>
-            <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0" />
+            <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
           </label>
           <button onClick={() => setYearOffset(0)} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold">오늘</button>
         </div>

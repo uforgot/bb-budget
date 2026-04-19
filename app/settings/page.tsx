@@ -61,7 +61,7 @@ export default function Settings() {
             className="flex items-center justify-between px-4 py-4"
           >
             <span className="text-[16px]">카테고리 관리</span>
-            <ChevronRight size={16} strokeWidth={2} className="text-muted-foreground" />
+            <ChevronRight size={16} strokeWidth={2} className="text-black/20 dark:text-white/20" />
           </Link>
         </div>
       </main>

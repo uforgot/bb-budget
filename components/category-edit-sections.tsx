@@ -23,7 +23,7 @@ export function CategoryEmojiCard({
           className="w-36 h-36 bg-surface rounded-[22px] flex items-center justify-center relative"
         >
           <span className="-translate-y-2" style={{ fontSize: '64px' }}>{emoji}</span>
-          <span className="absolute left-1/2 bottom-3 -translate-x-1/2 text-muted-foreground">
+          <span className="absolute left-1/2 bottom-3 -translate-x-1/2 text-black/20 dark:text-white/20">
             <SquarePen size={14} />
           </span>
         </button>
@@ -105,17 +105,17 @@ export function CategoryChildrenEditor({
                 <button onClick={onSaveEdit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="확인">
                   <Check size={14} />
                 </button>
-                <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60 hover:text-foreground" aria-label="삭제">
+                <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-black/20 dark:text-white/20 hover:bg-background/60 hover:text-foreground" aria-label="삭제">
                   <Trash size={14} />
                 </button>
-                <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-muted-foreground hover:bg-background/60" aria-label="취소">
+                <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-black/20 dark:text-white/20 hover:bg-background/60" aria-label="취소">
                   <X size={14} />
                 </button>
               </span>
             ) : (
               <span key={child.id} className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-[16px]">
                 {child.name}
-                <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-6 rounded-full text-muted-foreground hover:text-foreground" aria-label="편집">
+                <button onClick={() => onStartEdit(child)} className="flex items-center justify-center size-6 rounded-full text-black/20 dark:text-white/20 hover:text-foreground" aria-label="편집">
                   <SquarePen size={13} />
                 </button>
               </span>

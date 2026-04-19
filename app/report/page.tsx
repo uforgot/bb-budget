@@ -62,7 +62,7 @@ function Card({
         onClick={() => setOpen(o => !o)}
       >
         {header(open)}
-        <ChevronDown size={14} strokeWidth={2} className={`text-muted-foreground transition-transform flex-shrink-0 ml-3 ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} strokeWidth={2} className={`text-black/20 dark:text-white/20 transition-transform flex-shrink-0 ml-3 ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && <div className="mt-4">{children}</div>}
     </div>

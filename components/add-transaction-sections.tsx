@@ -158,7 +158,7 @@ export function TransactionCategorySection({
             <span className="text-[16px]">소분류</span>
             <div className="flex items-center gap-2 min-w-0 ml-4">
               <span className="text-[16px] text-right truncate">{categoryLabel}</span>
-              <ChevronRight size={16} strokeWidth={2} className="text-gray-500 dark:text-gray-500 flex-shrink-0" />
+              <ChevronRight size={16} strokeWidth={2} className="text-black/20 dark:text-white/20 flex-shrink-0" />
             </div>
           </button>
         </>
