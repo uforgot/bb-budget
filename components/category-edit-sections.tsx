@@ -92,7 +92,7 @@ export function CategoryChildrenEditor({
           {children.map((child) => {
             const isEditing = editingChildId === child.id
             return isEditing ? (
-              <span key={child.id} className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 pl-3 pr-2 py-1.5 rounded-full text-[16px] max-w-full">
+              <span key={child.id} className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 pl-3 pr-3 py-1.5 rounded-full text-[16px] max-w-full">
                 <input
                   type="text"
                   value={editingChildName}
