@@ -95,6 +95,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   // Populate fields when editing
   useEffect(() => {
     if (editTransaction && open) {
+      setSaving(false)
       setType(REVERSE_TYPE_MAP[editTransaction.type] || null)
       setRawAmount(String(editTransaction.amount))
       setCategoryId(editTransaction.category_id)
@@ -105,6 +106,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setRecoverAmount(String(editTransaction.amount))
       setRecoverOpen(false)
       setCategoryPickerOpen(false)
+      setSaving(false)
       setLinkedRecurringId(null)
       setRepeatFrequency('none')
       setRepeatDropdownOpen(false)
@@ -139,6 +141,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         } catch {}
       })()
     } else if (!editTransaction && open) {
+      setSaving(false)
       setType(null)
       setRawAmount('')
       setCategoryId('')
