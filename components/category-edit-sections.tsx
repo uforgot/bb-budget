@@ -121,7 +121,7 @@ export function CategoryChildrenEditor({
           })}
 
           {addingSubCat ? (
-              <span className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-[16px]">
+              <span className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 pl-3 pr-3 py-1.5 rounded-full text-[16px]">
                 <input
                   type="text"
                   value={newSubCat}
