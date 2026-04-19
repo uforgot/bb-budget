@@ -130,15 +130,15 @@ export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
           transition: sheetAnimating ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
           visibility: sheetVisible ? 'visible' : 'hidden',
         }}
-        onTouchStart={handleSheetTouchStart}
-        onTouchMove={handleSheetTouchMove}
-        onTouchEnd={handleSheetTouchEnd}
       >
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
-          <h3 className="text-base font-semibold">이모지 선택</h3>
-          <button onClick={handleClose} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white">
-            <X size={20} strokeWidth={2.2} />
-          </button>
+        <div className="flex flex-col px-5 pt-3 pb-3 flex-shrink-0" onTouchStart={handleSheetTouchStart} onTouchMove={handleSheetTouchMove} onTouchEnd={handleSheetTouchEnd}>
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-black/15 dark:bg-white/15" />
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-semibold">이모지 선택</h3>
+            <button onClick={handleClose} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white">
+              <X size={20} strokeWidth={2.2} />
+            </button>
+          </div>
         </div>
 
         <div ref={scrollRef} className="overflow-y-auto px-5 pb-24">

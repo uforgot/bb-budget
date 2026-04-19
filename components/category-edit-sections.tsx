@@ -1,5 +1,5 @@
 import type { Category } from '@/lib/api'
-import { Check, SquarePen, Trash, X } from 'lucide-react'
+import { Check, Plus, SquarePen, Trash, X } from 'lucide-react'
 import { EmojiPicker } from '@/components/emoji-picker'
 
 export function CategoryEmojiCard({
@@ -139,9 +139,10 @@ export function CategoryChildrenEditor({
             ) : (
               <button
                 onClick={onStartAdd}
-                className="inline-flex items-center bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 px-3 py-1.5 rounded-full text-sm font-medium"
+                className="inline-flex items-center justify-center size-[36px] bg-gray-100 dark:bg-gray-800 rounded-full text-black dark:text-white"
+                aria-label="소분류 추가"
               >
-                추가
+                <Plus size={18} strokeWidth={2.2} />
               </button>
             )}
             </div>
