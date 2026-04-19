@@ -60,7 +60,7 @@ export function HistoryMonthSelector({
             >
               {years.map(y => <option key={y} value={y}>{y}년</option>)}
             </select>
-            <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0" />
+            <ChevronDown size={16} strokeWidth={2.5} className="text-black/50 dark:text-white/50 flex-shrink-0" />
           </label>
           <label className={`flex items-center cursor-pointer ${currentMonth >= 10 ? 'gap-1.5' : 'gap-1'}`}>
             <select
@@ -71,7 +71,7 @@ export function HistoryMonthSelector({
             >
               {months.map(m => <option key={m} value={m}>{m}월</option>)}
             </select>
-            <ChevronDown size={16} strokeWidth={2.5} className="text-foreground/60 flex-shrink-0 mt-0.5" />
+            <ChevronDown size={16} strokeWidth={2.5} className="text-black/50 dark:text-white/50 flex-shrink-0 mt-0.5" />
           </label>
         </div>
         <button onClick={onResetToday} className="px-4 py-2 rounded-full bg-accent-blue text-white text-[14px] font-semibold" aria-label="오늘">
