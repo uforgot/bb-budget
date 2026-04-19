@@ -99,7 +99,7 @@ export function CategoryChildrenEditor({
                   onChange={(e) => onChangeEditingChildName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
                   autoFocus
-                  size={Math.max(editingChildName.length || child.name.length || 1, 1)}
+                  size={Math.max((editingChildName.length || child.name.length || 1) + 3, 4)}
                   style={{ fontSize: '16px' }}
                   className="min-w-[1ch] w-auto bg-transparent px-0 py-0 rounded-full text-[16px] outline-none"
                 />
