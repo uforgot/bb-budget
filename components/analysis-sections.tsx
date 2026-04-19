@@ -117,7 +117,7 @@ export function AnalysisRow({
           {months.map(({ month, amount }) => (
             <div key={month} className="flex items-center justify-between gap-3 text-[14px]">
               <span className="text-black/50 dark:text-white/50">{month}월</span>
-              <span className="font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(amount)}</span>
+              <span className="font-semibold tracking-[-0.02em] tabular-nums text-black/50 dark:text-white/50">{fmt(amount)}</span>
             </div>
           ))}
         </div>
