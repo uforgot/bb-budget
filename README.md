@@ -191,6 +191,34 @@
 - Do **not** delete or overwrite a DB row until the candidate mismatch is proven by amount-aware comparison.
 - A real incident happened on `2026-04-16`: a row was wrongly deleted after comparing mainly by memo text, then had to be restored. Treat this as a hard rule, not a suggestion.
 
+## Recent Visual Tuning (2026-04-19)
+
+### Neutral text and chevron adjustments
+- Weekly inactive pills and analysis inactive pills were tuned several times, then settled at `text-black/20 dark:text-white/20`.
+- Daily detail memo text and daily income/expense footer values were changed to `text-black/50 dark:text-white/50`.
+- Yearly chart card inactive tabs were adjusted to `text-black/20 dark:text-white/20`.
+- Yearly chart comparison copy (`월 평균 ... 대비`) and month labels under the graph were set to `text-black/50 dark:text-white/50`.
+- Analysis category accordion month labels and amount labels were both changed to `text-black/50 dark:text-white/50`.
+- Top large dropdown chevrons under the tab bar (year/month/category selectors) and analysis category accordion chevrons were changed to `text-black/50 dark:text-white/50`.
+
+### Summary slider footer copy
+- Summary slider bottom helper copy uses `typography.cardSubtleInverse`.
+- That token was changed from `text-gray-200 dark:text-white/70` to `text-white/70 dark:text-white/70` because the slider cards use the same colored background in both themes.
+
+### Related commits
+- `01fe075` Set yearly comparison text to gray-500
+- `08ef42d` Restore inactive pill text colors
+- `6c99441` Set inactive pill text to black/10 and white/10
+- `920ce9b` Increase inactive pill text opacity
+- `3820156` Adjust muted text colors for daily and yearly views
+- `6c08534` Adjust yearly inactive tab text opacity
+- `ae1e347` Adjust analysis monthly labels to black/50 and white/50
+- `d06b42a` Adjust analysis monthly amounts to black/50 and white/50
+- `40740cb` Adjust inverse subtle text color
+- `4f856c1` Increase inverse subtle text opacity
+- `0b7d20b` Set inverse subtle text to white/70
+- `2f40f5b` Adjust dropdown chevron colors
+
 ## Recent UX Changes (2026-04-14)
 
 ### Category management / editor polish
