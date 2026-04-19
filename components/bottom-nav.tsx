@@ -29,7 +29,7 @@ export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
               key={href}
               href={href}
               className={`flex min-w-[64px] flex-col items-center gap-0.5 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap ${
-                active ? 'bg-black/5 dark:bg-white/10' : ''
+                active ? 'bg-black/5 dark:bg-white/5' : ''
               }`}
             >
               <Icon className={`h-5 w-5 ${active ? 'text-accent-blue' : 'text-gray-500 dark:text-gray-400'}`} />
