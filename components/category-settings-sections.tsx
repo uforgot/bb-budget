@@ -77,7 +77,7 @@ export function AddRootCategoryRow({
   inline?: boolean
 }) {
   const content = (
-    <div className="w-full flex items-center gap-3 px-4 py-2 transition-all duration-200">
+    <div className="w-full flex items-center gap-3 px-2 py-2 transition-all duration-200">
       <input
         type="text"
         placeholder="새 카테고리명"
@@ -88,12 +88,12 @@ export function AddRootCategoryRow({
         style={{ fontSize: '16px' }}
         className="flex-1 min-w-0 bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/70 outline-none"
       />
-      <div className="ml-auto flex items-center justify-end gap-2 min-w-[88px] flex-shrink-0">
-        <button onClick={onSubmit} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white flex-shrink-0" aria-label="추가">
-          <Check size={20} strokeWidth={2.2} />
+      <div className="ml-auto flex items-center justify-end gap-3 min-w-[72px] flex-shrink-0">
+        <button onClick={onSubmit} className="flex items-center justify-center text-black dark:text-white flex-shrink-0" aria-label="추가">
+          <Check size={18} strokeWidth={2.2} />
         </button>
-        <button onClick={onCancel} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white flex-shrink-0" aria-label="취소">
-          <X size={20} strokeWidth={2.2} />
+        <button onClick={onCancel} className="flex items-center justify-center text-black dark:text-white flex-shrink-0" aria-label="취소">
+          <X size={18} strokeWidth={2.2} />
         </button>
       </div>
     </div>
