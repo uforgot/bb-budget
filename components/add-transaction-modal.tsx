@@ -503,7 +503,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           ) : (
             <div className="flex gap-2 mb-2">
               <button onClick={handleSave} className="flex-1 bg-accent-blue text-white rounded-[22px] py-3.5 text-[16px] font-semibold">
-                {saving ? '저장 중...' : '수정하기'}
+                {saving ? '저장 중...' : '저장하기'}
               </button>
               {editTransaction.type === 'savings' && (
                 <button
