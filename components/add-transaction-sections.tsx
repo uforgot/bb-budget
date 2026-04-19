@@ -254,7 +254,7 @@ export function TransactionRepeatSection({
           <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-[16px]">종료일</span>
             <label className="relative cursor-pointer">
-              <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+              <span className="text-foreground text-[16px] font-semibold tabular-nums">
                 {(() => {
                   const d = new Date(repeatEndDate + 'T00:00:00')
                   return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
@@ -295,7 +295,7 @@ export function RecoverySection({
       <div className="flex items-center justify-between py-3.5 border-b border-black/10 dark:border-white/10">
         <span className="text-[16px]">회수일</span>
         <label className="relative cursor-pointer">
-          <span className="bg-white dark:bg-gray-800 text-foreground px-3 py-1.5 rounded-lg text-[15px] font-medium">
+          <span className="text-foreground text-[16px] font-semibold tabular-nums">
             {recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}
           </span>
           <input
