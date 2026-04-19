@@ -254,7 +254,7 @@ export function TransactionRepeatSection({
           <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-[16px]">종료일</span>
             <label className="relative cursor-pointer">
-              <span className="text-foreground text-[16px] font-semibold tabular-nums">
+              <span className="text-foreground text-[15px] font-medium">
                 {(() => {
                   const d = new Date(repeatEndDate + 'T00:00:00')
                   const days = ['일', '월', '화', '수', '목', '금', '토']
@@ -296,7 +296,7 @@ export function RecoverySection({
       <div className="flex items-center justify-between py-3.5 border-b border-black/10 dark:border-white/10">
         <span className="text-[16px]">회수일</span>
         <label className="relative cursor-pointer">
-          <span className="text-foreground text-[16px] font-semibold tabular-nums">
+          <span className="text-foreground text-[15px] font-medium">
             {recoverDate ? formatDateDisplay(recoverDate) : '날짜 선택'}
           </span>
           <input
