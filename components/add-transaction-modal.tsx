@@ -489,7 +489,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                     setSaving(false)
                   }
                 }}
-                className="flex-1 bg-[#14b8a6] text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
+                className="flex-1 bg-accent-purple text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
               >
                 {saving ? '처리 중...' : '적용하기'}
               </button>
@@ -508,7 +508,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               {editTransaction.type === 'savings' && (
                 <button
                   onClick={() => setRecoverOpen(true)}
-                  className="flex-1 bg-[#14b8a6] text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
+                  className="flex-1 bg-accent-purple text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
                 >
                   회수하기
                 </button>
