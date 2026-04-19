@@ -108,9 +108,6 @@ export function CategoryChildrenEditor({
                 <button onClick={() => onRemove(child)} className="flex items-center justify-center size-7 rounded-full text-gray-500 dark:text-gray-500 hover:bg-background/60 hover:text-foreground" aria-label="삭제">
                   <Trash size={14} />
                 </button>
-                <button onClick={onCancelEdit} className="flex items-center justify-center size-7 rounded-full text-gray-500 dark:text-gray-500 hover:bg-background/60" aria-label="취소">
-                  <X size={14} />
-                </button>
               </span>
             ) : (
               <span key={child.id} className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-[16px]">
@@ -123,7 +120,7 @@ export function CategoryChildrenEditor({
           })}
 
           {addingSubCat ? (
-              <span className="inline-flex items-center gap-1">
+              <span className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-[16px]">
                 <input
                   type="text"
                   value={newSubCat}
@@ -132,14 +129,16 @@ export function CategoryChildrenEditor({
                   autoFocus
                   placeholder="이름"
                   style={{ fontSize: '16px' }}
-                  className="bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-sm w-20 outline-none"
+                  className="bg-transparent px-1 py-0.5 rounded-full text-sm w-20 outline-none"
                 />
-                <button onClick={onSubmit} className="text-xs text-accent-blue">확인</button>
+                <button onClick={onSubmit} className="flex items-center justify-center size-7 rounded-full text-accent-blue hover:bg-background/60" aria-label="추가 확인">
+                  <Check size={14} />
+                </button>
               </span>
             ) : (
               <button
                 onClick={onStartAdd}
-                className="inline-flex items-center bg-gray-100 dark:bg-gray-800 text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium"
+                className="inline-flex items-center bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 px-3 py-1.5 rounded-full text-sm font-medium"
               >
                 추가
               </button>
