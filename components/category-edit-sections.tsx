@@ -92,14 +92,14 @@ export function CategoryChildrenEditor({
           {children.map((child) => {
             const isEditing = editingChildId === child.id
             return isEditing ? (
-              <span key={child.id} className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-[16px] max-w-full">
+              <span key={child.id} className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full text-[16px] max-w-full">
                 <input
                   type="text"
                   value={editingChildName}
                   onChange={(e) => onChangeEditingChildName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
                   autoFocus
-                  size={Math.max((editingChildName.length || child.name.length || 1) + 3, 4)}
+                  size={Math.max((editingChildName.length || child.name.length || 1) + 5, 6)}
                   style={{ fontSize: '16px' }}
                   className="min-w-[1ch] w-auto bg-transparent px-0 py-0 rounded-full text-[16px] outline-none"
                 />
