@@ -257,7 +257,8 @@ export function TransactionRepeatSection({
               <span className="text-foreground text-[16px] font-semibold tabular-nums">
                 {(() => {
                   const d = new Date(repeatEndDate + 'T00:00:00')
-                  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
+                  const days = ['일', '월', '화', '수', '목', '금', '토']
+                  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}. (${days[d.getDay()]})`
                 })()}
               </span>
               <input
