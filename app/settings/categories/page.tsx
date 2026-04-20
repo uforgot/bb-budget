@@ -506,7 +506,7 @@ export default function CategoriesSettings() {
                 }}
                 className="w-full py-3.5 rounded-[22px] bg-accent-blue text-white text-[16px] font-semibold"
               >
-                순서 변경 완료하기
+                순서 변경하기
               </button>
             </div>
           </div>

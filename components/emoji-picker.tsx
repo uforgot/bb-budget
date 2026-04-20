@@ -144,7 +144,7 @@ export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
         <div ref={scrollRef} className="overflow-y-auto px-5 pb-24">
           {EMOJI_SECTIONS.map((section) => (
             <div key={section.label} className="mb-4">
-              <p className="text-[12px] text-muted-foreground mb-2 font-medium">{section.label}</p>
+              <p className="text-[14px] text-muted-foreground mb-2 font-medium">{section.label}</p>
               <div className="grid grid-cols-8 gap-1">
                 {section.emojis.map((emoji, i) => (
                   <button
