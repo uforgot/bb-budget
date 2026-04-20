@@ -139,7 +139,11 @@ export default function AnalysisPage() {
 
         <AddTransactionModal
           open={modalOpen}
-          onClose={() => { setModalOpen(false); setEditTx(null) }}
+          onClose={() => {
+            loadData()
+            setModalOpen(false)
+            setEditTx(null)
+          }}
           onSave={() => {
             loadData()
             setModalOpen(false)

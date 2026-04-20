@@ -339,10 +339,11 @@ export default function CategoriesSettings() {
               if (!editingParent) return
 
               const nextName = editName.trim() || editingParent.name
-              await supabase.from('categories').update({
-                name: nextName,
-                icon: (editingParent as CategoryWithIcon).icon || null,
-              }).eq('id', editingParent.id)
+              const updatePayload: { name: string; icon?: string | null } = { name: nextName }
+              if ((editingParent as CategoryWithIcon).icon !== (categories.find(cat => cat.id === editingParent.id) as CategoryWithIcon | undefined)?.icon) {
+                updatePayload.icon = (editingParent as CategoryWithIcon).icon || null
+              }
+              await supabase.from('categories').update(updatePayload).eq('id', editingParent.id)
 
               const currentChildren = childrenOf(editingParent.id)
               const { persistedIds, newDrafts } = splitDraftChildren(draftChildren)
