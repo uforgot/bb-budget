@@ -44,6 +44,7 @@ export default function AnalysisPage() {
 
   useEffect(() => {
     if (parentCategories.length === 0) return
+    if (parentCategoryId === '__all__') return
     if (parentCategories.some(cat => cat.id === parentCategoryId)) return
     setParentCategoryId(parentCategories[0].id)
   }, [parentCategories, parentCategoryId])
