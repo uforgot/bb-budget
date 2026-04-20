@@ -40,13 +40,15 @@ export function CategoryNameRow({
   value: string
   onChange: (value: string) => void
 }) {
+  const MAX_CATEGORY_NAME_LENGTH = 9
+
   return (
     <div className="flex items-center gap-3 px-4 py-4">
       <span className="text-[16px] text-foreground w-24 flex-shrink-0">카테고리명</span>
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value.slice(0, MAX_CATEGORY_NAME_LENGTH))}
         style={{ fontSize: '16px' }}
         className="flex-1 bg-transparent outline-none"
       />
@@ -96,7 +98,7 @@ export function CategoryChildrenEditor({
                 <input
                   type="text"
                   value={editingChildName}
-                  onChange={(e) => onChangeEditingChildName(e.target.value)}
+                  onChange={(e) => onChangeEditingChildName(e.target.value.slice(0, 9))}
                   onKeyDown={(e) => e.key === 'Enter' && onSaveEdit()}
                   autoFocus
                   size={Math.max((editingChildName.length || child.name.length || 1) + 5, 6)}
@@ -125,7 +127,7 @@ export function CategoryChildrenEditor({
                 <input
                   type="text"
                   value={newSubCat}
-                  onChange={(e) => onChangeNewSubCat(e.target.value)}
+                  onChange={(e) => onChangeNewSubCat(e.target.value.slice(0, 9))}
                   onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
                   autoFocus
                   placeholder="이름"

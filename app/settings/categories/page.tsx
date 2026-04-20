@@ -234,6 +234,7 @@ export default function CategoriesSettings() {
   const [savingSub, setSavingSub] = useState(false)
   const handleAddSubCat = async () => {
     if (!editingParent || !newSubCat.trim() || savingSub) return
+    if (newSubCat.trim().length > 9) return
     setDraftChildren(prev => [...prev, createDraftChild(newSubCat, type, editingParent.id, prev.length + 1)])
     setNewSubCat('')
     setAddingSubCat(false)
@@ -242,6 +243,7 @@ export default function CategoriesSettings() {
   const [savingRoot, setSavingRoot] = useState(false)
   const handleAddRoot = async () => {
     if (!newRootName.trim() || savingRoot || !addingRootType) return
+    if (newRootName.trim().length > 9) return
     setSavingRoot(true)
     try {
       await addCategory(newRootName.trim(), addingRootType)
@@ -320,7 +322,7 @@ export default function CategoriesSettings() {
               }}
               onSaveEdit={() => {
                 if (!editingChildId || !editingChildName.trim()) return
-                setDraftChildren(prev => renameDraftChild(prev, editingChildId, editingChildName.trim()))
+                setDraftChildren(prev => renameDraftChild(prev, editingChildId, editingChildName.trim().slice(0, 9)))
                 setEditingChildId(null)
                 setEditingChildName('')
               }}
@@ -338,7 +340,7 @@ export default function CategoriesSettings() {
             onSubmit={async () => {
               if (!editingParent) return
 
-              const nextName = editName.trim() || editingParent.name
+              const nextName = (editName.trim() || editingParent.name).slice(0, 9)
               const updatePayload: { name: string; icon?: string | null } = { name: nextName }
               if ((editingParent as CategoryWithIcon).icon !== (categories.find(cat => cat.id === editingParent.id) as CategoryWithIcon | undefined)?.icon) {
                 updatePayload.icon = (editingParent as CategoryWithIcon).icon || null
@@ -381,7 +383,8 @@ export default function CategoriesSettings() {
               setDraftChildren(reset.draftChildren)
               setEditingChildId(null)
               setEditingChildName('')
-              loadCategories()
+              await loadCategories()
+              router.push('/analysis')
             }}
           />
         </div>
@@ -480,7 +483,7 @@ export default function CategoriesSettings() {
                   <div className="px-4">
                     <AddRootCategoryRow
                       value={newRootName}
-                      onChange={setNewRootName}
+                      onChange={(value) => setNewRootName(value.slice(0, 9))}
                       onSubmit={handleAddRoot}
                       onCancel={() => { setAddingRoot(false); setNewRootName(''); setAddingRootType(null) }}
                       inline

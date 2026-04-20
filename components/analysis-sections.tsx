@@ -35,11 +35,11 @@ export function AnalysisFilters({
         <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
 
-      <label className="flex items-center gap-1 cursor-pointer shrink-0 min-w-0">
+      <label className="flex items-center gap-1 cursor-pointer shrink min-w-0 max-w-[180px]">
         <select
           value={parentCategoryId}
           onChange={e => onChangeParent(e.target.value)}
-          className="appearance-none bg-transparent text-foreground text-[30px] font-bold outline-none cursor-pointer w-auto min-w-0"
+          className="appearance-none bg-transparent text-foreground text-[30px] font-bold outline-none cursor-pointer w-full min-w-0 truncate"
           style={{ letterSpacing: '-1px' }}
         >
           <option value="__all__">전체</option>
