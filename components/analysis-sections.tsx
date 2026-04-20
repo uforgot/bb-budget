@@ -35,17 +35,17 @@ export function AnalysisFilters({
         <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
 
-      <label className="flex items-center gap-1 cursor-pointer shrink-0 min-w-0 max-w-[240px]">
+      <label className="flex items-center gap-1 cursor-pointer shrink-0 min-w-0">
         <select
           value={parentCategoryId}
           onChange={e => onChangeParent(e.target.value)}
-          className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer w-auto min-w-0 max-w-[240px] truncate"
+          className="appearance-none bg-transparent text-foreground text-[30px] font-bold outline-none cursor-pointer w-auto min-w-0"
           style={{ letterSpacing: '-1px' }}
         >
+          <option value="__all__">전체</option>
           {parentCategories.map(category => (
             <option key={category.id} value={category.id}>{category.name}</option>
           ))}
-          <option value="__all__">전체</option>
         </select>
         <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
