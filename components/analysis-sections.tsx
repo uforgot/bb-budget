@@ -45,6 +45,7 @@ export function AnalysisFilters({
           {parentCategories.map(category => (
             <option key={category.id} value={category.id}>{category.name}</option>
           ))}
+          <option value="__all__">전체</option>
         </select>
         <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
@@ -87,14 +88,16 @@ export function AnalysisRow({
   months,
   maxTotal,
   color,
+  defaultOpen = false,
 }: {
   label: string
   total: number
   months: { month: number; amount: number }[]
   maxTotal: number
   color: string
+  defaultOpen?: boolean
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(defaultOpen)
   const width = maxTotal > 0 ? Math.max((total / maxTotal) * 100, total > 0 ? 8 : 0) : 0
 
   return (

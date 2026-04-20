@@ -10,7 +10,7 @@ import { getTransactions, getCategories, type Transaction, type Category } from 
 import { AnalysisEmptyState, AnalysisFilters, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
 import { HistorySearchPanel } from '@/components/history-sections'
 import { AnalysisLoadingSkeleton } from '@/components/page-loading-skeletons'
-import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getParentCategoriesByType } from '@/lib/analysis'
+import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getParentCategoriesByType, getParentCategorySummaryRows } from '@/lib/analysis'
 
 export default function AnalysisPage() {
   const router = useRouter()
@@ -48,6 +48,7 @@ export default function AnalysisPage() {
     setParentCategoryId(parentCategories[0].id)
   }, [parentCategories, parentCategoryId])
 
+  const isAllParentsSelected = parentCategoryId === '__all__'
   const childCategories = useMemo(() => getChildCategoriesForParent(categories, transactions, parentCategoryId), [categories, parentCategoryId, transactions])
 
   const availableYears = useMemo(() => getAvailableTransactionYears(transactions), [transactions])
@@ -58,7 +59,12 @@ export default function AnalysisPage() {
     setSelectedYear(availableYears[0])
   }, [availableYears, selectedYear])
 
-  const rows = useMemo(() => getAnalysisRows(childCategories, transactions, selectedYear), [childCategories, transactions, selectedYear])
+  const rows = useMemo(() => {
+    if (isAllParentsSelected) {
+      return getParentCategorySummaryRows(parentCategories, categories, transactions, selectedYear)
+    }
+    return getAnalysisRows(childCategories, transactions, selectedYear)
+  }, [isAllParentsSelected, parentCategories, categories, childCategories, transactions, selectedYear])
 
   const maxTotal = rows[0]?.total ?? 0
 
@@ -120,6 +126,7 @@ export default function AnalysisPage() {
                   months={row.months}
                   maxTotal={maxTotal}
                   color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
+                  defaultOpen={isAllParentsSelected}
                 />
               ))
             )}
