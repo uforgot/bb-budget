@@ -22,7 +22,7 @@ export function AddTransactionHeader({
       <div className="flex items-center justify-between h-14">
         <button
           onClick={onClose}
-          className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white"
+          className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-200 dark:bg-gray-800 text-black dark:text-white"
           aria-label="뒤로가기"
         >
           <ChevronLeft size={22} strokeWidth={2.4} />
@@ -30,7 +30,7 @@ export function AddTransactionHeader({
         <h1 className="text-[17px] font-semibold">{title}</h1>
         <button
           onClick={onConfirm}
-          className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white"
+          className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-200 dark:bg-gray-800 text-black dark:text-white"
           aria-label="삭제"
         >
           <Trash size={20} strokeWidth={2.2} />
