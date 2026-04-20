@@ -199,11 +199,37 @@
 - Yearly chart card inactive tabs were adjusted to `text-black/20 dark:text-white/20`.
 - Yearly chart comparison copy (`월 평균 ... 대비`) and month labels under the graph were set to `text-black/50 dark:text-white/50`.
 - Analysis category accordion month labels and amount labels were both changed to `text-black/50 dark:text-white/50`.
-- Top large dropdown chevrons under the tab bar (year/month/category selectors) and analysis category accordion chevrons were changed to `text-black/50 dark:text-white/50`.
+- Top large dropdown chevrons under the tab bar (year/month/category selectors) and analysis category accordion chevrons were first moved toward muted gray, then finalized per-screen with lighter `black/20, white/20` usage on selectors/accordions where requested.
 
 ### Summary slider footer copy
 - Summary slider bottom helper copy uses `typography.cardSubtleInverse`.
 - That token was changed from `text-gray-200 dark:text-white/70` to `text-white/70 dark:text-white/70` because the slider cards use the same colored background in both themes.
+
+### Follow-up tuning after the first pass
+- History/yearly search bars were rebuilt to use aligned `44x44` controls, `20px` icons, and matching heights between field and close button.
+- Search result rows on history were reshaped into daily-card-like rounded sections: `date + divider + category/memo/amount` inside one surface box.
+- Bottom tab active background was softened in dark mode from `white/10` to `white/5` while keeping light mode at `black/5`.
+- Analysis top dropdown chevrons and accordion chevrons were aligned with the lighter muted selector tone.
+- Recovery actions in the transaction edit sheet (`회수하기`, `적용하기`) were switched to the savings purple accent.
+- Repeat end-date / recovery-date rows were restyled to match the main date row more closely, including typography normalization to `15px / medium` and the repeat date format updated to include weekday notation.
+- Edit-mode save CTA inside the transaction sheet was relabeled from `수정하기` to `저장하기`.
+- A stale `saving` state issue that could leave the transaction modal showing `저장 중...` on first open was mitigated by resetting `saving` when opening/resetting the modal.
+
+### Category editor follow-up polish
+- Category edit bottom CTA text was changed from `수정 완료하기` to `수정하기`.
+- Child-category edit pills were reworked so the inline input can grow with text instead of staying fixed-width.
+- Initial input width for child-category edit mode was adjusted to account for action icon space, then re-tuned as icon spacing changed.
+- Check/trash action spacing in child-category edit mode was widened to avoid cramped touch targets.
+- Trailing padding in edit-mode pills was tuned multiple times to match the more stable resting pill spacing.
+- The temporary child-category add row was updated to match edit-pill spacing and icon tone more closely.
+- Category settings add-row controls were tightened horizontally while preserving row height, and the inline check/X controls lost their circular button backgrounds.
+- Child-category `추가` control was later changed into a circular `+` button, sized to sit comfortably with the surrounding pill rhythm.
+
+### Sheet / picker polish
+- Emoji picker was converted into a draggable bottom sheet with the same downward-dismiss interaction family as the transaction sheet.
+- The first full-sheet drag version caused scroll-vs-drag jitter, so drag was limited to the header region only.
+- Emoji picker gained a centered top drag handle and the top-right close button was normalized to the common `44x44` circular icon style with `20px` icon sizing.
+- Transaction add/edit sheet also gained the same centered top drag handle.
 
 ### Related commits
 - `01fe075` Set yearly comparison text to gray-500
