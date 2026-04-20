@@ -127,7 +127,7 @@ export default function AnalysisPage() {
                   months={row.months}
                   maxTotal={maxTotal}
                   color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
-                  defaultOpen={isAllParentsSelected}
+                  defaultOpen={false}
                 />
               ))
             )}
