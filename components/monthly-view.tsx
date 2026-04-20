@@ -130,7 +130,7 @@ const MonthlyGridView = memo(function MonthlyGridView({
               >
                 <span className="relative flex items-center justify-center size-6 flex-shrink-0">
                   <span
-                    className={`relative text-[16px] ${isToday ? 'font-semibold text-accent-blue' : 'font-medium text-foreground'} tabular-nums leading-none`}
+                    className={`relative text-[16px] ${isToday ? 'font-bold text-accent-blue' : 'font-bold text-foreground'} tabular-nums leading-none`}
                     style={{ letterSpacing: '-0.0625em' }}
                   >
                     {day}
@@ -193,7 +193,7 @@ const WeekStripView = memo(function WeekStripView({
               className={`flex h-[64px] flex-col items-center justify-center rounded-[22px] transition-colors ${selected ? 'bg-accent-blue text-white' : 'bg-background text-foreground'}`}
             >
               <span className={`text-[10px] font-medium ${selected ? 'text-white/80' : 'text-black/50 dark:text-white/50'}`}>{weekdayLabel}</span>
-              <span className="mt-1 text-[16px] font-medium tracking-[-0.0625em] tabular-nums">{day}</span>
+              <span className="mt-1 text-[16px] font-bold tracking-[-0.0625em] tabular-nums">{day}</span>
             </button>
           )
         })}
