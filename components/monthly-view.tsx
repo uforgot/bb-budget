@@ -270,7 +270,7 @@ const WeekDayCard = memo(function WeekDayCard({
   return (
     <div
       ref={registerRef}
-      className="mx-5 mb-3 rounded-[22px] bg-surface transition-colors"
+      className={`mx-5 mb-3 rounded-[22px] bg-surface transition-colors ${highlighted ? 'ring-1 ring-black/20 dark:ring-white/20' : ''}`}
     >
       <div className="px-4 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
