@@ -123,7 +123,7 @@ export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
       <div className="absolute inset-0 bg-black/50" style={{ visibility: sheetVisible ? 'visible' : 'hidden' }} onClick={handleClose} />
 
       <div
-        className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col"
+        className="relative w-full max-w-md bg-sheet rounded-t-2xl overflow-hidden flex flex-col"
         style={{
           maxHeight: '60dvh',
           transform: `translateY(${dragTranslateY}px)`,
@@ -134,7 +134,7 @@ export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
         <div className="flex flex-col px-5 pt-3 pb-3 flex-shrink-0" onTouchStart={handleSheetTouchStart} onTouchMove={handleSheetTouchMove} onTouchEnd={handleSheetTouchEnd}>
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-black/15 dark:bg-white/15" />
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold">이모지 선택</h3>
+            <h3 className="text-[16px] font-semibold">이모지 선택</h3>
             <button onClick={handleClose} className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white">
               <X size={20} strokeWidth={2.2} />
             </button>
@@ -144,7 +144,7 @@ export function EmojiPicker({ open, onSelect, onClose }: EmojiPickerProps) {
         <div ref={scrollRef} className="overflow-y-auto px-5 pb-24">
           {EMOJI_SECTIONS.map((section) => (
             <div key={section.label} className="mb-4">
-              <p className="text-[11px] text-muted-foreground mb-2 font-medium">{section.label}</p>
+              <p className="text-[12px] text-muted-foreground mb-2 font-medium">{section.label}</p>
               <div className="grid grid-cols-8 gap-1">
                 {section.emojis.map((emoji, i) => (
                   <button
