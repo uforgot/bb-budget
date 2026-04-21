@@ -19,7 +19,7 @@ export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <div className="fixed bottom-6 left-5 right-5 z-50 flex items-center justify-between gap-3" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       {/* Tab bar */}
       <div className="flex items-center gap-0.5 px-1 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 shadow-lg backdrop-blur-md border border-border/10 dark:border-white/10">
         {tabs.map(({ href, label, icon: Icon }) => {
