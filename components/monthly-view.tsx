@@ -409,6 +409,10 @@ export function MonthlyView({
   const weekTabsScrollRef = useRef<HTMLDivElement | null>(null)
   const stickyRef = useRef<HTMLDivElement | null>(null)
   const stripTouchStartX = useRef<number | null>(null)
+  const stripContainerRef = useRef<HTMLDivElement | null>(null)
+  const pendingWeekRef = useRef<number | null>(null)
+  const [slideOffset, setSlideOffset] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
   const lastMonthKeyRef = useRef(`${targetYear}-${actualMonth}`)
 
@@ -489,6 +493,18 @@ export function MonthlyView({
   const { startDay, endDay } = getWeekDateRange(targetYear, actualMonth, selectedWeek)
   const weekDays = Array.from({ length: endDay - startDay + 1 }, (_, i) => startDay + i)
 
+  const prevWeekDays = useMemo(() => {
+    if (selectedWeek <= 1) return []
+    const { startDay: s, endDay: e } = getWeekDateRange(targetYear, actualMonth, selectedWeek - 1)
+    return Array.from({ length: e - s + 1 }, (_, i) => s + i)
+  }, [selectedWeek, targetYear, actualMonth])
+
+  const nextWeekDays = useMemo(() => {
+    if (selectedWeek >= totalWeeks) return []
+    const { startDay: s, endDay: e } = getWeekDateRange(targetYear, actualMonth, selectedWeek + 1)
+    return Array.from({ length: e - s + 1 }, (_, i) => s + i)
+  }, [selectedWeek, totalWeeks, targetYear, actualMonth])
+
   const groupedWeekTxs = useMemo(() => {
     const groups = new Map<string, Transaction[]>()
     for (const tx of weekTxs) {
@@ -522,6 +538,54 @@ export function MonthlyView({
     const { startDay } = getWeekDateRange(targetYear, actualMonth, week)
     setSelectedDay(startDay)
     setHighlightedDate(null)
+  }
+
+  const handleStripTouchStart = (e: React.TouchEvent) => {
+    if (isTransitioning) return
+    stripTouchStartX.current = e.touches[0].clientX
+  }
+
+  const handleStripTouchMove = (e: React.TouchEvent) => {
+    if (stripTouchStartX.current === null || isTransitioning) return
+    const delta = e.touches[0].clientX - stripTouchStartX.current
+    const canPrev = selectedWeek > 1
+    const canNext = selectedWeek < totalWeeks
+    if ((!canPrev && delta > 0) || (!canNext && delta < 0)) {
+      setSlideOffset(delta * 0.15)
+    } else {
+      setSlideOffset(delta)
+    }
+  }
+
+  const handleStripTouchEnd = (e: React.TouchEvent) => {
+    if (stripTouchStartX.current === null || isTransitioning) return
+    const delta = e.changedTouches[0].clientX - stripTouchStartX.current
+    stripTouchStartX.current = null
+    const containerWidth = stripContainerRef.current?.clientWidth ?? 300
+    const threshold = containerWidth * 0.25
+    setIsTransitioning(true)
+    if (delta < -threshold && selectedWeek < totalWeeks) {
+      pendingWeekRef.current = selectedWeek + 1
+      setSlideOffset(-containerWidth)
+    } else if (delta > threshold && selectedWeek > 1) {
+      pendingWeekRef.current = selectedWeek - 1
+      setSlideOffset(containerWidth)
+    } else {
+      pendingWeekRef.current = null
+      setSlideOffset(0)
+    }
+  }
+
+  const handleStripTransitionEnd = () => {
+    if (pendingWeekRef.current !== null) {
+      const nextWeekNum = pendingWeekRef.current
+      pendingWeekRef.current = null
+      setIsTransitioning(false)
+      setSlideOffset(0)
+      handleWeekTabClick(nextWeekNum)
+    } else {
+      setIsTransitioning(false)
+    }
   }
 
   const jumpToDay = (day: number) => {
@@ -619,24 +683,57 @@ export function MonthlyView({
         </div>
       ) : (
         <div
-          onTouchStart={(e) => { stripTouchStartX.current = e.touches[0].clientX }}
-          onTouchEnd={(e) => {
-            if (stripTouchStartX.current === null) return
-            const delta = e.changedTouches[0].clientX - stripTouchStartX.current
-            stripTouchStartX.current = null
-            if (Math.abs(delta) < 50) return
-            if (delta < 0 && selectedWeek < totalWeeks) handleWeekTabClick(selectedWeek + 1)
-            else if (delta > 0 && selectedWeek > 1) handleWeekTabClick(selectedWeek - 1)
-          }}
+          ref={stripContainerRef}
+          className="overflow-hidden"
+          style={{ touchAction: 'pan-y' }}
+          onTouchStart={handleStripTouchStart}
+          onTouchMove={handleStripTouchMove}
+          onTouchEnd={handleStripTouchEnd}
         >
-          <WeekStripView
-            year={targetYear}
-            month={actualMonth}
-            weekDays={weekDays}
-            focusedWeekDay={selectedDay}
-            onSelectDay={jumpToDay}
-            registerDayButton={(day, node) => { weekDayButtonRefs.current[day] = node }}
-          />
+          <div
+            className="flex"
+            style={{
+              transform: `translateX(calc(-100% + ${slideOffset}px))`,
+              transition: isTransitioning ? 'transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none',
+              willChange: 'transform',
+            }}
+            onTransitionEnd={handleStripTransitionEnd}
+          >
+            <div className="w-full flex-shrink-0">
+              {selectedWeek > 1 ? (
+                <WeekStripView
+                  year={targetYear}
+                  month={actualMonth}
+                  weekDays={prevWeekDays}
+                  focusedWeekDay={null}
+                  onSelectDay={() => {}}
+                  registerDayButton={() => {}}
+                />
+              ) : <div className="h-[80px]" />}
+            </div>
+            <div className="w-full flex-shrink-0">
+              <WeekStripView
+                year={targetYear}
+                month={actualMonth}
+                weekDays={weekDays}
+                focusedWeekDay={selectedDay}
+                onSelectDay={jumpToDay}
+                registerDayButton={(day, node) => { weekDayButtonRefs.current[day] = node }}
+              />
+            </div>
+            <div className="w-full flex-shrink-0">
+              {selectedWeek < totalWeeks ? (
+                <WeekStripView
+                  year={targetYear}
+                  month={actualMonth}
+                  weekDays={nextWeekDays}
+                  focusedWeekDay={null}
+                  onSelectDay={() => {}}
+                  registerDayButton={() => {}}
+                />
+              ) : <div className="h-[80px]" />}
+            </div>
+          </div>
         </div>
       )}
       </div>
