@@ -408,6 +408,7 @@ export function MonthlyView({
   const weekDayButtonRefs = useRef<Record<number, HTMLButtonElement | null>>({})
   const weekTabsScrollRef = useRef<HTMLDivElement | null>(null)
   const stickyRef = useRef<HTMLDivElement | null>(null)
+  const stripTouchStartX = useRef<number | null>(null)
   const [highlightedDate, setHighlightedDate] = useState<string | null>(null)
   const lastMonthKeyRef = useRef(`${targetYear}-${actualMonth}`)
 
@@ -617,7 +618,17 @@ export function MonthlyView({
           />
         </div>
       ) : (
-        <div>
+        <div
+          onTouchStart={(e) => { stripTouchStartX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (stripTouchStartX.current === null) return
+            const delta = e.changedTouches[0].clientX - stripTouchStartX.current
+            stripTouchStartX.current = null
+            if (Math.abs(delta) < 50) return
+            if (delta < 0 && selectedWeek < totalWeeks) handleWeekTabClick(selectedWeek + 1)
+            else if (delta > 0 && selectedWeek > 1) handleWeekTabClick(selectedWeek - 1)
+          }}
+        >
           <WeekStripView
             year={targetYear}
             month={actualMonth}
