@@ -496,12 +496,6 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               >
                 {saving ? '처리 중...' : '적용하기'}
               </button>
-              <button
-                onClick={() => setRecoverOpen(false)}
-                className="flex-1 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-500 rounded-[22px] py-3.5 text-[16px] font-semibold"
-              >
-                취소하기
-              </button>
             </div>
           ) : (
             <div className="flex gap-2 mb-2">
