@@ -139,7 +139,7 @@ export function HistorySearchPanel({
             <div key={dateKey} className="mb-3 rounded-[22px] bg-surface">
               <div className="px-4 pt-4 pb-3">
                 <p className="text-[14px] font-semibold text-foreground">
-                  {d.getFullYear()}년 {d.getMonth() + 1}월 {d.getDate()}일 {dayNames[d.getDay()]}요일
+                  {d.getFullYear()}. {d.getMonth() + 1}. {d.getDate()}. ({dayNames[d.getDay()]})
                 </p>
               </div>
               <div className="mx-4 border-t border-black/10 dark:border-white/10" />
