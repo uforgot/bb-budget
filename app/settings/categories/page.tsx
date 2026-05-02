@@ -340,6 +340,10 @@ export default function CategoriesSettings() {
             onSubmit={async () => {
               if (!editingParent) return
 
+              const effectiveDraftChildren = (addingSubCat && newSubCat.trim())
+                ? [...draftChildren, createDraftChild(newSubCat.trim(), type, editingParent.id, draftChildren.length + 1)]
+                : draftChildren
+
               const nextName = (editName.trim() || editingParent.name).slice(0, 9)
               const updatePayload: { name: string; icon?: string | null } = { name: nextName }
               if ((editingParent as CategoryWithIcon).icon !== (categories.find(cat => cat.id === editingParent.id) as CategoryWithIcon | undefined)?.icon) {
@@ -348,7 +352,7 @@ export default function CategoriesSettings() {
               await supabase.from('categories').update(updatePayload).eq('id', editingParent.id)
 
               const currentChildren = childrenOf(editingParent.id)
-              const { persistedIds, newDrafts } = splitDraftChildren(draftChildren)
+              const { persistedIds, newDrafts } = splitDraftChildren(effectiveDraftChildren)
 
               for (const child of currentChildren) {
                 if (!persistedIds.has(child.id)) {
@@ -357,7 +361,7 @@ export default function CategoriesSettings() {
               }
 
               for (const child of currentChildren) {
-                const draftChild = draftChildren.find(item => item.id === child.id)
+                const draftChild = effectiveDraftChildren.find(item => item.id === child.id)
                 if (!draftChild) continue
                 if (draftChild.name !== child.name) {
                   await supabase.from('categories').update({
