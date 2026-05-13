@@ -167,6 +167,43 @@ export function AnalysisRow({
   )
 }
 
+export function AnalysisMonthlyGroupCard({
+  label,
+  total,
+  rows,
+  maxTotal,
+  color,
+}: {
+  label: string
+  total: number
+  rows: { id: string; label: string; total: number }[]
+  maxTotal: number
+  color: string
+}) {
+  const width = maxTotal > 0 ? Math.max((total / maxTotal) * 100, total > 0 ? 8 : 0) : 0
+  return (
+    <div className="bg-surface rounded-[22px] px-4 py-4">
+      <div className="mb-3 h-2 rounded-full bg-background overflow-hidden">
+        <div className="h-full rounded-full transition-all" style={{ width: `${width}%`, backgroundColor: color }} />
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <p className="min-w-0 truncate text-[14px] font-medium text-foreground">{label}</p>
+        <span className="text-[15px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(total)}</span>
+      </div>
+      {rows.length > 0 && (
+        <div className="mt-4 border-t border-black/10 dark:border-white/10 pt-3 space-y-2">
+          {rows.map(row => (
+            <div key={row.id} className="flex items-center justify-between gap-3 text-[14px]">
+              <span className="text-black/50 dark:text-white/50 min-w-0 truncate">{row.label}</span>
+              <span className="font-semibold tracking-[-0.02em] tabular-nums text-black/50 dark:text-white/50">{fmt(row.total)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function AnalysisEmptyState() {
   return (
     <div className="bg-surface rounded-[22px] px-4 py-8 text-center text-[14px] text-muted-foreground">

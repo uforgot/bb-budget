@@ -7,7 +7,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { TopToolbar } from '@/components/top-toolbar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, getCategories, type Transaction, type Category } from '@/lib/api'
-import { AnalysisEmptyState, AnalysisFilters, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
+import { AnalysisEmptyState, AnalysisFilters, AnalysisMonthlyGroupCard, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
 import { HistorySearchPanel } from '@/components/history-sections'
 import { AnalysisLoadingSkeleton } from '@/components/page-loading-skeletons'
 import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getMonthlyGroupedRows, getParentCategoriesByType, getParentCategorySummaryRows } from '@/lib/analysis'
@@ -79,7 +79,7 @@ export default function AnalysisPage() {
   }, [monthMode, parentCategories, categories, transactions, currentYear, currentMonth])
 
   const maxTotal = rows[0]?.total ?? 0
-  const monthlyMaxTotal = monthlyGroups.reduce((max, group) => Math.max(max, ...group.rows.map(r => r.total)), 0)
+  const monthlyMaxTotal = monthlyGroups.reduce((max, group) => Math.max(max, group.total), 0)
 
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
@@ -137,21 +137,14 @@ export default function AnalysisPage() {
                 <AnalysisEmptyState />
               ) : (
                 monthlyGroups.map(group => (
-                  <div key={group.parent.id} className="space-y-2 pt-2">
-                    <p className="px-1 text-[15px] font-semibold text-black/50 dark:text-white/50">{group.parent.name}</p>
-                    {group.rows.map(row => (
-                      <AnalysisRow
-                        key={row.id}
-                        label={row.label}
-                        total={row.total}
-                        months={row.months}
-                        maxTotal={monthlyMaxTotal}
-                        color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
-                        defaultOpen={false}
-                        expandable={false}
-                      />
-                    ))}
-                  </div>
+                  <AnalysisMonthlyGroupCard
+                    key={group.parent.id}
+                    label={group.parent.name}
+                    total={group.total}
+                    rows={group.rows.map(r => ({ id: r.id, label: r.label, total: r.total }))}
+                    maxTotal={monthlyMaxTotal}
+                    color={typeFilter === 'income' ? '#2dd4bf' : typeFilter === 'savings' ? '#A855F7' : '#5865F2'}
+                  />
                 ))
               )
             ) : rows.length === 0 ? (
