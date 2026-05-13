@@ -78,8 +78,8 @@ export default function AnalysisPage() {
     return getMonthlyGroupedRows(parentCategories, categories, transactions, currentYear, currentMonth)
   }, [monthMode, parentCategories, categories, transactions, currentYear, currentMonth])
 
-  const maxTotal = rows[0]?.total ?? 0
-  const monthlyMaxTotal = monthlyGroups.reduce((max, group) => Math.max(max, group.total), 0)
+  const rowsTotalSum = rows.reduce((sum, row) => sum + row.total, 0)
+  const monthlyTotalSum = monthlyGroups.reduce((sum, group) => sum + group.total, 0)
 
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
@@ -142,7 +142,7 @@ export default function AnalysisPage() {
                     label={group.parent.name}
                     total={group.total}
                     rows={group.rows.map(r => ({ id: r.id, label: r.label, total: r.total }))}
-                    maxTotal={monthlyMaxTotal}
+                    maxTotal={monthlyTotalSum}
                     color={typeFilter === 'income' ? '#2dd4bf' : typeFilter === 'savings' ? '#A855F7' : '#5865F2'}
                   />
                 ))
@@ -156,7 +156,7 @@ export default function AnalysisPage() {
                   label={row.label}
                   total={row.total}
                   months={row.months}
-                  maxTotal={maxTotal}
+                  maxTotal={rowsTotalSum}
                   color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
                   defaultOpen={false}
                   expandable={true}
