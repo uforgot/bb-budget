@@ -6,21 +6,33 @@ function fmt(n: number) {
   return `₩${n.toLocaleString()}`
 }
 
+function truncateLabel(label: string, max: number) {
+  return label.length > max ? `${label.slice(0, max)}…` : label
+}
+
 export function AnalysisFilters({
   typeFilter,
   parentCategoryId,
   parentCategories,
+  monthMode,
   onChangeType,
   onChangeParent,
+  onToggleMonthMode,
 }: {
   typeFilter: 'expense' | 'income' | 'savings'
   parentCategoryId: string
   parentCategories: Category[]
+  monthMode: boolean
   onChangeType: (value: 'expense' | 'income' | 'savings') => void
   onChangeParent: (value: string) => void
+  onToggleMonthMode: () => void
 }) {
+  const selectedParent = parentCategories.find(cat => cat.id === parentCategoryId)
+  const parentLabel = parentCategoryId === '__all__' ? '전체' : (selectedParent?.name ?? '전체')
+  const visibleParentLabel = truncateLabel(parentLabel, 6)
+
   return (
-    <div className="flex items-center gap-3 mt-1 mb-4 overflow-x-auto scrollbar-hide">
+    <div className="flex items-center gap-3 mt-1 mb-4">
       <label className="flex items-center gap-1 cursor-pointer shrink-0">
         <select
           value={typeFilter}
@@ -35,20 +47,34 @@ export function AnalysisFilters({
         <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
 
-      <label className="flex items-center gap-1 cursor-pointer shrink min-w-0 max-w-[180px]">
+      <label className="relative flex items-center gap-1 cursor-pointer shrink min-w-0">
+        <span
+          className="text-foreground text-[30px] font-bold leading-none whitespace-nowrap"
+          style={{ letterSpacing: '-1px' }}
+        >
+          {visibleParentLabel}
+        </span>
+        <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
         <select
           value={parentCategoryId}
           onChange={e => onChangeParent(e.target.value)}
-          className="appearance-none bg-transparent text-foreground text-[30px] font-bold outline-none cursor-pointer w-full min-w-0 truncate"
-          style={{ letterSpacing: '-1px' }}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          aria-label="카테고리"
         >
           <option value="__all__">전체</option>
           {parentCategories.map(category => (
             <option key={category.id} value={category.id}>{category.name}</option>
           ))}
         </select>
-        <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
+
+      <button
+        type="button"
+        onClick={onToggleMonthMode}
+        className={`ml-auto shrink-0 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-colors ${monthMode ? 'bg-gray-100 dark:bg-gray-800 text-black/60 dark:text-white/60' : 'bg-accent-blue text-white'}`}
+      >
+        {monthMode ? '전체' : '이번 달'}
+      </button>
     </div>
   )
 }
@@ -89,6 +115,7 @@ export function AnalysisRow({
   maxTotal,
   color,
   defaultOpen = false,
+  expandable = true,
 }: {
   label: string
   total: number
@@ -96,13 +123,20 @@ export function AnalysisRow({
   maxTotal: number
   color: string
   defaultOpen?: boolean
+  expandable?: boolean
 }) {
   const [open, setOpen] = useState(defaultOpen)
   const width = maxTotal > 0 ? Math.max((total / maxTotal) * 100, total > 0 ? 8 : 0) : 0
+  const isOpen = expandable && open
 
   return (
     <div className="bg-surface rounded-[22px] px-4 py-4">
-      <button type="button" onClick={() => setOpen(v => !v)} className="w-full text-left">
+      <button
+        type="button"
+        onClick={() => { if (expandable) setOpen(v => !v) }}
+        className="w-full text-left"
+        disabled={!expandable}
+      >
         <div className="mb-3 h-2 rounded-full bg-background overflow-hidden">
           <div className="h-full rounded-full transition-all" style={{ width: `${width}%`, backgroundColor: color }} />
         </div>
@@ -110,12 +144,14 @@ export function AnalysisRow({
           <p className="min-w-0 truncate text-[14px] font-medium text-foreground">{label}</p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-[15px] font-semibold tracking-[-0.02em] tabular-nums text-foreground">{fmt(total)}</span>
-            <ChevronDown size={14} strokeWidth={2} className={`text-black/20 dark:text-white/20 transition-transform ${open ? 'rotate-180' : ''}`} />
+            {expandable && (
+              <ChevronDown size={14} strokeWidth={2} className={`text-black/20 dark:text-white/20 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            )}
           </div>
         </div>
       </button>
 
-      {open && (
+      {isOpen && (
         <div className="mt-4 border-t border-black/10 dark:border-white/10 pt-3 space-y-2">
           {months.map(({ month, amount }) => (
             <div key={month} className="flex items-center justify-between gap-3 text-[14px]">

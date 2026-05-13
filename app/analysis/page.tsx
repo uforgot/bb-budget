@@ -23,6 +23,7 @@ export default function AnalysisPage() {
   const [typeFilter, setTypeFilter] = useState<'expense' | 'income' | 'savings'>('expense')
   const [parentCategoryId, setParentCategoryId] = useState('')
   const [selectedYear, setSelectedYear] = useState(today.getFullYear())
+  const [monthMode, setMonthMode] = useState(false)
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -60,12 +61,17 @@ export default function AnalysisPage() {
     setSelectedYear(availableYears[0])
   }, [availableYears, selectedYear])
 
+  const currentYear = today.getFullYear()
+  const currentMonth = today.getMonth() + 1
+  const yearForRows = monthMode ? currentYear : selectedYear
+  const monthForRows = monthMode ? currentMonth : undefined
+
   const rows = useMemo(() => {
     if (isAllParentsSelected) {
-      return getParentCategorySummaryRows(parentCategories, categories, transactions, selectedYear)
+      return getParentCategorySummaryRows(parentCategories, categories, transactions, yearForRows, monthForRows)
     }
-    return getAnalysisRows(childCategories, transactions, selectedYear)
-  }, [isAllParentsSelected, parentCategories, categories, childCategories, transactions, selectedYear])
+    return getAnalysisRows(childCategories, transactions, yearForRows, monthForRows)
+  }, [isAllParentsSelected, parentCategories, categories, childCategories, transactions, yearForRows, monthForRows])
 
   const maxTotal = rows[0]?.total ?? 0
 
@@ -103,15 +109,19 @@ export default function AnalysisPage() {
             typeFilter={typeFilter}
             parentCategoryId={parentCategoryId}
             parentCategories={parentCategories}
+            monthMode={monthMode}
             onChangeType={setTypeFilter}
             onChangeParent={setParentCategoryId}
+            onToggleMonthMode={() => setMonthMode(v => !v)}
           />
 
-          <AnalysisYearPills
-            years={availableYears}
-            selectedYear={selectedYear}
-            onSelect={setSelectedYear}
-          />
+          {!monthMode && (
+            <AnalysisYearPills
+              years={availableYears}
+              selectedYear={selectedYear}
+              onSelect={setSelectedYear}
+            />
+          )}
 
           <div className="space-y-3 pb-4">
             {initialLoading ? (
@@ -128,6 +138,7 @@ export default function AnalysisPage() {
                   maxTotal={maxTotal}
                   color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
                   defaultOpen={false}
+                  expandable={!monthMode}
                 />
               ))
             )}

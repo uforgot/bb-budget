@@ -28,7 +28,7 @@ export function getAvailableTransactionYears(transactions: Transaction[]) {
   return Array.from(new Set(transactions.map(tx => new Date(tx.date).getFullYear()))).sort((a, b) => b - a)
 }
 
-export function getAnalysisRows(categories: Category[], transactions: Transaction[], selectedYear: number) {
+export function getAnalysisRows(categories: Category[], transactions: Transaction[], selectedYear: number, selectedMonth?: number) {
   return categories
     .map(category => {
       const categoryTxs = transactions.filter(tx => {
@@ -38,8 +38,8 @@ export function getAnalysisRows(categories: Category[], transactions: Transactio
         return txCategory.id === category.id
       })
 
-      const months = Array.from({ length: 12 }, (_, i) => {
-        const month = i + 1
+      const monthRange = selectedMonth ? [selectedMonth] : Array.from({ length: 12 }, (_, i) => i + 1)
+      const months = monthRange.map(month => {
         const amount = categoryTxs
           .filter(tx => new Date(tx.date).getMonth() + 1 === month)
           .reduce((sum, tx) => sum + tx.amount, 0)
@@ -65,6 +65,7 @@ export function getParentCategorySummaryRows(
   categories: Category[],
   transactions: Transaction[],
   selectedYear: number,
+  selectedMonth?: number,
 ) {
   return parentCategories
     .map(parent => {
@@ -80,8 +81,8 @@ export function getParentCategorySummaryRows(
         return categoryIds.has(txCategory.id)
       })
 
-      const months = Array.from({ length: 12 }, (_, i) => {
-        const month = i + 1
+      const monthRange = selectedMonth ? [selectedMonth] : Array.from({ length: 12 }, (_, i) => i + 1)
+      const months = monthRange.map(month => {
         const amount = parentTxs
           .filter(tx => new Date(tx.date).getMonth() + 1 === month)
           .reduce((sum, tx) => sum + tx.amount, 0)
