@@ -73,7 +73,7 @@ export function AnalysisFilters({
       <button
         type="button"
         onClick={onToggleMonthMode}
-        className={`ml-auto shrink-0 px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors ${monthMode ? 'bg-gray-100 dark:bg-gray-800 text-black/60 dark:text-white/60' : 'bg-accent-blue text-white'}`}
+        className="ml-auto shrink-0 px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap bg-accent-blue text-white"
       >
         {monthMode ? '전체' : '이번 달'}
       </button>
