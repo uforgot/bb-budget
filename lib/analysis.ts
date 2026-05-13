@@ -60,6 +60,28 @@ export function getAnalysisRows(categories: Category[], transactions: Transactio
     .sort((a, b) => b.total - a.total)
 }
 
+export function getMonthlyGroupedRows(
+  parentCategories: Category[],
+  categories: Category[],
+  transactions: Transaction[],
+  selectedYear: number,
+  selectedMonth: number,
+) {
+  return parentCategories
+    .map(parent => {
+      const children = categories.filter(cat => cat.parent_id === parent.id)
+      const hasDirectParentTx = transactions.some(tx => {
+        const txCategory = tx.category as Category | undefined
+        return txCategory?.id === parent.id
+      })
+      const targets = hasDirectParentTx ? [parent, ...children] : children
+      const rows = getAnalysisRows(targets, transactions, selectedYear, selectedMonth)
+      const total = rows.reduce((sum, row) => sum + row.total, 0)
+      return { parent, rows, total }
+    })
+    .filter(group => group.rows.length > 0)
+}
+
 export function getParentCategorySummaryRows(
   parentCategories: Category[],
   categories: Category[],

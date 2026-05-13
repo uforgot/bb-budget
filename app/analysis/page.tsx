@@ -10,7 +10,7 @@ import { getTransactions, getCategories, type Transaction, type Category } from 
 import { AnalysisEmptyState, AnalysisFilters, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
 import { HistorySearchPanel } from '@/components/history-sections'
 import { AnalysisLoadingSkeleton } from '@/components/page-loading-skeletons'
-import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getParentCategoriesByType, getParentCategorySummaryRows } from '@/lib/analysis'
+import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getMonthlyGroupedRows, getParentCategoriesByType, getParentCategorySummaryRows } from '@/lib/analysis'
 
 export default function AnalysisPage() {
   const router = useRouter()
@@ -73,7 +73,13 @@ export default function AnalysisPage() {
     return getAnalysisRows(childCategories, transactions, yearForRows, monthForRows)
   }, [isAllParentsSelected, parentCategories, categories, childCategories, transactions, yearForRows, monthForRows])
 
+  const monthlyGroups = useMemo(() => {
+    if (!monthMode) return []
+    return getMonthlyGroupedRows(parentCategories, categories, transactions, currentYear, currentMonth)
+  }, [monthMode, parentCategories, categories, transactions, currentYear, currentMonth])
+
   const maxTotal = rows[0]?.total ?? 0
+  const monthlyMaxTotal = monthlyGroups.reduce((max, group) => Math.max(max, ...group.rows.map(r => r.total)), 0)
 
   const searchResults = searchQuery.trim()
     ? transactions.filter(t => {
@@ -126,6 +132,28 @@ export default function AnalysisPage() {
           <div className="space-y-3 pb-4">
             {initialLoading ? (
               <AnalysisLoadingSkeleton />
+            ) : monthMode ? (
+              monthlyGroups.length === 0 ? (
+                <AnalysisEmptyState />
+              ) : (
+                monthlyGroups.map(group => (
+                  <div key={group.parent.id} className="space-y-2 pt-2">
+                    <p className="px-1 text-[15px] font-semibold text-black/50 dark:text-white/50">{group.parent.name}</p>
+                    {group.rows.map(row => (
+                      <AnalysisRow
+                        key={row.id}
+                        label={row.label}
+                        total={row.total}
+                        months={row.months}
+                        maxTotal={monthlyMaxTotal}
+                        color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
+                        defaultOpen={false}
+                        expandable={false}
+                      />
+                    ))}
+                  </div>
+                ))
+              )
             ) : rows.length === 0 ? (
               <AnalysisEmptyState />
             ) : (
@@ -138,7 +166,7 @@ export default function AnalysisPage() {
                   maxTotal={maxTotal}
                   color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
                   defaultOpen={false}
-                  expandable={!monthMode}
+                  expandable={true}
                 />
               ))
             )}

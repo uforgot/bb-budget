@@ -47,26 +47,28 @@ export function AnalysisFilters({
         <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
 
-      <label className="relative flex items-center gap-1 cursor-pointer shrink min-w-0">
-        <span
-          className="text-foreground text-[30px] font-bold leading-none whitespace-nowrap"
-          style={{ letterSpacing: '-1px' }}
-        >
-          {visibleParentLabel}
-        </span>
-        <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
-        <select
-          value={parentCategoryId}
-          onChange={e => onChangeParent(e.target.value)}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          aria-label="카테고리"
-        >
-          <option value="__all__">전체</option>
-          {parentCategories.map(category => (
-            <option key={category.id} value={category.id}>{category.name}</option>
-          ))}
-        </select>
-      </label>
+      {!monthMode && (
+        <label className="relative flex items-center gap-1 cursor-pointer shrink min-w-0">
+          <span
+            className="text-foreground text-[30px] font-bold leading-none whitespace-nowrap"
+            style={{ letterSpacing: '-1px' }}
+          >
+            {visibleParentLabel}
+          </span>
+          <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
+          <select
+            value={parentCategoryId}
+            onChange={e => onChangeParent(e.target.value)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            aria-label="카테고리"
+          >
+            <option value="__all__">전체</option>
+            {parentCategories.map(category => (
+              <option key={category.id} value={category.id}>{category.name}</option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <button
         type="button"
