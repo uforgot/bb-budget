@@ -1,6 +1,7 @@
 'use client'
 
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { type Transaction, type Category } from '@/lib/api'
 import { SummaryCardSlider } from '@/components/summary-card-slider'
 import { TxRow } from '@/components/tx-row'
@@ -352,6 +353,7 @@ export function MonthlyView({
   todayResetToken = 0,
   onEdit, onDeleted,
 }: MonthlyViewProps) {
+  const router = useRouter()
   const now = new Date()
   const today = new Date()
   const { currentYear: targetYear, currentMonth: actualMonth } = resolveYearMonthFromOffset(monthOffset, now)
@@ -636,6 +638,11 @@ export function MonthlyView({
           hasPrev={prevTxs.length > 0}
           labelPrefixOverride={isCurrentMonthView ? `${actualMonth}월` : undefined}
           prevLabelOverride={isCurrentMonthView ? `${prevM}월 동일 시점` : undefined}
+          clickableCardTypes={['expense']}
+          onCardClick={(type) => {
+            if (type !== 'expense') return
+            router.push(`/history/monthly-expense?year=${targetYear}&month=${actualMonth}`)
+          }}
         />
       )}
 

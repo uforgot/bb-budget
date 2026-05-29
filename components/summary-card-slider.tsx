@@ -3,6 +3,8 @@
 import { useRef, useState, useEffect, useMemo } from 'react'
 import { typography, semanticColors } from '@/components/ui-colors'
 
+type SummaryCardType = 'income' | 'expense' | 'savings' | 'balance'
+
 function fmt(n: number) {
   const abs = Math.abs(n)
   if (abs >= 100000000) return `${Math.floor(abs / 100000000)}억`
@@ -33,11 +35,14 @@ interface SummaryCardSliderProps {
   prevLabelOverride?: string
   labelPrefixOverride?: string
   labelSuffixOverride?: string
+  clickableCardTypes?: SummaryCardType[]
+  onCardClick?: (type: SummaryCardType) => void
 }
 
 export function SummaryCardSlider({
   month, income, expense, savings, balance,
   prevMonth, prevIncome, prevExpense, prevSavings, prevBalance, hasPrev, yearMode, prevLabelOverride, labelPrefixOverride, labelSuffixOverride,
+  clickableCardTypes = [], onCardClick,
 }: SummaryCardSliderProps) {
   const unit = yearMode ? '년' : '월'
   const prevLabel = prevLabelOverride || `${prevMonth}${unit}`
@@ -49,6 +54,8 @@ export function SummaryCardSlider({
   const startX = useRef(0)
   const startY = useRef(0)
   const dragDirection = useRef<'h' | 'v' | null>(null)
+  const didDrag = useRef(false)
+  const suppressClick = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
@@ -63,12 +70,12 @@ export function SummaryCardSlider({
 
   const labelPrefix = labelPrefixOverride || `${month}${unit}`
   const labelSuffix = labelSuffixOverride || ''
-  const cards = [
+  const cards = useMemo(() => [
     { labelPrefix: `${labelPrefix} 쓴 지출`, labelSuffix, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: semanticColors.expense, img: '/card-expense.png' },
     { labelPrefix: `${labelPrefix} 번 수입`, labelSuffix, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: semanticColors.income, img: '/card-income.png' },
     { labelPrefix: `${labelPrefix} 모은 저축`, labelSuffix, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: semanticColors.savings, img: '/card-saving.png' },
     { labelPrefix: `${labelPrefix} 남은 잔액`, labelSuffix, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: '#2C2C2E', img: '/card-balance.png' },
-  ]
+  ], [balance, expense, hasPrev, income, labelPrefix, labelSuffix, prevBalance, prevExpense, prevIncome, prevSavings, savings])
   const total = cards.length
   const loopCards = useMemo(() => [...cards, ...cards, ...cards], [cards])
   const baseIndex = total
@@ -80,6 +87,7 @@ export function SummaryCardSlider({
 
   const isInteractiveTarget = (target: EventTarget | null) => {
     if (!(target instanceof HTMLElement)) return false
+    if (target.closest('[data-card-action="true"]')) return false
     return !!target.closest('button, a, input, select, textarea, [role="button"], [data-no-swipe="true"]')
   }
 
@@ -88,6 +96,7 @@ export function SummaryCardSlider({
     isDragging.current = true
     setDragging(true)
     dragDirection.current = null
+    didDrag.current = false
     startX.current = e.touches[0].clientX
     startY.current = e.touches[0].clientY
     setDragX(0)
@@ -115,6 +124,7 @@ export function SummaryCardSlider({
     if (dragDirection.current === 'h') {
       e.preventDefault()
       e.stopPropagation()
+      didDrag.current = true
       const clamped = Math.max(-containerWidth * 0.6, Math.min(containerWidth * 0.6, dx))
       setDragX(clamped)
     }
@@ -131,8 +141,18 @@ export function SummaryCardSlider({
       setAnimating(true)
       setCurrent(c => c - 1)
     }
+    if (didDrag.current) {
+      suppressClick.current = true
+      window.setTimeout(() => { suppressClick.current = false }, 350)
+    }
     setDragX(0)
     dragDirection.current = null
+  }
+
+  const handleCardClick = (type: SummaryCardType) => {
+    if (!onCardClick || !clickableCardTypes.includes(type)) return
+    if (suppressClick.current) return
+    onCardClick(type)
   }
 
   const handleTransitionEnd = () => {
@@ -162,13 +182,28 @@ export function SummaryCardSlider({
       >
         {loopCards.map((card, idx) => {
           const dt = diffText(card.diff, card.type, prevLabel)
+          const isClickable = clickableCardTypes.includes(card.type)
           return (
             <div
               key={`${card.labelPrefix}-${idx}`}
               className="flex-shrink-0 w-full"
               style={{ padding: '0 20px' }}
             >
-              <div className="rounded-[22px] px-4 pt-4 pb-4 flex flex-col justify-between overflow-hidden relative" style={{ minHeight: '150px', backgroundColor: card.bg }}>
+              <div
+                data-card-action={isClickable ? 'true' : undefined}
+                role={isClickable ? 'button' : undefined}
+                tabIndex={isClickable ? 0 : undefined}
+                onClick={() => handleCardClick(card.type)}
+                onKeyDown={(e) => {
+                  if (!isClickable) return
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleCardClick(card.type)
+                  }
+                }}
+                className={`rounded-[22px] px-4 pt-4 pb-4 flex flex-col justify-between overflow-hidden relative ${isClickable ? 'cursor-pointer active:scale-[0.99]' : ''}`}
+                style={{ minHeight: '150px', backgroundColor: card.bg }}
+              >
                 {/* 데코 이미지 — 우측, 텍스트 3줄 센터 높이 */}
                 <img
                   src={card.img}

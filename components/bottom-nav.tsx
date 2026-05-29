@@ -23,7 +23,7 @@ export function BottomNav({ onAdd, hideAdd }: BottomNavProps) {
       {/* Tab bar */}
       <div className="flex items-center gap-0.5 px-1 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 shadow-lg backdrop-blur-md border border-border/10 dark:border-white/10">
         {tabs.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href
+          const active = pathname === href || pathname.startsWith(`${href}/`)
           return (
             <Link
               key={href}
