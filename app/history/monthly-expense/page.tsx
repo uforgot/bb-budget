@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
@@ -72,13 +72,6 @@ function MonthlyExpensePageContent() {
   }, [loadData])
 
   const total = transactions.reduce((sum, tx) => sum + tx.amount, 0)
-  const grouped = useMemo(() => {
-    return transactions.reduce((acc, tx) => {
-      if (!acc[tx.date]) acc[tx.date] = []
-      acc[tx.date].push(tx)
-      return acc
-    }, {} as Record<string, Transaction[]>)
-  }, [transactions])
 
   const closeModal = () => {
     const scrollY = window.scrollY
@@ -104,77 +97,73 @@ function MonthlyExpensePageContent() {
         />
 
         <main className="px-5">
-          <section className="mb-5">
+          <section className="mb-3">
             <p className="text-[30px] font-bold text-foreground" style={{ letterSpacing: '-1px' }}>
               {year}년 {month}월
             </p>
-            <div className="mt-3 rounded-[22px] px-4 py-4 text-white" style={{ backgroundColor: semanticColors.expense }}>
-              <p className="text-[14px] font-medium text-white/75">쓴 지출</p>
-              <p className="mt-1 text-[26px] font-bold leading-tight tracking-[-0.03em] tabular-nums">
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-[13px] font-semibold text-muted-foreground">쓴 지출</span>
+              <span className="text-[20px] font-bold leading-tight tracking-[-0.03em] tabular-nums" style={{ color: semanticColors.expense }}>
                 ₩{total.toLocaleString()}
-              </p>
-              <p className="mt-2 text-[13px] font-medium text-white/70">{transactions.length}건</p>
+              </span>
+              <span className="text-[12px] font-medium text-muted-foreground">{transactions.length}건</span>
             </div>
           </section>
 
           {loading ? (
-            <div className="space-y-3 animate-pulse">
-              <div className="h-24 rounded-[22px] bg-surface" />
-              <div className="h-24 rounded-[22px] bg-surface" />
-              <div className="h-24 rounded-[22px] bg-surface" />
+            <div className="animate-pulse divide-y divide-black/5 dark:divide-white/10">
+              <div className="h-12 bg-surface" />
+              <div className="h-12 bg-surface" />
+              <div className="h-12 bg-surface" />
+              <div className="h-12 bg-surface" />
             </div>
           ) : transactions.length === 0 ? (
             <p className="py-16 text-center text-sm text-muted-foreground">지출 내역이 없어요</p>
           ) : (
-            <div className="space-y-3 pb-8">
-              {Object.entries(grouped).map(([dateKey, items]) => {
-                const d = new Date(`${dateKey}T00:00:00`)
-                const dayTotal = items.reduce((sum, tx) => sum + tx.amount, 0)
+            <div className="divide-y divide-black/5 pb-8 dark:divide-white/10">
+              {transactions.map((tx, index) => {
+                const showDate = index === 0 || transactions[index - 1].date !== tx.date
+                const d = new Date(`${tx.date}T00:00:00`)
                 return (
-                  <section key={dateKey} className="overflow-hidden rounded-[22px] bg-surface">
-                    <div className="flex items-center justify-between px-4 pb-3 pt-4">
-                      <p className="text-[14px] font-semibold text-foreground">
-                        {d.getMonth() + 1}. {d.getDate()}. ({DAY_NAMES[d.getDay()]})
-                      </p>
-                      <p className="text-[13px] font-semibold tabular-nums text-muted-foreground">
-                        ₩{dayTotal.toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="mx-4 border-t border-black/10 dark:border-white/10" />
-                    <div className="py-2">
-                      {items.map(tx => (
-                        <SwipeToDelete
-                          key={tx.id}
-                          onDelete={async () => {
-                            await deleteTransactionWithRecurringCascade(tx)
-                            loadData()
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              setEditTx(tx)
-                              setModalOpen(true)
-                            }}
-                            className={`flex w-full items-center gap-3 px-4 py-2 text-left active:bg-muted/30 ${tx.end_date ? 'opacity-40' : ''}`}
-                          >
-                            <div className="min-w-0 flex-1">
-                              <span className="inline-block rounded-full px-3 py-1 text-xs text-white" style={{ backgroundColor: semanticColors.expense }}>
-                                {getCategoryLabel(tx, categories)}
-                              </span>
-                              {tx.description && (
-                                <p className={`mt-1 truncate pl-1 text-[11px] text-muted-foreground ${tx.end_date ? 'line-through' : ''}`}>
-                                  {tx.description}
-                                </p>
-                              )}
-                            </div>
-                            <span className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${tx.end_date ? 'line-through' : ''}`}>
-                              ₩{tx.amount.toLocaleString()}
-                            </span>
-                          </button>
-                        </SwipeToDelete>
-                      ))}
-                    </div>
-                  </section>
+                  <SwipeToDelete
+                    key={tx.id}
+                    onDelete={async () => {
+                      await deleteTransactionWithRecurringCascade(tx)
+                      loadData()
+                    }}
+                  >
+                    <button
+                      onClick={() => {
+                        setEditTx(tx)
+                        setModalOpen(true)
+                      }}
+                      className={`flex min-h-12 w-full items-center gap-3 py-2 text-left active:bg-muted/30 ${tx.end_date ? 'opacity-40' : ''}`}
+                    >
+                      <div className="w-[52px] flex-shrink-0">
+                        {showDate ? (
+                          <div className="leading-tight">
+                            <p className="text-[13px] font-semibold tabular-nums text-foreground">
+                              {d.getMonth() + 1}. {d.getDate()}
+                            </p>
+                            <p className="text-[10px] font-medium text-muted-foreground">{DAY_NAMES[d.getDay()]}</p>
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className={`truncate text-[13px] font-semibold text-foreground ${tx.end_date ? 'line-through' : ''}`}>
+                          {getCategoryLabel(tx, categories)}
+                        </p>
+                        {tx.description && (
+                          <p className={`truncate text-[11px] text-muted-foreground ${tx.end_date ? 'line-through' : ''}`}>
+                            {tx.description}
+                          </p>
+                        )}
+                      </div>
+                      <span className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${tx.end_date ? 'line-through' : ''}`}>
+                        ₩{tx.amount.toLocaleString()}
+                      </span>
+                    </button>
+                  </SwipeToDelete>
                 )
               })}
             </div>
