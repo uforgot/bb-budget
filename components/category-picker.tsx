@@ -97,17 +97,15 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                   const isExpanded = expandedParent === parent.id
                   const children = childrenOf(parent.id)
                   const hasChildren = children.length > 0
-                  const hasSelectedChild = children.some(c => c.id === selected)
-                  const isSelected = selected === parent.id || hasSelectedChild
+                  const isParentActive = isExpanded || (!expandedParent && selected === parent.id)
                   return (
                     <button
                       key={parent.id}
                       onClick={() => {
                         if (hasChildren) {
-                          // 수정 모드에서 이미 해당 부모가 펜츼 상태일 때: 사용자가 다른 부모를 변경하려는 게 아니면 철원다 닫지 말고 유지
+                          // 수정 모드에서 선택된 부모를 다시 누르면 펼친 상태를 유지한다.
                           const selectedInThisParent = selected === parent.id || children.some(c => c.id === selected)
                           if (isExpanded && selectedInThisParent) {
-                            // 이미 선택된 부모 클릭 시 그냥 유지
                             return
                           }
                           setExpandedParent(isExpanded ? null : parent.id)
@@ -117,12 +115,12 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
                         }
                       }}
                       className={`flex flex-col items-center gap-1 py-3 rounded-[22px] transition-colors ${
-                        isSelected || isExpanded ? TYPE_COLOR[type] : 'bg-gray-100 dark:bg-gray-700'
+                        isParentActive ? TYPE_COLOR[type] : 'bg-gray-100 dark:bg-gray-700'
                       }`}
                     >
-                      <span className="text-xl">{(parent as any).icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
+                      <span className="text-xl">{parent.icon || CATEGORY_EMOJI[parent.name] || '📁'}</span>
                       <span className={`text-[12px] font-medium ${
-                        isSelected || isExpanded ? 'text-white' : 'text-gray-500 dark:text-gray-300'
+                        isParentActive ? 'text-white' : 'text-gray-500 dark:text-gray-300'
                       }`}>
                         {parent.name}
                       </span>
