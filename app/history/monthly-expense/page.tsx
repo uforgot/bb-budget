@@ -98,12 +98,11 @@ function MonthlyExpensePageContent() {
 
         <main className="px-5">
           <section className="mb-3">
-            <p className="text-[30px] font-bold text-foreground" style={{ letterSpacing: '-1px' }}>
-              {year}년 {month}월
+            <p className="text-[30px] font-bold text-foreground">
+              {year}년 {month}월 쓴 지출
             </p>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-[13px] font-semibold text-muted-foreground">쓴 지출</span>
-              <span className="text-[20px] font-bold leading-tight tracking-[-0.03em] tabular-nums" style={{ color: semanticColors.expense }}>
+              <span className="text-[20px] font-bold leading-tight tabular-nums" style={{ color: semanticColors.expense }}>
                 ₩{total.toLocaleString()}
               </span>
               <span className="text-[12px] font-medium text-muted-foreground">{transactions.length}건</span>
@@ -143,7 +142,7 @@ function MonthlyExpensePageContent() {
                         {showDate ? (
                           <div className="leading-tight">
                             <p className="text-[13px] font-semibold tabular-nums text-foreground">
-                              {d.getMonth() + 1}. {d.getDate()}
+                              {d.getDate()}일
                             </p>
                             <p className="text-[10px] font-medium text-muted-foreground">{DAY_NAMES[d.getDay()]}</p>
                           </div>
