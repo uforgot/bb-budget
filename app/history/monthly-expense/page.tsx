@@ -6,10 +6,9 @@ import { ChevronLeft } from 'lucide-react'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { BottomNav } from '@/components/bottom-nav'
 import { PullToRefresh } from '@/components/pull-to-refresh'
-import { SwipeToDelete } from '@/components/swipe-to-delete'
 import { semanticColors } from '@/components/ui-colors'
 import { TopToolbar } from '@/components/top-toolbar'
-import { deleteTransactionWithRecurringCascade, getCategories, getTransactions, type Category, type Transaction } from '@/lib/api'
+import { getCategories, getTransactions, type Category, type Transaction } from '@/lib/api'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 type MonthlyHistoryType = 'expense' | 'income' | 'savings' | 'balance'
@@ -257,48 +256,41 @@ function MonthlyExpensePageContent() {
                 const d = new Date(`${tx.date}T00:00:00`)
                 const isInactiveForView = !!tx.end_date && tx.end_date <= monthEndDate
                 return (
-                  <SwipeToDelete
+                  <button
                     key={tx.id}
-                    onDelete={async () => {
-                      await deleteTransactionWithRecurringCascade(tx)
-                      loadData()
+                    onClick={() => {
+                      setEditTx(tx)
+                      setModalOpen(true)
                     }}
+                    className={`flex min-h-12 w-full items-center gap-3 py-2 text-left active:bg-muted/30 ${isInactiveForView ? 'opacity-40' : ''}`}
                   >
-                    <button
-                      onClick={() => {
-                        setEditTx(tx)
-                        setModalOpen(true)
-                      }}
-                      className={`flex min-h-12 w-full items-center gap-3 py-2 text-left active:bg-muted/30 ${isInactiveForView ? 'opacity-40' : ''}`}
-                    >
-                      <div className="w-[52px] flex-shrink-0">
-                        {showDate ? (
-                          <div className="leading-tight">
-                            <p className="text-[13px] font-semibold tabular-nums text-foreground">
-                              {d.getDate()}일
-                            </p>
-                            <p className="text-[10px] font-medium text-muted-foreground">{DAY_NAMES[d.getDay()]}</p>
-                          </div>
-                        ) : null}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className={`truncate text-[13px] font-semibold text-foreground ${isInactiveForView ? 'line-through' : ''}`}>
-                          {getCategoryLabel(tx, categories)}
-                        </p>
-                        {tx.description && (
-                          <p className={`truncate text-[11px] text-muted-foreground ${isInactiveForView ? 'line-through' : ''}`}>
-                            {tx.description}
+                    <div className="w-[52px] flex-shrink-0">
+                      {showDate ? (
+                        <div className="leading-tight">
+                          <p className="text-[13px] font-semibold tabular-nums text-foreground">
+                            {d.getDate()}일
                           </p>
-                        )}
-                      </div>
-                      <span
-                        className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${isInactiveForView ? 'line-through' : ''}`}
-                        style={type === 'balance' ? { color: tx.type === 'income' ? semanticColors.income : semanticColors.expense } : undefined}
-                      >
-                        {type === 'balance' ? formatSignedCurrency(tx.type === 'income' ? tx.amount : -tx.amount) : formatCurrency(tx.amount)}
-                      </span>
-                    </button>
-                  </SwipeToDelete>
+                          <p className="text-[10px] font-medium text-muted-foreground">{DAY_NAMES[d.getDay()]}</p>
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className={`truncate text-[13px] font-semibold text-foreground ${isInactiveForView ? 'line-through' : ''}`}>
+                        {getCategoryLabel(tx, categories)}
+                      </p>
+                      {tx.description && (
+                        <p className={`truncate text-[11px] text-muted-foreground ${isInactiveForView ? 'line-through' : ''}`}>
+                          {tx.description}
+                        </p>
+                      )}
+                    </div>
+                    <span
+                      className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${isInactiveForView ? 'line-through' : ''}`}
+                      style={type === 'balance' ? { color: tx.type === 'income' ? semanticColors.income : semanticColors.expense } : undefined}
+                    >
+                      {type === 'balance' ? formatSignedCurrency(tx.type === 'income' ? tx.amount : -tx.amount) : formatCurrency(tx.amount)}
+                    </span>
+                  </button>
                 )
               })}
             </div>
