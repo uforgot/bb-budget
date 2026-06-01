@@ -638,9 +638,8 @@ export function MonthlyView({
           hasPrev={prevTxs.length > 0}
           labelPrefixOverride={isCurrentMonthView ? `${actualMonth}월` : undefined}
           prevLabelOverride={isCurrentMonthView ? `${prevM}월 동일 시점` : undefined}
-          clickableCardTypes={['expense', 'income', 'savings']}
+          clickableCardTypes={['expense', 'income', 'savings', 'balance']}
           onCardClick={(type) => {
-            if (type === 'balance') return
             router.push(`/history/monthly-expense?year=${targetYear}&month=${actualMonth}&type=${type}`)
           }}
         />

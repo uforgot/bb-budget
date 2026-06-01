@@ -12,12 +12,27 @@ import { TopToolbar } from '@/components/top-toolbar'
 import { deleteTransactionWithRecurringCascade, getCategories, getTransactions, type Category, type Transaction } from '@/lib/api'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
-type MonthlyHistoryType = 'expense' | 'income' | 'savings'
+type MonthlyHistoryType = 'expense' | 'income' | 'savings' | 'balance'
+type BalanceSummary = {
+  prevBalance: number
+  income: number
+  expense: number
+  savingsChange: number
+  currentBalance: number
+}
 
 const TYPE_META: Record<MonthlyHistoryType, { title: string; empty: string }> = {
   expense: { title: '쓴 지출', empty: '지출 내역이 없어요' },
   income: { title: '번 수입', empty: '수입 내역이 없어요' },
   savings: { title: '모은 저축', empty: '저축 내역이 없어요' },
+  balance: { title: '남은 잔액', empty: '수입/지출 내역이 없어요' },
+}
+
+const TYPE_COLOR: Record<MonthlyHistoryType, string> = {
+  expense: semanticColors.expense,
+  income: semanticColors.income,
+  savings: semanticColors.savings,
+  balance: '#2C2C2E',
 }
 
 function formatDateKey(year: number, month: number, day: number) {
@@ -40,7 +55,7 @@ function parseMonthParams(params: Pick<URLSearchParams, 'get'>) {
 
 function parseTypeParam(params: Pick<URLSearchParams, 'get'>): MonthlyHistoryType {
   const type = params.get('type')
-  return type === 'income' || type === 'savings' || type === 'expense' ? type : 'expense'
+  return type === 'income' || type === 'savings' || type === 'expense' || type === 'balance' ? type : 'expense'
 }
 
 function getMonthEndDate(year: number, month: number) {
@@ -48,8 +63,75 @@ function getMonthEndDate(year: number, month: number) {
   return formatDateKey(year, month, daysInMonth)
 }
 
+function getMonthStartDate(year: number, month: number) {
+  return formatDateKey(year, month, 1)
+}
+
+function getPrevMonthEndDate(year: number, month: number) {
+  const date = new Date(year, month - 1, 0)
+  return formatDateKey(date.getFullYear(), date.getMonth() + 1, date.getDate())
+}
+
 function filterActiveSavingsAtMonthEnd(transactions: Transaction[], monthEndDate: string) {
   return transactions.filter(tx => tx.date <= monthEndDate && (!tx.end_date || tx.end_date > monthEndDate))
+}
+
+function getBalanceAtDate(transactions: Transaction[], date: string) {
+  const income = transactions.filter(tx => tx.type === 'income' && tx.date <= date).reduce((sum, tx) => sum + tx.amount, 0)
+  const expense = transactions.filter(tx => tx.type === 'expense' && tx.date <= date).reduce((sum, tx) => sum + tx.amount, 0)
+  const savings = filterActiveSavingsAtMonthEnd(transactions.filter(tx => tx.type === 'savings'), date).reduce((sum, tx) => sum + tx.amount, 0)
+  return income - expense - savings
+}
+
+function getBalanceSummary(transactions: Transaction[], year: number, month: number): BalanceSummary {
+  const monthStartDate = getMonthStartDate(year, month)
+  const monthEndDate = getMonthEndDate(year, month)
+  const prevMonthEndDate = getPrevMonthEndDate(year, month)
+  const monthTxs = transactions.filter(tx => tx.date >= monthStartDate && tx.date <= monthEndDate)
+  const prevSavings = filterActiveSavingsAtMonthEnd(transactions.filter(tx => tx.type === 'savings'), prevMonthEndDate).reduce((sum, tx) => sum + tx.amount, 0)
+  const currentSavings = filterActiveSavingsAtMonthEnd(transactions.filter(tx => tx.type === 'savings'), monthEndDate).reduce((sum, tx) => sum + tx.amount, 0)
+
+  return {
+    prevBalance: getBalanceAtDate(transactions, prevMonthEndDate),
+    income: monthTxs.filter(tx => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0),
+    expense: monthTxs.filter(tx => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0),
+    savingsChange: currentSavings - prevSavings,
+    currentBalance: getBalanceAtDate(transactions, monthEndDate),
+  }
+}
+
+function getVisibleTransactions(type: MonthlyHistoryType, transactions: Transaction[], year: number, month: number) {
+  if (type === 'savings') return filterActiveSavingsAtMonthEnd(transactions, getMonthEndDate(year, month))
+  if (type !== 'balance') return transactions
+
+  const monthStartDate = getMonthStartDate(year, month)
+  const monthEndDate = getMonthEndDate(year, month)
+  return transactions.filter(tx => tx.date >= monthStartDate && tx.date <= monthEndDate && (tx.type === 'income' || tx.type === 'expense'))
+}
+
+function formatCurrency(amount: number) {
+  const sign = amount < 0 ? '-' : ''
+  return `${sign}₩${Math.abs(amount).toLocaleString()}`
+}
+
+function formatSignedCurrency(amount: number) {
+  if (amount === 0) return '₩0'
+  return `${amount > 0 ? '+' : '-'}₩${Math.abs(amount).toLocaleString()}`
+}
+
+function BalanceSummaryLine({ label, amount, signed = false, strong = false }: { label: string; amount: number; signed?: boolean; strong?: boolean }) {
+  const isPositive = amount > 0
+  const isNegative = amount < 0
+  return (
+    <div className={`flex items-center justify-between ${strong ? 'pt-3' : ''}`}>
+      <span className={`text-[13px] ${strong ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground'}`}>{label}</span>
+      <span
+        className={`text-[14px] tabular-nums ${strong ? 'font-bold text-foreground' : 'font-semibold'} ${!strong && isPositive ? 'text-[#14b8a6]' : ''} ${!strong && isNegative ? 'text-accent-blue' : ''} ${!strong && !isPositive && !isNegative ? 'text-foreground' : ''}`}
+      >
+        {signed ? formatSignedCurrency(amount) : formatCurrency(amount)}
+      </span>
+    </div>
+  )
 }
 
 function getCategoryLabel(tx: Transaction, categories: Category[]) {
@@ -69,6 +151,7 @@ function MonthlyExpensePageContent() {
   const monthEndDate = getMonthEndDate(year, month)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [balanceSummary, setBalanceSummary] = useState<BalanceSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTx, setEditTx] = useState<Transaction | null>(null)
@@ -77,12 +160,15 @@ function MonthlyExpensePageContent() {
     try {
       const [cats, txs] = await Promise.all([
         getCategories(),
-        type === 'savings'
+        type === 'balance'
+          ? getTransactions({})
+          : type === 'savings'
           ? getTransactions({ type })
           : getTransactions({ year, month, type }),
       ])
       setCategories(cats)
-      const visibleTxs = type === 'savings' ? filterActiveSavingsAtMonthEnd(txs, monthEndDate) : txs
+      setBalanceSummary(type === 'balance' ? getBalanceSummary(txs, year, month) : null)
+      const visibleTxs = getVisibleTransactions(type, txs, year, month)
       setTransactions([...visibleTxs].sort((a, b) => {
         const dateDiff = b.date.localeCompare(a.date)
         if (dateDiff !== 0) return dateDiff
@@ -91,14 +177,17 @@ function MonthlyExpensePageContent() {
     } finally {
       setLoading(false)
     }
-  }, [year, month, type, monthEndDate])
+  }, [year, month, type])
 
   useEffect(() => {
     setLoading(true)
     loadData()
   }, [loadData])
 
-  const total = transactions.reduce((sum, tx) => sum + tx.amount, 0)
+  const total = type === 'balance'
+    ? balanceSummary?.currentBalance ?? 0
+    : transactions.reduce((sum, tx) => sum + tx.amount, 0)
+  const savingsAdjustment = balanceSummary ? -balanceSummary.savingsChange : 0
 
   const closeModal = () => {
     const scrollY = window.scrollY
@@ -129,12 +218,28 @@ function MonthlyExpensePageContent() {
               {year}년 {month}월 {meta.title}
             </p>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-[20px] font-bold leading-tight tabular-nums" style={{ color: semanticColors[type] }}>
-                ₩{total.toLocaleString()}
+              <span className="text-[20px] font-bold leading-tight tabular-nums" style={{ color: TYPE_COLOR[type] }}>
+                {formatCurrency(total)}
               </span>
               <span className="text-[12px] font-medium text-muted-foreground">{transactions.length}건</span>
             </div>
           </section>
+
+          {type === 'balance' && balanceSummary && (
+            <section className="mb-4 rounded-[18px] bg-surface px-4 py-3">
+              <div className="space-y-2">
+                <BalanceSummaryLine label="전월 잔액" amount={balanceSummary.prevBalance} />
+                <BalanceSummaryLine label="수입" amount={balanceSummary.income} signed />
+                <BalanceSummaryLine label="지출" amount={-balanceSummary.expense} signed />
+                {savingsAdjustment !== 0 && (
+                  <BalanceSummaryLine label="저축 반영" amount={savingsAdjustment} signed />
+                )}
+              </div>
+              <div className="mt-3 border-t border-black/5 dark:border-white/10">
+                <BalanceSummaryLine label="해당 월 잔액" amount={balanceSummary.currentBalance} strong />
+              </div>
+            </section>
+          )}
 
           {loading ? (
             <div className="animate-pulse divide-y divide-black/5 dark:divide-white/10">
@@ -186,8 +291,11 @@ function MonthlyExpensePageContent() {
                           </p>
                         )}
                       </div>
-                      <span className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${isInactiveForView ? 'line-through' : ''}`}>
-                        ₩{tx.amount.toLocaleString()}
+                      <span
+                        className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${isInactiveForView ? 'line-through' : ''}`}
+                        style={type === 'balance' ? { color: tx.type === 'income' ? semanticColors.income : semanticColors.expense } : undefined}
+                      >
+                        {type === 'balance' ? formatSignedCurrency(tx.type === 'income' ? tx.amount : -tx.amount) : formatCurrency(tx.amount)}
                       </span>
                     </button>
                   </SwipeToDelete>
