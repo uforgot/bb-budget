@@ -12,6 +12,13 @@ import { TopToolbar } from '@/components/top-toolbar'
 import { deleteTransactionWithRecurringCascade, getCategories, getTransactions, type Category, type Transaction } from '@/lib/api'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
+type MonthlyHistoryType = 'expense' | 'income' | 'savings'
+
+const TYPE_META: Record<MonthlyHistoryType, { title: string; empty: string }> = {
+  expense: { title: '쓴 지출', empty: '지출 내역이 없어요' },
+  income: { title: '번 수입', empty: '수입 내역이 없어요' },
+  savings: { title: '모은 저축', empty: '저축 내역이 없어요' },
+}
 
 function formatDateKey(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -31,6 +38,20 @@ function parseMonthParams(params: Pick<URLSearchParams, 'get'>) {
   return { year, month }
 }
 
+function parseTypeParam(params: Pick<URLSearchParams, 'get'>): MonthlyHistoryType {
+  const type = params.get('type')
+  return type === 'income' || type === 'savings' || type === 'expense' ? type : 'expense'
+}
+
+function getMonthEndDate(year: number, month: number) {
+  const daysInMonth = new Date(year, month, 0).getDate()
+  return formatDateKey(year, month, daysInMonth)
+}
+
+function filterActiveSavingsAtMonthEnd(transactions: Transaction[], monthEndDate: string) {
+  return transactions.filter(tx => tx.date <= monthEndDate && (!tx.end_date || tx.end_date > monthEndDate))
+}
+
 function getCategoryLabel(tx: Transaction, categories: Category[]) {
   const cat = tx.category as Category | undefined
   if (!cat) return '미분류'
@@ -43,6 +64,9 @@ function MonthlyExpensePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { year, month } = parseMonthParams(searchParams)
+  const type = parseTypeParam(searchParams)
+  const meta = TYPE_META[type]
+  const monthEndDate = getMonthEndDate(year, month)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -53,10 +77,13 @@ function MonthlyExpensePageContent() {
     try {
       const [cats, txs] = await Promise.all([
         getCategories(),
-        getTransactions({ year, month, type: 'expense' }),
+        type === 'savings'
+          ? getTransactions({ type })
+          : getTransactions({ year, month, type }),
       ])
       setCategories(cats)
-      setTransactions([...txs].sort((a, b) => {
+      const visibleTxs = type === 'savings' ? filterActiveSavingsAtMonthEnd(txs, monthEndDate) : txs
+      setTransactions([...visibleTxs].sort((a, b) => {
         const dateDiff = b.date.localeCompare(a.date)
         if (dateDiff !== 0) return dateDiff
         return b.created_at.localeCompare(a.created_at)
@@ -64,7 +91,7 @@ function MonthlyExpensePageContent() {
     } finally {
       setLoading(false)
     }
-  }, [year, month])
+  }, [year, month, type, monthEndDate])
 
   useEffect(() => {
     setLoading(true)
@@ -99,10 +126,10 @@ function MonthlyExpensePageContent() {
         <main className="px-5">
           <section className="mb-3">
             <p className="text-[30px] font-bold text-foreground">
-              {year}년 {month}월 쓴 지출
+              {year}년 {month}월 {meta.title}
             </p>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-[20px] font-bold leading-tight tabular-nums" style={{ color: semanticColors.expense }}>
+              <span className="text-[20px] font-bold leading-tight tabular-nums" style={{ color: semanticColors[type] }}>
                 ₩{total.toLocaleString()}
               </span>
               <span className="text-[12px] font-medium text-muted-foreground">{transactions.length}건</span>
@@ -117,12 +144,13 @@ function MonthlyExpensePageContent() {
               <div className="h-12 bg-surface" />
             </div>
           ) : transactions.length === 0 ? (
-            <p className="py-16 text-center text-sm text-muted-foreground">지출 내역이 없어요</p>
+            <p className="py-16 text-center text-sm text-muted-foreground">{meta.empty}</p>
           ) : (
             <div className="divide-y divide-black/5 pb-8 dark:divide-white/10">
               {transactions.map((tx, index) => {
                 const showDate = index === 0 || transactions[index - 1].date !== tx.date
                 const d = new Date(`${tx.date}T00:00:00`)
+                const isInactiveForView = !!tx.end_date && tx.end_date <= monthEndDate
                 return (
                   <SwipeToDelete
                     key={tx.id}
@@ -136,7 +164,7 @@ function MonthlyExpensePageContent() {
                         setEditTx(tx)
                         setModalOpen(true)
                       }}
-                      className={`flex min-h-12 w-full items-center gap-3 py-2 text-left active:bg-muted/30 ${tx.end_date ? 'opacity-40' : ''}`}
+                      className={`flex min-h-12 w-full items-center gap-3 py-2 text-left active:bg-muted/30 ${isInactiveForView ? 'opacity-40' : ''}`}
                     >
                       <div className="w-[52px] flex-shrink-0">
                         {showDate ? (
@@ -149,16 +177,16 @@ function MonthlyExpensePageContent() {
                         ) : null}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className={`truncate text-[13px] font-semibold text-foreground ${tx.end_date ? 'line-through' : ''}`}>
+                        <p className={`truncate text-[13px] font-semibold text-foreground ${isInactiveForView ? 'line-through' : ''}`}>
                           {getCategoryLabel(tx, categories)}
                         </p>
                         {tx.description && (
-                          <p className={`truncate text-[11px] text-muted-foreground ${tx.end_date ? 'line-through' : ''}`}>
+                          <p className={`truncate text-[11px] text-muted-foreground ${isInactiveForView ? 'line-through' : ''}`}>
                             {tx.description}
                           </p>
                         )}
                       </div>
-                      <span className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${tx.end_date ? 'line-through' : ''}`}>
+                      <span className={`flex-shrink-0 text-[14px] font-semibold tabular-nums text-foreground ${isInactiveForView ? 'line-through' : ''}`}>
                         ₩{tx.amount.toLocaleString()}
                       </span>
                     </button>
