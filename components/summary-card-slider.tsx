@@ -50,10 +50,12 @@ export function SummaryCardSlider({
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
   const [animating, setAnimating] = useState(false)
+  const dragXRef = useRef(0)
   const isDragging = useRef(false)
   const startX = useRef(0)
   const startY = useRef(0)
   const dragDirection = useRef<'h' | 'v' | null>(null)
+  const dragSource = useRef<'touch' | 'mouse' | null>(null)
   const didDrag = useRef(false)
   const suppressClick = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -71,10 +73,10 @@ export function SummaryCardSlider({
   const labelPrefix = labelPrefixOverride || `${month}${unit}`
   const labelSuffix = labelSuffixOverride || ''
   const cards = useMemo(() => [
+    { labelPrefix: `${labelPrefix} 남은 잔액`, labelSuffix, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: '#2C2C2E', img: '/card-balance.png' },
     { labelPrefix: `${labelPrefix} 쓴 지출`, labelSuffix, amount: expense, diff: hasPrev ? expense - prevExpense : null, type: 'expense' as const, textColor: 'text-white', bg: semanticColors.expense, img: '/card-expense.png' },
     { labelPrefix: `${labelPrefix} 번 수입`, labelSuffix, amount: income, diff: hasPrev ? income - prevIncome : null, type: 'income' as const, textColor: 'text-white', bg: semanticColors.income, img: '/card-income.png' },
     { labelPrefix: `${labelPrefix} 모은 저축`, labelSuffix, amount: savings, diff: hasPrev ? savings - prevSavings : null, type: 'savings' as const, textColor: 'text-white', bg: semanticColors.savings, img: '/card-saving.png' },
-    { labelPrefix: `${labelPrefix} 남은 잔액`, labelSuffix, amount: balance, diff: hasPrev ? balance - prevBalance : null, type: 'balance' as const, textColor: 'text-white', bg: '#2C2C2E', img: '/card-balance.png' },
   ], [balance, expense, hasPrev, income, labelPrefix, labelSuffix, prevBalance, prevExpense, prevIncome, prevSavings, savings])
   const total = cards.length
   const loopCards = useMemo(() => [...cards, ...cards, ...cards], [cards])
@@ -91,19 +93,54 @@ export function SummaryCardSlider({
     return !!target.closest('button, a, input, select, textarea, [role="button"], [data-no-swipe="true"]')
   }
 
+  const setDragOffset = (value: number) => {
+    dragXRef.current = value
+    setDragX(value)
+  }
+
+  const cancelDrag = () => {
+    isDragging.current = false
+    setDragging(false)
+    setDragOffset(0)
+    dragDirection.current = null
+    dragSource.current = null
+  }
+
+  const finishDrag = () => {
+    if (!isDragging.current) return
+    const finalDragX = dragXRef.current
+    isDragging.current = false
+    setDragging(false)
+    if (finalDragX < -(containerWidth || 1) * 0.25) {
+      setAnimating(true)
+      setCurrent(c => c + 1)
+    } else if (finalDragX > (containerWidth || 1) * 0.25) {
+      setAnimating(true)
+      setCurrent(c => c - 1)
+    }
+    if (didDrag.current) {
+      suppressClick.current = true
+      window.setTimeout(() => { suppressClick.current = false }, 350)
+    }
+    setDragOffset(0)
+    dragDirection.current = null
+    dragSource.current = null
+  }
+
   const onTouchStart = (e: React.TouchEvent) => {
     if (isInteractiveTarget(e.target)) return
     isDragging.current = true
+    dragSource.current = 'touch'
     setDragging(true)
     dragDirection.current = null
     didDrag.current = false
     startX.current = e.touches[0].clientX
     startY.current = e.touches[0].clientY
-    setDragX(0)
+    setDragOffset(0)
   }
 
   const onTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current) return
+    if (!isDragging.current || dragSource.current !== 'touch') return
     const dx = e.touches[0].clientX - startX.current
     const dy = e.touches[0].clientY - startY.current
 
@@ -112,9 +149,7 @@ export function SummaryCardSlider({
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
         dragDirection.current = 'h'
       } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) {
-        dragDirection.current = 'v'
-        isDragging.current = false
-        setDragX(0)
+        cancelDrag()
         return
       } else {
         return
@@ -126,27 +161,59 @@ export function SummaryCardSlider({
       e.stopPropagation()
       didDrag.current = true
       const clamped = Math.max(-containerWidth * 0.6, Math.min(containerWidth * 0.6, dx))
-      setDragX(clamped)
+      setDragOffset(clamped)
     }
   }
 
-  const onTouchEnd = (_e: React.TouchEvent) => {
-    if (!isDragging.current) return
-    isDragging.current = false
-    setDragging(false)
-    if (dragX < -w * 0.25) {
-      setAnimating(true)
-      setCurrent(c => c + 1)
-    } else if (dragX > w * 0.25) {
-      setAnimating(true)
-      setCurrent(c => c - 1)
-    }
-    if (didDrag.current) {
-      suppressClick.current = true
-      window.setTimeout(() => { suppressClick.current = false }, 350)
-    }
-    setDragX(0)
+  const onTouchEnd = () => {
+    if (dragSource.current !== 'touch') return
+    finishDrag()
+  }
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0 || isInteractiveTarget(e.target)) return
+    isDragging.current = true
+    dragSource.current = 'mouse'
+    setDragging(true)
     dragDirection.current = null
+    didDrag.current = false
+    startX.current = e.clientX
+    startY.current = e.clientY
+    setDragOffset(0)
+  }
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || dragSource.current !== 'mouse') return
+    const dx = e.clientX - startX.current
+    const dy = e.clientY - startY.current
+
+    if (!dragDirection.current) {
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+        dragDirection.current = 'h'
+      } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) {
+        cancelDrag()
+        return
+      } else {
+        return
+      }
+    }
+
+    if (dragDirection.current === 'h') {
+      e.preventDefault()
+      didDrag.current = true
+      const clamped = Math.max(-containerWidth * 0.6, Math.min(containerWidth * 0.6, dx))
+      setDragOffset(clamped)
+    }
+  }
+
+  const onMouseUp = () => {
+    if (dragSource.current !== 'mouse') return
+    finishDrag()
+  }
+
+  const onMouseLeave = () => {
+    if (dragSource.current !== 'mouse') return
+    finishDrag()
   }
 
   const handleCardClick = (type: SummaryCardType) => {
@@ -169,7 +236,7 @@ export function SummaryCardSlider({
     <div className="mb-4 overflow-hidden" ref={containerRef}>
       {/* 슬라이드 트랙 */}
       <div
-        className="flex"
+        className={`flex select-none ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         style={{
           transform: `translateX(${translateX}%)`,
           transition: dragging || !animating ? 'none' : 'transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)',
@@ -178,6 +245,10 @@ export function SummaryCardSlider({
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseLeave}
         onTransitionEnd={handleTransitionEnd}
       >
         {loopCards.map((card, idx) => {

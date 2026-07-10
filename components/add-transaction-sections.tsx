@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Copy, Trash } from 'lucide-react'
 import { CategoryPicker } from './category-picker'
 
 type TransactionType = '지출' | '수입' | '저축'
@@ -9,17 +9,23 @@ export function AddTransactionHeader({
   title,
   onClose,
   onConfirm,
+  onCopy,
+  confirmType = 'save',
 }: {
   title: string
   onClose: () => void
   onConfirm: () => void
+  onCopy?: () => void
+  confirmType?: 'save' | 'delete'
 }) {
+  const ConfirmIcon = confirmType === 'delete' ? Trash : Check
+
   return (
     <header className="bg-sheet flex-shrink-0 px-5 pt-[env(safe-area-inset-top,0px)]">
       <div className="flex justify-center pt-3 pb-2">
         <div className="h-1 w-10 rounded-full bg-black/15 dark:bg-white/15" />
       </div>
-      <div className="flex items-center justify-between h-14">
+      <div className="relative flex items-center justify-between h-14">
         <button
           onClick={onClose}
           className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white"
@@ -27,14 +33,25 @@ export function AddTransactionHeader({
         >
           <ChevronLeft size={22} strokeWidth={2.4} />
         </button>
-        <h1 className="text-[17px] font-semibold">{title}</h1>
-        <button
-          onClick={onConfirm}
-          className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white"
-          aria-label="삭제"
-        >
-          <Trash size={20} strokeWidth={2.2} />
-        </button>
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-[17px] font-semibold">{title}</h1>
+        <div className="flex items-center gap-2">
+          {onCopy && (
+            <button
+              onClick={onCopy}
+              className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white"
+              aria-label="복사"
+            >
+              <Copy size={19} strokeWidth={2.2} />
+            </button>
+          )}
+          <button
+            onClick={onConfirm}
+            className="flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white"
+            aria-label={confirmType === 'delete' ? '삭제' : '저장'}
+          >
+            <ConfirmIcon size={confirmType === 'delete' ? 20 : 21} strokeWidth={2.2} />
+          </button>
+        </div>
       </div>
     </header>
   )

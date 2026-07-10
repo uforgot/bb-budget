@@ -27,11 +27,10 @@ const TYPE_META: Record<MonthlyHistoryType, { title: string; empty: string }> = 
   balance: { title: '남은 잔액', empty: '수입/지출 내역이 없어요' },
 }
 
-const TYPE_COLOR: Record<MonthlyHistoryType, string> = {
+const TYPE_COLOR: Record<Exclude<MonthlyHistoryType, 'balance'>, string> = {
   expense: semanticColors.expense,
   income: semanticColors.income,
   savings: semanticColors.savings,
-  balance: '#2C2C2E',
 }
 
 function formatDateKey(year: number, month: number, day: number) {
@@ -217,7 +216,10 @@ function MonthlyExpensePageContent() {
               {year}년 {month}월 {meta.title}
             </p>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-[20px] font-bold leading-tight tabular-nums" style={{ color: TYPE_COLOR[type] }}>
+              <span
+                className={`text-[20px] font-bold leading-tight tabular-nums ${type === 'balance' ? 'text-gray-600 dark:text-gray-300' : ''}`}
+                style={type === 'balance' ? undefined : { color: TYPE_COLOR[type] }}
+              >
                 {formatCurrency(total)}
               </span>
               <span className="text-[12px] font-medium text-muted-foreground">{transactions.length}건</span>

@@ -60,6 +60,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   const [sheetAnimating, setSheetAnimating] = useState(false)
   const [sheetVisible, setSheetVisible] = useState(false)
   const [shouldRender, setShouldRender] = useState(false)
+  const [copyMode, setCopyMode] = useState(false)
 
   // 최근 사용 카테고리 로드
   useEffect(() => {
@@ -94,6 +95,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
 
   // Populate fields when editing
   useEffect(() => {
+    setCopyMode(false)
     if (editTransaction && open) {
       setSaving(false)
       setType(REVERSE_TYPE_MAP[editTransaction.type] || null)
@@ -205,6 +207,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
   }, [repeatDropdownOpen])
 
   const date = editDate || initialDate || formatDateInputValue()
+  const activeEditTransaction = copyMode ? null : editTransaction
 
   const handleSave = async () => {
     const numAmount = parseInt(rawAmount, 10)
@@ -227,7 +230,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
     setSaving(true)
     try {
       await saveTransactionWithRecurring({
-        editTransaction,
+        editTransaction: activeEditTransaction,
         payload,
         linkedRecurringId,
         repeatFrequency,
@@ -267,20 +270,36 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       setLinkedRecurringId(null)
       setRepeatFrequency('none')
       setRepeatDropdownOpen(false)
+      setCopyMode(false)
       const d = new Date(); d.setMonth(d.getMonth() + 1)
       setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
       onClose()
     }, 220)
   }
 
-  const handleDelete = async () => {
+  const handleCopy = () => {
     if (!editTransaction || saving) return
+    setCopyMode(true)
+    setEditDate(formatDateInputValue())
+    setEndDate('')
+    setEndAmount('')
+    setRecoverAmount('')
+    setRecoverOpen(false)
+    setLinkedRecurringId(null)
+    setRepeatFrequency('none')
+    setRepeatDropdownOpen(false)
+    const d = new Date(); d.setMonth(d.getMonth() + 1)
+    setRepeatEndDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
+  }
+
+  const handleDelete = async () => {
+    if (!activeEditTransaction || saving) return
     const ok = window.confirm('이 기록을 삭제할까요?')
     if (!ok) return
 
     setSaving(true)
     try {
-      await deleteTransactionWithRecurringCascade(editTransaction)
+      await deleteTransactionWithRecurringCascade(activeEditTransaction)
       handleClose()
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : JSON.stringify(e)
@@ -372,9 +391,11 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         onTouchEnd={handleSheetTouchEnd}
       >
       <AddTransactionHeader
-        title={editTransaction ? '수정하기' : '기록하기'}
+        title={activeEditTransaction ? '수정하기' : '기록하기'}
         onClose={handleClose}
-        onConfirm={editTransaction ? handleDelete : handleSave}
+        onConfirm={activeEditTransaction ? handleDelete : handleSave}
+        onCopy={activeEditTransaction ? handleCopy : undefined}
+        confirmType={activeEditTransaction ? 'delete' : 'save'}
       />
 
       {/* Scrollable content */}
@@ -433,7 +454,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               onBlur={() => setKeypadActive(false)}
               onFocus={() => setKeypadActive(false)}
             />
-          {(!editTransaction || linkedRecurringId) && (
+          {(!activeEditTransaction || linkedRecurringId) && (
             <>
               <div className="border-t border-black/10 dark:border-white/10 mx-4" />
               <TransactionRepeatSection
@@ -452,7 +473,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
           )}
           </div>
 
-          {recoverOpen && editTransaction && (
+          {recoverOpen && activeEditTransaction && (
             <div className="px-0 pt-1 pb-1">
               <RecoverySection
                 recoverDate={recoverDate}
@@ -470,7 +491,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       {/* 하단 버튼 영역 */}
       <div className="w-full px-4 pt-3 flex-shrink-0 bg-sheet" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
         <div className="w-full max-w-md mx-auto">
-        {editTransaction ? (
+        {activeEditTransaction ? (
           recoverOpen ? (
             <div className="flex gap-3 mb-2">
               <button
@@ -478,7 +499,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
                   setSaving(true)
                   try {
                     await applySavingsRecovery({
-                      editTransaction,
+                      editTransaction: activeEditTransaction,
                       recoverAmount,
                       recoverDate,
                     })
@@ -502,7 +523,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
               <button onClick={handleSave} className="flex-1 bg-accent-blue text-white rounded-[22px] py-3.5 text-[16px] font-semibold">
                 {saving ? '저장 중...' : '저장하기'}
               </button>
-              {editTransaction.type === 'savings' && (
+              {activeEditTransaction.type === 'savings' && (
                 <button
                   onClick={() => setRecoverOpen(true)}
                   className="flex-1 bg-accent-purple text-white rounded-[22px] py-3.5 text-[16px] font-semibold"
