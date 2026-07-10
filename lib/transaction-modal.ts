@@ -114,16 +114,36 @@ export async function applySavingsRecovery({
   recoverAmount: string
   recoverDate: string
 }) {
-  const amount = parseInt(recoverAmount, 10)
-  if (!amount) throw new Error('금액을 입력해주세요')
+  const recoveredAmount = parseInt(recoverAmount.replace(/[^0-9]/g, ''), 10)
+  if (!recoveredAmount) throw new Error('금액을 입력해주세요')
+  if (recoverDate < editTransaction.date) throw new Error('회수일은 저축일보다 빠를 수 없어요')
 
-  const catName = editTransaction.category?.name || '저축'
-  await addTransaction({
-    type: 'income',
-    amount,
-    category_id: editTransaction.category_id,
-    description: `${catName} 회수`,
-    date: recoverDate,
-  })
+  const principalAmount = Number(editTransaction.amount)
+  const remainingAmount = principalAmount - recoveredAmount
+
+  // 저축 원금 회수는 새 수입이 아니다.
+  // 기존 활성 저축을 줄이면 잔액 계산식(income - expense - activeSavings)에서 자동으로 현금 잔액에 반영된다.
   await updateTransaction(editTransaction.id, { end_date: recoverDate })
+
+  if (remainingAmount > 0) {
+    await addTransaction({
+      type: 'savings',
+      amount: remainingAmount,
+      category_id: editTransaction.category_id,
+      description: editTransaction.description || '',
+      date: recoverDate,
+    })
+    return
+  }
+
+  if (remainingAmount < 0) {
+    const catName = editTransaction.category?.name || '저축'
+    await addTransaction({
+      type: 'income',
+      amount: Math.abs(remainingAmount),
+      category_id: editTransaction.category_id,
+      description: `${catName} 회수 차익`,
+      date: recoverDate,
+    })
+  }
 }
