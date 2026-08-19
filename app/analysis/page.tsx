@@ -23,7 +23,7 @@ export default function AnalysisPage() {
   const [typeFilter, setTypeFilter] = useState<'expense' | 'income' | 'savings'>('expense')
   const [parentCategoryId, setParentCategoryId] = useState('')
   const [selectedYear, setSelectedYear] = useState(today.getFullYear())
-  const [monthMode, setMonthMode] = useState(false)
+  const [monthMode, setMonthMode] = useState(true)
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
