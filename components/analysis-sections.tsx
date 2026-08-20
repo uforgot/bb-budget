@@ -1,38 +1,24 @@
 import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
-import type { Category } from '@/lib/api'
 
 function fmt(n: number) {
   return `₩${n.toLocaleString()}`
 }
 
-function truncateLabel(label: string, max: number) {
-  return label.length > max ? `${label.slice(0, max)}…` : label
-}
-
 export function AnalysisFilters({
+  month,
   typeFilter,
-  parentCategoryId,
-  parentCategories,
-  monthMode,
   onChangeType,
-  onChangeParent,
-  onToggleMonthMode,
 }: {
+  month: number
   typeFilter: 'expense' | 'income' | 'savings'
-  parentCategoryId: string
-  parentCategories: Category[]
-  monthMode: boolean
   onChangeType: (value: 'expense' | 'income' | 'savings') => void
-  onChangeParent: (value: string) => void
-  onToggleMonthMode: () => void
 }) {
-  const selectedParent = parentCategories.find(cat => cat.id === parentCategoryId)
-  const parentLabel = parentCategoryId === '__all__' ? '전체' : (selectedParent?.name ?? '전체')
-  const visibleParentLabel = truncateLabel(parentLabel, 6)
-
   return (
-    <div className="flex items-center gap-3 mt-1 mb-4">
+    <div className="flex items-center gap-1 mt-1 mb-4">
+      <span className="text-foreground text-[28px] font-bold" style={{ letterSpacing: '-1px' }}>
+        {month}월
+      </span>
       <label className="flex items-center gap-1 cursor-pointer shrink-0">
         <select
           value={typeFilter}
@@ -46,37 +32,6 @@ export function AnalysisFilters({
         </select>
         <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
       </label>
-
-      {!monthMode && (
-        <label className="relative flex items-center gap-1 cursor-pointer shrink min-w-0">
-          <span
-            className="text-foreground text-[30px] font-bold leading-none whitespace-nowrap"
-            style={{ letterSpacing: '-1px' }}
-          >
-            {visibleParentLabel}
-          </span>
-          <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
-          <select
-            value={parentCategoryId}
-            onChange={e => onChangeParent(e.target.value)}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            aria-label="카테고리"
-          >
-            <option value="__all__">전체</option>
-            {parentCategories.map(category => (
-              <option key={category.id} value={category.id}>{category.name}</option>
-            ))}
-          </select>
-        </label>
-      )}
-
-      <button
-        type="button"
-        onClick={onToggleMonthMode}
-        className="ml-auto shrink-0 px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap bg-accent-blue text-white"
-      >
-        {monthMode ? '전체' : '이번 달'}
-      </button>
     </div>
   )
 }
@@ -173,16 +128,23 @@ export function AnalysisMonthlyGroupCard({
   rows,
   maxTotal,
   color,
+  onClick,
 }: {
   label: string
   total: number
   rows: { id: string; label: string; total: number }[]
   maxTotal: number
   color: string
+  onClick: () => void
 }) {
   const width = maxTotal > 0 ? Math.max((total / maxTotal) * 100, total > 0 ? 8 : 0) : 0
   return (
-    <div className="bg-surface rounded-[22px] px-4 py-4">
+    <button
+      type="button"
+      onClick={onClick}
+      className="block w-full bg-surface rounded-[22px] px-4 py-4 text-left transition-transform active:scale-[0.99]"
+      aria-label={`${label} 상세 내역 보기`}
+    >
       <div className="mb-3 h-2 rounded-full bg-background overflow-hidden">
         <div className="h-full rounded-full transition-all" style={{ width: `${width}%`, backgroundColor: color }} />
       </div>
@@ -200,7 +162,7 @@ export function AnalysisMonthlyGroupCard({
           ))}
         </div>
       )}
-    </div>
+    </button>
   )
 }
 

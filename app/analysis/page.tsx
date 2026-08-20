@@ -1,16 +1,17 @@
 'use client'
 
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopToolbar } from '@/components/top-toolbar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, getCategories, type Transaction, type Category } from '@/lib/api'
-import { AnalysisEmptyState, AnalysisFilters, AnalysisMonthlyGroupCard, AnalysisRow, AnalysisYearPills } from '@/components/analysis-sections'
+import { AnalysisEmptyState, AnalysisFilters, AnalysisMonthlyGroupCard } from '@/components/analysis-sections'
+import { AnalysisDetailSheet } from '@/components/analysis-detail-sheet'
 import { HistorySearchPanel } from '@/components/history-sections'
 import { AnalysisLoadingSkeleton } from '@/components/page-loading-skeletons'
-import { getAnalysisRows, getAvailableTransactionYears, getChildCategoriesForParent, getMonthlyGroupedRows, getParentCategoriesByType, getParentCategorySummaryRows } from '@/lib/analysis'
+import { getMonthlyGroupedRows, getParentCategoriesByType } from '@/lib/analysis'
 
 export default function AnalysisPage() {
   const router = useRouter()
@@ -21,9 +22,7 @@ export default function AnalysisPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [initialLoading, setInitialLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState<'expense' | 'income' | 'savings'>('expense')
-  const [parentCategoryId, setParentCategoryId] = useState('')
-  const [selectedYear, setSelectedYear] = useState(today.getFullYear())
-  const [monthMode, setMonthMode] = useState(true)
+  const [detailParent, setDetailParent] = useState<Category | null>(null)
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -42,43 +41,13 @@ export default function AnalysisPage() {
   useEffect(() => { loadData() }, [loadData])
 
   const parentCategories = useMemo(() => getParentCategoriesByType(categories, typeFilter), [categories, typeFilter])
-
-  useEffect(() => {
-    if (parentCategories.length === 0) return
-    if (parentCategoryId === '__all__') return
-    if (parentCategories.some(cat => cat.id === parentCategoryId)) return
-    setParentCategoryId(parentCategories[0].id)
-  }, [parentCategories, parentCategoryId])
-
-  const isAllParentsSelected = parentCategoryId === '__all__'
-  const childCategories = useMemo(() => getChildCategoriesForParent(categories, transactions, parentCategoryId), [categories, parentCategoryId, transactions])
-
-  const availableYears = useMemo(() => getAvailableTransactionYears(transactions), [transactions])
-
-  useEffect(() => {
-    if (availableYears.length === 0) return
-    if (availableYears.includes(selectedYear)) return
-    setSelectedYear(availableYears[0])
-  }, [availableYears, selectedYear])
-
   const currentYear = today.getFullYear()
   const currentMonth = today.getMonth() + 1
-  const yearForRows = monthMode ? currentYear : selectedYear
-  const monthForRows = monthMode ? currentMonth : undefined
 
-  const rows = useMemo(() => {
-    if (isAllParentsSelected) {
-      return getParentCategorySummaryRows(parentCategories, categories, transactions, yearForRows, monthForRows)
-    }
-    return getAnalysisRows(childCategories, transactions, yearForRows, monthForRows)
-  }, [isAllParentsSelected, parentCategories, categories, childCategories, transactions, yearForRows, monthForRows])
+  const monthlyGroups = useMemo(() => (
+    getMonthlyGroupedRows(parentCategories, categories, transactions, currentYear, currentMonth)
+  ), [parentCategories, categories, transactions, currentYear, currentMonth])
 
-  const monthlyGroups = useMemo(() => {
-    if (!monthMode) return []
-    return getMonthlyGroupedRows(parentCategories, categories, transactions, currentYear, currentMonth)
-  }, [monthMode, parentCategories, categories, transactions, currentYear, currentMonth])
-
-  const rowsTotalSum = rows.reduce((sum, row) => sum + row.total, 0)
   const monthlyTotalSum = monthlyGroups.reduce((sum, group) => sum + group.total, 0)
 
   const searchResults = searchQuery.trim()
@@ -110,30 +79,17 @@ export default function AnalysisPage() {
             onSelectTransaction={(tx) => { setEditTx(tx); setModalOpen(true) }}
           />
         ) : (
-        <div className="px-5">
-          <AnalysisFilters
-            typeFilter={typeFilter}
-            parentCategoryId={parentCategoryId}
-            parentCategories={parentCategories}
-            monthMode={monthMode}
-            onChangeType={setTypeFilter}
-            onChangeParent={setParentCategoryId}
-            onToggleMonthMode={() => setMonthMode(v => !v)}
-          />
-
-          {!monthMode && (
-            <AnalysisYearPills
-              years={availableYears}
-              selectedYear={selectedYear}
-              onSelect={setSelectedYear}
+          <div className="px-5">
+            <AnalysisFilters
+              month={currentMonth}
+              typeFilter={typeFilter}
+              onChangeType={(value) => { setTypeFilter(value); setDetailParent(null) }}
             />
-          )}
 
-          <div className="space-y-3 pb-4">
-            {initialLoading ? (
-              <AnalysisLoadingSkeleton />
-            ) : monthMode ? (
-              monthlyGroups.length === 0 ? (
+            <div className="space-y-3 pb-4">
+              {initialLoading ? (
+                <AnalysisLoadingSkeleton />
+              ) : monthlyGroups.length === 0 ? (
                 <AnalysisEmptyState />
               ) : (
                 monthlyGroups.map(group => (
@@ -141,33 +97,34 @@ export default function AnalysisPage() {
                     key={group.parent.id}
                     label={group.parent.name}
                     total={group.total}
-                    rows={group.rows.map(r => ({ id: r.id, label: r.label, total: r.total }))}
+                    rows={group.rows.map(row => ({ id: row.id, label: row.label, total: row.total }))}
                     maxTotal={monthlyTotalSum}
                     color={typeFilter === 'income' ? '#2dd4bf' : typeFilter === 'savings' ? '#A855F7' : '#5865F2'}
+                    onClick={() => setDetailParent(group.parent)}
                   />
                 ))
-              )
-            ) : rows.length === 0 ? (
-              <AnalysisEmptyState />
-            ) : (
-              rows.map(row => (
-                <AnalysisRow
-                  key={row.id}
-                  label={row.label}
-                  total={row.total}
-                  months={row.months}
-                  maxTotal={rowsTotalSum}
-                  color={row.type === 'income' ? '#2dd4bf' : row.type === 'savings' ? '#A855F7' : '#5865F2'}
-                  defaultOpen={false}
-                  expandable={true}
-                />
-              ))
-            )}
+              )}
+            </div>
           </div>
-        </div>
         )}
 
-        {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
+        {!modalOpen && !detailParent && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
+
+        <AnalysisDetailSheet
+          key={detailParent?.id ?? 'closed'}
+          open={detailParent !== null}
+          parent={detailParent}
+          categories={categories}
+          transactions={transactions}
+          initialYear={currentYear}
+          initialMonth={currentMonth}
+          onClose={() => setDetailParent(null)}
+          onSelectTransaction={(transaction) => {
+            setDetailParent(null)
+            setEditTx(transaction)
+            setModalOpen(true)
+          }}
+        />
 
         <AddTransactionModal
           open={modalOpen}
