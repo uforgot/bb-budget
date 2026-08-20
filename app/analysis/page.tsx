@@ -81,7 +81,6 @@ export default function AnalysisPage() {
         ) : (
           <div className="px-5">
             <AnalysisFilters
-              month={currentMonth}
               typeFilter={typeFilter}
               onChangeType={(value) => { setTypeFilter(value); setDetailParent(null) }}
             />

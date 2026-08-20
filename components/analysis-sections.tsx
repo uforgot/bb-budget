@@ -6,18 +6,16 @@ function fmt(n: number) {
 }
 
 export function AnalysisFilters({
-  month,
   typeFilter,
   onChangeType,
 }: {
-  month: number
   typeFilter: 'expense' | 'income' | 'savings'
   onChangeType: (value: 'expense' | 'income' | 'savings') => void
 }) {
   return (
     <div className="flex items-center gap-1 mt-1 mb-4">
       <span className="text-foreground text-[28px] font-bold" style={{ letterSpacing: '-1px' }}>
-        {month}월
+        이번 달
       </span>
       <label className="flex items-center gap-1 cursor-pointer shrink-0">
         <select

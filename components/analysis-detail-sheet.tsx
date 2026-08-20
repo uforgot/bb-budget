@@ -67,8 +67,24 @@ export function AnalysisDetailSheet({
       .sort((a, b) => b.date.localeCompare(a.date) || b.created_at.localeCompare(a.created_at))
   }, [childCategories, month, parent, transactions, year])
 
+  const previousMonthTransactions = useMemo(() => {
+    if (!parent) return []
+    const previousMonth = new Date(year, month - 2, 1)
+    const categoryIds = new Set([parent.id, ...childCategories.map(category => category.id)])
+    return transactions.filter(transaction => {
+      if (!categoryIds.has(transaction.category_id)) return false
+      const date = parseDate(transaction.date)
+      return date.getFullYear() === previousMonth.getFullYear() && date.getMonth() === previousMonth.getMonth()
+    })
+  }, [childCategories, month, parent, transactions, year])
+
   const categoryTotals = useMemo(() => {
     const categoryById = new Map(categories.map(category => [category.id, category]))
+    const previousTotals = new Map<string, number>()
+    previousMonthTransactions.forEach(transaction => {
+      previousTotals.set(transaction.category_id, (previousTotals.get(transaction.category_id) ?? 0) + transaction.amount)
+    })
+
     const totals = new Map<string, { id: string; label: string; total: number }>()
     monthTransactions.forEach(transaction => {
       const category = categoryById.get(transaction.category_id)
@@ -78,12 +94,16 @@ export function AnalysisDetailSheet({
       item.total += transaction.amount
       totals.set(id, item)
     })
-    return Array.from(totals.values()).sort((a, b) => b.total - a.total)
-  }, [categories, monthTransactions, parent])
+
+    return Array.from(totals.values())
+      .map(item => ({ ...item, difference: item.total - (previousTotals.get(item.id) ?? 0) }))
+      .sort((a, b) => b.total - a.total)
+  }, [categories, monthTransactions, parent, previousMonthTransactions])
 
   if (!open || !parent) return null
 
   const total = monthTransactions.reduce((sum, transaction) => sum + transaction.amount, 0)
+  const recentTransactions = monthTransactions.slice(0, 5)
   const isCurrentMonth = year === initialYear && month === initialMonth
 
   const moveMonth = (offset: number) => {
@@ -131,14 +151,19 @@ export function AnalysisDetailSheet({
                 {categoryTotals.map((item, index) => (
                   <div key={item.id} className={`flex items-center justify-between py-3 text-[14px] ${index > 0 ? 'border-t border-black/10 dark:border-white/10' : ''}`}>
                     <span className="text-black/50 dark:text-white/50">{item.label}</span>
-                    <span className="font-semibold tabular-nums text-black/50 dark:text-white/50">{fmt(item.total)}</span>
+                    <span className="flex flex-col items-end">
+                      <span className="font-semibold tabular-nums text-black/50 dark:text-white/50">{fmt(item.total)}</span>
+                      <span className={`mt-0.5 text-[11px] tabular-nums ${item.difference > 0 ? 'text-accent-coral' : item.difference < 0 ? 'text-[#14b8a6]' : 'text-muted-foreground'}`}>
+                        지난달 대비 {item.difference > 0 ? '+' : item.difference < 0 ? '-' : ''}{fmt(Math.abs(item.difference))}
+                      </span>
+                    </span>
                   </div>
                 ))}
               </section>
 
               <section className="mt-3 overflow-hidden rounded-[22px] bg-white px-4 dark:bg-gray-800">
-                <p className="py-4 text-[14px] font-semibold">결제 내역</p>
-                {monthTransactions.map((transaction, index) => {
+                <p className="py-4 text-[14px] font-semibold">최근 결제 내역</p>
+                {recentTransactions.map((transaction, index) => {
                   const category = categories.find(item => item.id === transaction.category_id)
                   const date = parseDate(transaction.date)
                   return (
