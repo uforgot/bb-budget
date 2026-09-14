@@ -136,11 +136,6 @@ export default function AnalysisPage() {
           initialYear={selectedYear}
           initialMonth={selectedMonth}
           onClose={() => setDetailParent(null)}
-          onSelectTransaction={(transaction) => {
-            setDetailParent(null)
-            setEditTx(transaction)
-            setModalOpen(true)
-          }}
         />
 
         <AddTransactionModal
