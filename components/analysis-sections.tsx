@@ -5,31 +5,76 @@ function fmt(n: number) {
   return `₩${n.toLocaleString()}`
 }
 
+function TitleSelect({
+  value,
+  label,
+  ariaLabel,
+  options,
+  onChange,
+}: {
+  value: string
+  label: string
+  ariaLabel: string
+  options: { value: string; label: string }[]
+  onChange: (value: string) => void
+}) {
+  return (
+    <label className="relative flex items-center gap-1 cursor-pointer shrink-0">
+      <span className="text-foreground text-[28px] font-bold" style={{ letterSpacing: '-1px' }}>
+        {label}
+      </span>
+      <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        aria-label={ariaLabel}
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>{option.label}</option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
+const TYPE_OPTIONS = [
+  { value: 'expense', label: '지출' },
+  { value: 'income', label: '수입' },
+  { value: 'savings', label: '저축' },
+] as const
+
 export function AnalysisFilters({
+  monthValue,
+  monthLabel,
+  monthOptions,
+  onChangeMonth,
   typeFilter,
   onChangeType,
 }: {
+  monthValue: string
+  monthLabel: string
+  monthOptions: { value: string; label: string }[]
+  onChangeMonth: (value: string) => void
   typeFilter: 'expense' | 'income' | 'savings'
   onChangeType: (value: 'expense' | 'income' | 'savings') => void
 }) {
   return (
-    <div className="flex items-center gap-1 mt-1 mb-4">
-      <span className="text-foreground text-[28px] font-bold" style={{ letterSpacing: '-1px' }}>
-        이번 달
-      </span>
-      <label className="flex items-center gap-1 cursor-pointer shrink-0">
-        <select
-          value={typeFilter}
-          onChange={e => onChangeType(e.target.value as 'expense' | 'income' | 'savings')}
-          className="appearance-none bg-transparent text-foreground text-[28px] font-bold outline-none cursor-pointer"
-          style={{ letterSpacing: '-1px' }}
-        >
-          <option value="expense">지출</option>
-          <option value="income">수입</option>
-          <option value="savings">저축</option>
-        </select>
-        <ChevronDown size={16} strokeWidth={2.5} className="text-black/20 dark:text-white/20 flex-shrink-0" />
-      </label>
+    <div className="flex items-center gap-1 mt-1 mb-4 flex-wrap">
+      <TitleSelect
+        value={monthValue}
+        label={monthLabel}
+        ariaLabel="연월 선택"
+        options={monthOptions}
+        onChange={onChangeMonth}
+      />
+      <TitleSelect
+        value={typeFilter}
+        label={TYPE_OPTIONS.find(option => option.value === typeFilter)?.label ?? '지출'}
+        ariaLabel="내역 종류 선택"
+        options={[...TYPE_OPTIONS]}
+        onChange={value => onChangeType(value as 'expense' | 'income' | 'savings')}
+      />
     </div>
   )
 }

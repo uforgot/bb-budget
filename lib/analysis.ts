@@ -28,6 +28,36 @@ export function getAvailableTransactionYears(transactions: Transaction[]) {
   return Array.from(new Set(transactions.map(tx => new Date(tx.date).getFullYear()))).sort((a, b) => b - a)
 }
 
+export function getAnalysisMonthLabel(year: number, month: number, now: Date = new Date()) {
+  if (year === now.getFullYear() && month === now.getMonth() + 1) return '이번 달'
+  return `${year}년 ${month}월`
+}
+
+export function getAnalysisMonthValue(year: number, month: number) {
+  return `${year}-${String(month).padStart(2, '0')}`
+}
+
+export function getAnalysisMonthOptions(now: Date = new Date(), earliestYear?: number) {
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth() + 1
+  const startYear = Math.min(earliestYear ?? currentYear, currentYear - 5)
+  const options: { year: number; month: number; value: string; label: string }[] = []
+
+  for (let year = currentYear; year >= startYear; year--) {
+    const maxMonth = year === currentYear ? currentMonth : 12
+    for (let month = maxMonth; month >= 1; month--) {
+      options.push({
+        year,
+        month,
+        value: getAnalysisMonthValue(year, month),
+        label: getAnalysisMonthLabel(year, month, now),
+      })
+    }
+  }
+
+  return options
+}
+
 export function getAnalysisRows(categories: Category[], transactions: Transaction[], selectedYear: number, selectedMonth?: number) {
   return categories
     .map(category => {

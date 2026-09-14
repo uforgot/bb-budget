@@ -104,7 +104,8 @@ export function AnalysisDetailSheet({
 
   const total = monthTransactions.reduce((sum, transaction) => sum + transaction.amount, 0)
   const recentTransactions = monthTransactions.slice(0, 5)
-  const isCurrentMonth = year === initialYear && month === initialMonth
+  const today = new Date()
+  const isCurrentMonth = year === today.getFullYear() && month === today.getMonth() + 1
 
   const moveMonth = (offset: number) => {
     const next = new Date(year, month - 1 + offset, 1)
