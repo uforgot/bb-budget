@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { BOTTOM_NAV_CLEARANCE } from '@/components/bottom-nav'
 import type { Category, Transaction } from '@/lib/api'
 
 function fmt(amount: number) {
@@ -113,7 +114,7 @@ export function AnalysisDetailSheet({
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center" role="dialog" aria-modal="true" aria-label={`${parent.name} 상세 내역`}>
       <button type="button" className="absolute inset-0 bg-black/50" onClick={onClose} aria-label="상세 내역 닫기" />
-      <div className="relative flex max-h-[82dvh] w-full max-w-md flex-col overflow-hidden rounded-t-[28px] bg-sheet shadow-2xl">
+      <div className="relative flex max-h-[82dvh] w-full max-w-md flex-col overflow-hidden rounded-t-[28px] bg-sheet shadow-2xl" style={{ marginBottom: BOTTOM_NAV_CLEARANCE }}>
         <div className="px-5 pt-3 pb-4 flex-shrink-0">
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-black/15 dark:bg-white/15" />
           <div className="flex items-start justify-between gap-3">
@@ -151,7 +152,7 @@ export function AnalysisDetailSheet({
           )}
         </div>
 
-        <div className="flex-shrink-0 px-5 pt-4" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
+        <div className="flex-shrink-0 px-5 pt-4 pb-4">
           <div className="flex items-center gap-2">
             <button
               type="button"

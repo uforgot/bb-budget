@@ -307,7 +307,7 @@ function MonthlyExpensePageContent() {
           onSave={() => {}}
         />
 
-        {!modalOpen && <BottomNav hideAdd />}
+        <BottomNav hideAdd />
       </>
     </PullToRefresh>
   )

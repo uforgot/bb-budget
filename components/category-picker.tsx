@@ -4,6 +4,7 @@ import { X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCategories, type Category } from '@/lib/api'
+import { BOTTOM_NAV_CLEARANCE } from '@/components/bottom-nav'
 
 interface CategoryPickerProps {
   open: boolean
@@ -179,7 +180,7 @@ export function CategoryPicker({ open, type, selected, onSelect, onClose, inline
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '75dvh' }}>
+      <div className="relative w-full max-w-md bg-card rounded-t-2xl overflow-hidden flex flex-col" style={{ maxHeight: '75dvh', marginBottom: BOTTOM_NAV_CLEARANCE }}>
         <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
           <h3 className="text-base font-semibold">카테고리</h3>
           <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground" aria-label="닫기">

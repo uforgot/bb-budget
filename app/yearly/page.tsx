@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { ChevronDown, Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
-import { BottomNav } from '@/components/bottom-nav'
+import { BottomNav, useDismissOnTab } from '@/components/bottom-nav'
 import { TopToolbar } from '@/components/top-toolbar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, type Transaction, type Category } from '@/lib/api'
@@ -26,6 +26,13 @@ export default function Yearly() {
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [yearlyChartMode, setYearlyChartMode] = useState<'expense' | 'income' | 'savings'>('expense')
+
+  useDismissOnTab('/yearly', () => {
+    setSearchMode(false)
+    setSearchQuery('')
+    setModalOpen(false)
+    setEditTx(null)
+  })
 
   const loadData = useCallback(async () => {
     try {
@@ -270,7 +277,7 @@ export default function Yearly() {
         onClose={() => { setModalOpen(false); setEditTx(null); loadData() }}
         onSave={() => {}}
       />
-      {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
+      <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />
       </>
     </PullToRefresh>
   )

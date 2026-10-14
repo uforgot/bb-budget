@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
-import { BottomNav } from '@/components/bottom-nav'
+import { BottomNav, useDismissOnTab } from '@/components/bottom-nav'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { MonthlyView } from '@/components/monthly-view'
 import { getTransactions, getCategories, getRecurringPreview, type Transaction, type Category } from '@/lib/api'
@@ -26,6 +26,13 @@ export default function History() {
   const [initialLoading, setInitialLoading] = useState(true)
   const [recurringItems, setRecurringItems] = useState<{ day: number; type: string; amount: number; category_id: string; description: string; categoryName?: string }[]>([])
   const [todayResetToken, setTodayResetToken] = useState(0)
+
+  useDismissOnTab('/history', () => {
+    setSearchMode(false)
+    setSearchQuery('')
+    setModalOpen(false)
+    setEditTx(null)
+  })
 
   // 현재 연월 (select 기준)
   const now = new Date()
@@ -130,7 +137,7 @@ export default function History() {
         onSave={() => {}}
       />
 
-      {!modalOpen && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
+      <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />
       </>
     </PullToRefresh>
   )

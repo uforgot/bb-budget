@@ -5,6 +5,7 @@ import { deleteTransactionWithRecurringCascade, getCategories, type Category, ty
 import { formatDateDisplay, formatDateInputValue, formatKoreanWon } from '@/lib/format'
 import { AddTransactionHeader, RecoverySection, TransactionAmountRow, TransactionCategorySection, TransactionDateRow, TransactionMemoRow, TransactionRepeatSection } from './add-transaction-sections'
 import { applySavingsRecovery, buildTransactionPayload, REVERSE_TYPE_MAP, saveTransactionWithRecurring, type TransactionTypeKo } from '@/lib/transaction-modal'
+import { BOTTOM_NAV_CLEARANCE } from '@/components/bottom-nav'
 
 type TransactionType = TransactionTypeKo
 
@@ -175,6 +176,12 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
       window.setTimeout(() => setSheetAnimating(false), 220)
     })
     return () => window.cancelAnimationFrame(raf)
+  }, [open])
+
+  useEffect(() => {
+    if (open) return
+    setSheetVisible(false)
+    setShouldRender(false)
   }, [open])
 
   useEffect(() => {
@@ -376,6 +383,7 @@ export function AddTransactionModal({ open, initialDate, editTransaction, onClos
         className="absolute inset-x-0 bottom-0 flex flex-col bg-sheet"
         style={{
           top: 'max(8px, env(safe-area-inset-top, 0px) + 4px)',
+          bottom: BOTTOM_NAV_CLEARANCE,
           transform: `translateY(${dragTranslateY}px)`,
           transition: sheetAnimating ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
           borderTopLeftRadius: 28,

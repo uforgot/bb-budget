@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PullToRefresh } from '@/components/pull-to-refresh'
-import { BottomNav } from '@/components/bottom-nav'
+import { BottomNav, useDismissOnTab } from '@/components/bottom-nav'
 import { TopToolbar } from '@/components/top-toolbar'
 import { AddTransactionModal } from '@/components/add-transaction-modal'
 import { getTransactions, getCategories, type Transaction, type Category } from '@/lib/api'
@@ -27,6 +27,14 @@ export default function AnalysisPage() {
   const [detailParent, setDetailParent] = useState<Category | null>(null)
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+
+  useDismissOnTab('/analysis', () => {
+    setSearchMode(false)
+    setSearchQuery('')
+    setModalOpen(false)
+    setEditTx(null)
+    setDetailParent(null)
+  })
 
   const loadData = useCallback(async () => {
     try {
@@ -125,7 +133,7 @@ export default function AnalysisPage() {
           </div>
         )}
 
-        {!modalOpen && !detailParent && <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />}
+        <BottomNav onAdd={() => { setEditTx(null); setModalOpen(true) }} />
 
         <AnalysisDetailSheet
           key={detailParent ? `${detailParent.id}-${selectedYear}-${selectedMonth}` : 'closed'}
