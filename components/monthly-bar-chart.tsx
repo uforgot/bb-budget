@@ -36,16 +36,13 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   const TOP_PAD = 8 // border-radius 잘림 방지용 상단 여백
 
   const focusMonth = today.getMonth() + 1
-  const alignCurrentToStart = focusMonth > 6
-
   useLayoutEffect(() => {
-    if (!alignCurrentToStart) return
+    if (focusMonth <= 6) return
     const el = scrollRef.current
     if (!el) return
-    const spacer = el.querySelector('[data-chart-spacer]') as HTMLElement | null
-    if (spacer) spacer.style.width = `${Math.max(0, el.clientWidth - ITEM_W)}px`
-    el.scrollLeft = (focusMonth - 1) * ITEM_W
-  }, [ITEM_W, alignCurrentToStart, focusMonth])
+    const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth)
+    el.scrollLeft = Math.min((focusMonth - 1) * ITEM_W, maxScroll)
+  }, [ITEM_W, focusMonth])
 
   const maxValue = Math.max(...data.filter(d => !d.isFuture).map(d => d.value), 1)
   const selectedData = data.find(d => d.month === selectedMonth)
@@ -95,7 +92,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
 
         {/* 바 그래프 */}
         <div ref={scrollRef} className="overflow-x-auto overflow-y-hidden scrollbar-hide w-full">
-        <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: 'max-content' }}>
+        <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: ITEM_W * 12 }}>
           {data.map(d => {
             const isSelected = d.month === selectedMonth
             const hasValue = !d.isFuture && d.value > 0
@@ -131,7 +128,6 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               </div>
             )
           })}
-          {alignCurrentToStart && <div data-chart-spacer="" style={{ width: 0, flexShrink: 0 }} />}
         </div>
         </div>
       </div>
