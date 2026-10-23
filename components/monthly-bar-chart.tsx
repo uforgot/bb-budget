@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { typography } from '@/components/ui-colors'
 
 interface MonthData {
@@ -24,6 +24,7 @@ interface MonthlyBarChartProps {
 }
 
 export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, topSlot, flatTop = false, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
 
@@ -33,6 +34,18 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   const MAX_H = maxHeight
   const LABEL_H = 24
   const TOP_PAD = 8 // border-radius 잘림 방지용 상단 여백
+
+  const focusMonth = today.getMonth() + 1
+  const alignCurrentToStart = focusMonth > 6
+
+  useLayoutEffect(() => {
+    if (!alignCurrentToStart) return
+    const el = scrollRef.current
+    if (!el) return
+    const spacer = el.querySelector('[data-chart-spacer]') as HTMLElement | null
+    if (spacer) spacer.style.width = `${Math.max(0, el.clientWidth - ITEM_W)}px`
+    el.scrollLeft = (focusMonth - 1) * ITEM_W
+  }, [ITEM_W, alignCurrentToStart, focusMonth])
 
   const maxValue = Math.max(...data.filter(d => !d.isFuture).map(d => d.value), 1)
   const selectedData = data.find(d => d.month === selectedMonth)
@@ -81,8 +94,8 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
       </div>
 
         {/* 바 그래프 */}
-        <div className="overflow-x-auto overflow-y-hidden scrollbar-hide w-full">
-        <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: ITEM_W * 12 }}>
+        <div ref={scrollRef} className="overflow-x-auto overflow-y-hidden scrollbar-hide w-full">
+        <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: 'max-content' }}>
           {data.map(d => {
             const isSelected = d.month === selectedMonth
             const hasValue = !d.isFuture && d.value > 0
@@ -118,6 +131,7 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
               </div>
             )
           })}
+          {alignCurrentToStart && <div data-chart-spacer="" style={{ width: 0, flexShrink: 0 }} />}
         </div>
         </div>
       </div>
