@@ -25,7 +25,7 @@ export default function Yearly() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [searchMode, setSearchMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [yearlyChartMode, setYearlyChartMode] = useState<'expense' | 'income' | 'savings'>('expense')
+  const [yearlyChartMode, setYearlyChartMode] = useState<'balance' | 'expense' | 'income' | 'savings'>('balance')
 
   useDismissOnTab('/yearly', () => {
     setSearchMode(false)
@@ -90,6 +90,9 @@ export default function Yearly() {
       return m.month < now.getMonth() + 1
     })
   })()
+  const avgBalance = completedMonths.length > 0
+    ? Math.round(completedMonths.reduce((s, m) => s + m.balance, 0) / completedMonths.length)
+    : 0
   const avgExpense = completedMonths.length > 0
     ? Math.round(completedMonths.reduce((s, m) => s + m.expense, 0) / completedMonths.length)
     : 0
@@ -222,6 +225,7 @@ export default function Yearly() {
             <div className="mb-0">
               <div className="flex gap-0 overflow-visible">
                 {([
+                  ['balance', '잔액'],
                   ['expense', '지출'],
                   ['income', '수입'],
                   ['savings', '저축'],
@@ -245,9 +249,10 @@ export default function Yearly() {
             <MonthlyBarChart
               flatTop
               className="mb-4 mt-0"
-              label={yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
-              color={yearlyChartMode === 'expense' ? '#5865F2' : yearlyChartMode === 'income' ? '#14b8a6' : '#A855F7'}
-              avgValue={yearlyChartMode === 'expense' ? avgExpense : yearlyChartMode === 'income' ? avgIncome : avgSavings}
+              signed={yearlyChartMode === 'balance'}
+              label={yearlyChartMode === 'balance' ? '남은 잔액' : yearlyChartMode === 'expense' ? '쓴 지출' : yearlyChartMode === 'income' ? '번 수입' : '모은 저축'}
+              color={yearlyChartMode === 'balance' ? 'var(--foreground)' : yearlyChartMode === 'expense' ? '#5865F2' : yearlyChartMode === 'income' ? '#14b8a6' : '#A855F7'}
+              avgValue={yearlyChartMode === 'balance' ? avgBalance : yearlyChartMode === 'expense' ? avgExpense : yearlyChartMode === 'income' ? avgIncome : avgSavings}
               comparisonText={yearlyChartMode === 'savings' ? ((selectedValue) => {
                 const diff = selectedValue - startSavings
                 const toMan = (v: number) => `${Math.round(v / 10000).toLocaleString()}만 원`
@@ -262,7 +267,7 @@ export default function Yearly() {
                   (targetYear === today.getFullYear() && m > today.getMonth() + 1)
                 return {
                   month: m,
-                  value: yearlyChartMode === 'expense' ? ms.expense : yearlyChartMode === 'income' ? ms.income : ms.savings,
+                  value: yearlyChartMode === 'balance' ? ms.balance : yearlyChartMode === 'expense' ? ms.expense : yearlyChartMode === 'income' ? ms.income : ms.savings,
                   isFuture,
                 }
               })}

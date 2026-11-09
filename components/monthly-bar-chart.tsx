@@ -11,6 +11,7 @@ interface MonthData {
 
 interface MonthlyBarChartProps {
   data: MonthData[]
+  signed?: boolean
   label: string
   color?: string
   avgValue?: number
@@ -23,7 +24,7 @@ interface MonthlyBarChartProps {
   comparisonText?: (selectedValue: number) => string | null
 }
 
-export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, topSlot, flatTop = false, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, signed = false, label, color = '#CF6679', avgValue, avgLabel = '월 평균', headerRight, topSlot, flatTop = false, className = '', maxHeight = 120, comparisonText }: MonthlyBarChartProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const today = new Date()
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1)
@@ -45,6 +46,9 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
   }, [ITEM_W, focusMonth])
 
   const maxValue = Math.max(...data.filter(d => !d.isFuture).map(d => d.value), 1)
+  const minValue = signed ? Math.min(...data.filter(d => !d.isFuture).map(d => d.value), 0) : 0
+  const valueRange = maxValue - minValue
+  const zeroTop = (maxValue / valueRange) * MAX_H
   const selectedData = data.find(d => d.month === selectedMonth)
 
   return (
@@ -67,16 +71,16 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
             {selectedData ? `${selectedData.month}월 ${label}` : label}
           </p>
           <p className="text-[24px] font-bold tabular-nums leading-tight mt-0" style={{ letterSpacing: '-1px', color }}>
-            {selectedData && !selectedData.isFuture && selectedData.value > 0
+            {selectedData && !selectedData.isFuture && (signed || selectedData.value > 0)
               ? `₩${selectedData.value.toLocaleString()}`
               : '—'}
           </p>
-          {selectedData && !selectedData.isFuture && selectedData.value > 0 && comparisonText && (
+          {selectedData && !selectedData.isFuture && (signed || selectedData.value > 0) && comparisonText && (
             <p className="text-[13px] font-medium mt-1 whitespace-nowrap text-gray-500 dark:text-gray-500">
               {comparisonText(selectedData.value)}
             </p>
           )}
-          {selectedData && !selectedData.isFuture && selectedData.value > 0 && !comparisonText && avgValue != null && avgValue > 0 && (() => {
+          {selectedData && !selectedData.isFuture && (signed || selectedData.value > 0) && !comparisonText && avgValue != null && (signed || avgValue > 0) && (() => {
             const diff = selectedData.value - avgValue
             if (diff === 0) return null
             const isOver = diff > 0
@@ -95,11 +99,11 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
         <div className="flex items-end" style={{ height: MAX_H + LABEL_H + 8 + TOP_PAD, paddingTop: TOP_PAD, width: ITEM_W * 12 }}>
           {data.map(d => {
             const isSelected = d.month === selectedMonth
-            const hasValue = !d.isFuture && d.value > 0
+            const hasValue = !d.isFuture && (signed ? d.value !== 0 : d.value > 0)
             const barH = d.isFuture
               ? 6
               : hasValue
-                ? Math.max(6, Math.round((d.value / maxValue) * MAX_H))
+                ? Math.max(6, Math.round((Math.abs(d.value) / valueRange) * MAX_H))
                 : 0
             const barColor = d.isFuture
               ? 'rgba(255,255,255,0.08)'
@@ -114,7 +118,19 @@ export function MonthlyBarChart({ data, label, color = '#CF6679', avgValue, avgL
                 className="flex flex-col items-center justify-end"
                 onClick={() => { if (!d.isFuture) setSelectedMonth(d.month) }}
               >
-                <div style={{ width: BAR_W, height: barH, backgroundColor: hasValue || d.isFuture ? barColor : 'transparent', borderRadius, marginBottom: 8, flexShrink: 0 }} />
+                {signed ? (
+                  <div className="relative" style={{ width: ITEM_W, height: MAX_H, marginBottom: 8, flexShrink: 0 }}>
+                    <div className="absolute w-full border-t border-foreground/15" style={{ top: zeroTop }} />
+                    <div style={{
+                      position: 'absolute', left: BAR_GAP / 2, width: BAR_W,
+                      top: d.value < 0 && !d.isFuture ? zeroTop : zeroTop - Math.min(barH, zeroTop),
+                      height: Math.min(barH, d.value < 0 && !d.isFuture ? MAX_H - zeroTop : zeroTop),
+                      backgroundColor: hasValue || d.isFuture ? barColor : 'transparent', borderRadius,
+                    }} />
+                  </div>
+                ) : (
+                  <div style={{ width: BAR_W, height: barH, backgroundColor: hasValue || d.isFuture ? barColor : 'transparent', borderRadius, marginBottom: 8, flexShrink: 0 }} />
+                )}
                 <span style={{
                   fontSize: 10,
                   fontWeight: isSelected ? 600 : 400,
